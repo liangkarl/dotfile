@@ -7,7 +7,6 @@ set -x
 PWD=`pwd`
 SRC=(
 "$PWD/environment/bin"
-"$PWD/environment/ssh"
 "$PWD/environment/vim/vimrc"
 "$PWD/environment/android"
 "/media/karl/ext4/Projects"
@@ -16,7 +15,6 @@ SRC=(
 
 GOAL=(
 "$HOME/bin"
-"$HOME/.ssh"
 "$HOME/.vimrc"
 "$HOME/.android"
 "$HOME/Projects"
@@ -31,9 +29,9 @@ while [ true ]; do
 		break;
 	fi
 	if [ -e ${GOAL[$i]} ]; then
-		rm -rf ${GOAL[$i]}
+		mv ${GOAL[$i]} ${GOAL[$i]}.bak
 	fi
-	ln -sf ${SRC[$i]} ${GOAL[$i]}
+	cp ${SRC[$i]} ${GOAL[$i]}
 	i=$((i+1))
 done
 
