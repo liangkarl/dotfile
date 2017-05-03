@@ -1,0 +1,118 @@
+#!/bin/bash
+# Author: Karl Liang
+# Date: 08/24/15
+# Version: 2.0
+
+get_sample() {
+	##
+	# Not support binary diff
+	##
+	local cmd=$1
+	local project=`git config remote.korg.projectname`
+	local files="`git $cmd --name-status | awk '/^[ACDMR][\t]/{print $2}'`"
+	local stamp=`date +%Y%m%d`
+	local pos=HEAD
+	local folder=''
+	if [ $cmd == "show" ]; then
+		pos=HEAD^
+	fi
+
+	mkdir patch
+	if ! git $cmd > patch/${stamp}.patch; then
+		echo "git tree doesn't exist"
+		return 128
+	fi
+
+	for i in $files; do
+		folder=`dirname $i`
+		if [ ! -e res/new/$project/$folder ]; then
+			mkdir -p res/new/$project/$folder res/old/$project/$folder
+		fi
+
+		cp $i res/new/$project/$i
+		git show $pos:$i > res/old/$project/$i 2> /dev/null
+	done
+
+	echo "output folder: sample_$stamp"
+	rm -rf sample_$stamp
+	mkdir sample_$stamp
+	mv res patch sample_$stamp
+	#7z a ${stamp}.7z sample
+}
+
+get_diff() {
+	local target=${1-.}
+	local new=new
+	local old=old
+
+	pushd $target > /dev/null
+	if [ ! -e $new ] || [ ! -e $old ]; then
+		echo "$new/ or $old/ not existed"
+		return 128
+	elif ! type diff > /dev/null; then
+		echo "diff is invailed"
+		return 128
+	fi
+
+	for dir in `ls -d $new/*/`; do
+		echo "create $dir patch"
+		diff -EZBNru ${dir/$new/$old} $dir > ${dir}.patch
+	done
+
+	echo "---------- done ----------"
+	echo "use the patch(es) with \"-p2\" in patch command"
+	popd > /dev/null
+}
+
+usage() {
+	cat << USAGE
+
+	$0 OPTIONS
+
+	OPTIONS:
+		[-s | --sample] [diff|show]: create sample/
+			ex: $0 -s show
+
+		[-d | --diff] folder: generate .diff from sample files
+			ex: $0 -d ~/aaa/
+
+		[-h | --help]: help
+			ex: $0 -h
+
+USAGE
+}
+
+proc_opts() {
+	case $1 in
+		-)
+			case $OPTARG in
+				help)		proc_opts h;;
+				diff=*)		proc_opts d ${OPTARG#*=};;
+				sample=*)	proc_opts s ${OPTARG#*=};;
+				*)			proc_opts ?;;
+			esac
+			;;
+
+		s)	get_sample ${2:-$OPTARG};;
+		d)	get_diff ${2:-$OPTARG};;
+		h | ?)
+			usage
+			exit 128
+			;;
+	esac
+}
+
+optspec=":s:d:-:h"
+proc=0
+
+if [ -z "$1" ]; then
+	usage
+	exit
+fi
+
+if getopts $optspec opt; then
+	proc_opts $opt
+else
+	usage
+	exit 128
+fi
