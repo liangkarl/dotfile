@@ -47,7 +47,7 @@ Bundle 'nelstrom/vim-mac-classic-theme'
 Bundle 'mgutz/vim-colors'
 
 " Text auto-completetion
-Bundle 'Shougo/neocomplete.vim'
+Bundle 'Valloric/YouCompleteMe'
 
 " Taglist like
 Bundle 'majutsushi/tagbar'
@@ -70,7 +70,7 @@ Bundle 'scrooloose/nerdcommenter'
 Bundle 'tomtom/tlib_vim'
 
 " cscope
-Bundle 'vim-scripts/cecscope'
+Bundle 'steffanc/cscopemaps.vim'
 
 " Marks
 Bundle 'vim-scripts/Marks-Browser'
@@ -156,20 +156,20 @@ set backspace=indent,eol,start
 set showcmd
 
 " Load cscope files
-if has("cscope")
-  set csprg=/usr/bin/cscope
-  set csto=0
-  set cst
-  set nocsverb
-  " add any database in current directory
-  if filereadable("cscope.out")
-    cs add cscope.out
-  " else add database pointed to by environment
-  elseif $CSCOPE_DB != ""
-    cs add $CSCOPE_DB
-  endif
-  set csverb
-endif
+"if has("cscope")
+  "set csprg=/usr/bin/cscope
+  "set csto=0
+  "set cst
+  "set nocsverb
+  "" add any database in current directory
+  "if filereadable("cscope.out")
+    "cs add cscope.out
+  "" else add database pointed to by environment
+  "elseif $CSCOPE_DB != ""
+    "cs add $CSCOPE_DB
+  "endif
+  "set csverb
+"endif
 
 "}}}
 
