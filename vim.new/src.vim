@@ -84,7 +84,6 @@ Plug 'tomasr/molokai'
 " c
 Plug 'vim-scripts/c.vim', {'for': ['c', 'cpp']}
 Plug 'ludwig/split-manpage.vim'
-Plug 'vivien/vim-linux-coding-style'
 
 
 " python
@@ -189,7 +188,7 @@ else
   let g:indentLine_char = '┆'
   let g:indentLine_faster = 1
 
-
+  
   if $COLORTERM == 'gnome-terminal'
     set term=gnome-256color
   else
@@ -197,7 +196,7 @@ else
       set term=xterm-256color
     endif
   endif
-
+  
 endif
 
 
@@ -205,7 +204,6 @@ if &term =~ '256color'
   set t_ut=
 endif
 
-set colorcolumn=80
 
 "" Disable the blinking cursor.
 set gcr=a:blinkon0
@@ -263,10 +261,10 @@ let g:NERDTreeSortOrder=['^__\.py$', '\/$', '*', '\.swp$', '\.bak$', '\~$']
 let g:NERDTreeShowBookmarks=1
 let g:nerdtree_tabs_focus_on_files=1
 let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
-let g:NERDTreeWinSize = 35
+let g:NERDTreeWinSize = 50
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
-nnoremap <silent> <leader>3 :NERDTreeFind<CR>
-noremap <silent> <leader>2 :NERDTreeToggle<CR>
+nnoremap <silent> <F2> :NERDTreeFind<CR>
+noremap <F3> :NERDTreeToggle<CR>
 
 " grep.vim
 nnoremap <silent> <leader>f :Rgrep<CR>
@@ -330,7 +328,6 @@ set autoread
 "" Mappings
 "*****************************************************************************
 
-"" leader = ,
 "" Split
 noremap <Leader>h :<C-u>split<CR>
 noremap <Leader>v :<C-u>vsplit<CR>
@@ -346,9 +343,6 @@ noremap <Leader>gd :Gvdiff<CR>
 noremap <Leader>gr :Gremove<CR>
 
 " session management
-" ------------------
-" Use session to save current opened files
-" Open session in the next time
 nnoremap <leader>so :OpenSession<Space>
 nnoremap <leader>ss :SaveSession<Space>
 nnoremap <leader>sd :DeleteSession<CR>
@@ -406,7 +400,7 @@ let g:syntastic_auto_loc_list=1
 let g:syntastic_aggregate_errors = 1
 
 " Tagbar
-nmap <silent> <leader>1 :TagbarToggle<CR>
+nmap <silent> <F4> :TagbarToggle<CR>
 let g:tagbar_autofocus = 1
 
 " Disable visualbell
@@ -437,10 +431,7 @@ noremap <leader>x :bn<CR>
 noremap <leader>w :bn<CR>
 
 "" Close buffer
-noremap <leader>d :bd<CR>
-
-"" Close window
-noremap <C-x> <C-w>c
+noremap <leader>c :bd<CR>
 
 "" Clean search (highlight)
 nnoremap <silent> <leader><space> :noh<cr>
@@ -471,7 +462,7 @@ autocmd FileType c setlocal tabstop=4 shiftwidth=4 expandtab
 autocmd FileType cpp setlocal tabstop=4 shiftwidth=4 expandtab
 
 
-" python --> start
+" python
 " vim-python
 augroup vimrc-python
   autocmd!
@@ -479,7 +470,6 @@ augroup vimrc-python
       \ formatoptions+=croq softtabstop=4
       \ cinwords=if,elif,else,for,while,try,except,finally,def,class,with
 augroup END
-
 
 " jedi-vim
 let g:jedi#popup_on_dot = 0
@@ -503,7 +493,6 @@ let g:airline#extensions#virtualenv#enabled = 1
 let g:polyglot_disabled = ['python']
 let python_highlight_all = 1
 
-" python --> end
 
 "*****************************************************************************
 "*****************************************************************************

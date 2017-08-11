@@ -70,7 +70,10 @@ Bundle 'scrooloose/nerdcommenter'
 Bundle 'tomtom/tlib_vim'
 
 " cscope
-Bundle 'steffanc/cscopemaps.vim'
+" vim-codequery need this
+Plugin 'mileszs/ack.vim'
+Bundle 'Shougo/unite.vim'
+Bundle 'devjoe/vim-codequery'
 
 " Marks
 Bundle 'vim-scripts/Marks-Browser'
@@ -446,17 +449,6 @@ nnoremap <Leader>\] g<c-]>
 " cscope
 nnoremap <Leader>\r :!/usr/bin/cscope -Rbq<CR>
 nnoremap <Leader>\u :cs reset<CR>
-nnoremap <Leader>\a :cs add <C-R>=expand("%:p:h") . "/"<CR><CR>
-" find the caller of func, macro or enum
-nnoremap <Leader>\s :CSL s <C-R>=expand("<cword>")<CR><CR>
-" find definition of func, macro, enum
-nnoremap <Leader>\g :CSL g <C-R>=expand("<cword>")<CR><CR>
-nnoremap <Leader>\c :CSL c <C-R>=expand("<cword>")<CR><CR>
-" find the string
-nnoremap <Leader>\t :CSL t <C-R>=expand("<cword>")<CR><CR>
-nnoremap <Leader>\e :CSL e <C-R>=expand("<cword>")<CR><CR>
-" find the func include what funcs
-nnoremap <Leader>\d :CSL d <C-R>=expand("<cword>")<CR><CR>
 
 noremap z<Up> :wincmd k<CR>
 noremap z<Down> :wincmd j<CR>
