@@ -1,7 +1,0 @@
-#!/bin/bash
-
-REMOTE='sprd3'
-SRC=$1
-GOAL=$2
-
-scp -r $REMOTE:$SRC $GOAL
