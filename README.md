@@ -1,4 +1,4 @@
-# My Ubuntu Shell Setup #
+# My Ubuntu Shell Config #
 
 ## Introduce ##
 
