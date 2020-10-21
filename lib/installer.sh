@@ -2,6 +2,7 @@
 
 INSTALL_PACKAGES_LIST=(
         'tmux'
+        'git'
 )
 
 install_packages()
