@@ -25,6 +25,28 @@ bash
 
 Ubuntu 18.04
 
+## Usage ##
+
+### Install All ###
+
+Execute `install.sh`
+
+### Partial Install ###
+
+1. Set environment
+
+```
+source core/env.sh`
+init_env
+```
+
+2. Choose which application you want to install. For example
+
+```
+source lib/git.sh
+install
+```
+
 ## Notice ##
 
 Still on progress, many works needed to do.
