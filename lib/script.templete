@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# source $CORE_DIR/utils.sh
+# source $CORE_DIR/sign.sh
+
+XXXX_NAME='xxxx'
+XXXX_CONFIG="$CONFIG_DIR/$XXXX_NAME"
+
+install()
+{
+        config_package
+}
+
+uninstall()
+{
+        echo "Remove $XXXX_NAME..."
+}
+
+config_package()
+{
+        echo "Config $XXXX_NAME..."
+}
