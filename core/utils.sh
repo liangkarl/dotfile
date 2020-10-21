@@ -16,7 +16,7 @@ create_link()
                 rm $DST
         fi
 
-        echo "Copy $SRC to $DST"
+        echo "Link $SRC to $DST"
         ln -s $SRC $DST
 }
 
