@@ -13,7 +13,7 @@ install_packages()
 
         for((i = 0; i < len; i++)); do
                 package=${INSTALL_PACKAGES_LIST[$i]}
-                echo "Package: $package"
+                echo "Install $((i+1)) : $package"
                 load_and_install_package $package
         done
 }
