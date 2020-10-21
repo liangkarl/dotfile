@@ -2,16 +2,17 @@
 
 ## Introduce ##
 
-Since, I hate re-type every command while install a new Ubuntu system from zero.
+  Since I hate re-type every command while installing a new Ubuntu system from zero,
 I tried to write some simple script before, but they are hard to mantain or modify
-after system update or something else happended. I want to try another way to 
-break such goddamn infinite loop.
+after system update or something else happended. I want to try another way to break
+such goddamn infinite loop.
 
 ## Goal ##
 
-1. Make integrated key-binding while using many programming tools
-2. Mainly, key-bindings are vi-like
-3. Simple scripts to mantain/modify
+1. Simple scripts to mantain/modify
+2. Less manual operation while installing
+3. Make integrated key-binding while using many programming tools
+4. Main key-bindings are vi-like
 
 ## Include ##
 
@@ -19,6 +20,10 @@ tmux
 git
 bash
 (still adding)
+
+## Platform ##
+
+Ubuntu 18.04
 
 ## Notice ##
 
