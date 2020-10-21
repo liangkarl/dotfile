@@ -1,6 +1,6 @@
 #!/bin/bash
 
-INSTALL_PACKAGES_LIST=(
+declare -r INSTALL_PACKAGES_LIST=(
         'tmux'
         'git'
         'bash'
@@ -8,22 +8,23 @@ INSTALL_PACKAGES_LIST=(
 
 install_packages()
 {
-        local len=${#INSTALL_PACKAGES_LIST[@]}
-        local package=
+        local LEN=${#INSTALL_PACKAGES_LIST[@]}
+        local PACKAGE_NAME=
 
-        for((i = 0; i < len; i++)); do
-                package=${INSTALL_PACKAGES_LIST[$i]}
-                echo "Install $((i+1)) : $package"
-                load_and_install_package $package
+        for((i = 0; i < LEN; i++)); do
+                PACKAGE_NAME=${INSTALL_PACKAGES_LIST[$i]}
+                echo "Install $((i+1)) : $PACKAGE_NAME"
+                load_and_install_package $PACKAGE_NAME
         done
 }
 
 load_and_install_package()
 {
-        local script=${1}.sh
+        local -r PACKAGE_NAME=$1
+        local LIB_SCRIPT=$LIB_DIR/${1}.sh
         (
-                echo "Load script of package"
-                source $LIB_DIR/$script
-                install
+                echo "Load \"$PACKAGE_NAME\" script"
+                source $LIB_SCRIPT &&
+                        install
         )
 }
