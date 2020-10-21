@@ -1,6 +1,4 @@
 #!/bin/bash
-#
-set -x
 
 ## Load environment variables
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -15,5 +13,3 @@ source $CORE_DIR/installer.sh
 
 # Install package
 install_packages
-
-set +x
