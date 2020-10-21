@@ -35,7 +35,7 @@ config_package()
 
         ## Add autocomplete for bash
         local -r DST_BASH="$HOME/.bash_completion"
-        local -r SRC_BASH="$TMUX_CONFIG/bash_completion_tmux"
+        local -r SRC_BASH="$TMUX_CONFIG/bash_completion"
         
         # Add load command to bash_completion
         local -r LOAD_CMD="source $SRC_BASH\ncomplete -F _tmux tmux"
