@@ -1,9 +1,0 @@
-#!/bin/bash -
-
-#set -x
-
-path=$3
-filetype=$1
-string=$2
-
-find $path -name "*.$filetype" | xargs grep -HIrns $4 $string --color;

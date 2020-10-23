@@ -1,3 +1,7 @@
 alias ls='ls -v --group-directories-first -N --color=auto'
 alias ll='ls -l'
 alias la='ls -a'
+alias cls='clear'
+
+# Search contents in assigned filetypes
+alias qgrep='set -f;cmd 2>-';cmd(){ find $(dirname $2) -name $(basename $2) | xargs grep -HIrns $3 "$1" --color; "$@";set +f;}
