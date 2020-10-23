@@ -29,17 +29,8 @@ config_package()
         local -r BASHRC="$HOME/.bashrc"
         local -r BASHRC_TMP="${BASHRC}.tmp"
         if [ -e $BASHRC ]; then
+                echo "Replace and backup $BASHRC"
                 # Show current dir only, not full path.
-                sed 's:\\w\\:\\W\\:g' $BASHRC > $BASHRC_TMP
-
-                if ! cmp $BASHRC $BASHRC_TMP; then
-                        echo "Backup $BASHRC"
-                        mv $BASHRC ${BASHRC}.bak
-
-                        echo "Replace $BASHRC"
-                        mv $BASHRC_TMP $BASHRC
-                fi
-
-                rm $BASHRC_TMP
+                sed -i'.bak' 's:\\w\\:\\W\\:g' $BASHRC
         fi
 }
