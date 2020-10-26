@@ -1,3 +1,15 @@
 #!/bin/bash
 
-sed -i 's/\r$//' $1
+[ -z "$1" ] && {
+  NAME=$(basename $0)
+  cat << \
+USAGE
+Usage: "$NAME [filename]"
+Example:
+  $ fromdos dos.txt
+  $ ls
+  dos.txt dos.txt.bak
+USAGE
+} || {
+  sed -i.bak 's/\r$//' $1
+}
