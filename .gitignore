@@ -1,1 +1,7 @@
 known_hosts
+
+# Ignore generated files by nvim
+config/nvim/plugged/
+config/nvim/backup/
+config/nvim/swap/
+config/nvim/undo/
