@@ -28,9 +28,17 @@ config_package()
         # Assume $PS1 are almost the same as default bashrc
         local -r BASHRC="$HOME/.bashrc"
         local -r BASHRC_TMP="${BASHRC}.tmp"
-        if [ -e $BASHRC ]; then
-                echo "Replace and backup $BASHRC"
-                # Show current dir only, not full path.
-                sed -i'.bak' 's:\\w\\:\\W\\:g' $BASHRC
+	if [ -e $BASHRC ]; then
+		cp $BASHRC $BASHRC_TMP
+                sed -i 's:\\w\\:\\W\\:g' $BASHRC_TMP
+		if ! cmp $BASHRC $BASHRC_TMP; then
+			echo "Replace and backup $BASHRC"
+			mv -vf $BASHRC $BASHRC.bak
+			mv $BASHRC_TMP $BASHRC
+		else
+			rm $BASHRC_TMP
+		fi
+	else
+		echo "No $BASHRC found."
         fi
 }
