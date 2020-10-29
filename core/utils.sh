@@ -24,7 +24,7 @@ test_cmd()
 	command -v >&- "$@" && \
 		return $OK || \
 		return $BAD
-	}
+}
 
 is_abs_path()
 {
@@ -32,10 +32,10 @@ is_abs_path()
 	[[ "$TEST_PATH" = /* ]] &&
 		return $OK ||
 		return $BAD
-	}
+}
 
 to_abs_path()
 {
 	local -r SRC_PATH=$1
-	[ "$SRC_PATH" -z ] || echo $(pwd)/$1
+	[[ -z "$SRC_PATH" ]] || echo $(pwd)/$SRC_PATH
 }
