@@ -5,3 +5,6 @@ config/nvim/plugged/
 config/nvim/backup/
 config/nvim/swap/
 config/nvim/undo/
+
+*.log
+.netrwhist
