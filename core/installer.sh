@@ -1,9 +1,12 @@
 #!/bin/bash
 
+# TODO:
+# Need to implement 'ccls', 'bear', 'others'
 declare -r INSTALL_PACKAGES_LIST=(
         'tmux'
         'git'
         'bash'
+        'nvim'
 )
 
 install_packages()
