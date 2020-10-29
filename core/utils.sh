@@ -8,15 +8,8 @@ create_link()
 	local -r SRC=$1
 	local -r DST=$2
 
-	if [ -L $DST ]; then
-		echo "Remove symbolic link: $DST"
-		rm -v $DST
-	else
-		mv -v $DST $DST.bak
-	fi
-
 	echo "Link $SRC to $DST"
-	ln -sv $SRC $DST
+	ln -svib $SRC $DST
 }
 
 test_cmd()
