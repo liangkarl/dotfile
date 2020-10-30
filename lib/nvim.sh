@@ -7,6 +7,7 @@ NVIM_NAME='nvim'
 NVIM_CONFIG="$CONFIG_DIR/$NVIM_NAME"
 REQUIRED_PACKAGE="
 	'python3-pip'
+	'npm'
 "
 
 install()
@@ -51,4 +52,28 @@ config_package()
 	# ag, ripgrep
 	# snap install ripgrep
 	# sudo apt install silversearcher-ag
+	# config_plugin
+}
+
+config_plugin()
+{
+	# Install plugins with vim-plug
+	nvim +PlugInstall +qa
+
+	OTHER_PLUGIN="coc-highlighti coc-yank"
+	LANG_LSP="coc-html coc-json coc-python coc-vimlsp coc-sh coc-markdownlint coc-xml"
+	EXT_DIR="~/.config/coc/extensions"
+	# Install
+	# Install extensions
+	mkdir -p $EXT_DIR
+	pushd $EXT_DIR
+	[[ ! -f package.json ]] &&
+		echo '{"dependencies":{}}'> package.json
+
+	# Change extension names to the extensions you need
+	npm install $LANG_LSP $OTHER_PLUGIN \
+		--global-style --ignore-scripts \
+		--no-bin-links --no-package-lock \
+		--only=prod
+	popd
 }
