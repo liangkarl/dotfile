@@ -1,8 +1,39 @@
+" Overview of which map command works in which mode.  More details below.
+" |----------+-----------+---------+------------------------------------------|
+" | COMMANDS                       | MODES~                                   |
+" |----------+-----------+---------+------------------------------------------|
+" | :map     | :noremap  | :uumap  | Normal, Visual, Select, Operator-pending |
+" | :nmap    | :nnoremap | :nunmap | Normal                                   |
+" | :vmap    | :vnoremap | :vunmap | Visual and  Select                       |
+" | :smap    | :snoremap | :sunmap | Select                                   |
+" | :xmap    | :xnoremap | :xunmap | Visual                                   |
+" | :omap    | :onoremap | :ounmap | Operator-pending                         |
+" | :map!    | :noremap! | :unmap! | Insert and Command-line                  |
+" | :imap    | :inoremap | :iunmap | Insert                                   |
+" | :lmap    | :lnoremap | :lunmap | Insert, Command-line,  Lang-Arg          |
+" | :cmap    | :cnoremap | :cunmap | Command-line                             |
+" |----------+-----------+---------+------------------------------------------|
+
 " map Leader
-let mapleader = " "
+let mapleader = ' '
 
 " Reload vim config
 nnoremap <Leader>r :so $MYVIMRC<CR>
+
+" CTRL-C: Quit insert mode, go back to Normal mode. Do not check for
+" abbreviations. Does not trigger the InsertLeave autocommand event.
+" Swap ESC & C-c
+noremap! <C-[> <C-c>
+noremap! <C-c> <ESC>
+
+" Add keybind for system clipboard.
+" There are two different clipboards for Linux and only one for Win
+" '*' uses PRIMARY; mnemonic: Star is Select (for copy-on-select)
+" '+' uses CLIPBOARD; mnemonic: CTRL PLUS C (for the common keybind)
+noremap <Leader>y "*y
+noremap <Leader>p "*p
+noremap <Leader>Y "+y
+noremap <Leader>P "+p
 
 " buffer motion (buffer: define as file content itself)
 nnoremap <Leader>n :bn<CR>
@@ -28,8 +59,7 @@ nnoremap <Leader>q :close<CR>
 nnoremap <Leader>2 :NERDTreeToggle<CR>
 
 " vim-signature
-" mx: add bookmark x
-" dmx: remove bookmark x
+" mx: add/remove bookmark x
 " 'x: move to bookmark x
 " List bookmarks
 " nnoremap <Leader>M m/ | Replace by fzf
@@ -66,12 +96,10 @@ nnoremap <Leader>fm :FzfMarks<CR>
 " Plugin : vim-table-mode
 " Example:
 "|----------+----------------|
-"|  center  |          right |
-"|:--------:+---------------:|
-"| commands |        explain |
-"|----------+----------------|
-"| del col  | <Leader>tdc    |
-"| ins col  | <Leader>tic    |
+"| commands |     explain    |
+"|----------+:--------------:|
+"| del col  |   <Leader>tdc  |
+"| ins col  |   <Leader>tic  |
 "| tableize | Tableize/[sep] |
 "|----------+----------------|
 nnoremap <Leader>tm :TableModeToggle<CR>
@@ -81,3 +109,5 @@ nnoremap <Leader>tr :TableModeRealign<CR>
 " Plugin : Commentary
 " Toggle comment
 nnoremap <Leader>gc :Commentary<CR>
+
+"
