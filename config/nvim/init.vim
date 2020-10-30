@@ -1,6 +1,6 @@
-source ~/.config/nvim/include/plugin_install.vim
-source ~/.config/nvim/include/plugin_config.vim
-source ~/.config/nvim/include/keybinding.vim
+source ~/.config/nvim/include/plug-install.vim
+source ~/.config/nvim/include/plug-config.vim
+source ~/.config/nvim/include/keybind.vim
 
 set number
 " show the cursor position all the time
@@ -15,7 +15,9 @@ set hidden
 
 " backup/swap/undo files
 set directory=~/.config/nvim/swap//,.,~/tmp,/var/tmp,/tmp
-set backupdir=~/.config/nvim/backup//,.,~/tmp,~/
+" Coc.nvim may get error if backup enabled
+" set backupdir=~/.config/nvim/backup//,.,~/tmp,~/
+set nobackup
 set undodir=~/.config/nvim/undo//,.
 
 set termencoding=utf-8

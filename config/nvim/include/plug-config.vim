@@ -23,10 +23,6 @@ let g:strip_whitelines_at_eof=1
 " To highlight space characters that appear before or in-between tabs
 let g:show_spaces_that_precede_tabs=1
 
-
 " fzf : fuzzy finder
 " e.g. let g:fzf_command_prefix = 'Fzf' and you have FzfFiles, etc.
 let g:fzf_command_prefix = 'Fzf'
-
-
-
