@@ -8,6 +8,8 @@ set ruler
 set cursorline
 " display incomplete commands
 set showcmd
+" Close a split window in Vim without resizing other windows
+set noequalalways
 
 " opening a new file when the current buffer has unsaved changes
 " causes files to be hidden instead of closed
