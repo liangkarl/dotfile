@@ -36,11 +36,17 @@ Plug 'morhetz/gruvbox'
 " Show status line
 Plug 'vim-airline/vim-airline'
 " File explorer (and dependecy)
-Plug 'preservim/nerdtree'
+" Plug 'preservim/nerdtree'
+" Plug 'Shougo/defx.nvim', { 'do': ':UpdateRemotePlugins' }
+" Plug 'kristijanhusak/defx-icons'
+" Many icons / fonts for coc-explorer
+" Plug 'ryanoasis/nerd-fonts'
+" Plug 'ryanoasis/vim-devicons'
 
 " 1.2 Integrated Tools
 " Denite is a dark powered plugin for Neovim/Vim to unite all interfaces.
-Plug 'Shougo/denite.nvim'
+" Only for nvim
+" Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
 
 """ 2. General Editor Tools
 
