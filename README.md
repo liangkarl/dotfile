@@ -3,8 +3,8 @@
 ## Introduce ##
 
   Since I hate re-typing every command while installing a new Ubuntu system from
-zero, I tried to write some simple script before, but they are difficult to maintain 
-or modify after system update or other kind of circumstances. I want to try another 
+zero, I tried to write some simple script before, but they are difficult to maintain
+or modify after system update or other kind of circumstances. I want to try another
 way to break such goddamn infinite loop.
 
 ## Goal ##
