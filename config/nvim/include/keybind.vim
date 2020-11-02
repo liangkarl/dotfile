@@ -2,7 +2,7 @@
 " |----------+-----------+---------+------------------------------------------|
 " | COMMANDS                       | MODES~                                   |
 " |----------+-----------+---------+------------------------------------------|
-" | :map     | :noremap  | :uumap  | Normal, Visual, Select, Operator-pending |
+" | :map     | :noremap  | :unmap  | Normal, Visual, Select, Operator-pending |
 " | :nmap    | :nnoremap | :nunmap | Normal                                   |
 " | :vmap    | :vnoremap | :vunmap | Visual and  Select                       |
 " | :smap    | :snoremap | :sunmap | Select                                   |
