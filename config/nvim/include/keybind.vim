@@ -1,18 +1,19 @@
 " Overview of which map command works in which mode.  More details below.
-" |----------+-----------+---------+------------------------------------------|
-" | COMMANDS                       | MODES~                                   |
-" |----------+-----------+---------+------------------------------------------|
-" | :map     | :noremap  | :unmap  | Normal, Visual, Select, Operator-pending |
-" | :nmap    | :nnoremap | :nunmap | Normal                                   |
-" | :vmap    | :vnoremap | :vunmap | Visual and  Select                       |
-" | :smap    | :snoremap | :sunmap | Select                                   |
-" | :xmap    | :xnoremap | :xunmap | Visual                                   |
-" | :omap    | :onoremap | :ounmap | Operator-pending                         |
-" | :map!    | :noremap! | :unmap! | Insert and Command-line                  |
-" | :imap    | :inoremap | :iunmap | Insert                                   |
-" | :lmap    | :lnoremap | :lunmap | Insert, Command-line,  Lang-Arg          |
-" | :cmap    | :cnoremap | :cunmap | Command-line                             |
-" |----------+-----------+---------+------------------------------------------|
+" |---------------------------+------------------------------------------|
+" | COMMANDS                  | MODES~                                   |
+" |---------------------------+------------------------------------------|
+" | :map, :noremap, :unmap    | Normal, Visual, Select, Operator-pending |
+" | :nmap, :nnoremap, :nunmap | Normal                                   |
+" | :vmap, :vnoremap, :vunmap | Visual and  Select                       |
+" | :smap, :snoremap, :sunmap | Select                                   |
+" | :xmap, :xnoremap, :xunmap | Visual                                   |
+" | :omap, :onoremap, :ounmap | Operator-pending                         |
+" | :map!, :noremap!, :unmap! | Insert and Command-line                  |
+" | :imap, :inoremap, :iunmap | Insert                                   |
+" | :lmap, :lnoremap, :lunmap | Insert, Command-line,  Lang-Arg          |
+" | :cmap, :cnoremap, :cunmap | Command-line                             |
+" | :tmap, :tnoremap, :tunmap | Terminal                                 |
+" |---------------------------+------------------------------------------|
 
 " map Leader
 let mapleader = ' '
@@ -26,29 +27,46 @@ nnoremap <Leader>r :so $MYVIMRC<CR>
 noremap! <C-[> <C-c>
 noremap! <C-c> <ESC>
 
+" Open terminal
+" PS. you can use the terminal as debug console
+nnoremap <Leader>c :split term://bash<CR>:startinsert<CR>
+" To use `ALT+{h,j,k,l}` to navigate windows from any mode:
+tnoremap <A-h> <C-\><C-N><C-w>h
+tnoremap <A-j> <C-\><C-N><C-w>j
+tnoremap <A-k> <C-\><C-N><C-w>k
+tnoremap <A-l> <C-\><C-N><C-w>l
+inoremap <A-h> <C-\><C-N><C-w>h
+inoremap <A-j> <C-\><C-N><C-w>j
+inoremap <A-k> <C-\><C-N><C-w>k
+inoremap <A-l> <C-\><C-N><C-w>l
+" To map <Esc> to exit terminal-mode:
+tnoremap <Esc> <C-\><C-n>
+
 " Add keybind for system clipboard.
 " There are two different clipboards for Linux and only one for Win
 " '*' uses PRIMARY; mnemonic: Star is Select (for copy-on-select)
 " '+' uses CLIPBOARD; mnemonic: CTRL PLUS C (for the common keybind)
-noremap <Leader>y "*y
-" TODO: conflict wiht buffer motion
-noremap <Leader>p "*p
-noremap <Leader>Y "+y
-noremap <Leader>P "+p
+noremap <Leader><Space>y "*y
+noremap <Leader><Space>p "*p
+noremap <Leader><Space>c "+y
+noremap <Leader><Space>v "+p
 
 " buffer motion (buffer: define as file content itself)
 nnoremap <Leader>n :bn<CR>
 nnoremap <Leader>p :bp<CR>
 nnoremap <Leader>bb :b#<CR>
 nnoremap <Leader>w :w<CR>
-nnoremap <Leader>d :bd<CR>
+" Save buffer content if modifiable is 'on'
+nnoremap <Leader>d :if !&modifiable<CR>bd!<CR>else<CR>w<CR>bd<CR>endif<CR>
 
 " Window motion (window: view point of a buffer)
-nnoremap <Leader>h <C-w>h
-nnoremap <Leader>j <C-w>j
-nnoremap <Leader>k <C-w>k
-nnoremap <Leader>l <C-w>l
-nnoremap <Leader>q :close<CR>
+nnoremap <A-h> <C-w>h
+nnoremap <A-j> <C-w>j
+nnoremap <A-k> <C-w>k
+nnoremap <A-l> <C-w>l
+" quick command :C, only closing the current window, rather than quits.
+command! -nargs=0 C :close
+nnoremap <Leader>q :C<CR>
 
 " Tab motion (tab: a collection of windows, like workspace)
 
@@ -70,7 +88,7 @@ map N <Plug>(is-nohl)<Plug>(anzu-N-with-echo)
 
 " Plugin: fzf
 nnoremap <Leader>fb :FzfBuffers<CR>
-nnoremap <Leader>ff :FzfFiles<CR>
+" nnoremap <Leader>ff :FzfFiles<CR> " Replace with coc-explorer
 " Recently open file
 nnoremap <Leader>fr :FzfHistory<CR>
 " Search history
@@ -78,18 +96,19 @@ nnoremap <Leader>fs :FzfHistory/<CR>
 nnoremap <Leader>fc :FzfCommands<CR>
 nnoremap <Leader>f? :FzfMaps<CR>
 " List bookmarks
-" |---------+-------------------------|
-" | command | explain                 |
-" |---------+-------------------------|
-" | mx      | add/remove bookmark 'x' |
-" | 'mx     | jump to bookmark 'x'    |
-" |---------+-------------------------|
+" |---------+----------------------|
+" | command | explain              |
+" |---------+----------------------|
+" | mx      | toggle bookmark 'x'  |
+" | 'mx     | jump to bookmark 'x' |
+" |---------+----------------------|
 nnoremap <Leader>fm :FzfMarks<CR>
 
 " Plugin: coc-explorer
-nmap <space>ed :CocCommand explorer --preset .vim<CR>
+nmap <space>en :CocCommand explorer --preset .nvim<CR>
 nmap <space>ef :CocCommand explorer --preset floating<CR>
-nmap <space>el :CocList explPresets
+nmap <space>ee :CocCommand explorer --preset leftsideBar<CR>
+nmap <space>el :CocList explPresets<CR>
 
 " Plugin: vim-table-mode
 " Example:
@@ -100,10 +119,10 @@ nmap <space>el :CocList explPresets
 "| ins col  |   <Leader>tic  |
 "| tableize | Tableize/[sep] |
 "|----------+----------------|
-nnoremap <Leader>tm :TableModeToggle<CR>
+nnoremap <Leader>tt :TableModeToggle<CR>
 " Realigned text-table
 nnoremap <Leader>tr :TableModeRealign<CR>
 
 " Plugin: Commentary
 " Toggle comment
-nnoremap <Leader>gc :Commentary<CR>
+nnoremap <Leader>gg :Commentary<CR>

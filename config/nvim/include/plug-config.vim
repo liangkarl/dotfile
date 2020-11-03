@@ -29,15 +29,19 @@ let g:fzf_command_prefix = 'Fzf'
 
 " Plugin: coc-explorer
 let g:coc_explorer_global_presets = {
-\   '.vim': {
-\     'root-uri': '~/.vim',
+\   '.nvim': {
+\     'root-uri': '~/.config/nvim',
+\     'position': 'floating',
+\     'floating-width': 50,
+\     'open-action-strategy': 'sourceWindow',
 \   },
-\   'tab': {
+\   'tab-view': {
 \     'position': 'tab',
 \     'quit-on-open': v:true,
 \   },
 \   'floating': {
 \     'position': 'floating',
+\     'floating-width': 50,
 \     'open-action-strategy': 'sourceWindow',
 \   },
 \   'floatingTop': {
@@ -48,16 +52,17 @@ let g:coc_explorer_global_presets = {
 \   'floatingLeftside': {
 \     'position': 'floating',
 \     'floating-position': 'left-center',
-\     'floating-width': 50,
+\     'floating-width': 40,
 \     'open-action-strategy': 'sourceWindow',
 \   },
 \   'floatingRightside': {
 \     'position': 'floating',
 \     'floating-position': 'right-center',
-\     'floating-width': 50,
+\     'floating-width': 40,
 \     'open-action-strategy': 'sourceWindow',
 \   },
-\   'simplify': {
+\   'leftsideBar': {
+\     'width': 30,
 \     'file-child-template': '[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1]'
 \   }
 \ }
