@@ -10,8 +10,10 @@ APT_PACKAGES="
 	'npm'
 "
 
+# cpplint is used to check c/cpp format
 PIP3_PACKAGES="
 	pynvim
+	cpplint
 "
 
 NPM_PACKAGES="
@@ -22,6 +24,7 @@ NPM_PACKAGES="
 	coc-sh
 	coc-markdownlint
 	coc-xml
+	coc-clangd
 	coc-highlight
 	coc-yank
 	coc-lists
