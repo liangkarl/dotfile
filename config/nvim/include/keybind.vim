@@ -27,6 +27,14 @@ nnoremap <Leader>r :so $MYVIMRC<CR>
 noremap! <C-[> <C-c>
 noremap! <C-c> <ESC>
 
+" Insert mode motion
+inoremap <A-h> <Left>
+inoremap <A-j> <Down>
+inoremap <A-k> <Up>
+inoremap <A-l> <Right>
+inoremap <A-b> <C-Left>
+inoremap <A-w> <C-Right>
+
 " Open terminal
 " PS. you can use the terminal as debug console
 nnoremap <Leader>c :split term://bash<CR>:startinsert<CR>
@@ -35,21 +43,17 @@ tnoremap <A-h> <C-\><C-N><C-w>h
 tnoremap <A-j> <C-\><C-N><C-w>j
 tnoremap <A-k> <C-\><C-N><C-w>k
 tnoremap <A-l> <C-\><C-N><C-w>l
-inoremap <A-h> <C-\><C-N><C-w>h
-inoremap <A-j> <C-\><C-N><C-w>j
-inoremap <A-k> <C-\><C-N><C-w>k
-inoremap <A-l> <C-\><C-N><C-w>l
 " To map <Esc> to exit terminal-mode:
 tnoremap <Esc> <C-\><C-n>
 
 " Add keybind for system clipboard.
 " There are two different clipboards for Linux and only one for Win
-" |--------+------------------------------------------------------------|
-" | SYMBOL | Explain                                                    |
-" |:------:+------------------------------------------------------------|
-" |    *   | Use PRIMARY; mnemonic: Star is Select (for copy-on-select) |
-" |    +   | Use CLIPBOARD; mnemonic: <C-c> (for the common keybind)    |
-" |--------+------------------------------------------------------------|
+" |--------+--------------------------------------------------|
+" | SYMBOL | Explain                                          |
+" |:------:+--------------------------------------------------|
+" |    *   | Use PRIMARY; Star is Select (for copy-on-select) |
+" |    +   | Use CLIPBOARD; <C-c> (for the common keybind)    |
+" |--------+--------------------------------------------------|
 noremap <Leader><Space>y "*y
 noremap <Leader><Space>p "*p
 noremap <Leader><Space>c "+y
@@ -61,13 +65,13 @@ nnoremap <Leader>p :bp<CR>
 nnoremap <Leader>bb :b#<CR>
 nnoremap <Leader>w :w<CR>
 " Save buffer content if modifiable is 'on'
-nnoremap <Leader>d :if !&modifiable<CR>bd!<CR>else<CR>w<CR>bd<CR>endif<CR>
+nnoremap <Leader>d :if !&modifiable<CR>bd!<CR>else<CR>bd<CR>endif<CR><CR>
 
 " Window motion (window: view point of a buffer)
-nnoremap <A-h> <C-w>h
-nnoremap <A-j> <C-w>j
-nnoremap <A-k> <C-w>k
-nnoremap <A-l> <C-w>l
+nnoremap <Leader>h <C-w>h
+nnoremap <Leader>j <C-w>j
+nnoremap <Leader>k <C-w>k
+nnoremap <Leader>l <C-w>l
 " quick command :C, only closing the current window, rather than quits.
 command! -nargs=0 C :close
 nnoremap <Leader>q :C<CR>
@@ -88,6 +92,9 @@ nmap # <Plug>(anzu-sharp-with-echo)
 map n <Plug>(is-nohl)<Plug>(anzu-n-with-echo)
 map N <Plug>(is-nohl)<Plug>(anzu-N-with-echo)
 
+" Plugin: Vista.vim
+nnoremap <Leader>= :Vista coc<CR>
+
 " Plugin: fzf
 nnoremap <Leader>fb :FzfBuffers<CR>
 " Recently open file
@@ -104,12 +111,6 @@ nnoremap <Leader>f? :FzfMaps<CR>
 " | 'mx      | jump to bookmark 'x' |
 " |----------+----------------------|
 nnoremap <Leader>fm :FzfMarks<CR>
-
-" Plugin: coc-explorer
-nmap <space>en :CocCommand explorer --preset .nvim<CR>
-nmap <space>ef :CocCommand explorer --preset floating<CR>
-nmap <space>ee :CocCommand explorer --preset leftsideBar<CR>
-nmap <space>el :CocList explPresets<CR>
 
 " Plugin: vim-table-mode
 " |----------+----------------|
@@ -128,3 +129,30 @@ noremap <Leader>tz :Tableize/,
 " Plugin: Commentary
 " Toggle comment
 noremap <Leader>gg :Commentary<CR>
+
+" Plugin: coc-explorer
+" |-----+--------------------------|
+" | CMD | explain                  |
+" |-----+--------------------------|
+" | d   | delete                   |
+" | r   | rename                   |
+" | a   | create file              |
+" | A   | create folder            |
+" |-----+--------------------------|
+" | o   | toggle expand/collapse   |
+" | q   | quit explore             |
+" | R   | refresh explore          |
+" | <BS>| goto parent dir          |
+" | .   | Toggle hidden            |
+" | *   | select                   |
+" |-----+--------------------------|
+nmap <space>en :CocCommand explorer --preset .nvim<CR>
+nmap <space>ef :CocCommand explorer --preset floating<CR>
+nmap <space>ee :CocCommand explorer --preset leftsideBar<CR>
+nmap <space>el :CocList explPresets<CR>
+
+" Plugin: coc-clangd
+" Resolve symbol info under the cursor
+" map <Leader>ci :CocCommand clangd.symbolInfo<CR>
+" Switch between source/header files
+" map <Leader>cs :CocCommand clangd.switchSourceHeader<CR>
