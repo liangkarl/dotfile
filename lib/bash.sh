@@ -41,4 +41,10 @@ config_package()
 	else
 		echo "No $BASHRC found."
 	fi
+
+	# Source customized init script
+	# local -r INIT_SCRIPT="$HOME/.init.bash"
+	# local -r SRC_SCRIPT="$BASH_CONFIG/init.bash"
+	# echo "[[ ! -e $INIT_SCRIPT ]] && . $SRC_SCRIPT" >> $BASHRC
+	# ln -s $INIT_SCRIPT $HOME/.init.bash
 }
