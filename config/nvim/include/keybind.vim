@@ -1,6 +1,6 @@
 " Overview of which map command works in which mode.  More details below.
-" |---------------------------+------------------------------------------|
-" | COMMANDS                  | MODES~                                   |
+" |:-------------------------:+:----------------------------------------:|
+" | CMD                       | MODES~                                   |
 " |---------------------------+------------------------------------------|
 " | :map, :noremap, :unmap    | Normal, Visual, Select, Operator-pending |
 " | :nmap, :nnoremap, :nunmap | Normal                                   |
@@ -44,8 +44,12 @@ tnoremap <Esc> <C-\><C-n>
 
 " Add keybind for system clipboard.
 " There are two different clipboards for Linux and only one for Win
-" '*' uses PRIMARY; mnemonic: Star is Select (for copy-on-select)
-" '+' uses CLIPBOARD; mnemonic: CTRL PLUS C (for the common keybind)
+" |--------+------------------------------------------------------------|
+" | SYMBOL | Explain                                                    |
+" |:------:+------------------------------------------------------------|
+" |    *   | Use PRIMARY; mnemonic: Star is Select (for copy-on-select) |
+" |    +   | Use CLIPBOARD; mnemonic: <C-c> (for the common keybind)    |
+" |--------+------------------------------------------------------------|
 noremap <Leader><Space>y "*y
 noremap <Leader><Space>p "*p
 noremap <Leader><Space>c "+y
@@ -71,9 +75,7 @@ nnoremap <Leader>q :C<CR>
 " Tab motion (tab: a collection of windows, like workspace)
 
 " vim-better-whitespace
-" Strip whitespace
-" <Leader>s: strip white space in whole file
-" <Leader>sip: remove trailing whitespace from the current paragraph.
+" Remove trailing whitespace
 nnoremap <Leader>ss :StripWhitespace<CR>
 
 " Plugin: vim-anzu
@@ -88,7 +90,6 @@ map N <Plug>(is-nohl)<Plug>(anzu-N-with-echo)
 
 " Plugin: fzf
 nnoremap <Leader>fb :FzfBuffers<CR>
-" nnoremap <Leader>ff :FzfFiles<CR> " Replace with coc-explorer
 " Recently open file
 nnoremap <Leader>fr :FzfHistory<CR>
 " Search history
@@ -96,12 +97,12 @@ nnoremap <Leader>fs :FzfHistory/<CR>
 nnoremap <Leader>fc :FzfCommands<CR>
 nnoremap <Leader>f? :FzfMaps<CR>
 " List bookmarks
-" |---------+----------------------|
-" | command | explain              |
-" |---------+----------------------|
-" | mx      | toggle bookmark 'x'  |
-" | 'mx     | jump to bookmark 'x' |
-" |---------+----------------------|
+" |----------+----------------------|
+" | ORIG CMD | explain              |
+" |----------+----------------------|
+" | mx       | toggle bookmark 'x'  |
+" | 'mx      | jump to bookmark 'x' |
+" |----------+----------------------|
 nnoremap <Leader>fm :FzfMarks<CR>
 
 " Plugin: coc-explorer
@@ -111,18 +112,19 @@ nmap <space>ee :CocCommand explorer --preset leftsideBar<CR>
 nmap <space>el :CocList explPresets<CR>
 
 " Plugin: vim-table-mode
-" Example:
-"|----------+----------------|
-"| commands |     explain    |
-"|----------+:--------------:|
-"| del col  |   <Leader>tdc  |
-"| ins col  |   <Leader>tic  |
-"| tableize | Tableize/[sep] |
-"|----------+----------------|
+" |----------+----------------|
+" | ORIG CMD |     explain    |
+" |----------+:--------------:|
+" | del col  |   <Leader>tdc  |
+" | ins col  |   <Leader>tic  |
+" | tableize | Tableize/[sep] |
+" |----------+----------------|
 nnoremap <Leader>tt :TableModeToggle<CR>
 " Realigned text-table
 nnoremap <Leader>tr :TableModeRealign<CR>
+" Tableize
+noremap <Leader>tz :Tableize/,
 
 " Plugin: Commentary
 " Toggle comment
-nnoremap <Leader>gg :Commentary<CR>
+noremap <Leader>gg :Commentary<CR>
