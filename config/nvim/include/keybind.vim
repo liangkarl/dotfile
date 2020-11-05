@@ -93,7 +93,7 @@ map n <Plug>(is-nohl)<Plug>(anzu-n-with-echo)
 map N <Plug>(is-nohl)<Plug>(anzu-N-with-echo)
 
 " Plugin: Vista.vim
-nnoremap <Leader>= :Vista coc<CR>
+nnoremap <Leader>= :Vista!!<CR>
 
 " Plugin: fzf
 nnoremap <Leader>fb :FzfBuffers<CR>
@@ -129,6 +129,13 @@ noremap <Leader>tz :Tableize/,
 " Plugin: Commentary
 " Toggle comment
 noremap <Leader>gg :Commentary<CR>
+
+" Plugin: coc
+" Use <Tab> and <S-Tab> to navigate the completion list:
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+" Use <cr> to confirm completion
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 " Plugin: coc-explorer
 " |-----+--------------------------|
