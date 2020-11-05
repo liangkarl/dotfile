@@ -1,0 +1,34 @@
+{
+	"# coc config": "comment",
+	"initializationOptions": {
+		"index": {
+			"onChange": true
+		},
+		"highlight": { "lsRanges" : true }
+	},
+	"suggest.detailMaxLength": 50,
+	"suggest.maxPreviewWidth": 50,
+
+	"# LSP": "comment",
+	"#languageserver": {
+		"ccls": {
+			"command": "ccls",
+			"filetypes": ["c", "cpp", "objc", "objcpp"],
+			"rootPatterns": [".ccls", "compile_commands.json", ".git/"],
+			"initializationOptions": {
+				"cache": {
+					"directory": "/tmp/ccls"
+				}
+			}
+		}
+	},
+
+	"# coc-explorer setup": "comment",
+	"explorer.icon.enableNerdfont": true,
+
+	"# coc-clangd config":"comment",
+	"clangd.semanticHighlighting": true,
+	"clangd.fallbackFlags": [
+		"-std=c11"
+	]
+}
