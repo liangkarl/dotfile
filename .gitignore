@@ -6,5 +6,8 @@ config/nvim/backup/
 config/nvim/swap/
 config/nvim/undo/
 
+# Ignore the test file
+config/nvim/init.min.vim
+
 *.log
 .netrwhist
