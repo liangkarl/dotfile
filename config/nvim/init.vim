@@ -15,6 +15,9 @@ set noequalalways
 " causes files to be hidden instead of closed
 set hidden
 
+" Set up font for special characters
+set guifont=SauceCodePro\ Nerd\ Font\ Mono
+
 " backup/swap/undo files
 set directory=~/.config/nvim/swap//,.,~/tmp,/var/tmp,/tmp
 " Coc.nvim may get error if backup enabled
