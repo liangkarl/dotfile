@@ -4,7 +4,8 @@ call plug#begin('~/.config/nvim/plugged')
 " | Item | Name             | Explain                              |
 " |------+------------------+--------------------------------------|
 " | 1    | Enviromnent      | Whole nvim setup                     |
-" | 1.1  | Integrated Tools | Tools like IDE providing many things |
+" | 1.1  | Env Setup        | Set up enviroments                   |
+" | 1.2  | Integrated Tools | Tools like IDE providing many things |
 " |------+------------------+--------------------------------------|
 " | 2    | Editor           | Funcions for editor                  |
 " | 2.1  | Text Format      | Space, indent, tab, ...              |
@@ -35,18 +36,24 @@ Plug 'mhinz/vim-startify'
 Plug 'morhetz/gruvbox'
 " Show status line
 Plug 'vim-airline/vim-airline'
-" File explorer (and dependecy)
-" Plug 'preservim/nerdtree'
-" Plug 'Shougo/defx.nvim', { 'do': ':UpdateRemotePlugins' }
-" Plug 'kristijanhusak/defx-icons'
-" Many icons / fonts for coc-explorer
-" Plug 'ryanoasis/nerd-fonts'
+Plug 'vim-airline/vim-airline-themes'
+" More icons
 " Plug 'ryanoasis/vim-devicons'
+" Function manager
+Plug 'liuchengxu/vista.vim'
+" Neomake is a plugin for Vim/Neovim to asynchronously run programs.
+" Plug 'neomake/neomake'
+" File explorer (and dependecy)
+" Use coc-explorer instead
 
 " 1.2 Integrated Tools
-" Denite is a dark powered plugin for Neovim/Vim to unite all interfaces.
-" Only for nvim
-" Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
+" Searching is fzf's main function
+" Provide buffer, window, keymap and etc functions
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+" Autocompletion is coc's main function
+" Like Fzf, coc provide many features
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 """ 2. General Editor Tools
 
@@ -70,37 +77,37 @@ Plug 'markonm/traces.vim'
 " Improve display effect of searching text
 Plug 'haya14busa/is.vim'
 Plug 'osyo-manga/vim-anzu'
-" Search tool (for opening files)
-" Grep keywords in Vim
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
 
 " 2.4 Edit
 " Expand or reduce visual block region
 Plug 'terryma/vim-expand-region'
 " Comment codes easily
-"Plug 'vim-scripts/The-NERD-Commenter'
 Plug 'tpope/vim-commentary'
 " Auto-balance pairs
 Plug 'Krasjet/auto.pairs'
 " Draw text-styled table easily
 Plug 'dhruvasagar/vim-table-mode'
-" Autocomplete
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Multiple Edit
+" Plug 'terryma/vim-multiple-cursors'
 
 " 2.5 Others
 " Open URL from vim
 Plug 'tyru/open-browser.vim'
+" Open terminal with float window
+" Plug 'voldikss/vim-floaterm'
 
 """ 3. Language Support
+
 " 3.1 VIM script
-" Popup vim build-in function signature
-" Plug 'rbtnn/vim-popup_signature'
+" Supported by coc-vimlsp
 
 " 3.2 C/C++
 " xavierd/clang_complete
 " Clang-format
 Plug 'rhysd/vim-clang-format'
+" C/C++ syntex highlight
+" ps. integrated with coc-clangd
+Plug 'jackguo380/vim-lsp-cxx-highlight'
 "
 " dense-analysis/ale
 call plug#end()
