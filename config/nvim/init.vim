@@ -20,7 +20,8 @@ set hidden
 set guifont=SauceCodePro\ Nerd\ Font\ Mono
 
 " backup/swap/undo files
-set directory=~/.config/nvim/swap//,.,~/tmp,/var/tmp,/tmp
+" set directory=~/.config/nvim/swap//,.,~/tmp,/var/tmp,/tmp
+set noswapfile
 " Coc.nvim may get error if backup enabled
 " set backupdir=~/.config/nvim/backup//,.,~/tmp,~/
 set nobackup
