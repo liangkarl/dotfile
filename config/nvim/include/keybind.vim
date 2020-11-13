@@ -37,7 +37,7 @@ inoremap <A-w> <C-Right>
 
 " Open terminal
 " PS. you can use the terminal as debug console
-nnoremap <Leader>c :split term://bash<CR>:startinsert<CR>
+nnoremap <Leader>t :split term://bash<CR>:startinsert<CR>
 " To use `ALT+{h,j,k,l}` to navigate windows from any mode:
 tnoremap <A-h> <C-\><C-N><C-w>h
 tnoremap <A-j> <C-\><C-N><C-w>j
@@ -65,7 +65,14 @@ nnoremap <Leader>p :bp<CR>
 nnoremap <Leader>bb :b#<CR>
 nnoremap <Leader>w :w<CR>
 " Save buffer content if modifiable is 'on'
-nnoremap <Leader>d :if !&modifiable<CR>bd!<CR>else<CR>bd<CR>endif<CR><CR>
+fun CloseBuf()
+  if !&modifiable
+    bdelete!
+  else
+    bdelete
+  endif
+endfun
+nnoremap <Leader>d :call CloseBuf()<CR>
 
 " Window motion (window: view point of a buffer)
 nnoremap <Leader>h <C-w>h
@@ -81,7 +88,7 @@ noremap <space>5 5<C-w>w
 
 " quick command :C, only closing the current window, rather than quits.
 command! -nargs=0 C :close
-nnoremap <Leader>q :C<CR>
+nnoremap <Leader>c :C<CR>
 
 " Tab motion (tab: a collection of windows, like workspace)
 
