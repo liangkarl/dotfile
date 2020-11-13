@@ -8,6 +8,7 @@
 	},
 	"suggest.detailMaxLength": 50,
 	"suggest.maxPreviewWidth": 50,
+	"diagnostic.displayByAle": true,
 
 	"# LSP": "comment",
 	"#languageserver": {
