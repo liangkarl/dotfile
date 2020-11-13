@@ -73,6 +73,12 @@ let g:vista_executive_for = {
 " let g:vista_icon_indent = ['╰─🞂 ', '├─🞂 ']
 let g:vista_sidebar_width = 40
 
+" Plugin: Startify
+" Show startify when there is no opened buffers
+autocmd BufDelete * if empty(filter(tabpagebuflist(), '!buflisted(v:val)')) | Startify | endif
+" Auto-open startify when closing all buffers
+autocmd BufEnter * if bufname() == "" && len(tabpagebuflist()) == 1 | Startify | endif
+
 " Plugin: vim_current_word
 " The word under cursor:
 let g:vim_current_word#highlight_current_word = 1
@@ -100,6 +106,9 @@ let g:cpp_class_decl_highlight = 1
 " Plugin: fzf - fuzzy finder
 " e.g. let g:fzf_command_prefix = 'Fzf' and you have FzfFiles, etc.
 let g:fzf_command_prefix = 'Fzf'
+
+" Plugin: ALE
+let g:ale_disable_lsp = 1
 
 " Plugin: coc
 
@@ -142,3 +151,10 @@ let g:coc_explorer_global_presets = {
 \     'file-child-template': '[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1]'
 \   }
 \ }
+
+""" Optimization start
+" Disable showing trailing white space in coc-explorer
+autocmd User CocExplorerOpenPre DisableWhitespace
+
+
+""" Optimization end
