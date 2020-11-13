@@ -16,7 +16,7 @@ function! MyLineNumber()
 endfunction
 
 call airline#parts#define('linenr', {'function': 'MyLineNumber', 'accents': 'bold'})
-let g:airline_section_z = airline#section#create(['%3p%%: ', 'linenr', ':%3v'])
+let g:airline_section_z = airline#section#create(['windowswap', '%3p%% ', 'linenr', ':%3v'])
 
 " Add the window number in front of the mode
 function! WindowNumber(...)
@@ -100,6 +100,8 @@ let g:cpp_class_decl_highlight = 1
 " Plugin: fzf - fuzzy finder
 " e.g. let g:fzf_command_prefix = 'Fzf' and you have FzfFiles, etc.
 let g:fzf_command_prefix = 'Fzf'
+
+" Plugin: coc
 
 " Plugin: coc-explorer
 let g:coc_explorer_global_presets = {
