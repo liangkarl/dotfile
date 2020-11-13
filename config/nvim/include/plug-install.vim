@@ -37,10 +37,10 @@ Plug 'morhetz/gruvbox'
 " Show status line
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-" More icons
-" Plug 'ryanoasis/vim-devicons'
 " Function manager
 Plug 'liuchengxu/vista.vim'
+" git support
+Plug 'airblade/vim-gitgutter'
 " Neomake is a plugin for Vim/Neovim to asynchronously run programs.
 " Plug 'neomake/neomake'
 " File explorer (and dependecy)
@@ -54,6 +54,9 @@ Plug 'junegunn/fzf.vim'
 " Autocompletion is coc's main function
 " Like Fzf, coc provide many features
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Autocompletion supporting LSP
+" mainly construct by vim script instead of python
+Plug 'dense-analysis/ale'
 
 """ 2. General Editor Tools
 
