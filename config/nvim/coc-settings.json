@@ -10,26 +10,13 @@
 	"suggest.maxPreviewWidth": 50,
 	"diagnostic.displayByAle": true,
 
-	"# LSP": "comment",
-	"#languageserver": {
-		"ccls": {
-			"command": "ccls",
-			"filetypes": ["c", "cpp", "objc", "objcpp"],
-			"rootPatterns": [".ccls", "compile_commands.json", ".git/"],
-			"initializationOptions": {
-				"cache": {
-					"directory": "/tmp/ccls"
-				}
-			}
-		}
+	"# Coc LSP document": {
+		"URL": "https://github.com/neoclide/coc.nvim/wiki/Language-servers#ccobjective-c"
 	},
 
 	"# coc-explorer setup": "comment",
 	"explorer.icon.enableNerdfont": true,
 
-	"# coc-clangd config":"comment",
-	"clangd.semanticHighlighting": true,
-	"clangd.fallbackFlags": [
-		"-std=c11"
-	]
+	"# coc-clangd config": "comment",
+	"clangd.semanticHighlighting": true
 }
