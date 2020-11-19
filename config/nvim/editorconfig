@@ -1,0 +1,39 @@
+####################################
+# General Setup
+# Eg, [*] here
+####################################
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+indent_size = 4
+indent_style = tab
+charset = utf-8
+
+[*.{js,json}]
+indent_size = 2
+
+[*.{vim,yml,xml,html,htm,md,py,bash,sh,json}]
+indent_style = space
+
+[*.{c,cpp,h}]
+trim_trailing_whitespace = true;
+
+####################################
+# Special Setup
+# Eg, [lib/**.js] here
+####################################
+
+# Indentation override for all JS under lib directory
+[lib/**.js]
+indent_style = space
+indent_size = 2
+
+# Matches the exact files either package.json or .travis.yml
+[{package.json,.travis.yml}]
+indent_style = space
+indent_size = 2
