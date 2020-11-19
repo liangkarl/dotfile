@@ -19,7 +19,7 @@
 let mapleader = ' '
 
 " Reload vim config
-nnoremap <Leader>r :so $MYVIMRC<CR>
+nnoremap <Leader>so :so $MYVIMRC<CR>
 
 " CTRL-C: Quit insert mode, go back to Normal mode. Do not check for
 " abbreviations. Does not trigger the InsertLeave autocommand event.
