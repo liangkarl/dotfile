@@ -7,47 +7,44 @@ source $CORE_DIR/sign.sh
 TMUX_NAME='tmux'
 TMUX_CONFIG="$CONFIG_DIR/$TMUX_NAME"
 
-install()
-{
-        if test_cmd $TMUX_NAME; then
-                echo "$TMUX_NAME is already installed"
-        else
-                echo "Start installing $TMUX_NAME"
-                sudo apt install -y $TMUX_NAME
-                config_package
-        fi
+install() {
+    if test_cmd $TMUX_NAME; then
+        echo "$TMUX_NAME is already installed"
+    else
+        echo "Start installing $TMUX_NAME"
+        sudo apt install -y $TMUX_NAME
+        config_package
+    fi
 }
 
-uninstall()
-{
-        echo "Remove $TMUX_NAME..."
-        sudo apt purge $TMUX_NAME
+uninstall() {
+    echo "Remove $TMUX_NAME..."
+    sudo apt purge $TMUX_NAME
 }
 
-config_package()
-{
-        echo "Config $TMUX_NAME..."
+config_package() {
+    echo "Config $TMUX_NAME..."
 
-        ## Create config link
-        local -r DST_CONFIG='.tmux.conf'
-        local -r SRC_CONFIG='tmux.conf'
-        create_link $TMUX_CONFIG/$SRC_CONFIG $HOME/$DST_CONFIG
+    ## Create config link
+    local -r DST_CONFIG='.tmux.conf'
+    local -r SRC_CONFIG='tmux.conf'
+    create_link $TMUX_CONFIG/$SRC_CONFIG $HOME/$DST_CONFIG
 
-        ## Add autocomplete for bash
-        local -r DST_BASH="$HOME/.bash_completion"
-        local -r SRC_BASH="$TMUX_CONFIG/bash_completion"
+    ## Add autocomplete for bash
+    local -r DST_BASH="$HOME/.bash_completion"
+    local -r SRC_BASH="$TMUX_CONFIG/bash_completion"
 
-        # Add load command to bash_completion
-        local -r LOAD_CMD="source $SRC_BASH\ncomplete -F _tmux tmux"
+    # Add load command to bash_completion
+    local -r LOAD_CMD="source $SRC_BASH\ncomplete -F _tmux tmux"
 
-        init_sign $TMUX_NAME "$LOAD_CMD"
+    init_sign $TMUX_NAME "$LOAD_CMD"
 
-        if [ -z $DST_BASH ]; then
-                touch $DST_BASH
-        else
-                cp $DST_BASH ${DST_BASH}.bak
-        fi
-        append_sign_and_content $DST_BASH
+    if [ -z $DST_BASH ]; then
+        touch $DST_BASH
+    else
+        cp $DST_BASH ${DST_BASH}.bak
+    fi
+    append_sign_and_content $DST_BASH
 }
 
 # tmux-continuum
