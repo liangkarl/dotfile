@@ -19,15 +19,16 @@ call airline#parts#define('linenr', {'function': 'MyLineNumber', 'accents': 'bol
 let g:airline_section_z = airline#section#create(['windowswap', '%3p%% ', 'linenr', ':%3v'])
 
 " Add the window number in front of the mode
-function! WindowNumber(...)
-    let builder = a:1
-    let context = a:2
-    call builder.add_section('airline_b', ' %{tabpagewinnr(tabpagenr())} ')
-    return 0
-endfunction
-
-call airline#add_statusline_func('WindowNumber')
-call airline#add_inactive_statusline_func('WindowNumber')
+if !exists("*WindowNumber")
+    function! WindowNumber(...)
+        let builder = a:1
+        let context = a:2
+        call builder.add_section('airline_b', ' %{tabpagewinnr(tabpagenr())} ')
+        return 0
+    endfunction
+    call airline#add_statusline_func('WindowNumber')
+    call airline#add_inactive_statusline_func('WindowNumber')
+endif
 
 " Plugin: Vista.vim
 function! NearestMethodOrFunction() abort
@@ -75,9 +76,15 @@ let g:vista_sidebar_width = 40
 
 " Plugin: Startify
 " Show startify when there is no opened buffers
-autocmd BufDelete * if empty(filter(tabpagebuflist(), '!buflisted(v:val)')) | Startify | endif
+autocmd BufDelete * if empty(filter(tabpagebuflist(), '!buflisted(v:val)')) && bufname() == "" | Startify | endif
 " Auto-open startify when closing all buffers
 autocmd BufEnter * if bufname() == "" && len(tabpagebuflist()) == 1 | Startify | endif
+
+" Plugin: vim-clang-format
+
+" Plugin: editorconfig
+let g:EditorConfig_exclude_patterns = ['fugitive://.*', 'scp://.*']
+au FileType gitcommit let b:EditorConfig_disable = 1
 
 " Plugin: vim_current_word
 " The word under cursor:
