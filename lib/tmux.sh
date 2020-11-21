@@ -45,6 +45,11 @@ config_package() {
         cp $DST_BASH ${DST_BASH}.bak
     fi
     append_sign_and_content $DST_BASH
+
+    # Install TPM
+    local -r GIT_REPO="https://github.com/tmux-plugins/tpm"
+    local -r TPM_DIR="~/.tmux/plugins/tpm"
+    git clone $GIT_REPO $TPM_DIR
 }
 
 # tmux-continuum
