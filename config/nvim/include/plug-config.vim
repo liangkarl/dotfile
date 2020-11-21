@@ -98,6 +98,9 @@ let g:vim_current_word#enabled = 1
 " Avoid conflict with edit motion"
 let g:AutoPairsShortcutBackInsert = '<M-B>'
 
+" Plugin: vim-commentary
+au FileType c,cpp,cc,h setlocal commentstring=//\ %s
+
 " Plugin: vim-better-whitespace
 " To strip white lines at the end of the file when stripping whitespace
 let g:strip_whitelines_at_eof=1
