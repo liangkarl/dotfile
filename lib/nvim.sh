@@ -24,7 +24,6 @@ NPM_PACKAGES="
 	coc-sh
 	coc-markdownlint
 	coc-xml
-	coc-clangd
 	coc-highlight
 	coc-yank
 	coc-lists

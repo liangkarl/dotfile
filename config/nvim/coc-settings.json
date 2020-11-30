@@ -1,22 +1,35 @@
 {
-	"# coc config": "comment",
-	"initializationOptions": {
-		"index": {
-			"onChange": true
-		},
-		"highlight": { "lsRanges" : true }
-	},
-	"suggest.detailMaxLength": 50,
-	"suggest.maxPreviewWidth": 50,
-	"diagnostic.displayByAle": true,
+  "//": [
+    "Coc's LSP documents",
+    "https://github.com/neoclide/coc.nvim/wiki/Language-servers",
+    "https://github.com/neoclide/coc.nvim/wiki/Language-servers#ccobjective-c"
+  ],
 
-	"# Coc LSP document": {
-		"URL": "https://github.com/neoclide/coc.nvim/wiki/Language-servers#ccobjective-c"
-	},
+  "languageserver": {
+    "ccls": {
+      "command": "ccls",
+      "filetypes": ["c", "cpp", "cuda", "objc", "objcpp"],
+      "rootPatterns": [".ccls-root", "compile_commands.json"],
+      "initializationOptions": {
+        "cache": {
+          "directory": ".ccls-cache"
+        },
+        "client": {
+          "snippetSupport": true
+        },
+        "# vim-lsp-cxx-highlight": "https://github.com/jackguo380/vim-lsp-cxx-highlight",
+        "index": {
+          "onChange": true
+        },
+        "highlight": { "lsRanges" : true }
+      },
+      "# trace.server": "verbose"
+    }
+  },
+  "suggest.detailMaxLength": 50,
+  "suggest.maxPreviewWidth": 50,
+  "diagnostic.displayByAle": true,
 
-	"# coc-explorer setup": "comment",
-	"explorer.icon.enableNerdfont": true,
-
-	"# coc-clangd config": "comment",
-	"clangd.semanticHighlighting": true
+  "//":"coc-explorer setup",
+  "explorer.icon.enableNerdfont": true
 }
