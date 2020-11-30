@@ -1,0 +1,10 @@
+﻿---
+ConstructorInitializerIndentWidth: '4'
+ContinuationIndentWidth: '4'
+IndentWidth: '4'
+Language: Cpp
+ObjCBlockIndentWidth: '4'
+TabWidth: '4'
+UseTab: ForIndentation
+
+...
