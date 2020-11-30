@@ -105,7 +105,7 @@ au FileType c,cpp,cc,h setlocal commentstring=//\ %s
 " To strip white lines at the end of the file when stripping whitespace
 let g:strip_whitelines_at_eof=1
 " To highlight space characters that appear before or in-between tabs
-let g:show_spaces_that_precede_tabs=1
+" let g:show_spaces_that_precede_tabs=1
 
 " Plugin: vim-lsp-cxx-highlight
 " c++ syntax highlighting
