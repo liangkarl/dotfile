@@ -145,6 +145,8 @@ noremap <Leader>tz :Tableize/,
 noremap <Leader>gg :Commentary<CR>
 
 " Plugin: coc
+" for debug coc LSP
+nnoremap <Leader>o :CocCommand workspace.showOutput<CR>
 
 " Use tab for trigger completion with characters ahead and navigate.
 function! s:check_back_space() abort
