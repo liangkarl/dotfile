@@ -36,4 +36,6 @@ set colorcolumn=80
 set noshowmode " hide default mode text (e.g. INSERT) as airline already displays it
 set display+=lastline " don't show '@@@' when there is no enough room
 
+set mouse+=a " copy text without borders
+
 colorscheme gruvbox
