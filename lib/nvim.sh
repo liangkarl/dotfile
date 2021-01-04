@@ -81,7 +81,7 @@ config_plugin()
 	# Install plugins with vim-plug
 	nvim +PlugInstall +qa
 
-	local -r EXT_DIR="~/.config/coc/extensions"
+	local -r EXT_DIR="$HOME/.config/coc/extensions"
 	# Install
 	# Install extensions
 	mkdir -p $EXT_DIR

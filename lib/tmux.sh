@@ -48,7 +48,7 @@ config_package() {
 
     # Install TPM
     local -r GIT_REPO="https://github.com/tmux-plugins/tpm"
-    local -r TPM_DIR="~/.tmux/plugins/tpm"
+    local -r TPM_DIR="$HOME/.tmux/plugins/tpm"
     git clone $GIT_REPO $TPM_DIR
 }
 
