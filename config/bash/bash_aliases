@@ -1,35 +1,7 @@
-alias ls='ls -v --group-directories-first -N --color=auto'
-alias ll='ls -l'
-alias la='ls -a'
-alias cls='clear'
+if [ -f ~/.alias_common ]; then
+	. ~/.alias_common
+fi
 
-# Search contents in assigned filetypes
-alias qgrep='set -f;__qgrep_cmd 2>&-';__qgrep_cmd(){
-	local -r DIR=$(dirname $2)
-	local -r TYPE=$(basename $2)
-	local -r KEYWORD=$1
-	shift 2
-	local -r FIND="find \"$DIR/\" -name '$TYPE' -type f"
-	local -r GREP="grep -HIrns $@ \"$KEYWORD\" --color"
-	local -r CMD="$FIND | xargs -r $GREP"
-
-	if [ -z "$KEYWORD" ] || [ ! -d "$DIR" ] ||  [ -z "$TYPE" ]; then
-	cat <<\
-USAGE
-Usage:
-qgrep [KEYWORD] [WHERE/TYPE] [PARAMETERS]
-
-Example:
-qgrep init system/*.c -A4 -B4
-
-USAGE
-	else
-		bash -c "$CMD"
-		# find $DIR/ -name '$TYPE' -type f | xargs -r grep -HIrns $@ "$KEYWORD" --color
-		# echo "$CMD"
-		# echo $DIR
-		# echo $TYPE
-		# echo $KEYWORD
-	fi
-	set +f
-}
+if [ -f ~/.alias_working ]; then
+	. ~/.alias_working
+fi

@@ -1,0 +1,4 @@
+# Quanta
+alias vpn-on='sudo openvpn $HOME/.config/openvpn/client.ovpn'
+alias to-s6='ssh karl@10.242.116.6'
+alias to-s7='ssh karl@10.242.116.7'
