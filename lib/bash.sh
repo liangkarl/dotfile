@@ -36,8 +36,11 @@ config_package()
 	# Assume $PS1 are almost the same as default bashrc
 	local -r BASHRC="$HOME/.bashrc"
     local -r INITRC="$HOME/.init.bash"
+    local -r BASH_COMPLETION="/etc/profile.d/bash_completion.sh"
 
     [ -f $BASHRC ] || cp /etc/skel/.bashrc $BASHRC
 
-    echo -e "\nif [ -f $BASHRC ]; then\n	. $INITRC\nfi\n\n" >> $BASHRC
+    grep -wq "^. $BASH_COMPLETION" $BASHRC || echo ". $BASH_COMPLETION" >> $BASHRC
+
+    grep -wq "^. $INITRC" $BASHRC || echo ". $INITRC" >> $BASHRC
 }
