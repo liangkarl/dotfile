@@ -1,55 +1,21 @@
 #!/bin/bash
 
-declare -r __MAGIC='AUTO-GEN-BY-SCRIPT'
-declare -r __BEGIN='BEGIN'
-declare -r __END='END'
-__ADDED_CONTENT=
-__SCRIPT_NAME=
-
-append_sign_and_content()
+add_with_sig()
 {
-        local -r FILE=$1
-        local -r SIGNED_STAMP=$(gen_stamp)
-        echo -e "$SIGNED_STAMP" >> $FILE
-}
+    local -r NOTE='GEN-BY-SCRIPT'
+    local -r CONTENT=$1
+    local -r FILE=$2
+    local -r BY_WHO=${3:-sigh.sh}
+    local -r DATE=$(date -I'date')
+    local -r USR_STAMP="# $USERNAME|$BY_WHO|$NOTE"
+    local -r TIME_STAMP="# $DATE created"
 
-check_sign()
-{
-        echo "TODO: $0"
-}
-
-remove_sign_and_content()
-{
-        echo "TODO: $0"
-}
-
-init_sign()
-{
-        __SCRIPT_NAME=$1
-        __ADDED_CONTENT=$2
-}
-
-gen_stamp()
-{
-        local -r DATE=$(date -I'date')
-        local -r FIRST_STAMP="## $USERNAME|$__SCRIPT_NAME|$__MAGIC|$__BEGIN"
-        local -r TIME_STAMP="## $DATE created"
-        local -r LAST_STAMP="## $USERNAME|$__SCRIPT_NAME|$__MAGIC|$__END"
-
-# Default format:
-# ## $USERNAME|$SCRIPTNAME|$__MAGIC|$__BEGIN
-# ## $DATE created
-# added content here
-# ## $USERNAME|$SCRIPTNAME|$__MAGIC|$__END
-#
-# Assume $USERNAME is from shell environment 
-
-# RAW Ouput
-        echo "
-${FIRST_STAMP}
-${TIME_STAMP}
-
-${__ADDED_CONTENT}
-
-${LAST_STAMP}"
+    # Default format:
+    # # $USERNAME|$BY_WHO|$NOTE
+    # # $DATE created
+    # added content here
+    #
+    # Assume $USERNAME is from shell environment
+    local -r SIGNED_STAMP="\n${USR_STAMP}\n${TIME_STAMP}\n\n${CONTENT}\n"
+    echo -e "$SIGNED_STAMP" >> $FILE
 }

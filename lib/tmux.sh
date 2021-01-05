@@ -30,21 +30,12 @@ config_package() {
     local -r SRC_CONFIG='tmux.conf'
     create_link $TMUX_CONFIG/$SRC_CONFIG $HOME/$DST_CONFIG
 
-    ## Add autocomplete for bash
+    # Add load command to bash_completion
     local -r DST_BASH="$HOME/.bash_completion"
     local -r SRC_BASH="$TMUX_CONFIG/tmux_completion"
-
-    # Add load command to bash_completion
     local -r LOAD_CMD="source $SRC_BASH\ncomplete -F _tmux tmux"
-
-    init_sign $TMUX_NAME "$LOAD_CMD"
-
-    if [ -z $DST_BASH ]; then
-        touch $DST_BASH
-    else
-        cp $DST_BASH ${DST_BASH}.bak
-    fi
-    append_sign_and_content $DST_BASH
+    grep -wq "^$LOAD_CMD" $BASHRC ||\
+        add_with_sig "$LOAD_CMD" "$DST_BASH" "$TMUX_NAME"
 
     # Install TPM
     local -r GIT_REPO="https://github.com/tmux-plugins/tpm"
