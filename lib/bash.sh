@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source $CORE_DIR/utils.sh
+source $CORE_DIR/sign.sh
 
 BASH_NAME='bash'
 BASH_CONFIG="$CONFIG_DIR/$BASH_NAME"
@@ -40,7 +41,11 @@ config_package()
 
     [ -f $BASHRC ] || cp /etc/skel/.bashrc $BASHRC
 
-    grep -wq "^. $BASH_COMPLETION" $BASHRC || echo ". $BASH_COMPLETION" >> $BASHRC
+    local LOAD_CMD=". $BASH_COMPLETION"
+    grep -wq "^$LOAD_CMD" $BASHRC ||\
+        add_with_sig "$LOAD_CMD" "$BASHRC" "$BASH_NAME"
 
-    grep -wq "^. $INITRC" $BASHRC || echo ". $INITRC" >> $BASHRC
+    LOAD_CMD=". $INITRC"
+    grep -wq "^$LOAD_CMD" $BASHRC ||\
+        add_with_sig "$LOAD_CMD" "$BASHRC" "$BASH_NAME"
 }
