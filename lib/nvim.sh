@@ -30,11 +30,31 @@ NPM_PACKAGES="
 	coc-explorer
 "
 
+# prepared binary:
+# curl, npm
+NEED_PACKAGES="
+    curl
+    npm
+"
+need_packages()
+{
+    for package in $NEED_PACKAGES; do
+        if ! test_cmd package; then
+            echo $package
+        fi
+    done
+}
+
 install()
 {
 	if test_cmd $NVIM_NAME; then
 		echo "$NVIM_NAME is already installed"
 	else
+        local NEED=need_packages
+        if [ -z $NEED ]; then
+            echo "Need to install: $NEED" >&2
+            return
+        fi
 		echo "Start installing $NVIM_NAME"
 		sudo add-apt-repository ppa:neovim-ppa/stable
 		sudo apt update -y
