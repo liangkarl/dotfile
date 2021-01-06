@@ -179,6 +179,6 @@ _tmux() {
 }
 # http://linux.die.net/man/1/bash
 # Move to script
-# complete -F _tmux tmux
+complete -F _tmux tmux
 
 # END tmux completion

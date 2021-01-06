@@ -33,6 +33,7 @@ config_package()
     [ -f $BASHRC ] || cp /etc/skel/.bashrc $BASHRC
     SRC=$BASH_CONFIG
     create_link $SRC/bash_aliases .bash_aliases
+    create_link $SRC/bash_completion .bash_completion
 
     LOAD_CMD=". $BASH_COMPLETION"
     grep -wq "^$LOAD_CMD" $BASHRC ||\
