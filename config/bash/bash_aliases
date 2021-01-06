@@ -1,7 +1,7 @@
-if [ -f ~/.alias_common ]; then
-	. ~/.alias_common
+if [ -f ~/.config/bash/alias/alias_common ]; then
+	. ~/.config/bash/alias/alias_common
 fi
 
-if [ -f ~/.alias_working ]; then
-	. ~/.alias_working
+if [ -f ~/.config/bash/alias/alias_working ]; then
+	. ~/.config/bash/alias/alias_working
 fi
