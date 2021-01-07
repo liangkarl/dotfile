@@ -45,7 +45,11 @@ install()
 		echo "Start installing $NVIM_NAME"
 		sudo add-apt-repository ppa:neovim-ppa/stable
 		sudo apt update -y
-		sudo apt install -y 'neovim'
+
+		sudo apt install -y neovim
+		sudo apt install python-neovim
+		sudo apt install python3-neovim
+
 		sudo apt autoremove -y
 		config_package
 	fi
@@ -82,6 +86,12 @@ config_package()
 	# Start install plugin for nvim
 	nvim +PlugInstall +qa
 
+	sudo update-alternatives --install /usr/bin/vi vi /usr/bin/nvim 60
+	sudo update-alternatives --config vi
+	sudo update-alternatives --install /usr/bin/vim vim /usr/bin/nvim 60
+	sudo update-alternatives --config vim
+	sudo update-alternatives --install /usr/bin/editor editor /usr/bin/nvim 60
+	sudo update-alternatives --config editor
 	# check external commands for plugin
 	# ag, ripgrep
 	# snap install ripgrep
