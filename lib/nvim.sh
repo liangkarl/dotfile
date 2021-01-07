@@ -36,23 +36,33 @@ install()
 {
 	if test_cmd $NVIM_NAME; then
 		echo "$NVIM_NAME is already installed"
-	else
+		return
+	fi
+
         local NEED=need_packages
         if [ -z $NEED ]; then
             echo "Need to install: $NEED" >&2
             return
         fi
-		echo "Start installing $NVIM_NAME"
-		sudo add-apt-repository ppa:neovim-ppa/stable
-		sudo apt update -y
 
-		sudo apt install -y neovim
+	echo "Start installing $NVIM_NAME"
+	sudo add-apt-repository ppa:neovim-ppa/stable
+	sudo apt update
+
+	sudo apt install -y neovim
+
+	if test_cmd nvim; then
 		sudo apt install python-neovim
 		sudo apt install python3-neovim
-
-		sudo apt autoremove -y
-		config_package
+	else
+		sudo add-apt-repository ppa:neovim-ppa/unstable
+		sudo apt update
+		sudo apt install -y neovim
+		sudo apt install python-dev python-pip python3-dev python3-pip
 	fi
+
+	sudo apt autoremove -y
+	config_package
 }
 
 uninstall()
