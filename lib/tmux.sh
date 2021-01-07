@@ -49,6 +49,7 @@ config_package() {
 
         #grep -wq "^$LOAD_CMD" $BASH_COMPL ||\
         #    add_with_sig "$LOAD_CMD" "$BASH_COMPL" "$TMUX_NAME"
+	popd
     fi
 
     # Install TPM
