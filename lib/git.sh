@@ -25,9 +25,10 @@ uninstall()
 config_package()
 {
         echo "Config $GIT_NAME..."
-        
+
+	pushd $HOME
         ## Create config link
-        local -r DST_CONFIG="$HOME/.gitconfig"
         local -r SRC_CONFIG="$GIT_CONFIG/gitconfig"
-        create_link $SRC_CONFIG $DST_CONFIG
+        create_link $SRC_CONFIG .gitconfig
+	popd
 }
