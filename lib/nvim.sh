@@ -5,6 +5,7 @@ source $CORE_DIR/utils.sh
 
 NVIM_NAME='nvim'
 NVIM_CONFIG="$CONFIG_DIR/$NVIM_NAME"
+USR_CONFIG="$HOME/.config"
 APT_PACKAGES="
 	'python3-pip'
 	'npm'
@@ -14,20 +15,6 @@ APT_PACKAGES="
 PIP3_PACKAGES="
 	pynvim
 	cpplint
-"
-
-NPM_PACKAGES="
-	coc-html
-	coc-json
-	coc-python
-	coc-vimlsp
-	coc-sh
-	coc-markdownlint
-	coc-xml
-	coc-highlight
-	coc-yank
-	coc-lists
-	coc-explorer
 "
 
 # prepared binary:
@@ -74,19 +61,25 @@ config_package()
 	echo "Config $NVIM_NAME..."
 
 	# link config
-	local -r NVIM_DIR=$HOME/.config/nvim
-	if [ -d $NVIM_DIR ]; then
-		rm -rf $NVIM_DIR.bak
-		mkdir $NVIM_DIR.bak
-		mv $NVIM_DIR/* $NVIM_DIR.bak
-	else
-		mkdir $NVIM_DIR
-	fi
-	ln -s $NVIM_CONFIG $NVIM_DIR
+	local -r NVIM_DIR="$USR_CONFIG/$NVIM"
+	[ -e $NVIM_DIR ] || return
+
+	create_link $NVIM_CONFIG $USR_CONFIG
 
 	# Install Plug-vim
 	local -r URL='https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 	curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs $URL
+
+	# for vista.nvim
+	sudo apt install -y ctags
+
+	# Prepare for coc.nvim
+	## Update nodejs with ppa
+	sudo apt install curl
+	curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+	sudo apt install nodejs
+
+	# Start install plugin for nvim
 	nvim +PlugInstall +qa
 
 	# check external commands for plugin
@@ -96,15 +89,27 @@ config_package()
 	# config_plugin
 }
 
-config_plugin()
+config_coc_plugin()
 {
-	# Install plugins with vim-plug
-	nvim +PlugInstall +qa
+	local -r NPM_PACKAGES="
+		coc-html
+		coc-json
+		coc-python
+		coc-vimlsp
+		coc-sh
+		coc-markdownlint
+		coc-xml
+		coc-highlight
+		coc-yank
+		coc-lists
+		coc-explorer
+	"
 
 	local -r EXT_DIR="$HOME/.config/coc/extensions"
-	# Install
-	# Install extensions
-	mkdir -p $EXT_DIR
+
+	[ -e $EXT_DIR ] || mkdir -p $EXT_DIR
+
+	# Install coc extensions
 	pushd $EXT_DIR
 	[[ ! -f package.json ]] &&
 		echo '{"dependencies":{}}'> package.json
