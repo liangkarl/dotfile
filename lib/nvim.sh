@@ -5,6 +5,7 @@ source $CORE_DIR/utils.sh
 
 NVIM_NAME='nvim'
 NVIM_CONFIG="$CONFIG_DIR/$NVIM_NAME"
+USR_CONFIG="$HOME/.config"
 APT_PACKAGES="
 	'python3-pip'
 	'npm'
@@ -74,19 +75,23 @@ config_package()
 	echo "Config $NVIM_NAME..."
 
 	# link config
-	local -r NVIM_DIR=$HOME/.config/nvim
-	if [ -d $NVIM_DIR ]; then
-		rm -rf $NVIM_DIR.bak
-		mkdir $NVIM_DIR.bak
-		mv $NVIM_DIR/* $NVIM_DIR.bak
-	else
-		mkdir $NVIM_DIR
-	fi
-	ln -s $NVIM_CONFIG $NVIM_DIR
+	local -r NVIM_DIR="$USR_CONFIG/$NVIM"
+	[ -e $NVIM_DIR ] || return
+
+	create_link $NVIM_CONFIG $USR_CONFIG
 
 	# Install Plug-vim
 	local -r URL='https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 	curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs $URL
+
+	# Prepare for coc.nvim
+	## Update nodejs with ppa
+	sudo apt-get install curl
+	curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+	sudo apt-get install nodejs
+
+	# Ready for coc
+	# curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
 	nvim +PlugInstall +qa
 
 	# check external commands for plugin
