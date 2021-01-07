@@ -71,8 +71,8 @@ install_ccls()
 	# systemctl start snapd.service
 	# install ccls by snap
 	if test_cmd 'snap'; then
-		sudo snap install ccls --classic
-		return
+		sudo snap install ccls --classic \
+			&& return
 	fi
 
 	echo "Try to build ccls"
