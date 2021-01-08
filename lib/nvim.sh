@@ -96,12 +96,9 @@ config_package()
 	# Start install plugin for nvim
 	nvim +PlugInstall +qa
 
-	sudo update-alternatives --install /usr/bin/vi vi /usr/bin/nvim 60
-	sudo update-alternatives --config vi
-	sudo update-alternatives --install /usr/bin/vim vim /usr/bin/nvim 60
-	sudo update-alternatives --config vim
-	sudo update-alternatives --install /usr/bin/editor editor /usr/bin/nvim 60
-	sudo update-alternatives --config editor
+	setup_version "/usr/bin/vi" "vi" "/usr/bin/nvim"
+	setup_version "/usr/bin/vim" "vim" "/usr/bin/nvim"
+	setup_version "/usr/bin/editor" "editor" "/usr/bin/nvim"
 	# check external commands for plugin
 	# ag, ripgrep
 	# snap install ripgrep

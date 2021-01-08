@@ -19,6 +19,20 @@ test_cmd()
 		return $BAD
 }
 
+setup_version()
+{
+	local -r LINK=$1
+	local -r NAME=$2
+	# Seperated by " "
+	local -r LIST=$3
+	local PRIORITY=10
+	for LOCATION in $LIST; do
+		sudo update-alternatives --install $LINK $NAME $LOCATION $PRIORITY
+		PRIORITY=$((PRIORITY + 10))
+	done
+	sudo update-alternatives --config $NAME
+}
+
 is_abs_path()
 {
 	local -r TEST_PATH=$1
