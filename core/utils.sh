@@ -33,6 +33,14 @@ setup_version()
 	sudo update-alternatives --config $NAME
 }
 
+add_ppa_repo()
+{
+	local -r NAME=$1
+	test_cmd add-apt-repository || sudo apt install software-properties-common
+	sudo add-apt-repository $NAME
+	sudo apt update
+}
+
 is_abs_path()
 {
 	local -r TEST_PATH=$1
