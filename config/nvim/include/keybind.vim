@@ -37,7 +37,7 @@ inoremap <A-w> <C-Right>
 
 " Open terminal
 " PS. you can use the terminal as debug console
-nnoremap <Leader>t :split term://bash<CR>:startinsert<CR>
+nnoremap <Leader><Leader>f :FloatermToggle<CR>
 " To use `ALT+{h,j,k,l}` to navigate windows from any mode:
 tnoremap <A-h> <C-\><C-N><C-w>h
 tnoremap <A-j> <C-\><C-N><C-w>j

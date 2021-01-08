@@ -93,6 +93,7 @@ let g:vim_current_word#highlight_current_word = 1
 let g:vim_current_word#highlight_only_in_focused_window = 1
 " Enable/disable plugin:
 let g:vim_current_word#enabled = 1
+au BufAdd floaterm :let b:vim_current_word_disabled_in_this_buffer = 1
 
 " Plugin: auto-pairs
 " Avoid conflict with edit motion"

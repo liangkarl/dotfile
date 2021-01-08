@@ -71,6 +71,12 @@ config_package()
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
     ~/.fzf/install
 
+    # for float term
+    install_if_no pip3 python3-pip
+    install_if_no pip python-pip
+    setup_version "/usr/bin/pip" "pip" "/usr/local/bin/pip /usr/local/bin/pip3"
+    pip install neovim-remote
+
 	# Prepare for coc.nvim
 	## Update nodejs with ppa
 	curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -

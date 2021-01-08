@@ -97,7 +97,7 @@ Plug 'dhruvasagar/vim-table-mode'
 " Open URL from vim
 Plug 'tyru/open-browser.vim'
 " Open terminal with float window
-" Plug 'voldikss/vim-floaterm'
+Plug 'voldikss/vim-floaterm'
 
 """ 3. Language Support
 
