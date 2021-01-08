@@ -7,7 +7,7 @@ GIT_CONFIG="$CONFIG_DIR/$GIT_NAME"
 
 install()
 {
-    if test_cmd $GIT_NAME; then
+    if has_cmd $GIT_NAME; then
         echo "$GIT_NAME is already installed"
     else
         echo "Start installing $GIT_NAME"

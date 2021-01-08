@@ -12,7 +12,7 @@ create_link()
 	ln -svib $SRC $DST
 }
 
-test_cmd()
+has_cmd()
 {
 	command -v >&- "$@" && \
 		return $OK || \
@@ -37,7 +37,7 @@ install_if_no()
 {
 	local -r CMD_NAME=$1
 	local -r APT_NAME=${2:-$CMD_NAME}
-	test_cmd $CMD_NAME || sudo apt install $APT_NAME
+	has_cmd $CMD_NAME || sudo apt install $APT_NAME
 }
 
 add_ppa_repo()

@@ -9,7 +9,7 @@ TMUX_CONFIG="$CONFIG_DIR/$TMUX_NAME"
 USR_CONFIG="$HOME/.config"
 
 install() {
-    if test_cmd $TMUX_NAME; then
+    if has_cmd $TMUX_NAME; then
         echo "$TMUX_NAME is already installed"
     else
         echo "Start installing $TMUX_NAME"

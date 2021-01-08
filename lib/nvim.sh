@@ -18,7 +18,7 @@ PIP3_PACKAGES="
 
 install()
 {
-	if test_cmd $NVIM_NAME; then
+	if has_cmd $NVIM_NAME; then
 		echo "$NVIM_NAME is already installed"
 		return
 	fi
@@ -28,7 +28,7 @@ install()
     add_ppa_repo ppa:neovim-ppa/stable
     install_if_no nvim neovim
 
-	if ! test_cmd nvim; then
+	if ! has_cmd nvim; then
         add_ppa_repo ppa:neovim-ppa/unstable
         install_if_no nvim neovim
     fi
