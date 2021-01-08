@@ -3,7 +3,7 @@
 source $SHELL_CORE_DIR/utils.sh
 
 GIT_NAME='git'
-GIT_CONFIG="$SHELL_CONFIG_DIR/$GIT_NAME"
+GIT_DIR="$SHELL_CONFIG_DIR/$GIT_NAME"
 
 install()
 {
@@ -28,7 +28,7 @@ config_package()
 
     pushd $HOME
     ## Create config link
-    local -r SRC_CONFIG="$GIT_CONFIG/gitconfig"
+    local -r SRC_CONFIG="$GIT_DIR/gitconfig"
     create_link $SRC_CONFIG .gitconfig
     popd
 }

@@ -3,8 +3,7 @@
 source $SHELL_CORE_DIR/utils.sh
 
 NVIM_NAME='nvim'
-NVIM_CONFIG="$SHELL_CONFIG_DIR/$NVIM_NAME"
-USR_CONFIG="$HOME/.config"
+NVIM_DIR="$SHELL_CONFIG_DIR/$NVIM_NAME"
 APT_PACKAGES="
 	'python3-pip'
 	'npm'
@@ -51,12 +50,12 @@ config_package()
 	echo "Config $NVIM_NAME..."
 
 	# link config
-	local -r NVIM_DIR="$USR_CONFIG/$NVIM"
+	local -r NVIM_DIR="$USR_CONFIG_DIR/$NVIM"
 	[ -e $NVIM_DIR ] || return
 
-	create_link $NVIM_CONFIG $USR_CONFIG
-	create_link $NVIM_CONFIG/editorconfig $HOME/.editorconfig
-	create_link $NVIM_CONFIG/clang-format.txt $HOME/.clang-format
+	create_link $NVIM_DIR $USR_CONFIG_DIR
+	create_link $NVIM_DIR/editorconfig $HOME/.editorconfig
+	create_link $NVIM_DIR/clang-format.txt $HOME/.clang-format
 
 	# Install Plug-vim
 	local -r URL='https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'

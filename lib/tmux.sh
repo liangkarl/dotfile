@@ -5,8 +5,7 @@ source $SHELL_CORE_DIR/utils.sh
 source $SHELL_CORE_DIR/sign.sh
 
 TMUX_NAME='tmux'
-TMUX_CONFIG="$SHELL_CONFIG_DIR/$TMUX_NAME"
-USR_CONFIG="$HOME/.config"
+TMUX_DIR="$SHELL_CONFIG_DIR/$TMUX_NAME"
 
 install() {
     if has_cmd $TMUX_NAME; then
@@ -30,7 +29,7 @@ config_package() {
     local SRC=''
 
     pushd $HOME
-    SRC=$TMUX_CONFIG
+    SRC=$TMUX_DIR
     create_link $SRC/tmux.conf .tmux.conf
 
     # Add load command to bash_completion
@@ -38,9 +37,9 @@ config_package() {
     local -r BASHRC='.bashrc'
     local LOAD_CMD=''
 
-    SRC=$USR_CONFIG/bash/completion
+    SRC=$USR_CONFIG_DIR/bash/completion
     if [ -e $SRC ]; then
-        local -r TMUX_COMPL="$TMUX_CONFIG/completion_tmux"
+        local -r TMUX_COMPL="$TMUX_DIR/completion_tmux"
 
         pushd $SRC
         create_link $TMUX_COMPL .
@@ -54,7 +53,7 @@ config_package() {
 
     # Install TPM
     local -r GIT_REPO='https://github.com/tmux-plugins/tpm'
-    local -r TPM_DIR="$USR_CONFIG/$TMUX_NAME/plugins/tpm"
+    local -r TPM_DIR="$USR_CONFIG_DIR/$TMUX_NAME/plugins/tpm"
     git clone $GIT_REPO $TPM_DIR
     popd
 }
