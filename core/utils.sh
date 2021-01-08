@@ -35,8 +35,8 @@ setup_version()
 
 install_if_no()
 {
-	local -r $CMD_NAME=$1
-	local -r $APT_NAME=$2
+	local -r CMD_NAME=$1
+	local -r APT_NAME=${2:-$CMD_NAME}
 	test_cmd $CMD_NAME || sudo apt install $APT_NAME
 }
 
