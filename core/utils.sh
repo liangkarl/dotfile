@@ -33,10 +33,17 @@ setup_version()
 	sudo update-alternatives --config $NAME
 }
 
+install_if_no()
+{
+	local -r $CMD_NAME=$1
+	local -r $APT_NAME=$2
+	test_cmd $CMD_NAME || sudo apt install $APT_NAME
+}
+
 add_ppa_repo()
 {
 	local -r NAME=$1
-	test_cmd add-apt-repository || sudo apt install software-properties-common
+	install_if_no add-apt-repository software-properties-common
 	sudo add-apt-repository $NAME
 	sudo apt update
 }
