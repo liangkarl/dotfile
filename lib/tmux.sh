@@ -43,13 +43,13 @@ config_package() {
         local -r TMUX_COMPL="$TMUX_CONFIG/completion_tmux"
 
         pushd $SRC
-	create_link $TMUX_COMPL .
+        create_link $TMUX_COMPL .
 
         LOAD_CMD="source $TMUX_COMPL\ncomplete -F _tmux tmux"
 
         #grep -wq "^$LOAD_CMD" $BASH_COMPL ||\
         #    add_with_sig "$LOAD_CMD" "$BASH_COMPL" "$TMUX_NAME"
-	popd
+        popd
     fi
 
     # Install TPM
@@ -58,11 +58,3 @@ config_package() {
     git clone $GIT_REPO $TPM_DIR
     popd
 }
-
-# tmux-continuum
-
-# tmux-yank
-
-# Tmux Resurrect
-
-# Tmux sensible

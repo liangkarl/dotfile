@@ -55,7 +55,7 @@ config_package()
     SRC="$BASH_CONFIG/$ALIAS_DIR"
     create_link $SRC/alias_common .
     create_link $SRC/alias_working .
-    popd 
+    popd
 
     [ -e $COMPLETION_DIR ] || mkdir $COMPLETION_DIR
     pushd $COMPLETION_DIR
