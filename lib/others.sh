@@ -19,6 +19,7 @@ CUST_LIST="
 	install_ccls
 	install_gcc
 	install_nodejs
+	install_python
 "
 
 install()
@@ -110,8 +111,7 @@ install_ccls()
 
 install_gcc()
 {
-	sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-	sudo apt update
+	add_ppa_repo ppa:ubuntu-toolchain-r/test
 	sudo apt install gcc-7 gcc-8 gcc-9
 	setup_version "/usr/bin/gcc" "gcc" "$(ls /usr/bin/gcc-[0-9])"
 
@@ -121,8 +121,7 @@ install_gcc()
 
 install_python()
 {
-	sudo add-apt-repository ppa:deadsnakes/ppa
-	sudo apt update
+	add_ppa_repo ppa:deadsnakes/ppa
 	sudo apt install python3.6 python3.9
 	# FIXME: only matched regex: pythonX.Y
 	setup_version "/usr/bin/python" "python" "$(ls /usr/bin/python[0-9].[0-9])"
