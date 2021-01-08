@@ -24,7 +24,7 @@ install_packages()
 load_and_install_package()
 {
         local -r PACKAGE_NAME=$1
-        local LIB_SCRIPT=$LIB_DIR/${1}.sh
+        local LIB_SCRIPT=$SHELL_LIB_DIR/${1}.sh
         (
                 echo "Load \"$PACKAGE_NAME\" script"
                 source $LIB_SCRIPT &&

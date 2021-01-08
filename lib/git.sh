@@ -1,9 +1,9 @@
 #!/bin/bash
 
-source $CORE_DIR/utils.sh
+source $SHELL_CORE_DIR/utils.sh
 
 GIT_NAME='git'
-GIT_CONFIG="$CONFIG_DIR/$GIT_NAME"
+GIT_CONFIG="$SHELL_CONFIG_DIR/$GIT_NAME"
 
 install()
 {

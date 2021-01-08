@@ -1,9 +1,9 @@
 #!/bin/bash
 
-source $CORE_DIR/utils.sh
+source $SHELL_CORE_DIR/utils.sh
 
 NVIM_NAME='nvim'
-NVIM_CONFIG="$CONFIG_DIR/$NVIM_NAME"
+NVIM_CONFIG="$SHELL_CONFIG_DIR/$NVIM_NAME"
 USR_CONFIG="$HOME/.config"
 APT_PACKAGES="
 	'python3-pip'

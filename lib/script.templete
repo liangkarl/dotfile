@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# source $CORE_DIR/utils.sh
-# source $CORE_DIR/sign.sh
+# source $SHELL_CORE_DIR/utils.sh
+# source $SHELL_CORE_DIR/sign.sh
 
 XXXX_NAME='xxxx'
-XXXX_CONFIG="$CONFIG_DIR/$XXXX_NAME"
+XXXX_CONFIG="$SHELL_CONFIG_DIR/$XXXX_NAME"
 
 install()
 {

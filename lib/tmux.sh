@@ -1,11 +1,11 @@
 #!/bin/bash
 # tmux installer script
 
-source $CORE_DIR/utils.sh
-source $CORE_DIR/sign.sh
+source $SHELL_CORE_DIR/utils.sh
+source $SHELL_CORE_DIR/sign.sh
 
 TMUX_NAME='tmux'
-TMUX_CONFIG="$CONFIG_DIR/$TMUX_NAME"
+TMUX_CONFIG="$SHELL_CONFIG_DIR/$TMUX_NAME"
 USR_CONFIG="$HOME/.config"
 
 install() {

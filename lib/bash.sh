@@ -1,10 +1,10 @@
 #!/bin/bash
 
-source $CORE_DIR/utils.sh
-source $CORE_DIR/sign.sh
+source $SHELL_CORE_DIR/utils.sh
+source $SHELL_CORE_DIR/sign.sh
 
 BASH_NAME='bash'
-BASH_CONFIG="$CONFIG_DIR/$BASH_NAME"
+BASH_CONFIG="$SHELL_CONFIG_DIR/$BASH_NAME"
 
 install()
 {
