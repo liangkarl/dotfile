@@ -1,7 +1,6 @@
 #!/bin/bash
 
 source $CORE_DIR/utils.sh
-# source $CORE_DIR/sign.sh
 
 NVIM_NAME='nvim'
 NVIM_CONFIG="$CONFIG_DIR/$NVIM_NAME"
@@ -17,21 +16,6 @@ PIP3_PACKAGES="
 	cpplint
 "
 
-# prepared binary:
-# curl, npm
-NEED_PACKAGES="
-    curl
-    npm
-"
-need_packages()
-{
-    for package in $NEED_PACKAGES; do
-        if ! test_cmd package; then
-            echo $package
-        fi
-    done
-}
-
 install()
 {
 	if test_cmd $NVIM_NAME; then
@@ -39,27 +23,19 @@ install()
 		return
 	fi
 
-        local NEED=need_packages
-        if [ -z $NEED ]; then
-            echo "Need to install: $NEED" >&2
-            return
-        fi
-
 	echo "Start installing $NVIM_NAME"
-	sudo add-apt-repository ppa:neovim-ppa/stable
-	sudo apt update
 
-	sudo apt install -y neovim
+    add_ppa_repo ppa:neovim-ppa/stable
+    install_if_no nvim neovim
 
-	if test_cmd nvim; then
-		sudo apt install python-neovim
-		sudo apt install python3-neovim
-	else
-		sudo add-apt-repository ppa:neovim-ppa/unstable
-		sudo apt update
-		sudo apt install -y neovim
-		sudo apt install python-dev python-pip python3-dev python3-pip
-	fi
+	if ! test_cmd nvim; then
+        add_ppa_repo ppa:neovim-ppa/unstable
+        install_if_no nvim neovim
+    fi
+
+    sudo apt install python-neovim
+    sudo apt install python3-neovim
+    sudo apt install python-dev python-pip python3-dev python3-pip
 
 	sudo apt autoremove -y
 	config_package
@@ -84,14 +60,15 @@ config_package()
 
 	# Install Plug-vim
 	local -r URL='https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+    install_if_no curl
 	curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs $URL
 
 	# for vista.nvim
+    install_if_no ctags
 	sudo apt install -y ctags
 
 	# Prepare for coc.nvim
 	## Update nodejs with ppa
-	sudo apt install curl
 	curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 	sudo apt install nodejs
 
@@ -133,6 +110,7 @@ config_coc_plugin()
 	[[ ! -f package.json ]] &&
 		echo '{"dependencies":{}}'> package.json
 
+    install_if_no npm
 	# Change extension names to the extensions you need
 	npm install $NPM_PACKAGES \
 		--global-style --ignore-scripts \
