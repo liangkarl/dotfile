@@ -66,6 +66,11 @@ config_package()
     install_if_no ctags
 	sudo apt install -y ctags
 
+    # for fzf
+    install_if_no git
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+    ~/.fzf/install
+
 	# Prepare for coc.nvim
 	## Update nodejs with ppa
 	curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
