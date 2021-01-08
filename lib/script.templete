@@ -4,7 +4,7 @@
 # source $SHELL_CORE_DIR/sign.sh
 
 XXXX_NAME='xxxx'
-XXXX_CONFIG="$SHELL_CONFIG_DIR/$XXXX_NAME"
+XXXX_DIR="$SHELL_CONFIG_DIR/$XXXX_NAME"
 
 install()
 {
