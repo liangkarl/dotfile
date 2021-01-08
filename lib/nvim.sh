@@ -79,6 +79,8 @@ config_package()
 	[ -e $NVIM_DIR ] || return
 
 	create_link $NVIM_CONFIG $USR_CONFIG
+	create_link $NVIM_CONFIG/editorconfig $HOME/.editorconfig
+	create_link $NVIM_CONFIG/clang-format.txt $HOME/.clang-format
 
 	# Install Plug-vim
 	local -r URL='https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
