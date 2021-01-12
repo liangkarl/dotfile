@@ -8,15 +8,19 @@ XXXX_DIR="$SHELL_CONFIG_DIR/$XXXX_NAME"
 
 install()
 {
-        config_package
+        echo "Install $XXXX_NAME..."
+        echo "Not finished yet..."
+        # config_package
 }
 
 uninstall()
 {
         echo "Remove $XXXX_NAME..."
+        echo "Not finished yet..."
 }
 
 config_package()
 {
         echo "Config $XXXX_NAME..."
+        echo "Not finished yet..."
 }
