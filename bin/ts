@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# this is for setting up a workspace in tmux
+
+# TARGET_DIR=$(fasd -d $@)
+TARGET_NAME="$1"
+
+if [ -z "$TARGET_NAME" ]; then
+	TOP_NAME=$(tmux ls | awk 'NR==1{print $1}' | tr -d : 2>-)
+	if [ -z "$TOP_NAME" ]; then
+		tmux new -s $(date +'%D %T')
+	else
+		echo "enter session: $TOP_NAME"
+		if [ -z "$TMUX" ]; then
+			tmux attach -t $TOP_NAME
+		else
+			TMUX='' tmux switch-client -t $TOP_NAME
+		fi
+	fi
+
+else # TARGET_NAME isn't null
+	if [ -e "$TARGET_NAME" ]; then # is a dir path
+		TARGET_DIR=$(dirname "$TARGET_NAME")
+		TARGET_NAME=$(basename "$TARGET_NAME")
+	else # is a name
+		TARGET_DIR=$HOME
+	fi
+
+	WANTED_NAME=$(tmux ls | awk '{print $1}' | tr -d : | grep "$TARGET_NAME" 2>-)
+	if [ -z "$WANTED_NAME" ]; then
+		echo "create session: $TARGET_NAME"
+		if [ -z "$TMUX" ]; then
+			tmux new -s "$TARGET_NAME" -c "$TARGET_DIR"
+		else
+			tmux new -d -s "$TARGET_NAME" -c "$TARGET_DIR"
+			TMUX='' tmux switch-client -t "$TARGET_NAME"
+		fi
+	else
+		if [ -z "$TMUX" ]; then
+			tmux attach -t "$WANTED_NAME"
+		else
+			TMUX='' tmux switch-client -t "$WANTED_NAME"
+		fi
+	fi
+fi
