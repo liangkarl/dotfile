@@ -6,7 +6,7 @@
 TARGET_NAME="$1"
 
 if [ -z "$TARGET_NAME" ]; then
-	TOP_NAME=$(tmux ls | awk 'NR==1{print $1}' | tr -d : 2>-)
+	TOP_NAME=$(tmux ls | awk 'NR==1{print $1}' | tr -d : 2>&-)
 	if [ -z "$TOP_NAME" ]; then
 		tmux new -s $(date +'%D %T')
 	else
@@ -26,7 +26,7 @@ else # TARGET_NAME isn't null
 		TARGET_DIR=$HOME
 	fi
 
-	WANTED_NAME=$(tmux ls | awk '{print $1}' | tr -d : | grep "$TARGET_NAME" 2>-)
+	WANTED_NAME=$(tmux ls | awk '{print $1}' | tr -d : | grep "$TARGET_NAME" 2>&-)
 	if [ -z "$WANTED_NAME" ]; then
 		echo "create session: $TARGET_NAME"
 		if [ -z "$TMUX" ]; then
