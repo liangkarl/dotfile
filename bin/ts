@@ -6,9 +6,9 @@
 TARGET_NAME="$1"
 
 if [ -z "$TARGET_NAME" ]; then
-	TOP_NAME=$(tmux ls | awk 'NR==1{print $1}' | tr -d : 2>&-)
+	TOP_NAME=$(tmux ls 2>&- | awk 'NR==1{print $1}' | tr -d : 2>&-)
 	if [ -z "$TOP_NAME" ]; then
-		tmux new -s $(date +'%D %T')
+		tmux new -s $USER
 	else
 		echo "enter session: $TOP_NAME"
 		if [ -z "$TMUX" ]; then
