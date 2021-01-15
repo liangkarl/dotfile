@@ -16,6 +16,9 @@ set noequalalways
 set hidden
 " set cmdheight=2
 
+" To show buffer name for lightline-bufferline config
+set showtabline=2
+
 " Set up font for special characters
 set guifont=SauceCodePro\ Nerd\ Font\ Mono
 
@@ -36,6 +39,6 @@ set colorcolumn=80
 set noshowmode " hide default mode text (e.g. INSERT) as airline already displays it
 set display+=lastline " don't show '@@@' when there is no enough room
 
-set mouse+=a " copy text without borders
+set mouse=v " copy text without borders
 
 colorscheme gruvbox

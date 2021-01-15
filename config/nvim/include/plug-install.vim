@@ -35,12 +35,14 @@ Plug 'mhinz/vim-startify'
 " Theme
 Plug 'morhetz/gruvbox'
 " Show status line
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+Plug 'itchyny/lightline.vim'
+Plug 'mengelbrecht/lightline-bufferline'
+" Plug 'vim-airline/vim-airline'
+" Plug 'vim-airline/vim-airline-themes'
 " Function manager
 Plug 'liuchengxu/vista.vim'
 " git support
-Plug 'airblade/vim-gitgutter'
+" Plug 'airblade/vim-gitgutter'
 " Neomake is a plugin for Vim/Neovim to asynchronously run programs.
 " Plug 'neomake/neomake'
 " File explorer (and dependecy)
@@ -56,7 +58,7 @@ Plug 'junegunn/fzf.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Autocompletion supporting LSP
 " mainly construct by vim script instead of python
-Plug 'dense-analysis/ale'
+" Plug 'dense-analysis/ale'
 
 """ 2. General Editor Tools
 
@@ -66,7 +68,7 @@ Plug 'editorconfig/editorconfig-vim'
 
 " 2.2 Display
 " Show bookmark codes near by line number
-Plug 'kshenoy/vim-signature'
+" Plug 'kshenoy/vim-signature'
 " Highlit current words
 Plug 'dominikduda/vim_current_word'
 " Show trailing space

@@ -1,34 +1,12 @@
-" Plugin: airline
-" buffers at the top as tabs
-let g:airline#extensions#tabline#enabled = 1
-" choose tab line format style
-let g:airline#extensions#tabline#formatter = 'unique_tail'
-" show buffer number
-let g:airline#extensions#tabline#buffer_nr_show = 1
-let g:airline#extensions#tabline#show_tab_type=1
-" enable powerline-fonts
-let g:airline_powerline_fonts = 1
+" Plugin: lightline-bufferline
+let g:lightline#bufferline#show_number  = 1
+let g:lightline#bufferline#shorten_path = 0
+let g:lightline#bufferline#unnamed      = '[No Name]'
 
-" Make line number human readable
-function! MyLineNumber()
-  return substitute(line('.'), '\d\@<=\(\(\d\{3\}\)\+\)$', ',&', 'g'). ' | '.
-    \    substitute(line('$'), '\d\@<=\(\(\d\{3\}\)\+\)$', ',&', 'g')
-endfunction
-
-call airline#parts#define('linenr', {'function': 'MyLineNumber', 'accents': 'bold'})
-let g:airline_section_z = airline#section#create(['windowswap', '%3p%% ', 'linenr', ':%3v'])
-
-" Add the window number in front of the mode
-if !exists("*WindowNumber")
-    function! WindowNumber(...)
-        let builder = a:1
-        let context = a:2
-        call builder.add_section('airline_b', ' %{tabpagewinnr(tabpagenr())} ')
-        return 0
-    endfunction
-    call airline#add_statusline_func('WindowNumber')
-    call airline#add_inactive_statusline_func('WindowNumber')
-endif
+let g:lightline                  = {}
+let g:lightline.tabline          = {'left': [['buffers']], 'right': [['close']]}
+let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
+let g:lightline.component_type   = {'buffers': 'tabsel'}
 
 " Plugin: Vista.vim
 function! NearestMethodOrFunction() abort
