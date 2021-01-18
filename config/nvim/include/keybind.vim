@@ -15,6 +15,10 @@
 " | :tmap, :tnoremap, :tunmap | Terminal                                 |
 " |---------------------------+------------------------------------------|
 
+" Retain the visual selection after indent lines
+vnoremap > >gv
+vnoremap < <gv
+
 " map Leader
 let mapleader = ' '
 
