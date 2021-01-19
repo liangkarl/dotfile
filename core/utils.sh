@@ -48,6 +48,22 @@ add_ppa_repo()
 	sudo apt update
 }
 
+get_latest_release() {
+    curl --silent "https://api.github.com/repos/$1/releases/latest" | # Get latest release from GitHub api
+        grep '"tag_name":' |                                            # Get tag line
+        sed -E 's/.*"([^"]+)".*/\1/'                                    # Pluck JSON value
+}
+
+get_deb_from_github() {
+    USER="$1"
+    REPO="$2"
+    curl -s https://api.github.com/repos/$USER/$REPO/releases/latest \
+        | grep "browser_download_url.*_amd64.deb" \
+        | cut -d : -f 2,3 \
+        | tr -d \" \
+        | wget -qi -
+}
+
 is_abs_path()
 {
 	local -r TEST_PATH=$1
