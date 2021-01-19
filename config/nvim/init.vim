@@ -41,4 +41,8 @@ set display+=lastline " don't show '@@@' when there is no enough room
 
 set mouse=v " copy text without borders
 
+if (has("termguicolors"))
+  set termguicolors
+endif
+
 colorscheme gruvbox
