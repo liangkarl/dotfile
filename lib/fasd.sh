@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source $SHELL_CORE_DIR/utils.sh
-# source $SHELL_CORE_DIR/sign.sh
+source $SHELL_CORE_DIR/sign.sh
 
 FASD_NAME='fasd'
 FASD_DIR="$SHELL_CONFIG_DIR/$FASD_NAME"
@@ -33,5 +33,9 @@ uninstall()
 config_package()
 {
         echo "Config $FASD_NAME..."
-        echo "Not finished yet..."
+
+        local CMD='eval "$(fasd --init auto)"'
+        local BASHRC=$HOME/.bashrc
+
+        add_with_sig "$CMD" "$BASHRC" "$FASD_NAME"
 }
