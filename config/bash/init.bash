@@ -23,7 +23,7 @@ __customize_ps1() {
     PS1+="${PURPLE}\$? "
     PS1+=${GREEN}'\u@\h '
     PS1+=${BLUE}'\w '
-    PS1+='$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/'${SED_PURPLE}'('${SED_ORANGE}'\1'${SED_PURPLE}')/")'
+    PS1+='$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/'${SED_PURPLE}'-> '${SED_ORANGE}'\1/")'
     PS1+='\n'${RESET}'└─ '
     PS1+=${LYELLOW}'\$'${RESET}' '
 
