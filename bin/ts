@@ -19,8 +19,8 @@ if [ -z "$TARGET_NAME" ]; then
 	fi
 
 else # TARGET_NAME isn't null
-	if [ -e "$TARGET_NAME" ]; then # is a dir path
-		TARGET_DIR=$(dirname "$TARGET_NAME")
+	if [ -d "$TARGET_NAME" ]; then # is a dir path
+		TARGET_DIR="$TARGET_NAME"
 		TARGET_NAME=$(basename "$TARGET_NAME")
 	else # is a name
 		TARGET_DIR=$HOME
