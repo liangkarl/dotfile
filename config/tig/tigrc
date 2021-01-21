@@ -1,0 +1,4 @@
+set commit-order = default
+set main-view-commit-title-graph = v1
+
+set main-view = line-number:no,interval=5 id:no date:default author:full,maxwidth=20 commit-title:yes,graph,refs,overflow=no
