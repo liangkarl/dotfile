@@ -1,3 +1,6 @@
+# Config reference
+# https://github.com/jonas/tig/blob/master/tigrc
+
 set commit-order = default
 set main-view-commit-title-graph = v1
 
