@@ -47,6 +47,7 @@ Plug 'liuchengxu/vista.vim'
 " Plug 'neomake/neomake'
 " File explorer (and dependecy)
 " Use coc-explorer instead
+Plug 'arithran/vim-delete-hidden-buffers'
 
 " 1.2 Integrated Tools
 " Searching is fzf's main function

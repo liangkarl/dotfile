@@ -24,6 +24,10 @@ let mapleader = ' '
 
 " Reload vim config
 nnoremap <Leader>so :so $MYVIMRC<CR>
+nnoremap <Leader>cwf :echo expand('%:p')<CR>
+nnoremap <Leader>cwd :pwd<CR>
+" Change the directory only for the current window
+nnoremap <Leader>cd :lcd %:p:h<CR>
 
 " CTRL-C: Quit insert mode, go back to Normal mode. Do not check for
 " abbreviations. Does not trigger the InsertLeave autocommand event.
@@ -62,6 +66,9 @@ noremap <Leader><Space>y "*y
 noremap <Leader><Space>p "*p
 noremap <Leader><Space>c "+y
 noremap <Leader><Space>v "+p
+
+" vim-delete-hidden-buffers
+nnoremap <Leader>bd :DeleteHiddenBuffers<CR>
 
 " buffer motion (buffer: define as file content itself)
 nnoremap <Leader>n :bn<CR>
