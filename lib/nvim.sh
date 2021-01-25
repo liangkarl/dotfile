@@ -15,6 +15,20 @@ PIP3_PACKAGES="
 	cpplint
 "
 
+install_from_stable_nvim()
+{
+    add_ppa_repo ppa:neovim-ppa/stable
+    sudo apt update
+    sudo apt install neovim
+}
+
+install_from_unstable_nvim()
+{
+    add_ppa_repo ppa:neovim-ppa/unstable
+    sudo apt update
+    sudo apt install neovim
+}
+
 install()
 {
 	if has_cmd $NVIM_NAME; then
@@ -22,32 +36,53 @@ install()
 		return
 	fi
 
+    local SOURCE=('stable_nvim' 'unstable_nvim')
 	echo "Start installing $NVIM_NAME"
 
-    add_ppa_repo ppa:neovim-ppa/stable
-    install_if_no nvim neovim
+    for SRC in ${SOURCE[@]}; do
+        install_from_${SRC}
+        has_cmd $NVIM_NAME && {
+            echo "Install $NVIM_NAME successfully"
+            break
+        }
+        show_err "Install $NVIM_NAME from $SRC failed"
+    done
 
-	if ! has_cmd nvim; then
-        add_ppa_repo ppa:neovim-ppa/unstable
-        install_if_no nvim neovim
-    fi
+    has_cmd nvim || {
+        show_err "No way to install $NVIM_NAME"
+        return
+    }
 
     sudo apt install python-neovim
     sudo apt install python3-neovim
     sudo apt install python-dev python-pip python3-dev python3-pip
 
+    # Remove unnessary dependencies
 	sudo apt autoremove -y
 	config_package
 }
 
-uninstall()
+install_plug_vim()
 {
-	echo "Remove $NVIM_NAME..."
+	local -r URL='https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+	curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs $URL
+}
+
+install_fzf()
+{
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+    ~/.fzf/install
 }
 
 config_package()
 {
 	echo "Config $NVIM_NAME..."
+
+    local NEED_CMD='curl git npm'
+    has_these_cmds || {
+        show_err "Need these installization of $NEED_CMD"
+        return
+    }
 
 	# link config
 	local -r NVIM_DIR="$USR_CONFIG_DIR/$NVIM"
@@ -57,30 +92,19 @@ config_package()
 	create_link $NVIM_DIR/editorconfig $HOME/.editorconfig
 	create_link $NVIM_DIR/clang-format.txt $HOME/.clang-format
 
-	# Install Plug-vim
-	local -r URL='https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-    install_if_no curl
-	curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs $URL
+    install_plug_vim
+
+    install_fzf
 
 	# for vista.nvim
     install_if_no ctags
 	sudo apt install -y ctags
-
-    # for fzf
-    install_if_no git
-    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-    ~/.fzf/install
 
     # for float term
     install_if_no pip3 python3-pip
     install_if_no pip python-pip
     setup_version "/usr/bin/pip" "pip" "/usr/local/bin/pip /usr/local/bin/pip3"
     pip install neovim-remote
-
-	# Prepare for coc.nvim
-	## Update nodejs with ppa
-	curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
-	sudo apt install nodejs
 
 	# Start install plugin for nvim
 	nvim +PlugInstall +qa
@@ -124,7 +148,6 @@ config_coc_plugin()
 	[[ ! -f package.json ]] &&
 		echo '{"dependencies":{}}'> package.json
 
-    install_if_no npm
 	# Change extension names to the extensions you need
 	npm install $NPM_PACKAGES \
 		--global-style --ignore-scripts \
