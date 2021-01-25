@@ -45,12 +45,13 @@ inoremap <A-w> <C-Right>
 
 " Open terminal
 " PS. you can use the terminal as debug console
-nnoremap <Leader><Leader>f :FloatermToggle<CR>
+nnoremap <F3> :FloatermToggle<CR>
+
 " To use `ALT+{h,j,k,l}` to navigate windows from any mode:
-tnoremap <A-h> <C-\><C-N><C-w>h
-tnoremap <A-j> <C-\><C-N><C-w>j
-tnoremap <A-k> <C-\><C-N><C-w>k
-tnoremap <A-l> <C-\><C-N><C-w>l
+" tnoremap <A-h> <C-\><C-N><C-w>h
+" tnoremap <A-j> <C-\><C-N><C-w>j
+" tnoremap <A-k> <C-\><C-N><C-w>k
+" tnoremap <A-l> <C-\><C-N><C-w>l
 " To map <Esc> to exit terminal-mode:
 tnoremap <Esc> <C-\><C-n>
 

@@ -71,7 +71,6 @@ let g:vim_current_word#highlight_current_word = 1
 let g:vim_current_word#highlight_only_in_focused_window = 1
 " Enable/disable plugin:
 let g:vim_current_word#enabled = 1
-au BufAdd term:// :let b:vim_current_word_disabled_in_this_buffer = 1
 
 " Plugin: auto-pairs
 " Avoid conflict with edit motion"
@@ -141,6 +140,7 @@ let g:coc_explorer_global_presets = {
 """ Optimization start
 " Disable showing trailing white space in coc-explorer
 autocmd User CocExplorerOpenPre DisableWhitespace
-
+autocmd TermEnter :let b:vim_current_word_disabled_in_this_buffer = 1
+autocmd TermOpen :let b:vim_current_word_disabled_in_this_buffer = 1
 
 """ Optimization end
