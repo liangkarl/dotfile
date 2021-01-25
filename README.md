@@ -1,52 +1,52 @@
-# My Ubuntu Shell Config #
+# My Ubuntu Shell Config
 
-## Introduce ##
+## Introduce
 
   Since I hate re-typing every command while installing a new Ubuntu system from
 zero, I tried to write some simple script before, but they are difficult to maintain
 or modify after system update or other kind of circumstances. I want to try another
 way to break such goddamn infinite loop.
 
-## Goal ##
+## Goal
 
 1. Simple scripts to mantain/modify
 2. Less manual operation while installing
 3. Make integrated key-binding while using many programming tools
 4. Main key-bindings are vi-like
 
-## Include ##
+## Include
 
 tmux
 git
 bash
 (still adding)
 
-## Platform ##
+## Platform
 
 Ubuntu 18.04
 
-## Usage ##
+## Usage
 
-### Install All ###
+### Install All
 
 Execute `install.sh`
 
-### Partial Install ###
+### Manual Install
 
 1. Set environment
 
-```
-source core/env.sh`
+```bash=
+. core/env.sh
 init_env
 ```
 
-2. Choose which application you want to install. For example
+2. Choose the application you want. For example
 
-```
-source lib/git.sh
+```bash=
+. lib/git.sh
 install
 ```
 
-## Notice ##
+## Notice
 
 Still on progress, many works needed to do.
