@@ -96,46 +96,43 @@ let g:cpp_class_decl_highlight = 1
 " e.g. let g:fzf_command_prefix = 'Fzf' and you have FzfFiles, etc.
 let g:fzf_command_prefix = 'Fzf'
 
-" Plugin: ALE
-let g:ale_disable_lsp = 1
-
 " Plugin: coc
 
 " Plugin: coc-explorer
 let g:coc_explorer_global_presets = {
-\   '.nvim': {
+\   'open.nvim': {
 \     'root-uri': '~/.config/nvim',
 \     'position': 'floating',
 \     'floating-width': 50,
 \     'open-action-strategy': 'sourceWindow',
 \   },
-\   'tab-view': {
+\   'tabview': {
 \     'position': 'tab',
 \     'quit-on-open': v:true,
 \   },
-\   'floating': {
+\   'center': {
 \     'position': 'floating',
 \     'floating-width': 50,
 \     'open-action-strategy': 'sourceWindow',
 \   },
-\   'floatingTop': {
+\   'top': {
 \     'position': 'floating',
 \     'floating-position': 'center-top',
 \     'open-action-strategy': 'sourceWindow',
 \   },
-\   'floatingLeftside': {
+\   'left': {
 \     'position': 'floating',
 \     'floating-position': 'left-center',
 \     'floating-width': 40,
 \     'open-action-strategy': 'sourceWindow',
 \   },
-\   'floatingRightside': {
+\   'right': {
 \     'position': 'floating',
 \     'floating-position': 'right-center',
 \     'floating-width': 40,
 \     'open-action-strategy': 'sourceWindow',
 \   },
-\   'leftsideBar': {
+\   'fixLeft': {
 \     'width': 30,
 \     'file-child-template': '[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1]'
 \   }

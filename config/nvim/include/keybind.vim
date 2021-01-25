@@ -251,9 +251,8 @@ nmap <silent> gr <Plug>(coc-references)
 " | .   | Toggle hidden            |
 " | *   | select                   |
 " |-----+--------------------------|
-nmap <space>en :CocCommand explorer --preset .nvim<CR>
-nmap <space>ef :CocCommand explorer --preset floating<CR>
-nmap <space>ee :CocCommand explorer --preset leftsideBar<CR>
+nmap <space>en :CocCommand explorer --preset open.nvim<CR>
+nmap <space>ef :CocCommand explorer --preset center<CR>
 nmap <space>el :CocList explPresets<CR>
 
 " Plugin: coc-clangd
