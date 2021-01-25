@@ -19,6 +19,15 @@ has_cmd()
 		return $BAD
 }
 
+has_these_cmds()
+{
+    local LIST="$1"
+    for CMD in $LIST; do
+        has_cmd $CMD || return 1
+    done
+    return 0
+}
+
 setup_version()
 {
 	local -r LINK=$1
@@ -76,4 +85,11 @@ to_abs_path()
 {
 	local -r SRC_PATH=$1
 	[[ -z "$SRC_PATH" ]] || echo $(pwd)/$SRC_PATH
+}
+
+show_err()
+{
+    local ARG="$1"
+    local CONTENT="$2"
+    echo $ARG $CONTENT >&2
 }
