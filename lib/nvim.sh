@@ -99,12 +99,12 @@ config_coc_plugin()
 {
 	local -r NPM_PACKAGES="
 		coc-html
+		coc-xml
 		coc-json
-		coc-python
+		coc-pyright
 		coc-vimlsp
 		coc-sh
 		coc-markdownlint
-		coc-xml
 		coc-highlight
 		coc-yank
 		coc-lists
@@ -112,6 +112,10 @@ config_coc_plugin()
 	"
 
 	local -r EXT_DIR="$HOME/.config/coc/extensions"
+
+    # for lsp server
+    # sudo npm install -g bash-language-server
+    # sudo npm install -g vim-language-server
 
 	[ -e $EXT_DIR ] || mkdir -p $EXT_DIR
 
