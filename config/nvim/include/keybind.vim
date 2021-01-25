@@ -119,7 +119,7 @@ map n <Plug>(is-nohl)<Plug>(anzu-n-with-echo)
 map N <Plug>(is-nohl)<Plug>(anzu-N-with-echo)
 
 " Plugin: Vista.vim
-nnoremap <Leader>= :Vista!!<CR>
+nnoremap <F2> :Vista!!<CR>
 
 " Plugin: fzf
 nnoremap <Leader>fb :FzfBuffers<CR>
