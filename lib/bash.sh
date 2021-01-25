@@ -22,24 +22,37 @@ config_package()
 
     local USR_BASH_DIR="$USR_CONFIG_DIR/$BASH"
     local BASHRC="$HOME/.bashrc"
-    local BASH_COMPLETION="/etc/profile.d/bash_completion.sh"
-    local INITRC="init.bash"
-    local CMD=''
-    local SRC=''
+    local DIR FILE
+    local LIST
+    local CMD SRC
 
     pushd $HOME
+
+    DIR=bin
+    [ ! -d $DIR ] && {
+        echo "Create $DIR folder"
+        mkdir $DIR
+    }
+
+    LIST="$(ls $SHELL_BIN_DIR/*)"
+    for BIN in "$LIST"; do
+        create_link $BIN $DIR/$BIN
+    done
+
     [ -e $USR_BASH_DIR ] || mkdir $USR_BASH_DIR
 
-    [ -f $BASHRC ] || cp /etc/skel/.bashrc $BASHRC
-    SRC=$BASH_DIR
-    create_link $SRC/bash_aliases .bash_aliases
-    create_link $SRC/bash_completion .bash_completion
+    FILE='/etc/skel/.bashrc'
+    [ -f $BASHRC ] || cp $FILE $BASHRC
 
-    CMD=". $BASH_COMPLETION"
+    create_link $BASH_DIR/bash_aliases .bash_aliases
+    create_link $BASH_DIR/bash_completion .bash_completion
+
+    FILE="/etc/profile.d/bash_completion.sh"
+    CMD=". $FILE"
     grep -wq "^$CMD" $BASHRC ||\
         add_with_sig "$CMD" "$BASHRC" "$BASH"
 
-    CMD=". $USR_BASH_DIR/$INITRC"
+    CMD=". $USR_BASH_DIR/init.bash"
     grep -wq "^$CMD" $BASHRC ||\
         add_with_sig "$CMD" "$BASHRC" "$BASH"
     popd
@@ -47,8 +60,7 @@ config_package()
     local ALIAS_DIR='alias'
     local COMPLETION_DIR='completion'
     pushd $USR_BASH_DIR
-    SRC=$BASH_DIR
-    create_link $SRC/init.bash .
+    create_link $BASH_DIR/init.bash .
 
     [ -e $ALIAS_DIR ] || mkdir $ALIAS_DIR
     pushd $ALIAS_DIR

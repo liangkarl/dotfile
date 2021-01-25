@@ -7,6 +7,7 @@ init_env()
     SHELL_LIB_DIR="$WHERE/lib"
     SHELL_CONFIG_DIR="$WHERE/config"
     SHELL_CORE_DIR="$WHERE/core"
+    SHELL_BIN_DIR="$WHERE/bin"
 
     USR_CONFIG_DIR="$HOME/.config"
 }
