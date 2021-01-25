@@ -1,26 +1,33 @@
 #!/bin/bash
 
-# source $SHELL_CORE_DIR/utils.sh
+source $SHELL_CORE_DIR/utils.sh
 # source $SHELL_CORE_DIR/sign.sh
 
-XXXX_NAME='xxxx'
-XXXX_DIR="$SHELL_CONFIG_DIR/$XXXX_NAME"
+XXXX='xxxx'
+XXXX_DIR="$SHELL_CONFIG_DIR/$XXXX"
 
 install()
 {
-        echo "Install $XXXX_NAME..."
-        echo "Not finished yet..."
-        # config_package
+	local NEED_PACK='
+
+	'
+	has_these_cmds "$NEED_PACK" || {
+		show_err "Incompleted installization of $NEED_PACK"
+		return
+	}
+	echo "Install $XXXX..."
+	echo "Not finished yet..."
+	# config_package
 }
 
 uninstall()
 {
-        echo "Remove $XXXX_NAME..."
-        echo "Not finished yet..."
+	echo "Remove $XXXX..."
+	echo "Not finished yet..."
 }
 
 config_package()
 {
-        echo "Config $XXXX_NAME..."
-        echo "Not finished yet..."
+	echo "Config $XXXX..."
+	echo "Not finished yet..."
 }
