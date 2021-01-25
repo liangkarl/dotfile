@@ -55,8 +55,6 @@ let g:vista_sidebar_width = 40
 " Plugin: Startify
 " Show startify when there is no opened buffers
 autocmd BufDelete * if empty(filter(tabpagebuflist(), '!buflisted(v:val)')) && bufname() == "" | Startify | endif
-" Auto-open startify when closing all buffers
-autocmd BufEnter * if bufname() == "" && len(tabpagebuflist()) == 1 | Startify | endif
 
 " Plugin: vim-clang-format
 
