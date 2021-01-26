@@ -35,14 +35,14 @@ Plug 'mhinz/vim-startify'
 " Theme
 Plug 'morhetz/gruvbox'
 " Show status line
+" NOTE: vim-airline is too slow
 Plug 'itchyny/lightline.vim'
 Plug 'mengelbrecht/lightline-bufferline'
-" Plug 'vim-airline/vim-airline'
-" Plug 'vim-airline/vim-airline-themes'
 " Function manager
 Plug 'liuchengxu/vista.vim'
 " git support
-" Plug 'airblade/vim-gitgutter'
+" NOTE: vim-gitgutter is too slow
+Plug 'mhinz/vim-signify'
 " Neomake is a plugin for Vim/Neovim to asynchronously run programs.
 " Plug 'neomake/neomake'
 " File explorer (and dependecy)
@@ -68,13 +68,15 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'editorconfig/editorconfig-vim'
 
 " 2.2 Display
-" Show bookmark codes near by line number
-" Plug 'kshenoy/vim-signature'
-" Highlit current words
+" | Plug                  | Desc                                          |
+" |-----------------------+-----------------------------------------------|
+" | vim-markbar           | Show bookmarks. PS. vim-signature is too slow |
+" | vim_current_word      | Highlit current words                         |
+" | vim-better-whitespace | Show trailing space                           |
+" | vim-matchup           | Enhance '%' matchup, like if-endif, etc       |
+Plug 'Yilin-Yang/vim-markbar'
 Plug 'dominikduda/vim_current_word'
-" Show trailing space
 Plug 'ntpeters/vim-better-whitespace'
-" Enhance '%' matchup function, like if-endif, etc
 Plug 'andymass/vim-matchup'
 
 " 2.3 Text Operation
