@@ -3,8 +3,8 @@
 source $SHELL_CORE_DIR/utils.sh
 source $SHELL_CORE_DIR/sign.sh
 
-BASH_NAME='bash'
-BASH_DIR="$SHELL_CONFIG_DIR/$BASH_NAME"
+BASH='bash'
+BASH_DIR="$SHELL_CONFIG_DIR/$BASH"
 
 install()
 {
@@ -13,42 +13,54 @@ install()
 
 uninstall()
 {
-	echo "Remove $BASH_NAME..."
+	echo "Remove $BASH..."
 }
 
 config_package()
 {
-    echo "Config $BASH_NAME..."
+    echo "Config $BASH..."
 
-    local -r USR_BASH_DIR="$USR_CONFIG_DIR/$BASH_NAME"
-    local -r BASHRC="$HOME/.bashrc"
-    local -r BASH_COMPLETION="/etc/profile.d/bash_completion.sh"
-    local -r INITRC="init.bash"
-    local LOAD_CMD=''
-    local SRC=''
+    local USR_BASH_DIR="$USR_CONFIG_DIR/$BASH"
+    local BASHRC="$HOME/.bashrc"
+    local DIR FILE
+    local LIST
+    local CMD SRC
 
     pushd $HOME
+
+    DIR=bin
+    [ ! -d $DIR ] && {
+        echo "Create $DIR folder"
+        mkdir $DIR
+    }
+
+    LIST="$(ls $SHELL_BIN_DIR/*)"
+    for BIN in "$LIST"; do
+        create_link $BIN $DIR/$BIN
+    done
+
     [ -e $USR_BASH_DIR ] || mkdir $USR_BASH_DIR
 
-    [ -f $BASHRC ] || cp /etc/skel/.bashrc $BASHRC
-    SRC=$BASH_DIR
-    create_link $SRC/bash_aliases .bash_aliases
-    create_link $SRC/bash_completion .bash_completion
+    FILE='/etc/skel/.bashrc'
+    [ -f $BASHRC ] || cp $FILE $BASHRC
 
-    LOAD_CMD=". $BASH_COMPLETION"
-    grep -wq "^$LOAD_CMD" $BASHRC ||\
-        add_with_sig "$LOAD_CMD" "$BASHRC" "$BASH_NAME"
+    create_link $BASH_DIR/bash_aliases .bash_aliases
+    create_link $BASH_DIR/bash_completion .bash_completion
 
-    LOAD_CMD=". $USR_BASH_DIR/$INITRC"
-    grep -wq "^$LOAD_CMD" $BASHRC ||\
-        add_with_sig "$LOAD_CMD" "$BASHRC" "$BASH_NAME"
+    FILE="/etc/profile.d/bash_completion.sh"
+    CMD=". $FILE"
+    grep -wq "^$CMD" $BASHRC ||\
+        add_with_sig "$CMD" "$BASHRC" "$BASH"
+
+    CMD=". $USR_BASH_DIR/init.bash"
+    grep -wq "^$CMD" $BASHRC ||\
+        add_with_sig "$CMD" "$BASHRC" "$BASH"
     popd
 
-    local -r ALIAS_DIR='alias'
-    local -r COMPLETION_DIR='completion'
+    local ALIAS_DIR='alias'
+    local COMPLETION_DIR='completion'
     pushd $USR_BASH_DIR
-    SRC=$BASH_DIR
-    create_link $SRC/init.bash .
+    create_link $BASH_DIR/init.bash .
 
     [ -e $ALIAS_DIR ] || mkdir $ALIAS_DIR
     pushd $ALIAS_DIR
@@ -64,5 +76,6 @@ config_package()
     popd
     popd # $USR_BASH_DIR
 
-    sudo dpkg-reconfigure dash
+    CMD=$(ls -l /bin/sh | awk -F'->' '{print $2}' | xargs)
+    [ "$CMD" != $BASH ] && sudo dpkg-reconfigure dash
 }

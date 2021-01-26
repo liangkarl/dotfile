@@ -1,33 +1,21 @@
 #!/bin/bash
 
-# TODO:
-# Need to implement 'ccls', 'bear', 'others'
-declare -r INSTALL_PACKAGES_LIST=(
-        'tmux'
-        'git'
-        'bash'
-        'nvim'
-)
-
-install_packages()
+install_full_list()
 {
-        local LEN=${#INSTALL_PACKAGES_LIST[@]}
-        local PACKAGE_NAME=
+    local INS_LIST=('tmux' 'git' 'bash' 'nvim')
 
-        for((i = 0; i < LEN; i++)); do
-                PACKAGE_NAME=${INSTALL_PACKAGES_LIST[$i]}
-                echo "Install $((i+1)) : $PACKAGE_NAME"
-                load_and_install_package $PACKAGE_NAME
-        done
+    for NAME in ${INS_LIST[@]}; do
+        echo "Install: $NAME"
+        install_package $NAME
+    done
 }
 
-load_and_install_package()
+install_package()
 {
-        local -r PACKAGE_NAME=$1
-        local LIB_SCRIPT=$SHELL_LIB_DIR/${1}.sh
-        (
-                echo "Load \"$PACKAGE_NAME\" script"
-                source $LIB_SCRIPT &&
-                        install
-        )
+    local LIB_SCRIPT=$SHELL_LIB_DIR/${1}.sh
+    (
+        echo "Load $LIB_SCRIPT"
+        source $LIB_SCRIPT &&
+            install
+    )
 }
