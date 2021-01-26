@@ -45,7 +45,8 @@ inoremap <A-w> <C-Right>
 
 " Open terminal
 " PS. you can use the terminal as debug console
-nnoremap <F3> :FloatermToggle<CR>
+nnoremap <silent><F3> :FloatermToggle<CR>
+tnoremap <silent><F3> <C-\><C-N>:FloatermToggle<CR>
 
 " To use `ALT+{h,j,k,l}` to navigate windows from any mode:
 " tnoremap <A-h> <C-\><C-N><C-w>h
@@ -146,7 +147,7 @@ nnoremap <Leader>fm :FzfMarks<CR>
 " | ins col  |   <Leader>tic  |
 " | tableize | Tableize/[sep] |
 " |----------+----------------|
-nnoremap <Leader>tt :TableModeToggle<CR>
+nnoremap <Leader>tg :TableModeToggle<CR>
 " Realigned text-table
 nnoremap <Leader>tr :TableModeRealign<CR>
 " Tableize
