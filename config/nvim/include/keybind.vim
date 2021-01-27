@@ -22,8 +22,12 @@ vnoremap < <gv
 " map Leader
 let mapleader = ' '
 
+" FIXME: workaround for invisible cursor
+" nnoremap <silent> <Leader>cu :set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
+nnoremap <silent> <Leader>cu :set guicursor=n-v-c:block-Cursor<CR>
+
 " Reload vim config
-nnoremap <silent><Leader>so :so $MYVIMRC<CR>
+nnoremap <Leader>so :so $MYVIMRC<CR>:echo "Reload nvim config"<CR>
 nnoremap <Leader>cwf :echo expand('%:p')<CR>
 nnoremap <Leader>cwd :pwd<CR>
 " Change the directory only for the current window
@@ -152,6 +156,12 @@ nnoremap <silent><Leader>tg :TableModeToggle<CR>
 nnoremap <silent><Leader>tr :TableModeRealign<CR>
 " Tableize
 noremap <Leader>tz :Tableize/,
+
+" Plugin: vim-marker
+nmap <Leader>mm <Plug>ToggleMarkbar
+" the following are unneeded if ToggleMarkbar is mapped
+nmap <Leader>mo <Plug>OpenMarkbar
+nmap <Leader>mc <Plug>CloseMarkbar
 
 " Plugin: Commentary
 " Toggle comment
