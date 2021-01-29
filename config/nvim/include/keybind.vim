@@ -126,6 +126,11 @@ map N <Plug>(is-nohl)<Plug>(anzu-N-with-echo)
 " Plugin: Vista.vim
 nnoremap <silent><F2> :Vista!!<CR>
 
+" Plugin: quick-scope
+nmap <leader>q <plug>(QuickScopeToggle)
+xmap <leader>q <plug>(QuickScopeToggle)
+let g:qs_buftype_blacklist = ['terminal', 'nofile']
+
 " Plugin: fzf
 nnoremap <Leader>fb :FzfBuffers<CR>
 " Recently open file
