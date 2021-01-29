@@ -14,13 +14,10 @@ function! NearestMethodOrFunction() abort
 endfunction
 set statusline+=%{NearestMethodOrFunction()}
 
-" By default vista.vim never run if you don't call it explicitly.
-"
-" If you want to show the nearest function in your statusline automatically,
-" you can add the following line to your vimrc
+" Show the nearest function in your statusline automatically,
 autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
 
-" Ensure you have installed some decent font to show these pretty symbols, then you can enable icon for the kind.
+" Show those pretty symbols.
 let g:vista#renderer#enable_icon = 1
 
 " The default icons can't be suitable for all the filetypes, you can extend it as you wish.
@@ -49,26 +46,21 @@ let g:vista_executive_for = {
 \	'python': 'coc'
 \  }
 
-" let g:vista_icon_indent = ['╰─🞂 ', '├─🞂 ']
 let g:vista_sidebar_width = 40
 
 " Plugin: Startify
 " Show startify when there is no opened buffers
 autocmd BufDelete * if empty(filter(tabpagebuflist(), '!buflisted(v:val)')) && bufname() == "" | Startify | endif
 
-" Plugin: vim-clang-format
-
 " Plugin: editorconfig
 let g:EditorConfig_exclude_patterns = ['fugitive://.*', 'scp://.*']
 au FileType gitcommit let b:EditorConfig_disable = 1
 
-" Plugin: vim_current_word
-" The word under cursor:
-let g:vim_current_word#highlight_current_word = 1
-" Enable/disable highlighting only in focused window:
-let g:vim_current_word#highlight_only_in_focused_window = 1
-" Enable/disable plugin:
-let g:vim_current_word#enabled = 1
+" Plugin: vim-ccls
+let g:ccls_levels = 1
+let g:ccls_size = 50
+let g:ccls_position = 'botright'
+let g:ccls_orientation = 'horizontal'
 
 " Plugin: auto-pairs
 " Avoid conflict with edit motion"
@@ -92,8 +84,6 @@ let g:cpp_class_decl_highlight = 1
 " Plugin: fzf - fuzzy finder
 " e.g. let g:fzf_command_prefix = 'Fzf' and you have FzfFiles, etc.
 let g:fzf_command_prefix = 'Fzf'
-
-" Plugin: coc
 
 " Plugin: coc-explorer
 let g:coc_explorer_global_presets = {
