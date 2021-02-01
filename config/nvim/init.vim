@@ -5,7 +5,6 @@ source ~/.config/nvim/include/keybind.vim
 set number
 " show the cursor position all the time
 set ruler
-set cursorline
 " display incomplete commands
 set showcmd
 " Close a split window in Vim without resizing other windows
@@ -46,3 +45,7 @@ if (has("termguicolors"))
 endif
 
 colorscheme gruvbox
+
+hi cursorline cterm=underline ctermbg=NONE
+hi cursorline gui=underline guibg=NONE guifg=BURLYWOOD
+set cursorline
