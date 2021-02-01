@@ -69,11 +69,17 @@ let g:AutoPairsShortcutBackInsert = '<M-B>'
 " Plugin: vim-commentary
 au FileType c,cpp,cc,h setlocal commentstring=//\ %s
 
+" Plugin: quick-scope
+" Create black list for QS
+let g:qs_buftype_blacklist = ['terminal', 'nofile']
+
 " Plugin: vim-better-whitespace
 " To strip white lines at the end of the file when stripping whitespace
 let g:strip_whitelines_at_eof=1
 " To highlight space characters that appear before or in-between tabs
 " let g:show_spaces_that_precede_tabs=1
+" Disable showing trailing white space in coc-explorer
+autocmd User CocExplorerOpenPre DisableWhitespace
 
 " Plugin: vim-lsp-cxx-highlight
 " c++ syntax highlighting
@@ -124,11 +130,3 @@ let g:coc_explorer_global_presets = {
 \     'file-child-template': '[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1]'
 \   }
 \ }
-
-""" Optimization start
-" Disable showing trailing white space in coc-explorer
-autocmd User CocExplorerOpenPre DisableWhitespace
-autocmd TermEnter :let b:vim_current_word_disabled_in_this_buffer = 1
-autocmd TermOpen :let b:vim_current_word_disabled_in_this_buffer = 1
-
-""" Optimization end
