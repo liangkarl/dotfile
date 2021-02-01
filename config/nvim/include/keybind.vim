@@ -270,6 +270,7 @@ nmap <silent> gr <Plug>(coc-references)
 " |-----+--------------------------|
 nmap <silent><space>en :CocCommand explorer --preset open.nvim<CR>
 nmap <silent><space>ef :CocCommand explorer --preset center<CR>
+nmap <silent><space>eb :CocCommand explorer --preset buffer<CR>
 nmap <silent><space>el :CocList explPresets<CR>
 
 " Plugin: coc-clangd

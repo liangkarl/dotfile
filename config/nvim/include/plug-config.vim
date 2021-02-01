@@ -93,40 +93,59 @@ let g:fzf_command_prefix = 'Fzf'
 
 " Plugin: coc-explorer
 let g:coc_explorer_global_presets = {
+\   'buffer': {
+\     'position': 'floating',
+\     'floating-width': 80,
+\     'floating-height': 20,
+\     'sources': [{'name': 'buffer', 'expand': v:true}],
+\   },
 \   'open.nvim': {
 \     'root-uri': '~/.config/nvim',
 \     'position': 'floating',
 \     'floating-width': 50,
 \     'open-action-strategy': 'sourceWindow',
-\   },
-\   'tabview': {
-\     'position': 'tab',
-\     'quit-on-open': v:true,
+\     'file-child-template':'[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1][modified][readonly growRight 1 omitCenter 5][size]',
+\     'sources': [{'name': 'file', 'expand': v:true}],
 \   },
 \   'center': {
 \     'position': 'floating',
 \     'floating-width': 50,
 \     'open-action-strategy': 'sourceWindow',
+\     'file-child-template':'[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1][modified][readonly growRight 1 omitCenter 5][size]',
+\     'sources': [{'name': 'file', 'expand': v:true}],
+\   },
+\   'tabview': {
+\     'position': 'tab',
+\     'quit-on-open': v:true,
+\     'file-child-template':'[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1][modified][readonly growRight 1 omitCenter 5][size]',
+\     'sources': [{'name': 'file', 'expand': v:true}],
 \   },
 \   'top': {
 \     'position': 'floating',
 \     'floating-position': 'center-top',
 \     'open-action-strategy': 'sourceWindow',
-\   },
-\   'left': {
-\     'position': 'floating',
-\     'floating-position': 'left-center',
-\     'floating-width': 40,
-\     'open-action-strategy': 'sourceWindow',
+\     'file-child-template':'[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1][modified][readonly growRight 1 omitCenter 5][size]',
+\     'sources': [{'name': 'file', 'expand': v:true}],
 \   },
 \   'right': {
 \     'position': 'floating',
 \     'floating-position': 'right-center',
 \     'floating-width': 40,
 \     'open-action-strategy': 'sourceWindow',
+\     'file-child-template':'[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1][modified][readonly growRight 1 omitCenter 5][size]',
+\     'sources': [{'name': 'file', 'expand': v:true}],
 \   },
-\   'fixLeft': {
+\   'left': {
+\     'position': 'floating',
+\     'floating-position': 'left-center',
+\     'floating-width': 40,
+\     'open-action-strategy': 'sourceWindow',
+\     'file-child-template':'[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1][modified][readonly growRight 1 omitCenter 5][size]',
+\     'sources': [{'name': 'file', 'expand': v:true}],
+\   },
+\   'leftFix': {
 \     'width': 30,
-\     'file-child-template': '[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1]'
-\   }
+\     'file-child-template':'[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1][modified][readonly growRight 1 omitCenter 5][size]',
+\     'sources': [{'name': 'file', 'expand': v:true}],
+\   },
 \ }
