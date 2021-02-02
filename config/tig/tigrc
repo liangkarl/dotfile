@@ -4,4 +4,13 @@
 set commit-order = default
 set main-view-commit-title-graph = v1
 
+# Addjust the column width of author
 set main-view = line-number:no,interval=5 id:no date:default author:full,maxwidth=20 commit-title:yes,graph,refs,overflow=no
+
+bind status D ?git checkout %(file)
+
+# NOTE:
+# `git stash save "stash name"` is deprecated at git 2.16
+# and replaced by `git stash push -m "stash name"`
+bind status P ?git stash save "%(prompt)"
+bind status p ?git stash save "%(prompt)" %(file)
