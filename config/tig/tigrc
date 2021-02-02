@@ -14,3 +14,7 @@ bind status D ?git checkout %(file)
 # and replaced by `git stash push -m "stash name"`
 bind status P ?git stash save "%(prompt)"
 bind status p ?git stash save "%(prompt)" %(file)
+bind status A ?git commit --amend
+
+bind refs F ?git fetch . HEAD:%(branch)
+bind refs M ?git merge %(branch)
