@@ -36,8 +36,7 @@ Execute `install.sh`
 1. Set environment
 
 ```bash=
-. core/env.sh
-init_env
+. manual.sh
 ```
 
 2. Choose the application you want. For example
@@ -49,4 +48,4 @@ install
 
 ## Notice
 
-Still on progress, many works needed to do.
+Still on progress, many bugs, many works needed to do.
