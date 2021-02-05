@@ -2,8 +2,7 @@
 
 . $SHELL_CORE_DIR/utils.sh
 
-install_full_list()
-{
+install_full_list() {
     local INS_LIST
 
     INS_LIST=('tmux' 'git' 'bash' 'nvim' 'pack-repos')
@@ -17,8 +16,7 @@ install_full_list()
     echo "install all packages"
 }
 
-install_from_script()
-{
+install_from_script() {
     local LIB_SCRIPT
 
     LIB_SCRIPT=$SHELL_LIB_DIR/${1}.sh
