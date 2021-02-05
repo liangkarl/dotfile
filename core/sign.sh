@@ -2,13 +2,16 @@
 
 add_with_sig()
 {
-    local -r NOTE='GEN-BY-SCRIPT'
-    local -r CONTENT=$1
-    local -r FILE=$2
-    local -r BY_WHO=${3:-sigh.sh}
-    local -r DATE=$(date -I'date')
-    local -r USR_STAMP="# $USER|$BY_WHO|$NOTE"
-    local -r TIME_STAMP="# $DATE created"
+    local NOTE CONTENT FILE BY_WHO DATE USR_STAMP TIME_STAMP
+    local SIGNED_STAMP
+
+    NOTE='GEN-BY-SCRIPT'
+    CONTENT=$1
+    FILE=$2
+    BY_WHO=${3:-sigh.sh}
+    DATE=$(date -I'date')
+    USR_STAMP="# $USER|$BY_WHO|$NOTE"
+    TIME_STAMP="# $DATE created"
 
     # Default format:
     # # $USER|$BY_WHO|$NOTE
@@ -16,6 +19,6 @@ add_with_sig()
     # added content here
     #
     # Assume $USER is from shell environment
-    local -r SIGNED_STAMP="\n${USR_STAMP}\n${TIME_STAMP}\n${CONTENT}\n"
+    SIGNED_STAMP="\n${USR_STAMP}\n${TIME_STAMP}\n${CONTENT}\n"
     echo -e "$SIGNED_STAMP" >> $FILE
 }

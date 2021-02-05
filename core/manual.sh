@@ -1,6 +1,11 @@
-WHERE="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)}"
+__manual_install__() {
+    local CORE_DIR
 
-. $WHERE/env.sh
-init_env
+    CORE_DIR="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)}"
 
-unset WHERE
+    . $CORE_DIR/env.sh
+    init_env
+}
+
+__manual_install__
+unset __manual_install__

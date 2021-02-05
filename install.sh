@@ -1,15 +1,17 @@
 #!/bin/bash
 
-## Load environment variables
-ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-source $ROOT/core/env.sh
+__install__() {
+    local ROOT
 
-# prepare basic functions
-init_env $ROOT
+    SHELL_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+    source $SHELL_DIR/core/env.sh
+    source $SHELL_DIR/core/installer.sh
 
-## Install packages
-# Load package libraries
-source $CORE_DIR/installer.sh
+    # prepare basic functions
+    init_env $SHELL_DIR
 
-# Install package
-install_full_list
+    # Install package
+    install_full_list
+}
+
+__install__

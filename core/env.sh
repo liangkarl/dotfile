@@ -1,13 +1,18 @@
 #!/bin/bash
 
-init_env()
-{
-    local WHERE="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. >/dev/null 2>&1 && pwd)}"
+init_env() {
+    local DEFAULT DIR
 
-    SHELL_LIB_DIR="$WHERE/lib"
-    SHELL_CONFIG_DIR="$WHERE/config"
-    SHELL_CORE_DIR="$WHERE/core"
-    SHELL_BIN_DIR="$WHERE/bin"
+    DEFAULT="$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. >/dev/null 2>&1 && pwd)"
+    DIR="${1:-$DEFAULT}"
+
+    SHELL_LIB_DIR="$DIR/lib"
+    SHELL_CONFIG_DIR="$DIR/config"
+    SHELL_CORE_DIR="$DIR/core"
+    SHELL_BIN_DIR="$DIR/bin"
 
     USR_CONFIG_DIR="$HOME/.config"
+
+    GOOD=0
+    BAD=1
 }
