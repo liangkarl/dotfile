@@ -25,15 +25,15 @@ config_package() {
     goto $HOME
 
     DIR=bin
-    [ ! -d $DIR ] && {
-        echo "Create $DIR folder"
+    [ ! -d $DIR ] &&
         mkdir $DIR
-    }
 
+    goto $DIR
     LIST="$(ls $SHELL_BIN_DIR/*)"
-    for BIN in "$LIST"; do
-        link $BIN $DIR/$BIN
+    for BIN in $LIST; do
+        link $BIN .
     done
+    back
 
     [ -e $USR_BASH_DIR ] || mkdir $USR_BASH_DIR
 

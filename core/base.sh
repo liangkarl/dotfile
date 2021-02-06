@@ -12,6 +12,7 @@ init_env() {
     SHELL_BIN_DIR="$DIR/bin"
 
     HOME_CONFIG_DIR="$HOME/.config"
+    HOME_BIN_DIR="$HOME/bin"
 
     GOOD=0
     BAD=1

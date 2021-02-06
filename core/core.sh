@@ -17,6 +17,18 @@ link() {
     SRC="$1"
     DST="$2"
 
+    [ "$DST" == . ] && {
+        DST=$(pwd)/$(basename $SRC)
+    }
+
+    end_with_slash "$DST" && {
+        DST+=$(basename $SRC)
+    }
+
+    is_abs_path "$DST" || {
+        DST=$(pwd)/$DST
+    }
+
     [ -e $DST ] && {
         show_hint "$DST is existed"
         return
@@ -95,17 +107,20 @@ get_deb_from_github() {
 }
 
 is_abs_path() {
-    local TEST_PATH
-    TEST_PATH="$1"
-    [ "$TEST_PATH" == /* ] &&
+    # double [[]] for wildcard
+    [[ "$@" == /* ]] &&
+        return $GOOD ||
+        return $BAD
+}
+
+end_with_slash() {
+    [[ "$@" == */ ]] &&
         return $GOOD ||
         return $BAD
 }
 
 to_abs_path() {
-    local SRC_PATH
-    SRC_PATH="$1"
-    [ -z "$SRC_PATH" ] || echo $(pwd)/$SRC_PATH
+    [ -z "$@" ] || echo $(pwd)/$@
 }
 
 show_err() {

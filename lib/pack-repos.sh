@@ -41,17 +41,30 @@ install_yarn_from_npm()
 
 install_brew_from_github()
 {
-	local NEED_CMD='curl wget file git'
+	local NEED_CMD
+    local HOMEBREW
+    NEED_CMD='curl wget file git'
     has_these_cmds "$NEED_CMD" || {
         show_err "$(info_req_cmd $NEED_CMD)"
         return
     }
-	sudo apt-get install build-essential
+	sudo apt install build-essential
 
-	git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew
-	mkdir ~/.linuxbrew/bin
-	ln -s ~/.linuxbrew/Homebrew/bin/brew ~/.linuxbrew/bin
-	eval $(~/.linuxbrew/bin/brew shellenv)
+    HOMEBREW=$HOME/.linuxbrew
+    [ ! -e $HOMEBREW ] &&
+        mkdir $HOMEBREW
+
+    goto $HOMEBREW
+    [ ! -e Homebrew ] &&
+        git clone https://github.com/Homebrew/brew Homebrew
+    back
+
+    [ ! -e $HOME_BIN_DIR ] &&
+        mkdir $HOME_BIN_DIR
+    goto $HOME_BIN_DIR
+    link $HOMEBREW/Homebrew/bin/brew .
+    back
+	eval $(brew shellenv)
 }
 
 install()
@@ -86,7 +99,7 @@ install()
             echo "Install $NAME from $SRC failed">&2
         done
 
-        has_cmd $NAME || echo "No way to install $NAME">&2
+        has_cmd $NAME || show_err "No way to install $NAME">&2
     done
 }
 
