@@ -156,6 +156,10 @@ info_installed() {
     echo "already installed: $@"
 }
 
+info_install_failed() {
+    echo "failed to install: $@"
+}
+
 add_with_sig()
 {
     local NOTE CONTENT FILE BY_WHO DATE USR_STAMP TIME_STAMP
