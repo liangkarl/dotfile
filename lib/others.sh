@@ -1,7 +1,6 @@
 #!/bin/bash
 
-source $SHELL_CORE_DIR/utils.sh
-# source $SHELL_CORE_DIR/sign.sh
+source $SHELL_CORE_DIR/core.sh
 
 OTHERS_NAME='others'
 OTHERS_CONFIG="$SHELL_CONFIG_DIR/$OTHERS_NAME"

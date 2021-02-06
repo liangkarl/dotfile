@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $SHELL_CORE_DIR/utils.sh
+source $SHELL_CORE_DIR/core.sh
 
 ANDROID_NAME='android'
 ANDROID_CONFIG="$SHELL_CONFIG_DIR/$ANDROID_NAME"

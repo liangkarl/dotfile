@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $SHELL_CORE_DIR/utils.sh
+source $SHELL_CORE_DIR/core.sh
 
 NVIM='nvim'
 NVIM_DIR="$SHELL_CONFIG_DIR/$NVIM"
@@ -80,9 +80,9 @@ config_package() {
 	# link config
 	[ -e $HOME_CONFIG_DIR/$NVIM ] || return
 
-	create_link $NVIM_DIR $HOME_CONFIG_DIR
-	create_link $NVIM_DIR/editorconfig $HOME/.editorconfig
-	create_link $NVIM_DIR/clang-format.txt $HOME/.clang-format
+	link $NVIM_DIR $HOME_CONFIG_DIR
+	link $NVIM_DIR/editorconfig $HOME/.editorconfig
+	link $NVIM_DIR/clang-format.txt $HOME/.clang-format
 
     install_plug_vim
 

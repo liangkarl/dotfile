@@ -1,7 +1,6 @@
 #!/bin/bash
 
-source $SHELL_CORE_DIR/utils.sh
-source $SHELL_CORE_DIR/sign.sh
+source $SHELL_CORE_DIR/core.sh
 
 FASD_NAME='fasd'
 FASD_DIR="$SHELL_CONFIG_DIR/$FASD_NAME"

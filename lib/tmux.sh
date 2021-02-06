@@ -1,8 +1,7 @@
 #!/bin/bash
 # tmux installer script
 
-source $SHELL_CORE_DIR/utils.sh
-source $SHELL_CORE_DIR/sign.sh
+source $SHELL_CORE_DIR/core.sh
 
 TMUX='tmux'
 TMUX_DIR="$SHELL_CONFIG_DIR/$TMUX"
@@ -15,7 +14,7 @@ config_package() {
 
     pushd $HOME
     SRC=$TMUX_DIR
-    create_link $SRC/tmux.conf .tmux.conf
+    link $SRC/tmux.conf .tmux.conf
 
     # Add load command to bash_completion
     BASH_COMPL="$HOME/.bash_completion"
@@ -26,7 +25,7 @@ config_package() {
         TMUX_COMPL="$TMUX_DIR/completion_tmux"
 
         pushd $SRC
-        create_link $TMUX_COMPL .
+        link $TMUX_COMPL .
 
         LOAD_CMD="source $TMUX_COMPL\ncomplete -F _tmux tmux"
 

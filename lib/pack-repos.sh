@@ -1,7 +1,6 @@
 #!/bin/bash
 
-source $SHELL_CORE_DIR/utils.sh
-# source $SHELL_CORE_DIR/sign.sh
+source $SHELL_CORE_DIR/core.sh
 
 PACK_REPOS_NAME=('npm' 'yarn' 'pip' 'pip3' 'brew')
 

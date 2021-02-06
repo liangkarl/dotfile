@@ -1,7 +1,6 @@
 #!/bin/bash
 
-source $SHELL_CORE_DIR/utils.sh
-source $SHELL_CORE_DIR/sign.sh
+source $SHELL_CORE_DIR/core.sh
 
 BASH='bash'
 BASH_DIR="$SHELL_CONFIG_DIR/$BASH"
@@ -33,7 +32,7 @@ config_package() {
 
     LIST="$(ls $SHELL_BIN_DIR/*)"
     for BIN in "$LIST"; do
-        create_link $BIN $DIR/$BIN
+        link $BIN $DIR/$BIN
     done
 
     [ -e $USR_BASH_DIR ] || mkdir $USR_BASH_DIR
@@ -41,8 +40,8 @@ config_package() {
     FILE='/etc/skel/.bashrc'
     [ -f $BASHRC ] || cp $FILE $BASHRC
 
-    create_link $BASH_DIR/bash_aliases .bash_aliases
-    create_link $BASH_DIR/bash_completion .bash_completion
+    link $BASH_DIR/bash_aliases .bash_aliases
+    link $BASH_DIR/bash_completion .bash_completion
 
     FILE="/etc/profile.d/bash_completion.sh"
     CMD=". $FILE"
@@ -57,19 +56,19 @@ config_package() {
     local ALIAS_DIR='alias'
     local COMPLETION_DIR='completion'
     pushd $USR_BASH_DIR
-    create_link $BASH_DIR/init.bash .
+    link $BASH_DIR/init.bash .
 
     [ -e $ALIAS_DIR ] || mkdir $ALIAS_DIR
     pushd $ALIAS_DIR
     SRC="$BASH_DIR/$ALIAS_DIR"
-    create_link $SRC/alias_common .
-    create_link $SRC/alias_working .
+    link $SRC/alias_common .
+    link $SRC/alias_working .
     popd
 
     [ -e $COMPLETION_DIR ] || mkdir $COMPLETION_DIR
     pushd $COMPLETION_DIR
     SRC="$BASH_DIR/$COMPLETION_DIR"
-    #create_link $SRC/ .
+    #link $SRC/ .
     popd
     popd # $USR_BASH_DIR
 

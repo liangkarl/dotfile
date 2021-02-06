@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source $SHELL_CORE_DIR/utils.sh
+source $SHELL_CORE_DIR/core.sh
 
 GIT='git'
 GIT_DIR="$SHELL_CONFIG_DIR/$GIT"
@@ -28,6 +28,6 @@ config_package() {
     echo "Config $GIT..."
 
     pushd $HOME
-    create_link $GITCONFIG .gitconfig
+    link $GITCONFIG .gitconfig
     popd
 }
