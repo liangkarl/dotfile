@@ -19,6 +19,6 @@ add_with_sig()
     # added content here
     #
     # Assume $USER is from shell environment
-    SIGNED_STAMP="\n${USR_STAMP}\n${TIME_STAMP}\n${CONTENT}\n"
+    SIGNED_STAMP="\n${USR_STAMP}\n${TIME_STAMP}\n${CONTENT}"
     echo -e "$SIGNED_STAMP" >> $FILE
 }

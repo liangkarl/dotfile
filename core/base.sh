@@ -11,7 +11,7 @@ init_env() {
     SHELL_CORE_DIR="$DIR/core"
     SHELL_BIN_DIR="$DIR/bin"
 
-    USR_CONFIG_DIR="$HOME/.config"
+    HOME_CONFIG_DIR="$HOME/.config"
 
     GOOD=0
     BAD=1

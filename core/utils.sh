@@ -18,7 +18,7 @@ has_cmd() {
 has_these_cmds() {
     local LIST
 
-    LIST="$1"
+    LIST="$@"
     for CMD in $LIST; do
         has_cmd $CMD || return $BAD
     done
@@ -93,8 +93,34 @@ to_abs_path() {
 }
 
 show_err() {
-    local ARG CONTENT
-    ARG="$1"
-    CONTENT="$2"
-    echo $ARG $CONTENT >&2
+    local RED NC
+    RED='\033[1;31m'
+    NC='\033[0m' # No Color
+    echo -e "${RED}$@${NC}" >&2
+}
+
+show_hint() {
+    local RED NC
+    YELLOW='\033[1;33m'
+    NC='\033[0m' # No Color
+    echo -e "${YELLOW}$@${NC}"
+}
+
+show_good() {
+    local RED NC
+    GREEN='\033[1;32m'
+    NC='\033[0m' # No Color
+    echo -e "${GREEN}$@${NC}"
+}
+
+info_req_cmd() {
+    if [ $# -gt 1 ]; then
+        echo "failed to find one or more these commands: $@"
+    else
+        echo "failed to find the command: $@"
+    fi
+}
+
+info_installed() {
+    echo "already installed: $@"
 }

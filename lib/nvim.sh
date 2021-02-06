@@ -2,12 +2,8 @@
 
 source $SHELL_CORE_DIR/utils.sh
 
-NVIM_NAME='nvim'
-NVIM_DIR="$SHELL_CONFIG_DIR/$NVIM_NAME"
-APT_PACKAGES="
-	'python3-pip'
-	'npm'
-"
+NVIM='nvim'
+NVIM_DIR="$SHELL_CONFIG_DIR/$NVIM"
 
 # cpplint is used to check c/cpp format
 PIP3_PACKAGES="
@@ -15,41 +11,40 @@ PIP3_PACKAGES="
 	cpplint
 "
 
-install_from_stable_nvim()
-{
+install_from_stable_nvim() {
     add_ppa_repo ppa:neovim-ppa/stable
     sudo apt update
     sudo apt install neovim
 }
 
-install_from_unstable_nvim()
-{
+install_from_unstable_nvim() {
     add_ppa_repo ppa:neovim-ppa/unstable
     sudo apt update
     sudo apt install neovim
 }
 
-install()
-{
-	if has_cmd $NVIM_NAME; then
-		echo "$NVIM_NAME is already installed"
-		return
-	fi
+install() {
+    local SOURCE
+    SOURCE=('stable_nvim' 'unstable_nvim')
 
-    local SOURCE=('stable_nvim' 'unstable_nvim')
-	echo "Start installing $NVIM_NAME"
+    has_cmd $NVIM && {
+        show_hint "$(info_installed $NVIM)"
+        return
+    }
+
+	echo "Start installing $NVIM"
 
     for SRC in ${SOURCE[@]}; do
         install_from_${SRC}
-        has_cmd $NVIM_NAME && {
-            echo "Install $NVIM_NAME successfully"
+        has_cmd $NVIM && {
+            show_good "Install $NVIM successfully"
             break
         }
-        show_err "Install $NVIM_NAME from $SRC failed"
+        show_err "Install $NVIM from $SRC failed"
     done
 
-    has_cmd nvim || {
-        show_err "No way to install $NVIM_NAME"
+    has_cmd $NVIM || {
+        show_err "No way to install $NVIM"
         return
     }
 
@@ -62,33 +57,30 @@ install()
 	config_package
 }
 
-install_plug_vim()
-{
+install_plug_vim() {
 	local -r URL='https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 	curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs $URL
 }
 
-install_fzf()
-{
+install_fzf() {
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
     ~/.fzf/install
 }
 
-config_package()
-{
-	echo "Config $NVIM_NAME..."
+config_package() {
+    local NEED_CMD
+    NEED_CMD='curl git pip3 pip'
 
-    local NEED_CMD='curl git npm'
-    has_these_cmds || {
-        show_err "Need these installization of $NEED_CMD"
+	echo "Config $NVIM..."
+    has_these_cmds $NEED_CMD || {
+        show_err "$(info_req_cmd $NEED_CMD)"
         return
     }
 
 	# link config
-	local -r NVIM_DIR="$USR_CONFIG_DIR/$NVIM"
-	[ -e $NVIM_DIR ] || return
+	[ -e $HOME_CONFIG_DIR/$NVIM ] || return
 
-	create_link $NVIM_DIR $USR_CONFIG_DIR
+	create_link $NVIM_DIR $HOME_CONFIG_DIR
 	create_link $NVIM_DIR/editorconfig $HOME/.editorconfig
 	create_link $NVIM_DIR/clang-format.txt $HOME/.clang-format
 
@@ -97,14 +89,15 @@ config_package()
     install_fzf
 
 	# for vista.nvim
-    install_if_no ctags
-	sudo apt install -y ctags
+    has_cmd ctags || {
+        echo "install ctags for vista.nvim"
+        sudo apt install -y ctags
+    }
 
     # for float term
-    install_if_no pip3 python3-pip
-    install_if_no pip python-pip
-    setup_version "/usr/bin/pip" "pip" "/usr/local/bin/pip /usr/local/bin/pip3"
-    pip install neovim-remote
+    pip install neovim-remote || {
+        show_err "install 'neovim-remote' failed from pip install"
+    }
 
 	# Start install plugin for nvim
 	nvim +PlugInstall +qa
@@ -119,9 +112,9 @@ config_package()
 	# config_plugin
 }
 
-config_coc_plugin()
-{
-	local -r NPM_PACKAGES="
+config_coc_plugin() {
+	local NPM_PACKAGES EXT_DIR
+    NPM_PACKAGES="
 		coc-html
 		coc-xml
 		coc-json
@@ -134,10 +127,13 @@ config_coc_plugin()
 		coc-lists
 		coc-explorer
 	"
+	EXT_DIR="$HOME/.config/coc/extensions"
 
-	local -r EXT_DIR="$HOME/.config/coc/extensions"
-
-    # for lsp server
+    has_cmd npm || {
+        show_err "$(info_req_cmd npm)"
+        return
+    }
+    # install lsp server without coc plugin
     # sudo npm install -g bash-language-server
     # sudo npm install -g vim-language-server
 
@@ -145,7 +141,7 @@ config_coc_plugin()
 
 	# Install coc extensions
 	pushd $EXT_DIR
-	[[ ! -f package.json ]] &&
+    [ ! -f package.json ] &&
 		echo '{"dependencies":{}}'> package.json
 
 	# Change extension names to the extensions you need

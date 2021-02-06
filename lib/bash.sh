@@ -6,25 +6,22 @@ source $SHELL_CORE_DIR/sign.sh
 BASH='bash'
 BASH_DIR="$SHELL_CONFIG_DIR/$BASH"
 
-install()
-{
+install() {
 	config_package
 }
 
-uninstall()
-{
+uninstall() {
 	echo "Remove $BASH..."
 }
 
-config_package()
-{
+config_package() {
+    local USR_BASH_DIR BASHRC
+    local DIR FILE LIST CMD SRC
+
     echo "Config $BASH..."
 
-    local USR_BASH_DIR="$USR_CONFIG_DIR/$BASH"
-    local BASHRC="$HOME/.bashrc"
-    local DIR FILE
-    local LIST
-    local CMD SRC
+    USR_BASH_DIR="$HOME_CONFIG_DIR/$BASH"
+    BASHRC="$HOME/.bashrc"
 
     pushd $HOME
 
@@ -49,11 +46,11 @@ config_package()
 
     FILE="/etc/profile.d/bash_completion.sh"
     CMD=". $FILE"
-    grep -wq "^$CMD" $BASHRC ||\
+    grep -wq "^$CMD" $BASHRC ||
         add_with_sig "$CMD" "$BASHRC" "$BASH"
 
     CMD=". $USR_BASH_DIR/init.bash"
-    grep -wq "^$CMD" $BASHRC ||\
+    grep -wq "^$CMD" $BASHRC ||
         add_with_sig "$CMD" "$BASHRC" "$BASH"
     popd
 
@@ -76,6 +73,7 @@ config_package()
     popd
     popd # $USR_BASH_DIR
 
-    CMD=$(ls -l /bin/sh | awk -F'->' '{print $2}' | xargs)
+    # $SHELL is from environment
+    CMD=$(echo $SHELL | grep $BASH)
     [ "$CMD" != $BASH ] && sudo dpkg-reconfigure dash
 }

@@ -44,7 +44,7 @@ install_brew_from_github()
 {
 	local NEED_CMD='curl wget file git'
     has_these_cmds "$NEED_CMD" || {
-        show_err "Incomplete installed cmd in $NEED_CMD"
+        show_err "$(info_req_cmd $NEED_CMD)"
         return
     }
 	sudo apt-get install build-essential
@@ -71,7 +71,7 @@ install()
 
     for NAME in ${PACK_REPOS_NAME[@]}; do
         has_cmd $NAME && {
-            echo "Skip install: $NAME"
+            show_hint "$(info_installed $NAME)"
             continue
         }
 
