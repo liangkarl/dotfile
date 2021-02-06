@@ -74,5 +74,5 @@ config_package() {
 
     # $SHELL is from environment
     CMD=$(echo $SHELL | grep $BASH)
-    [ "$CMD" != $BASH ] && sudo dpkg-reconfigure dash
+    [ -z "$CMD" ] && sudo dpkg-reconfigure dash
 }
