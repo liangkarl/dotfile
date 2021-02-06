@@ -22,7 +22,7 @@ config_package() {
     USR_BASH_DIR="$HOME_CONFIG_DIR/$BASH"
     BASHRC="$HOME/.bashrc"
 
-    pushd $HOME
+    goto $HOME
 
     DIR=bin
     [ ! -d $DIR ] && {
@@ -51,26 +51,26 @@ config_package() {
     CMD=". $USR_BASH_DIR/init.bash"
     grep -wq "^$CMD" $BASHRC ||
         add_with_sig "$CMD" "$BASHRC" "$BASH"
-    popd
+    back
 
     local ALIAS_DIR='alias'
     local COMPLETION_DIR='completion'
-    pushd $USR_BASH_DIR
+    goto $USR_BASH_DIR
     link $BASH_DIR/init.bash .
 
     [ -e $ALIAS_DIR ] || mkdir $ALIAS_DIR
-    pushd $ALIAS_DIR
+    goto $ALIAS_DIR
     SRC="$BASH_DIR/$ALIAS_DIR"
     link $SRC/alias_common .
     link $SRC/alias_working .
-    popd
+    back
 
     [ -e $COMPLETION_DIR ] || mkdir $COMPLETION_DIR
-    pushd $COMPLETION_DIR
+    goto $COMPLETION_DIR
     SRC="$BASH_DIR/$COMPLETION_DIR"
     #link $SRC/ .
-    popd
-    popd # $USR_BASH_DIR
+    back
+    back # $USR_BASH_DIR
 
     # $SHELL is from environment
     CMD=$(echo $SHELL | grep $BASH)

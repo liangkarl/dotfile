@@ -27,7 +27,7 @@ config_package() {
 
     echo "Config $GIT..."
 
-    pushd $HOME
+    goto $HOME
     link $GITCONFIG .gitconfig
-    popd
+    back
 }

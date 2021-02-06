@@ -12,7 +12,7 @@ config_package() {
 
     echo "Config $TMUX..."
 
-    pushd $HOME
+    goto $HOME
     SRC=$TMUX_DIR
     link $SRC/tmux.conf .tmux.conf
 
@@ -24,16 +24,16 @@ config_package() {
     if [ -e $SRC ]; then
         TMUX_COMPL="$TMUX_DIR/completion_tmux"
 
-        pushd $SRC
+        goto $SRC
         link $TMUX_COMPL .
 
         LOAD_CMD="source $TMUX_COMPL\ncomplete -F _tmux tmux"
 
         #grep -wq "^$LOAD_CMD" $BASH_COMPL ||\
         #    add_with_sig "$LOAD_CMD" "$BASH_COMPL" "$TMUX"
-        popd
+        back
     fi
-    popd
+    back
 }
 
 install_tpm() {
@@ -46,9 +46,9 @@ install_tpm() {
         return
     }
 
-    pushd $HOME
+    goto $HOME
     git clone $GIT_REPO $TPM_DIR
-    popd
+    back
 }
 
 install() {

@@ -1,12 +1,24 @@
 #!/bin/bash
 
+goto() {
+    local DST
+    DST=$1
+    [ -z "$DST" ] && return
+    pushd $DST &> /dev/null
+}
+
+back() {
+    popd &> /dev/null
+}
+
+
 link() {
     local SRC DST
     SRC="$1"
     DST="$2"
 
     [ -e $DST ] && {
-        show_hint "the target link is existed"
+        show_hint "$DST is existed"
         return
     }
 

@@ -140,7 +140,7 @@ config_coc_plugin() {
 	[ -e $EXT_DIR ] || mkdir -p $EXT_DIR
 
 	# Install coc extensions
-	pushd $EXT_DIR
+	goto $EXT_DIR
     [ ! -f package.json ] &&
 		echo '{"dependencies":{}}'> package.json
 
@@ -149,5 +149,5 @@ config_coc_plugin() {
 		--global-style --ignore-scripts \
 		--no-bin-links --no-package-lock \
 		--only=prod
-	popd
+	back
 }

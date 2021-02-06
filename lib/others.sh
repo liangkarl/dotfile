@@ -25,21 +25,21 @@ install()
 {
 	echo "Install: $PACKAGE_LIST"
 
-	pushd $HOME &>-
+	goto $HOME
 	for CMD in $PACKAGE_LIST; do
 		echo "==== Prepare $CMD ===="
 		sudo apt install -y $CMD
 		echo "==== Finish $CMD ===="
 	done
-	popd &>-
+	back
         config_package
 }
 
 install_llvm_clang()
 {
-	pushd $HOME
+	goto $HOME
 	mkdir .tmp
-	pushd .tmp
+	goto .tmp
 
 	wget https://apt.llvm.org/llvm.sh
 	chmod +x llvm.sh
@@ -53,9 +53,9 @@ install_llvm_clang()
 		clang-format-10 python3-clang-10 clangd-10
 
 	sudo apt install libclang-10-dev
-	popd # leave .tmp
+	back # leave .tmp
 	rm -rf .tmp
-	popd # leave $HOME
+	back # leave $HOME
 
 	# FIXME: only support clang-X
 	setup_version "/usr/bin/clang" "clang" "$(ls /usr/bin/clang-[0-9])"
@@ -83,9 +83,9 @@ install_ccls()
 	sudo apt install -y zlib1g-dev libncurses-dev
 	sudo apt install -y cmake
 
-	pushd $HOME
+	goto $HOME
 	mkdir .tmp
-	pushd .tmp
+	goto .tmp
 
 	git clone --depth=1 --recursive https://github.com/MaskRay/ccls
 	cd ccls
@@ -103,9 +103,9 @@ install_ccls()
 	cmake --build Release
 	sudo make install -C ./Release
 
-	popd # leave .tmp
+	back # leave .tmp
 	rm -rf .tmp
-	popd # leave $HOME
+	back # leave $HOME
 }
 
 install_gcc()
