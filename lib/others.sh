@@ -5,21 +5,27 @@ source $SHELL_CORE_DIR/core.sh
 OTHERS_NAME='others'
 OTHERS_CONFIG="$SHELL_CONFIG_DIR/$OTHERS_NAME"
 
-APT_LIST="
-	curl
-	bears
-	tree
-	tig
-	python3-pip
-"
-
-CUST_LIST="
+install_c_related_tools() {
 	install_llvm_clang
 	install_ccls
 	install_gcc
-	install_nodejs
-	install_python
-"
+}
+
+install_python_related_tools() {
+    install_python
+}
+
+install_lsp_related_tools() {
+    # install_bears
+}
+
+install_download_tools() {
+    # install curl wget
+}
+
+install_common_tools() {
+    # install tree
+}
 
 install()
 {

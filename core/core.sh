@@ -11,7 +11,6 @@ back() {
     popd &> /dev/null
 }
 
-
 link() {
     local SRC DST
     SRC="$1"
@@ -37,6 +36,25 @@ link() {
     ln -sv $SRC $DST
 }
 
+install_from_sources() {
+    local SOURCE CMD
+    CMD="$1"
+    shift
+    SOURCE=($@)
+
+    for SRC in ${SOURCE[@]}; do
+        install_from_${SRC}
+        has_cmd $CMD && {
+            show_good "Install $CMD successfully"
+            return $GOOD
+        }
+        echo "Try installing $CMD from $SRC failed"
+    done
+
+    show_err "$(info_install_failed $CMD)"
+    return $BAD
+}
+
 has_cmd() {
     command -v >&- "$@" &&
         return $GOOD ||
@@ -44,12 +62,17 @@ has_cmd() {
 }
 
 has_these_cmds() {
-    local LIST
+    local LIST FAIL
 
     LIST="$@"
     for CMD in $LIST; do
-        has_cmd $CMD || return $BAD
+        has_cmd $CMD || FAIL="$CMD $FAIL"
     done
+
+    # TODO: add more acute info about failed cmd
+    if [ ! -z "$FAIL" ]; then
+        return $BAD
+    fi
 
     return $GOOD
 }
@@ -160,8 +183,11 @@ info_install_failed() {
     echo "failed to install: $@"
 }
 
-add_with_sig()
-{
+info_install_done() {
+    echo "install completed: %@"
+}
+
+add_with_sig() {
     local NOTE CONTENT FILE BY_WHO DATE USR_STAMP TIME_STAMP
     local SIGNED_STAMP
 
