@@ -5,8 +5,7 @@ source $SHELL_CORE_DIR/core.sh
 XXXX='xxxx'
 XXXX_DIR="$SHELL_CONFIG_DIR/$XXXX"
 
-install()
-{
+install() {
 	has_cmd $XXXX && {
 		show_hint "$(info_installed $XXXX)"
 		return
@@ -25,14 +24,22 @@ install()
 	# config_package
 }
 
-uninstall()
-{
+uninstall() {
 	echo "Remove $XXXX..."
 	echo "Not finished yet..."
+
+	# Remove package itself without system configs
+	# sudo apt remove $XXXX
+
+	# Remove package itself & system config
+	# sudo apt purge $XXXX
+
+	# Remove related dependency
+	# sudo apt autoremove
+	# still remain user configs
 }
 
-config_package()
-{
+config_package() {
 	echo "Config $XXXX..."
 	echo "Not finished yet..."
 }
