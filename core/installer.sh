@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. $SHELL_CORE_DIR/utils.sh
+. $SHELL_CORE_DIR/core.sh
 
 install_full_list() {
     local INS_LIST
