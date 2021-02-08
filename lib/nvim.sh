@@ -113,7 +113,7 @@ config_package() {
 	# Start install plugin for nvim
 	nvim +PlugInstall +qa
 
-    npm install -g neovim
+    sudo npm install -g neovim
 
 	setup_version "/usr/bin/vi" "vi" "/usr/bin/nvim"
 	setup_version "/usr/bin/vim" "vim" "/usr/bin/nvim"
