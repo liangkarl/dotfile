@@ -88,7 +88,9 @@ config_package() {
 	# link config
 	[ -e $HOME_CONFIG_DIR ] || mkdir $HOME_CONFIG_DIR
 
-    link $NVIM_DIR $HOME_CONFIG_DIR
+    goto $HOME_CONFIG_DIR
+    link $NVIM_DIR .
+    back
 
     goto $HOME
 	link $NVIM_DIR/editorconfig .editorconfig
