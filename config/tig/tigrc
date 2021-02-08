@@ -12,8 +12,8 @@ bind status A ?git commit --amend
 # NOTE:
 # `git stash save "stash name"` is deprecated at git 2.16
 # and replaced by `git stash push -m "stash name"`
-bind status P ?git stash save "%(prompt)"
-bind status p ?git stash save "%(prompt)" %(file)
+bind status S ?git stash save "%(prompt)"
+bind status s ?git stash save "%(prompt)" %(file)
 
 bind refs F ?git fetch . HEAD:%(branch)
 bind refs M ?git merge %(branch)
