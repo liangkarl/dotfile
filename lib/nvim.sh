@@ -63,6 +63,14 @@ install_plug_vim() {
 }
 
 install_fzf() {
+    local FZF
+
+    FZF=fzf
+    has_cmd $FZF && {
+        show_hint "$(info_installed $FZF)"
+        return
+    }
+
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
     ~/.fzf/install
 }
@@ -78,10 +86,9 @@ config_package() {
     }
 
 	# link config
-	[ -e $HOME_CONFIG_DIR ] || {
-        mkdir $HOME_CONFIG_DIR
-        link $NVIM_DIR $HOME_CONFIG_DIR
-    }
+	[ -e $HOME_CONFIG_DIR ] || mkdir $HOME_CONFIG_DIR
+
+    link $NVIM_DIR $HOME_CONFIG_DIR
 
     goto $HOME
 	link $NVIM_DIR/editorconfig .editorconfig
@@ -106,6 +113,8 @@ config_package() {
 	# Start install plugin for nvim
 	nvim +PlugInstall +qa
 
+    npm install -g neovim
+
 	setup_version "/usr/bin/vi" "vi" "/usr/bin/nvim"
 	setup_version "/usr/bin/vim" "vim" "/usr/bin/nvim"
 	setup_version "/usr/bin/editor" "editor" "/usr/bin/nvim"
@@ -113,7 +122,7 @@ config_package() {
 	# ag, ripgrep
 	# snap install ripgrep
 	# sudo apt install silversearcher-ag
-	# config_plugin
+	config_coc_plugin
 }
 
 config_coc_plugin() {
