@@ -35,7 +35,7 @@ config_package() {
     done
     back
 
-    [ -e $USR_BASH_DIR ] || mkdir $USR_BASH_DIR
+    [ -e $USR_BASH_DIR ] || mkdir -p $USR_BASH_DIR
 
     FILE='/etc/skel/.bashrc'
     [ -f $BASHRC ] || cp $FILE $BASHRC
@@ -53,8 +53,9 @@ config_package() {
         add_with_sig "$CMD" "$BASHRC" "$BASH"
     back
 
-    local ALIAS_DIR='alias'
-    local COMPLETION_DIR='completion'
+    local ALIAS_DIR COMPLETION_DIR
+    ALIAS_DIR='alias'
+    COMPLETION_DIR='completion'
     goto $USR_BASH_DIR
     link $BASH_DIR/init.bash .
 
