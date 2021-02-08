@@ -78,11 +78,15 @@ config_package() {
     }
 
 	# link config
-	[ -e $HOME_CONFIG_DIR/$NVIM ] || return
+	[ -e $HOME_CONFIG_DIR ] || {
+        mkdir $HOME_CONFIG_DIR
+        link $NVIM_DIR $HOME_CONFIG_DIR
+    }
 
-	link $NVIM_DIR $HOME_CONFIG_DIR
-	link $NVIM_DIR/editorconfig $HOME/.editorconfig
-	link $NVIM_DIR/clang-format.txt $HOME/.clang-format
+    goto $HOME
+	link $NVIM_DIR/editorconfig .editorconfig
+	link $NVIM_DIR/clang-format.txt .clang-format
+    back
 
     install_plug_vim
 
