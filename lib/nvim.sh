@@ -54,12 +54,15 @@ install() {
 }
 
 install_nvim_optional() {
-    local NEED_CMD PACK
+    local NEED_CMD PACK CHECK
     NEED_CMD='pip2 pip3'
     if has_these_cmds $NEED_CMD; then
         PACK='pynvim'
-        pip2 show $PACK || pip2 install $PACK
-        pip3 show $PACK || pip3 install $PACK
+        pip2 show $PACK >&- || pip2 install $PACK
+        pip3 show $PACK >&- || pip3 install $PACK
+
+        PACK='neovim-remote'
+        pip3 show $PACK >&- || pip3 install $PACK
     else
         show_warn "$(info_req_cmd $NEED_CMD)"
     fi
