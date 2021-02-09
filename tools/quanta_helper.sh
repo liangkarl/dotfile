@@ -151,16 +151,25 @@ mtk_make() {
 				echo "system: $MTK_MAKE_SYSTEM_OUT_DIR"
 				echo "out: $MERGED_OUT_DIR"
 				echo "========================================="
-				MERGE_CMD="python $SPLIT_BUILD --system-dir $MTK_MAKE_SYSTEM_OUT_DIR/images
-					--vendor-dir $MTK_MAKE_VENDOR_OUT_DIR/images
-					--kernel-dir $MTK_MAKE_KERNEL_OUT_DIR/images
-					--output-dir $MERGED_OUT_DIR"
+				MERGE_CMD="python $SPLIT_BUILD "
+                MERGE_CMD+="--system-dir $MTK_MAKE_SYSTEM_OUT_DIR/images "
+                MERGE_CMD+="--vendor-dir $MTK_MAKE_VENDOR_OUT_DIR/images "
+                MERGE_CMD+="--kernel-dir $MTK_MAKE_KERNEL_OUT_DIR/images "
+                MERGE_CMD+="--output-dir $MERGED_OUT_DIR"
 				CLEAN_CMD+="rm -rf $MERGED_OUT_DIR;"
 				;;
 			c*|-c*)
 				echo "-c | -c *) not support yet"
 				echo "TODO: for clean purpose"
+                return 0;
 				;;
+            l|-l)
+                echo "list out dir:"
+                echo "kernel: $MTK_MAKE_KERNEL_OUT_DIR"
+                echo "vendor: $MTK_MAKE_VENDOR_OUT_DIR"
+                echo "system: $MTK_MAKE_SYSTEM_OUT_DIR"
+                return 0;
+                ;;
 			*)
 				echo "========================================="
 				echo "Check usages as below"
