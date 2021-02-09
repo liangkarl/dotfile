@@ -48,13 +48,29 @@ install() {
         return
     }
 
-    sudo apt install python-neovim
-    sudo apt install python3-neovim
-    sudo apt install python-dev python-pip python3-dev python3-pip
-
     # Remove unnessary dependencies
 	sudo apt autoremove -y
 	config_package
+}
+
+install_nvim_optional() {
+    local NEED_CMD PACK
+    NEED_CMD='pip2 pip3'
+    if has_these_cmds $NEED_CMD; then
+        PACK='pynvim'
+        pip2 show $PACK || pip2 install $PACK
+        pip3 show $PACK || pip3 install $PACK
+    else
+        show_warn "$(info_req_cmd $NEED_CMD)"
+    fi
+
+    NEED_CMD='npm'
+    if has_cmd $NEED_CMD; then
+        PACK='neovim'
+        sudo npm install -g $PACK
+    else
+        show_warn "$(info_req_cmd $NEED_CMD)"
+    fi
 }
 
 install_plug_vim() {
