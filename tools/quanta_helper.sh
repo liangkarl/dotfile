@@ -92,28 +92,55 @@ mtk_make() {
 	local MAKE_CMD MERGE_CMD CLEAN_CMD
 	local SPLIT_BUILD MERGED_OUT_DIR
 
-	MAKE_CMD='make -j24 '
-	while :; do
-		case "$1" in
-			k | -k)
+    echo "========================================="
+    echo "The script would save your lastest lunch "
+    echo "configs of sys, krnl and vndr if you stay"
+    echo "in the script."
+    echo "========================================="
+
+    [ "$#" -eq 0 ] && {
+            echo "========================================="
+            echo "Check usages as below"
+            echo "========================================="
+            declare -f mtk_make
+            return 1
+    }
+
+    for ARGV in "$@"; do
+		case "$ARGV" in
+            ak|-ak)
+				MTK_MAKE_KERNEL_OUT_DIR=$ANDROID_PRODUCT_OUT
+                echo "kernel lunch added: $MTK_MAKE_KERNEL_OUT_DIR"
+                ;;
+            av|-av)
+				MTK_MAKE_VENDOR_OUT_DIR=$ANDROID_PRODUCT_OUT
+                echo "vendor lunch added: $MTK_MAKE_VENDOR_OUT_DIR"
+                ;;
+            as|-as)
+				MTK_MAKE_SYSTEM_OUT_DIR=$ANDROID_PRODUCT_OUT
+                echo "system lunch added: $MTK_MAKE_SYSTEM_OUT_DIR"
+                ;;
+			k|-k)
 				MTK_MAKE_KERNEL_OUT_DIR=$ANDROID_PRODUCT_OUT
 				MAKE_CMD+="krn_images "
 				CLEAN_CMD+="rm -rf $MTK_MAKE_KERNEL_OUT_DIR/obj/KERNEL_OBJ;"
 				;;
-			s | -s)
+			s|-s)
 				MTK_MAKE_SYSTEM_OUT_DIR=$ANDROID_PRODUCT_OUT
 				MAKE_CMD+="sys_images "
+				CLEAN_CMD+="rm -rf $MTK_MAKE_SYSTEM_OUT_DIR/obj;"
 				;;
-			v | -v)
+			v|-v)
 				MTK_MAKE_VENDOR_OUT_DIR=$ANDROID_PRODUCT_OUT
 				MAKE_CMD+="vnd_images "
 				;;
-			kv | -kv | vk | -vk)
+			kv|-kv|vk|-vk)
 				MTK_MAKE_KERNEL_OUT_DIR=$ANDROID_PRODUCT_OUT
 				MTK_MAKE_VENDOR_OUT_DIR=$ANDROID_PRODUCT_OUT
 				MAKE_CMD+="vnd_images krn_images "
+				CLEAN_CMD+="rm -rf $MTK_MAKE_KERNEL_OUT_DIR/obj/KERNEL_OBJ;"
 				;;
-			m | -m)
+			m|-m)
 				SPLIT_BUILD=$MTK_MAKE_SYSTEM_OUT_DIR/images/split_build.py
 				MERGED_OUT_DIR=$MTK_MAKE_KERNEL_OUT_DIR/merged
 				echo "========================================="
@@ -130,7 +157,7 @@ mtk_make() {
 					--output-dir $MERGED_OUT_DIR"
 				CLEAN_CMD+="rm -rf $MERGED_OUT_DIR;"
 				;;
-			c* | -c*)
+			c*|-c*)
 				echo "-c | -c *) not support yet"
 				echo "TODO: for clean purpose"
 				;;
@@ -141,13 +168,15 @@ mtk_make() {
 				declare -f mtk_make
 				return 128
 		esac
-		shift
 	done
 
-	$CLEAN_CMD
-	$MAKE_CMD
-	$MERGE_CMD
+    [ -z "$MAKE_CMD" ] || MAKE_CMD="make -j24 $MAKE_CMD"
 
+    for CMD in "$CLEAN_CMD" "$MAKE_CMD" "$MERGE_CMD"; do
+        [ -z "$CMD" ] && continue
+        echo "exec: $CMD"
+        $CMD || return $?
+    done
 	return 0;
 }
 
