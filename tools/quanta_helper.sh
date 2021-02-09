@@ -28,6 +28,11 @@ from_saturn() {
 	SRC=$(__to_vm_path "$1")
 	DST="${2:-files@$(date +%s)}"
 
+	[ $# -eq 0 ] && {
+		declare -f $FUNCNAME
+		return 1
+	}
+
 	__rsync_cmd $SRVR:$SRC $DST
 }
 
@@ -36,6 +41,11 @@ to_saturn() {
 	SRVR='saturn'
 	SRC="$1"
 	DST=$(__to_vm_path "$2")
+
+	[ $# -eq 0 ] && {
+		declare -f $FUNCNAME
+		return 1
+	}
 
 	[ -z $DST ] && {
 		echo "Copy to where?"
@@ -50,6 +60,11 @@ from_hogwarts() {
 	SRC=$(__to_vm_path "$1")
 	DST="${2:-files@$(date +%s)}"
 
+	[ $# -eq 0 ] && {
+		declare -f $FUNCNAME
+		return 1
+	}
+
 	__rsync_cmd $SRVR:$SRC $DST
 }
 
@@ -58,6 +73,11 @@ to_hogwarts() {
 	SRVR='hogwarts'
 	SRC="$1"
 	DST=$(__to_vm_path "$2")
+
+	[ $# -eq 0 ] && {
+		declare -f $FUNCNAME
+		return 1
+	}
 
 	[ -z $DST ] && {
 		echo "Copy to where?"
