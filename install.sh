@@ -1,25 +1,39 @@
 #!/bin/bash
 
-## Load environment variables
-ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-source $ROOT/core/env.sh
-
-# prepare basic functions
-init_env $ROOT
-
-## Link bin/ to ~/bin/
-[[ ! -d $HOME/bin ]] && {
-	echo "Create 'bin' folder"
-	mkdir $HOME/bin
+__help__() {
+    cat <<\
+RAW
+$(basename $0) [-h]
+-h: print help
+RAW
 }
-echo "Link files"
-# ln with soft link, verbose, interactive, backup
-ln -svib $ROOT/bin/* $HOME/bin/
 
+__prepare__() {
+    local SHELL_DIR
+    SHELL_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-## Install packages
-# Load package libraries
-source $CORE_DIR/installer.sh
+    source $SHELL_DIR/core/base.sh
+    init_env $SHELL_DIR
+    source $SHELL_DIR/core/installer.sh
+}
 
-# Install package
-install_packages
+__main__() {
+    while :; do
+        case $1 in
+            -h)
+                __help__
+                exit $GOOD
+                ;;
+            -?* | ?*) # invaild string
+                __help__
+                exit $BAD
+                ;;
+            *)  # no var
+                install_full_list
+                exit $GOOD
+        esac
+    done
+}
+
+__prepare__
+__main__ "$@"

@@ -1,34 +1,33 @@
 #!/bin/bash
 
-source $CORE_DIR/utils.sh
+source $SHELL_CORE_DIR/core.sh
 
-GIT_NAME='git'
-GIT_CONFIG="$CONFIG_DIR/$GIT_NAME"
+GIT='git'
+GIT_DIR="$SHELL_CONFIG_DIR/$GIT"
 
-install()
-{
-        if test_cmd $GIT_NAME; then
-                echo "$GIT_NAME is already installed"
-        else
-                echo "Start installing $GIT_NAME"
-                sudo apt install -y $GIT_NAME
-                config_package
-        fi
+install() {
+    has_cmd $GIT && {
+        show_hint "$(info_installed $GIT)"
+        return
+    }
+
+    echo "Start installing $GIT"
+    sudo apt install -y $GIT
+    config_package
 }
 
-uninstall()
-{
-        echo "Remove $GIT_NAME..."
-        sudo apt purge $GIT_NAME
+uninstall() {
+    echo "Remove $GIT..."
+    sudo apt purge $GIT
 }
 
-config_package()
-{
-        echo "Config $GIT_NAME..."
+config_package() {
+    local GITCONFIG
+    GITCONFIG="$GIT_DIR/gitconfig"
 
-	pushd $HOME
-        ## Create config link
-        local -r SRC_CONFIG="$GIT_CONFIG/gitconfig"
-        create_link $SRC_CONFIG .gitconfig
-	popd
+    echo "Config $GIT..."
+
+    goto $HOME
+    link $GITCONFIG .gitconfig
+    back
 }

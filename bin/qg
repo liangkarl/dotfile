@@ -1,0 +1,58 @@
+#!/bin/bash
+
+KEYWORD="$1"
+DIR="$2"
+PATTERN=''
+
+if [ -d "$DIR" ]; then
+	PATTERN='*'
+else
+	DIR="$(dirname $2 2>&-)"
+	PATTERN="$(basename $2 2>&-)"
+
+	if [ "$PATTERN" == '.' ]; then
+		PATTERN='*'
+	else
+		PATTERN=$(echo $PATTERN | sed 's/{}/*/g')
+	fi
+fi
+
+if [ -z "$KEYWORD" ] || [ ! -d "$DIR" ] || [ -z "$PATTERN" ]; then
+	cat <<\
+USAGE
+Usage:
+$(basename $0) KEYWORD DIR/PATTERN [find opt] [grep opt]
+
+Example:
+$(basename $0) init system/*.c '-w' '-A4 -B4'
+
+Note:
+Use {} replace wildcard(*).
+FD_OPT => [find opt]
+RG_OPT => [grep opt]
+USAGE
+	exit
+fi
+
+CMD=''
+FD=$(which fd)
+RG=$(which rg)
+FD_OPT=${3:-$FD_OPT}
+RG_OPT=${4:-$RG_OPT}
+if [ -z $FD ]; then
+	CMD+="find '$DIR/' $FD_OPT -name '$PATTERN' -type f"
+else
+	# default no search hidden files
+	CMD+="$FD -t f -g $FD_OPT '$PATTERN' '$DIR'"
+fi
+
+if [ -z $RG ]; then
+	CMD+="| xargs -r grep -HIrns $RG_OPT '$KEYWORD' --color"
+else
+	CMD+="| xargs -r $RG -p $RG_OPT '$KEYWORD'"
+fi
+
+bash -c "$CMD"
+# echo $CMD
+# echo "RG_OPT: $RG_OPT"
+# echo "FD_OPT: $FD_OPT"

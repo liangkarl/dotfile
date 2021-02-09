@@ -5,7 +5,6 @@ source ~/.config/nvim/include/keybind.vim
 set number
 " show the cursor position all the time
 set ruler
-set cursorline
 " display incomplete commands
 set showcmd
 " Close a split window in Vim without resizing other windows
@@ -15,6 +14,9 @@ set noequalalways
 " causes files to be hidden instead of closed
 set hidden
 " set cmdheight=2
+
+" To show buffer name for lightline-bufferline config
+set showtabline=2
 
 " Set up font for special characters
 set guifont=SauceCodePro\ Nerd\ Font\ Mono
@@ -36,6 +38,14 @@ set colorcolumn=80
 set noshowmode " hide default mode text (e.g. INSERT) as airline already displays it
 set display+=lastline " don't show '@@@' when there is no enough room
 
-set mouse+=a " copy text without borders
+set mouse=v " copy text without borders
+
+if (has("termguicolors"))
+  set termguicolors
+endif
 
 colorscheme gruvbox
+
+hi cursorline cterm=underline ctermbg=NONE
+hi cursorline gui=underline guibg=NONE guifg=BURLYWOOD
+set cursorline

@@ -15,11 +15,23 @@
 " | :tmap, :tnoremap, :tunmap | Terminal                                 |
 " |---------------------------+------------------------------------------|
 
+" Retain the visual selection after indent lines
+vnoremap > >gv
+vnoremap < <gv
+
 " map Leader
 let mapleader = ' '
 
+" FIXME: workaround for invisible cursor
+" nnoremap <silent> <Leader>cu :set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
+nnoremap <silent> <Leader>cu :set guicursor=n-v-c:block-Cursor<CR>
+
 " Reload vim config
-nnoremap <Leader>so :so $MYVIMRC<CR>
+nnoremap <Leader>so :so $MYVIMRC<CR>:echo "Reload nvim config"<CR>
+nnoremap <Leader>cwf :echo expand('%:p')<CR>
+nnoremap <Leader>cwd :pwd<CR>
+" Change the directory only for the current window
+nnoremap <Leader>cd :lcd %:p:h<CR>
 
 " CTRL-C: Quit insert mode, go back to Normal mode. Do not check for
 " abbreviations. Does not trigger the InsertLeave autocommand event.
@@ -37,12 +49,14 @@ inoremap <A-w> <C-Right>
 
 " Open terminal
 " PS. you can use the terminal as debug console
-nnoremap <Leader>t :split term://bash<CR>:startinsert<CR>
+nnoremap <silent><F3> :FloatermToggle<CR>
+tnoremap <silent><F3> <C-\><C-N>:FloatermToggle<CR>
+
 " To use `ALT+{h,j,k,l}` to navigate windows from any mode:
-tnoremap <A-h> <C-\><C-N><C-w>h
-tnoremap <A-j> <C-\><C-N><C-w>j
-tnoremap <A-k> <C-\><C-N><C-w>k
-tnoremap <A-l> <C-\><C-N><C-w>l
+" tnoremap <A-h> <C-\><C-N><C-w>h
+" tnoremap <A-j> <C-\><C-N><C-w>j
+" tnoremap <A-k> <C-\><C-N><C-w>k
+" tnoremap <A-l> <C-\><C-N><C-w>l
 " To map <Esc> to exit terminal-mode:
 tnoremap <Esc> <C-\><C-n>
 
@@ -59,11 +73,14 @@ noremap <Leader><Space>p "*p
 noremap <Leader><Space>c "+y
 noremap <Leader><Space>v "+p
 
+" vim-delete-hidden-buffers
+nnoremap <Leader>bd :DeleteHiddenBuffers<CR>
+
 " buffer motion (buffer: define as file content itself)
-nnoremap <Leader>n :bn<CR>
-nnoremap <Leader>p :bp<CR>
-nnoremap <Leader>bb :b#<CR>
-nnoremap <Leader>w :w<CR>
+nnoremap <silent><Leader>n :bn<CR>
+nnoremap <silent><Leader>p :bp<CR>
+nnoremap <silent><Leader>bb :b#<CR>
+nnoremap <silent><Leader>w :w<CR>
 " Save buffer content if modifiable is 'on'
 fun CloseBuf()
   if !&modifiable
@@ -94,7 +111,7 @@ nnoremap <Leader>c :C<CR>
 
 " vim-better-whitespace
 " Remove trailing whitespace
-nnoremap <Leader>ss :StripWhitespace<CR>
+nnoremap <silent><Leader>ss :StripWhitespace<CR>
 
 " Plugin: vim-anzu
 " nmap n <Plug>(anzu-n-with-echo)
@@ -107,7 +124,12 @@ map n <Plug>(is-nohl)<Plug>(anzu-n-with-echo)
 map N <Plug>(is-nohl)<Plug>(anzu-N-with-echo)
 
 " Plugin: Vista.vim
-nnoremap <Leader>= :Vista!!<CR>
+nnoremap <silent><F2> :Vista!!<CR>
+
+" Plugin: quick-scope
+nmap <leader>q <plug>(QuickScopeToggle)
+xmap <leader>q <plug>(QuickScopeToggle)
+let g:qs_buftype_blacklist = ['terminal', 'nofile']
 
 " Plugin: fzf
 nnoremap <Leader>fb :FzfBuffers<CR>
@@ -134,15 +156,21 @@ nnoremap <Leader>fm :FzfMarks<CR>
 " | ins col  |   <Leader>tic  |
 " | tableize | Tableize/[sep] |
 " |----------+----------------|
-nnoremap <Leader>tt :TableModeToggle<CR>
+nnoremap <silent><Leader>tg :TableModeToggle<CR>
 " Realigned text-table
-nnoremap <Leader>tr :TableModeRealign<CR>
+nnoremap <silent><Leader>tr :TableModeRealign<CR>
 " Tableize
 noremap <Leader>tz :Tableize/,
 
+" Plugin: vim-marker
+nmap <Leader>mm <Plug>ToggleMarkbar
+" the following are unneeded if ToggleMarkbar is mapped
+nmap <Leader>mo <Plug>OpenMarkbar
+nmap <Leader>mc <Plug>CloseMarkbar
+
 " Plugin: Commentary
 " Toggle comment
-noremap <Leader>gg :Commentary<CR>
+noremap <silent><Leader>gg :Commentary<CR>
 
 " Plugin: coc
 " for debug coc LSP
@@ -180,7 +208,7 @@ endfunction
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 
 " Symbol renaming.
-nmap <leader>rn <Plug>(coc-rename)
+nmap <silent><leader>rn <Plug>(coc-rename)
 
 " Formatting selected code.
 xmap <leader>f  <Plug>(coc-format-selected)
@@ -240,10 +268,10 @@ nmap <silent> gr <Plug>(coc-references)
 " | .   | Toggle hidden            |
 " | *   | select                   |
 " |-----+--------------------------|
-nmap <space>en :CocCommand explorer --preset .nvim<CR>
-nmap <space>ef :CocCommand explorer --preset floating<CR>
-nmap <space>ee :CocCommand explorer --preset leftsideBar<CR>
-nmap <space>el :CocList explPresets<CR>
+nmap <silent><space>en :CocCommand explorer --preset open.nvim<CR>
+nmap <silent><space>ef :CocCommand explorer --preset center<CR>
+nmap <silent><space>eb :CocCommand explorer --preset buffer<CR>
+nmap <silent><space>el :CocList explPresets<CR>
 
 " Plugin: coc-clangd
 " Resolve symbol info under the cursor

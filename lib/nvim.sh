@@ -1,15 +1,9 @@
 #!/bin/bash
 
-source $CORE_DIR/utils.sh
-# source $CORE_DIR/sign.sh
+source $SHELL_CORE_DIR/core.sh
 
-NVIM_NAME='nvim'
-NVIM_CONFIG="$CONFIG_DIR/$NVIM_NAME"
-USR_CONFIG="$HOME/.config"
-APT_PACKAGES="
-	'python3-pip'
-	'npm'
-"
+NVIM='nvim'
+NVIM_DIR="$SHELL_CONFIG_DIR/$NVIM"
 
 # cpplint is used to check c/cpp format
 PIP3_PACKAGES="
@@ -17,121 +11,152 @@ PIP3_PACKAGES="
 	cpplint
 "
 
-# prepared binary:
-# curl, npm
-NEED_PACKAGES="
-    curl
-    npm
-"
-need_packages()
-{
-    for package in $NEED_PACKAGES; do
-        if ! test_cmd package; then
-            echo $package
-        fi
-    done
+install_from_stable_nvim() {
+    add_ppa_repo ppa:neovim-ppa/stable
+    sudo apt update
+    sudo apt install neovim
 }
 
-install()
-{
-	if test_cmd $NVIM_NAME; then
-		echo "$NVIM_NAME is already installed"
-		return
-	fi
+install_from_unstable_nvim() {
+    add_ppa_repo ppa:neovim-ppa/unstable
+    sudo apt update
+    sudo apt install neovim
+}
 
-        local NEED=need_packages
-        if [ -z $NEED ]; then
-            echo "Need to install: $NEED" >&2
-            return
-        fi
+install() {
+    local SOURCE
+    SOURCE=('stable_nvim' 'unstable_nvim')
 
-	echo "Start installing $NVIM_NAME"
-	sudo add-apt-repository ppa:neovim-ppa/stable
-	sudo apt update
+    has_cmd $NVIM && {
+        show_hint "$(info_installed $NVIM)"
+        return
+    }
 
-	sudo apt install -y neovim
+	echo "Start installing $NVIM"
 
-	if test_cmd nvim; then
-		sudo apt install python-neovim
-		sudo apt install python3-neovim
-	else
-		sudo add-apt-repository ppa:neovim-ppa/unstable
-		sudo apt update
-		sudo apt install -y neovim
-		sudo apt install python-dev python-pip python3-dev python3-pip
-	fi
+    for SRC in ${SOURCE[@]}; do
+        install_from_${SRC}
+        has_cmd $NVIM && {
+            show_good "Install $NVIM successfully"
+            break
+        }
+        show_err "Install $NVIM from $SRC failed"
+    done
 
+    has_cmd $NVIM || {
+        show_err "No way to install $NVIM"
+        return
+    }
+
+    sudo apt install python-neovim
+    sudo apt install python3-neovim
+    sudo apt install python-dev python-pip python3-dev python3-pip
+
+    # Remove unnessary dependencies
 	sudo apt autoremove -y
 	config_package
 }
 
-uninstall()
-{
-	echo "Remove $NVIM_NAME..."
-}
-
-config_package()
-{
-	echo "Config $NVIM_NAME..."
-
-	# link config
-	local -r NVIM_DIR="$USR_CONFIG/$NVIM"
-	[ -e $NVIM_DIR ] || return
-
-	create_link $NVIM_CONFIG $USR_CONFIG
-
-	# Install Plug-vim
+install_plug_vim() {
 	local -r URL='https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 	curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs $URL
+}
+
+install_fzf() {
+    local FZF
+
+    FZF=fzf
+    has_cmd $FZF && {
+        show_hint "$(info_installed $FZF)"
+        return
+    }
+
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+    ~/.fzf/install
+}
+
+config_package() {
+    local NEED_CMD
+    NEED_CMD='curl git pip3 pip'
+
+	echo "Config $NVIM..."
+    has_these_cmds $NEED_CMD || {
+        show_err "$(info_req_cmd $NEED_CMD)"
+        return
+    }
+
+	# link config
+	[ -e $HOME_CONFIG_DIR ] || mkdir $HOME_CONFIG_DIR
+
+    goto $HOME_CONFIG_DIR
+    link $NVIM_DIR .
+    back
+
+    goto $HOME
+	link $NVIM_DIR/editorconfig .editorconfig
+	link $NVIM_DIR/clang-format.txt .clang-format
+    back
+
+    install_plug_vim
+
+    install_fzf
 
 	# for vista.nvim
-	sudo apt install -y ctags
+    has_cmd ctags || {
+        echo "install ctags for vista.nvim"
+        sudo apt install -y ctags
+    }
 
-	# Prepare for coc.nvim
-	## Update nodejs with ppa
-	sudo apt install curl
-	curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
-	sudo apt install nodejs
+    # for float term
+    pip install neovim-remote || {
+        show_err "install 'neovim-remote' failed from pip install"
+    }
 
 	# Start install plugin for nvim
 	nvim +PlugInstall +qa
 
-	sudo update-alternatives --install /usr/bin/vi vi /usr/bin/nvim 60
-	sudo update-alternatives --config vi
-	sudo update-alternatives --install /usr/bin/vim vim /usr/bin/nvim 60
-	sudo update-alternatives --config vim
-	sudo update-alternatives --install /usr/bin/editor editor /usr/bin/nvim 60
-	sudo update-alternatives --config editor
+    sudo npm install -g neovim
+
+	setup_version "/usr/bin/vi" "vi" "/usr/bin/nvim"
+	setup_version "/usr/bin/vim" "vim" "/usr/bin/nvim"
+	setup_version "/usr/bin/editor" "editor" "/usr/bin/nvim"
 	# check external commands for plugin
 	# ag, ripgrep
 	# snap install ripgrep
 	# sudo apt install silversearcher-ag
-	# config_plugin
+	config_coc_plugin
 }
 
-config_coc_plugin()
-{
-	local -r NPM_PACKAGES="
+config_coc_plugin() {
+	local NPM_PACKAGES EXT_DIR
+    NPM_PACKAGES="
 		coc-html
+		coc-xml
 		coc-json
-		coc-python
+		coc-pyright
 		coc-vimlsp
 		coc-sh
 		coc-markdownlint
-		coc-xml
 		coc-highlight
 		coc-yank
 		coc-lists
 		coc-explorer
 	"
+	EXT_DIR="$HOME/.config/coc/extensions"
 
-	local -r EXT_DIR="$HOME/.config/coc/extensions"
+    has_cmd npm || {
+        show_err "$(info_req_cmd npm)"
+        return
+    }
+    # install lsp server without coc plugin
+    # sudo npm install -g bash-language-server
+    # sudo npm install -g vim-language-server
 
 	[ -e $EXT_DIR ] || mkdir -p $EXT_DIR
 
 	# Install coc extensions
-	pushd $EXT_DIR
-	[[ ! -f package.json ]] &&
+	goto $EXT_DIR
+    [ ! -f package.json ] &&
 		echo '{"dependencies":{}}'> package.json
 
 	# Change extension names to the extensions you need
@@ -139,5 +164,5 @@ config_coc_plugin()
 		--global-style --ignore-scripts \
 		--no-bin-links --no-package-lock \
 		--only=prod
-	popd
+	back
 }

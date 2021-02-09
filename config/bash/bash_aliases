@@ -1,1 +1,6 @@
-. ~/.config/bash/alias/*
+ALIAS_DIR="$HOME/.config/bash/alias"
+LIST="$(ls $ALIAS_DIR)"
+for FILE in $LIST; do
+	. $ALIAS_DIR/$FILE
+done
+unset LIST ALIAS_DIR

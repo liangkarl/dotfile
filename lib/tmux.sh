@@ -1,68 +1,70 @@
 #!/bin/bash
 # tmux installer script
 
-source $CORE_DIR/utils.sh
-source $CORE_DIR/sign.sh
+source $SHELL_CORE_DIR/core.sh
 
-TMUX_NAME='tmux'
-TMUX_CONFIG="$CONFIG_DIR/$TMUX_NAME"
-USR_CONFIG="$HOME/.config"
-
-install() {
-    if test_cmd $TMUX_NAME; then
-        echo "$TMUX_NAME is already installed"
-    else
-        echo "Start installing $TMUX_NAME"
-        sudo apt install -y $TMUX_NAME
-        config_package
-    fi
-}
-
-uninstall() {
-    echo "Remove $TMUX_NAME..."
-    sudo apt purge $TMUX_NAME
-}
+TMUX='tmux'
+TMUX_DIR="$SHELL_CONFIG_DIR/$TMUX"
 
 config_package() {
-    echo "Config $TMUX_NAME..."
+    local BASH_COMPL TMUX_COMPL BASHRC
+    local LOAD_CMD SRC
 
-    ## Create config link
-    local SRC=''
+    echo "Config $TMUX..."
 
-    pushd $HOME
-    SRC=$TMUX_CONFIG
-    create_link $SRC/tmux.conf .tmux.conf
+    goto $HOME
+    SRC=$TMUX_DIR
+    link $SRC/tmux.conf .tmux.conf
 
     # Add load command to bash_completion
-    local -r BASH_COMPL="$HOME/.bash_completion"
-    local -r BASHRC='.bashrc'
-    local LOAD_CMD=''
+    BASH_COMPL="$HOME/.bash_completion"
+    BASHRC='.bashrc'
 
-    SRC=$USR_CONFIG/bash/completion
+    SRC=$HOME_CONFIG_DIR/bash/completion
     if [ -e $SRC ]; then
-        local -r TMUX_COMPL="$TMUX_CONFIG/completion_tmux"
+        TMUX_COMPL="$TMUX_DIR/completion_tmux"
 
-        pushd $SRC
-	create_link $TMUX_COMPL .
+        goto $SRC
+        link $TMUX_COMPL .
 
         LOAD_CMD="source $TMUX_COMPL\ncomplete -F _tmux tmux"
 
         #grep -wq "^$LOAD_CMD" $BASH_COMPL ||\
-        #    add_with_sig "$LOAD_CMD" "$BASH_COMPL" "$TMUX_NAME"
-	popd
+        #    add_with_sig "$LOAD_CMD" "$BASH_COMPL" "$TMUX"
+        back
     fi
-
-    # Install TPM
-    local -r GIT_REPO='https://github.com/tmux-plugins/tpm'
-    local -r TPM_DIR="$USR_CONFIG/$TMUX_NAME/plugins/tpm"
-    git clone $GIT_REPO $TPM_DIR
-    popd
+    back
 }
 
-# tmux-continuum
+install_tpm() {
+    local GIT_REPO TPM_DIR
+    GIT_REPO='https://github.com/tmux-plugins/tpm'
+    TPM_DIR="$HOME_CONFIG_DIR/$TMUX/plugins/tpm"
 
-# tmux-yank
+    has_cmd git || {
+        show_err "$(info_req_cmd git)"
+        return
+    }
 
-# Tmux Resurrect
+    goto $HOME
+    git clone $GIT_REPO $TPM_DIR
+    back
+}
 
-# Tmux sensible
+install() {
+    has_cmd $TMUX && {
+        show_hint "$(info_installed $TMUX)"
+        return
+    }
+
+    echo "Start installing $TMUX"
+    sudo apt install -y $TMUX
+    config_package
+    install_tpm
+}
+
+uninstall() {
+    echo "Remove $TMUX..."
+    sudo apt purge $TMUX
+}
+
