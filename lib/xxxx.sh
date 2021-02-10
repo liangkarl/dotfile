@@ -6,11 +6,13 @@ XXXX='xxxx'
 XXXX_DIR="$SHELL_CONFIG_DIR/$XXXX"
 
 xxxx_install() {
-    local ALT_CMD
-    ALT_CMD=${1:-$XXXX}
+    local FORCE
+    FORCE=$(echo $1 | grep force)
 
-	has_cmd $ALT_CMD && {
-		show_hint "$(info_installed $ALT_CMD)"
+    [ -z $FORCE ] && {
+        has_cmd $XXXX || break
+
+		show_hint "$(info_installed $XXXX)"
 		return
 	}
 
@@ -52,13 +54,13 @@ xxxx_list() {
         [ -z "$1" ] && break
         echo "List $1's available function(s) as below"
         case $1 in
-            config)
+            c|-c|--config)
                 declare -F | awk '{print $3}' | grep -E "^${XXXX}_config"
                 ;;
-            install)
+            i|-i|--install)
                 declare -F | awk '{print $3}' | grep -E "^${XXXX}_install"
                 ;;
-            remove)
+            r|-r|--remove)
                 declare -F | awk '{print $3}' | grep -E "^${XXXX}_remove"
                 ;;
             *)

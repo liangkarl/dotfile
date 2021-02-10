@@ -113,7 +113,7 @@ worker() {
                 source $SHELL_LIB_DIR/${NAME}.sh
                 ;;
 			f|-f|--force)
-                ARGS=dont-stop-this-action
+                ARGS=force
 				;;
             r|-r|--remove)
                 CMD+=' remove'
@@ -146,8 +146,6 @@ worker() {
 	done
 
     [ -z "$NAME" ] || [ -z "$CMD" ] && {
-        show_err "Require package name as below:"
-        show_hint "$ALL\n"
         __help_install $FUNCNAME
         return $BAD
     }
