@@ -73,7 +73,7 @@ install()
     local npm_source pip_source pip3_source yarn_source
     local FROM
 
-    npm_source='apt npmjs_org nodesource'
+    npm_source='npmjs_org nodesource apt'
     pip_source='apt'
     pip3_source='apt'
     yarn_source='npm'
