@@ -5,7 +5,7 @@
 install_full_list() {
     local INS_LIST
 
-    INS_LIST=('tmux' 'git' 'bash' 'nvim' 'pack-repos')
+    INS_LIST=('pack-repos' 'bash' 'git' 'tmux' 'nvim')
     for NAME in ${INS_LIST[@]}; do
         echo "======================"
         echo "Install: $NAME"
