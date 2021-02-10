@@ -3,17 +3,24 @@
 . $SHELL_CORE_DIR/core.sh
 
 install_full_list() {
-    local INS_LIST
+    local INS_LIST FAILED
 
     INS_LIST=('pack-repos' 'bash' 'git' 'tmux' 'nvim')
     for NAME in ${INS_LIST[@]}; do
         echo "======================"
         echo "Install: $NAME"
         echo "======================"
-        install_from_script $NAME
+        install_from_script $NAME || {
+            FAILED+=" $NAME"
+        }
     done
 
-    echo "install all packages"
+    if [ -z $FAILED ]; then
+        show_good "install all packages"
+    else
+        show_hint "$(info_install_failed $FAILED)"
+    fi
+    return ${#FAILED}
 }
 
 install_from_script() {
@@ -23,10 +30,11 @@ install_from_script() {
     source $LIB_SCRIPT && {
         echo "Loaded $LIB_SCRIPT"
         install
-        return
+        return $?
     }
 
     show_err "Failed to load $LIB_SCRIPT"
+    return $BAD
 }
 
 install_from_sources() {
@@ -54,14 +62,18 @@ add_ppa_repo() {
     NEED_CMD='add-apt-repository'
     has_cmd $NEED_CMD || {
         show_err "$(info_req_cmd $NEED_CMD)"
-        return 128
+        return $BAD
     }
     # install_if_no add-apt-repository software-properties-common
-    sudo add-apt-repository $NAME
+    sudo add-apt-repository -y $NAME
     sudo apt update
+    return $GOOD
 }
 
 install_option() {
+    show_err "Not implement yet. $FUNCNAME"
+    return $BAD
+
     for ARGV in "$@"; do
 		case "$ARGV" in
 			f|-f|--force)
