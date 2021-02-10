@@ -37,25 +37,25 @@ link() {
 }
 
 has_cmd() {
-    command -v >&- "$@" &&
-        return $GOOD ||
+    local LIST TEST FAIL
+    TEST='command -v'
+
+    [ $# -eq 0 ] && {
+        FAILED_CMD=''
         return $BAD
-}
+    }
 
-has_these_cmds() {
-    local LIST FAIL
-
-    LIST="$@"
-    for CMD in $LIST; do
-        has_cmd $CMD || FAIL="$CMD $FAIL"
-    done
-
-    # TODO: add more acute info about failed cmd
-    if [ ! -z "$FAIL" ]; then
-        return $BAD
+    if [ $# -gt 1 ]; then
+        LIST="$@"
+        for CMD in $LIST; do
+            $TEST $CMD &>/dev/null || FAIL+=" $CMD"
+        done
+    else
+        $TEST "$@" &> /dev/null || FAIL=$@
     fi
 
-    return $GOOD
+    FAILED_CMD=($FAIL)
+    return ${#FAILED_CMD[@]}
 }
 
 setup_version() {

@@ -14,7 +14,7 @@ install() {
 	local NEED_PACK='
 
 	'
-	has_these_cmds "$NEED_PACK" || {
+	has_cmd "$NEED_PACK" || {
 		show_err "$(info_req_cmd $NEED_PACK)"
 		return
 	}

@@ -44,7 +44,7 @@ install_brew_from_github()
 	local NEED_CMD
     local HOMEBREW
     NEED_CMD='curl wget file git'
-    has_these_cmds "$NEED_CMD" || {
+    has_cmd "$NEED_CMD" || {
         show_err "$(info_req_cmd $NEED_CMD)"
         return
     }

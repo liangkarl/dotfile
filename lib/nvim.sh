@@ -57,7 +57,7 @@ install() {
 install_nvim_optional() {
     local NEED_CMD PACK CHECK
     NEED_CMD='pip2 pip3'
-    if has_these_cmds $NEED_CMD; then
+    if has_cmd $NEED_CMD; then
         PACK='pynvim'
         pip2 show $PACK >&- || pip2 install $PACK
         pip3 show $PACK >&- || pip3 install $PACK
@@ -100,7 +100,7 @@ config_package() {
     NEED_CMD='curl git pip3 pip'
 
 	echo "Config $NVIM..."
-    has_these_cmds $NEED_CMD || {
+    has_cmd $NEED_CMD || {
         show_err "$(info_req_cmd $NEED_CMD)"
         return
     }

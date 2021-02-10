@@ -5,6 +5,7 @@ init_env() {
 
     DEFAULT="$(cd "$(dirname "${BASH_SOURCE[0]}")"/.. >/dev/null 2>&1 && pwd)"
     DIR="${1:-$DEFAULT}"
+    FAILED_CMD=''
 
     SHELL_LIB_DIR="$DIR/lib"
     SHELL_CONFIG_DIR="$DIR/config"
