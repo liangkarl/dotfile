@@ -92,11 +92,12 @@ worker() {
         return $GOOD
     }
 
-    ALL="$(ls $SHELL_LIB_DIR | sed 's/\.sh//g')"
+    ALL="$(ls -p $SHELL_LIB_DIR | grep -v / | sed 's/\.sh//g')"
     while :; do
         [ $# -eq 0 ] && break
 		case $1 in
             a|-a|--add-all)
+                echo "Add all lib script"
                 for LIB in $ALL; do
                     source $SHELL_LIB_DIR/${LIB}.sh
                 done
