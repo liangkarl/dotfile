@@ -70,25 +70,94 @@ add_ppa_repo() {
     return $GOOD
 }
 
-install_option() {
-    show_err "Not implement yet. $FUNCNAME"
-    return $BAD
+__help_install() {
+    cat << USAGE
+SYNOPSIS:
+$1 [n|-n|--name ...] [i|-i|--install] [r|-r|--remove] [c|-c|--config] [f|-f|--force]
+$1 [l|-l|--list [install | remove | config]]
+$1 [h|-h|--help]
 
-    for ARGV in "$@"; do
-		case "$ARGV" in
+EXAMPLE:
+  $1 n bash i c #install and config bash
+  $1 n bash f i #force install bash
+  $1 n bash l i #list available install function(s) in bash.sh
+USAGE
+}
+
+worker() {
+    local CMD ARGS NAME HELP ALL RET
+
+    [ $# -eq 0 ] && {
+        __help_install $FUNCNAME
+        return $GOOD
+    }
+
+    ALL="$(ls $SHELL_LIB_DIR | sed 's/\.sh//g')"
+    while :; do
+        [ $# -eq 0 ] && break
+		case $1 in
+            a|-a|--add-all)
+                for LIB in $ALL; do
+                    source $SHELL_LIB_DIR/${LIB}.sh
+                done
+                ;;
+            n|-n|--name)
+                shift
+                NAME="$1"
+                RET="$(echo $ALL | grep "$NAME")"
+                [ -z "$RET" ] && {
+                    show_err "Require package name as below:"
+                    show_hint "$ALL\n"
+                    return $BAD
+                }
+                source $SHELL_LIB_DIR/${NAME}.sh
+                ;;
 			f|-f|--force)
+                ARGS=dont-stop-this-action
 				;;
-			h|-h|--help)
-				;;
-            u|-u|--uninstall)
+            r|-r|--remove)
+                CMD+=' remove'
+                ;;
+            i|-i|--install)
+                CMD+=' install'
                 ;;
             c|-c|--config)
+                CMD+=' config'
+                ;;
+            l|-l|--list)
+                CMD='list'
+                ARGS=''
+                shift
+                while :; do
+                    [ -z "$1" ] && break 2
+                    ARGS+=" $1"
+                    shift
+                done
+                ;;
+            h|-h|--help)
+                __help_install $FUNCNAME
+				return $GOOD
                 ;;
 			*)
-                [ $# -eq 0 ] && {
-                    install
-                }
-				return 128
+                __help_install $FUNCNAME
+				return $BAD
 		esac
+        shift
 	done
+
+    [ -z "$NAME" ] || [ -z "$CMD" ] && {
+        show_err "Require package name as below:"
+        show_hint "$ALL\n"
+        __help_install $FUNCNAME
+        return $BAD
+    }
+
+    for ACTION in $CMD; do
+        has_cmd ${NAME}_${ACTION} || {
+            show_hint "$NAME: Not support or implement $ACTION yet."
+            continue
+        }
+        ${NAME}_${ACTION} $ARGS
+    done
+    return $GOOD
 }
