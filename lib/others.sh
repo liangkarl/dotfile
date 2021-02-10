@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source $SHELL_CORE_DIR/core.sh
+source $SHELL_CORE_DIR/installer.sh
 
 OTHERS_NAME='others'
 OTHERS_CONFIG="$SHELL_CONFIG_DIR/$OTHERS_NAME"

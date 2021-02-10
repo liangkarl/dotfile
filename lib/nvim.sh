@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source $SHELL_CORE_DIR/core.sh
+source $SHELL_CORE_DIR/installer.sh
 
 NVIM='nvim'
 NVIM_DIR="$SHELL_CONFIG_DIR/$NVIM"
