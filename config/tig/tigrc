@@ -5,7 +5,7 @@ set commit-order = default
 set main-view-commit-title-graph = v1
 
 # Addjust the column width of author
-set main-view = line-number:no,interval=5 id:no date:default author:full,maxwidth=20 commit-title:yes,graph,refs,overflow=no
+set main-view = line-number:no,interval=5 id:no date:default author:full,width=20 commit-title:yes,graph,refs,overflow=no
 
 bind status D ?git checkout %(file)
 bind status A ?git commit --amend
