@@ -1,11 +1,20 @@
 # Config reference
 # https://github.com/jonas/tig/blob/master/tigrc
 
+# used for boosting loading speed
 set commit-order = default
 set main-view-commit-title-graph = v1
 
 # Addjust the column width of author
-set main-view = line-number:no,interval=5 id:no date:default author:full,width=20 commit-title:yes,graph,refs,overflow=no
+set main-view = line-number:no,interval=5 \
+                date:custom,format="%d/%m/%y %H:%M" date:relative-compact \
+                author:full,width=15 id:yes \
+                commit-title:yes,graph,refs,overflow=no
+set blame-view = id:yes,color file-name:auto author:abbreviated \
+                 line-number:yes,interval=1 text
+set refs-view = line-number:no \
+                date:custom,format="%d/%m/%y %H:%M" date:relative-compact \
+				ref id:yes,color commit-title
 
 bind status D ?git checkout %(file)
 bind status A ?git commit --amend
