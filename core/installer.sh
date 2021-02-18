@@ -96,22 +96,14 @@ worker() {
     while :; do
         [ $# -eq 0 ] && break
 		case $1 in
-            a|-a|--add-all)
-                echo "Add all lib script"
-                for LIB in $ALL; do
-                    source $SHELL_LIB_DIR/${LIB}.sh
-                done
-                ;;
             n|-n|--name)
                 shift
-                NAME="$1"
-                RET="$(echo $ALL | grep "$NAME")"
-                [ -z "$RET" ] && {
-                    show_err "Require package name as below:"
-                    show_hint "$ALL\n"
-                    return $BAD
-                }
-                source $SHELL_LIB_DIR/${NAME}.sh
+                NAME="$(echo -e $ALL | grep "$1")"
+                if [ -z "$1" ]; then
+                    NAME=''
+                else
+                    NAME="$1"
+                fi
                 ;;
 			f|-f|--force)
                 ARGS=force
@@ -146,10 +138,23 @@ worker() {
         shift
 	done
 
-    [ -z "$NAME" ] || [ -z "$CMD" ] && {
+    RET=$GOOD
+    if [ -z "$NAME" ]; then
+        show_err "Require package name as below:"
+        show_hint "$ALL\n"
+        RET=$BAD
+    fi
+
+    if [ -z "$CMD" ]; then
         __help_install $FUNCNAME
-        return $BAD
-    }
+        RET=$BAD
+    fi
+
+    if [ $RET -eq $BAD ]; then
+        return $RET
+    fi
+
+    source $SHELL_LIB_DIR/${NAME}.sh
 
     for ACTION in $CMD; do
         has_cmd ${NAME}_${ACTION} || {
