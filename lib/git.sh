@@ -19,6 +19,8 @@ git_config_tig() {
 }
 
 git_install_git() {
+    sudo add-apt-repository ppa:git-core/ppa
+    sudo apt-get update
     echo "install git"
     sudo apt install -y $GIT
 }
