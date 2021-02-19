@@ -120,15 +120,17 @@ worker() {
     }
 
     ALL="$(ls -p $SHELL_LIB_DIR | grep -v / | sed 's/\.sh//g')"
-    while :; do
-        [ $# -eq 0 ] && break
+    while [ $# -ne 0 ]; do
 		case $1 in
             n|-n|--name)
                 shift
-                NAME="$(echo -e $ALL | grep "$1")"
-                if [ -z "$1" ]; then
-                    NAME=''
-                else
+                [ -z "$1" ] && {
+                    show_err "need assigned name"
+                    break 2
+                }
+
+                RET="$(echo -e $ALL | grep "$1")"
+                if [ ! -z "$RET" ]; then
                     NAME="$1"
                 fi
                 ;;
@@ -148,8 +150,11 @@ worker() {
                 CMD='list'
                 ARGS=''
                 shift
-                while :; do
-                    [ -z "$1" ] && break 2
+                [ -z "$1" ] && {
+                    show_err "need listed item"
+                    break 2
+                }
+                while [ ! -z "$1" ]; do
                     ARGS+=" $1"
                     shift
                 done
@@ -163,7 +168,7 @@ worker() {
 				return $BAD
 		esac
         shift
-	done
+    done
 
     RET=$GOOD
     if [ -z "$NAME" ]; then
