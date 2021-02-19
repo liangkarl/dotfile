@@ -2,27 +2,6 @@
 
 . $SHELL_CORE_DIR/core.sh
 
-install_full_list() {
-    local INS_LIST FAILED
-
-    INS_LIST=('pack-repos' 'bash' 'git' 'tmux' 'nvim')
-    for NAME in ${INS_LIST[@]}; do
-        echo "======================"
-        echo "Install: $NAME"
-        echo "======================"
-        install_from_script $NAME || {
-            FAILED+=" $NAME"
-        }
-    done
-
-    if [ -z $FAILED ]; then
-        show_good "install all packages"
-    else
-        show_hint "$(info_install_failed $FAILED)"
-    fi
-    return ${#FAILED}
-}
-
 install_from_script() {
     local LIB_SCRIPT
 
