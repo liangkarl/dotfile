@@ -16,6 +16,10 @@ set blame-view = id:yes,color date:relative-compact \
 set refs-view = line-number:no \
                 date:custom,format="%d/%m/%y %H:%M" date:relative-compact \
 				ref id:yes,color commit-title
+set tree-view = line-number:no,interval=5 id:yes,color \
+                mode author:full file-size \
+                date:custom,format="%d/%m/%y %H:%M" date:relative-compact \
+                file-name
 
 bind status D ?git checkout %(file)
 bind status A ?git commit --amend
