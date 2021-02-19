@@ -70,6 +70,54 @@ add_ppa_repo() {
     return $GOOD
 }
 
+install_exector() {
+    local FORCE ALL FUNC CMD
+
+    CMD="$1"
+    FUNC="$2"
+    FORCE=$(echo $3 | grep force)
+    ALL=$(declare -F | awk '{print $3}' | grep -E "^$FUNC")
+
+    [ -z $FORCE ] && {
+        has_cmd $CMD && return $BAD
+
+        show_hint "$(info_installed $CMD)"
+        return $BAD
+    }
+
+    for EXEC in $ALL; do
+        $EXEC
+    done
+}
+
+install_lister() {
+    local NAME
+
+    NAME="$1"
+    shift
+
+    while [ $# -ne 0 ]; do
+        case $1 in
+            c|-c|--config)
+                echo "List config available function(s) as below"
+                declare -F | awk '{print $3}' | grep -E "^${NAME}_config"
+                ;;
+            i|-i|--install)
+                echo "List install available function(s) as below"
+                declare -F | awk '{print $3}' | grep -E "^${NAME}_install"
+                ;;
+            r|-r|--remove)
+                echo "List remove available function(s) as below"
+                declare -F | awk '{print $3}' | grep -E "^${NAME}_remove"
+                ;;
+            *)
+                show_err "not support option '$1'"
+        esac
+        shift
+        echo ""
+    done
+}
+
 __help_install() {
     cat << USAGE
 SYNOPSIS:

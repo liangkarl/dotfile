@@ -36,21 +36,11 @@ git_config_git() {
 }
 
 git_install() {
-    local FORCE ALL
-    FORCE=$(echo $1 | grep force)
-    ALL=$(declare -F | awk '{print $3}' | grep -E "^${GIT}_install_")
-
-    [ -z $FORCE ] && {
-        has_cmd $GIT || break
-
-		show_hint "$(info_installed $GIT)"
-		return
-	}
+    local FORCE
+    FORCE="$1"
 
     echo "Start installing $GIT"
-    for EXEC in $ALL; do
-        $EXEC
-    done
+    install_exector $GIT "${GIT}_install_" $FORCE
 }
 
 git_remove() {
@@ -59,43 +49,13 @@ git_remove() {
 }
 
 git_config() {
-    local FORCE ALL
-    FORCE=$(echo $1 | grep force)
-    ALL=$(declare -F | awk '{print $3}' | grep -E "^${GIT}_config_")
-
-    [ -z $FORCE ] && {
-        has_cmd $GIT || break
-
-		show_hint "$(info_installed $GIT)"
-		return
-	}
+    local FORCE
+    FORCE="$1"
 
     echo "Config $GIT..."
-    for EXEC in $ALL; do
-        $EXEC
-    done
+    install_exector $GIT "${GIT}_config_" $FORCE
 }
 
 git_list() {
-    while :; do
-        [ -z "$1" ] && break
-        case $1 in
-            c|-c|--config)
-                echo "List config available function(s) as below"
-                declare -F | awk '{print $4}' | grep -E "^${GIT}_config"
-                ;;
-            i|-i|--install)
-                echo "List install available function(s) as below"
-                declare -F | awk '{print $3}' | grep -E "^${GIT}_install"
-                ;;
-            r|-r|--remove)
-                echo "List remove available function(s) as below"
-                declare -F | awk '{print $3}' | grep -E "^${GIT}_remove"
-                ;;
-            *)
-                show_err "not support option '$1'"
-        esac
-        shift
-        echo ""
-    done
+    install_lister $GIT $@
 }

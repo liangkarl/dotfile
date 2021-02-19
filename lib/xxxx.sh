@@ -7,31 +7,20 @@ XXXX_DIR="$SHELL_CONFIG_DIR/$XXXX"
 
 xxxx_install() {
     local FORCE
-    FORCE=$(echo $1 | grep force)
+    FORCE="$1"
 
-    [ -z $FORCE ] && {
-        has_cmd $XXXX || break
-
-		show_hint "$(info_installed $XXXX)"
-		return
-	}
-
-	local NEED_PACK='
-
-	'
-	has_cmd "$NEED_PACK" || {
-		show_err "$(info_req_cmd $NEED_PACK)"
-		return
-	}
-
-	echo "Install $XXXX..."
-	echo "Not finished yet..."
-	# config_package
+    echo "Install $XXXX..."
+    install_exector $XXXX "${XXXX}_install_" $FORCE
+    return $GOOD
 }
 
 xxxx_remove() {
+    local FORCE
+    FORCE="$1"
+
 	echo "Remove $XXXX..."
-	echo "Not finished yet..."
+    install_exector $XXXX "${XXXX}_remove_" $FORCE
+    return $GOOD
 
 	# Remove package itself without system configs
 	# sudo apt remove $XXXX
@@ -45,28 +34,13 @@ xxxx_remove() {
 }
 
 xxxx_config() {
-	echo "Config $XXXX..."
-	echo "Not finished yet..."
+    local FORCE
+    FORCE="$1"
+
+    echo "Configure $XXXX..."
+    install_exector $XXXX "${XXXX}_config_" $FORCE
 }
 
 xxxx_list() {
-    while :; do
-        [ -z "$1" ] && break
-        echo "List $1's available function(s) as below"
-        case $1 in
-            c|-c|--config)
-                declare -F | awk '{print $3}' | grep -E "^${XXXX}_config"
-                ;;
-            i|-i|--install)
-                declare -F | awk '{print $3}' | grep -E "^${XXXX}_install"
-                ;;
-            r|-r|--remove)
-                declare -F | awk '{print $3}' | grep -E "^${XXXX}_remove"
-                ;;
-            *)
-                show_err "not support option '$1'"
-        esac
-        shift
-        echo ""
-    done
+    install_lister $XXXX $@
 }
