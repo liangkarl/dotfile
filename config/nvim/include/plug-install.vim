@@ -29,6 +29,7 @@ call plug#begin('~/.config/nvim/plugged')
 " | vim-del...buffers | Delete hidden buffers              |
 " | fzf, fzf.vim      | Fuzzy searching and other features |
 " | coc.nvim          | LSP clients and lots of features   |
+" | vim-tmux-clip...  | Share clipboard between tmux, vim  |
 " |-------------------+------------------------------------|
 " NOTE:
 " vim-airline has poor performance
@@ -46,6 +47,7 @@ Plug 'arithran/vim-delete-hidden-buffers'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'roxma/vim-tmux-clipboard'
 
 """ 2. General Editor Tools
 
