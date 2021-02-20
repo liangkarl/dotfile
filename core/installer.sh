@@ -35,6 +35,23 @@ install_from_sources() {
     return $BAD
 }
 
+apt_ins() {
+    local RET
+    RET=0
+
+    [ $# -eq 0 ] && return $BAD
+
+    for CMD in $@; do
+        echo "installing $CMD"
+        sudo apt install -y "$CMD" >&- || {
+            show_err "$(info_install_failed $CMD)"
+            echo "result from: sudo apt install $CMD"
+            RET=$((RET + 1))
+        }
+    done
+    return $RET
+}
+
 add_ppa_repo() {
     local NAME NEED_CMD
     NAME="$1"
