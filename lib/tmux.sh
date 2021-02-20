@@ -6,7 +6,7 @@ source $SHELL_CORE_DIR/core.sh
 TMUX='tmux'
 TMUX_DIR="$SHELL_CONFIG_DIR/$TMUX"
 
-config_package() {
+tmux_config_tmux() {
     local BASH_COMPL TMUX_COMPL BASHRC
     local LOAD_CMD SRC
 
@@ -36,35 +36,65 @@ config_package() {
     back
 }
 
-install_tpm() {
+tmux_install_tpm() {
     local GIT_REPO TPM_DIR
+
+    need_cmd git || return $?
+
     GIT_REPO='https://github.com/tmux-plugins/tpm'
     TPM_DIR="$HOME_CONFIG_DIR/$TMUX/plugins/tpm"
-
-    has_cmd git || {
-        show_err "$(info_req_cmd git)"
-        return
-    }
-
     goto $HOME
     git clone $GIT_REPO $TPM_DIR
     back
 }
 
-install() {
-    has_cmd $TMUX && {
-        show_hint "$(info_installed $TMUX)"
-        return
-    }
-
+tmux_install_tmux() {
     echo "Start installing $TMUX"
-    sudo apt install -y $TMUX
-    config_package
-    install_tpm
+    apt_ins $TMUX
 }
 
-uninstall() {
+tmux_remove() {
     echo "Remove $TMUX..."
     sudo apt purge $TMUX
+}
+
+tmux_install() {
+    local FORCE
+    FORCE="$1"
+
+    echo "Install $TMUX..."
+    __take_action $TMUX "${TMUX}_install_" $FORCE
+    return $GOOD
+}
+
+tmux_remove() {
+    local FORCE
+    FORCE="$1"
+
+	echo "Remove $TMUX..."
+    __take_action $TMUX "${TMUX}_remove_" $FORCE
+    return $GOOD
+
+	# Remove package itself without system configs
+	# sudo apt remove $TMUX
+
+	# Remove package itself & system config
+	# sudo apt purge $TMUX
+
+	# Remove related dependency
+	# sudo apt autoremove
+	# still remain user configs
+}
+
+tmux_config() {
+    local FORCE
+    FORCE="$1"
+
+    echo "Configure $TMUX..."
+    __take_action $TMUX "${TMUX}_config_" $FORCE
+}
+
+tmux_list() {
+    __show_list $TMUX $@
 }
 
