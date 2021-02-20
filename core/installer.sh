@@ -66,7 +66,7 @@ add_ppa_repo() {
     return $GOOD
 }
 
-install_exector() {
+__take_action() {
     local FORCE ALL FUNC CMD
 
     CMD="$1"
@@ -86,7 +86,7 @@ install_exector() {
     done
 }
 
-install_lister() {
+__show_list() {
     local NAME
 
     NAME="$1"

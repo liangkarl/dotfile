@@ -52,7 +52,7 @@ gdb_install() {
     FORCE="$1"
 
     echo "Install $GDB..."
-    install_exector $GDB "${GDB}_install_" $FORCE
+    __take_action $GDB "${GDB}_install_" $FORCE
     return $GOOD
 }
 
@@ -61,7 +61,7 @@ gdb_remove() {
     FORCE="$1"
 
 	echo "Remove $GDB..."
-    install_exector $GDB "${GDB}_remove_" $FORCE
+    __take_action $GDB "${GDB}_remove_" $FORCE
     return $GOOD
 }
 
@@ -70,9 +70,9 @@ gdb_config() {
     FORCE="$1"
 
     echo "Configure $GDB..."
-    install_exector $GDB "${GDB}_config_" $FORCE
+    __take_action $GDB "${GDB}_config_" $FORCE
 }
 
 gdb_list() {
-    install_lister $GDB $@
+    __show_list $GDB $@
 }

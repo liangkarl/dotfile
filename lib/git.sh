@@ -39,7 +39,7 @@ git_install() {
     FORCE="$1"
 
     echo "Start installing $GIT"
-    install_exector $GIT "${GIT}_install_" $FORCE
+    __take_action $GIT "${GIT}_install_" $FORCE
 }
 
 git_remove() {
@@ -52,9 +52,9 @@ git_config() {
     FORCE="$1"
 
     echo "Config $GIT..."
-    install_exector $GIT "${GIT}_config_" $FORCE
+    __take_action $GIT "${GIT}_config_" $FORCE
 }
 
 git_list() {
-    install_lister $GIT $@
+    __show_list $GIT $@
 }

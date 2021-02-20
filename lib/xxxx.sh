@@ -10,7 +10,7 @@ xxxx_install() {
     FORCE="$1"
 
     echo "Install $XXXX..."
-    install_exector $XXXX "${XXXX}_install_" $FORCE
+    __take_action $XXXX "${XXXX}_install_" $FORCE
     return $GOOD
 }
 
@@ -19,7 +19,7 @@ xxxx_remove() {
     FORCE="$1"
 
 	echo "Remove $XXXX..."
-    install_exector $XXXX "${XXXX}_remove_" $FORCE
+    __take_action $XXXX "${XXXX}_remove_" $FORCE
     return $GOOD
 
 	# Remove package itself without system configs
@@ -38,9 +38,9 @@ xxxx_config() {
     FORCE="$1"
 
     echo "Configure $XXXX..."
-    install_exector $XXXX "${XXXX}_config_" $FORCE
+    __take_action $XXXX "${XXXX}_config_" $FORCE
 }
 
 xxxx_list() {
-    install_lister $XXXX $@
+    __show_list $XXXX $@
 }
