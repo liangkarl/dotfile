@@ -4,7 +4,6 @@ source $SHELL_CORE_DIR/core.sh
 
 GIT='git'
 GIT_DIR="$SHELL_CONFIG_DIR/$GIT"
-TIG_DIR="$SHELL_CONFIG_DIR/tig"
 
 git_install_tig() {
     echo "install tig"
@@ -14,7 +13,7 @@ git_install_tig() {
 git_config_tig() {
     echo "config tig"
     goto $HOME
-    link $TIG_DIR/tigrc .tigrc
+    link $GIT_DIR/tigrc .tigrc
     back
 }
 
