@@ -36,6 +36,16 @@ link() {
     ln -sv $SRC $DST
 }
 
+need_cmd() {
+    [ $# -eq 0 ] && return $BAD
+
+    has_cmd $@ || {
+        show_err "$(info_req_cmd $@)"
+        return $BAD
+    }
+    return $GOOD
+}
+
 has_cmd() {
     local LIST TEST FAIL
     TEST='command -v'
@@ -133,7 +143,7 @@ info_install_failed() {
 }
 
 info_install_done() {
-    echo "install completed: %@"
+    echo "install completed: $@"
 }
 
 add_with_sig() {

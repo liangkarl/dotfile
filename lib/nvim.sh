@@ -14,14 +14,12 @@ PIP3_PACKAGES="
 
 install_from_stable_nvim() {
     add_ppa_repo ppa:neovim-ppa/stable
-    sudo apt update
-    sudo apt install neovim
+    apt_ins neovim
 }
 
 install_from_unstable_nvim() {
     add_ppa_repo ppa:neovim-ppa/unstable
-    sudo apt update
-    sudo apt install neovim
+    apt_ins neovim
 }
 
 install() {
@@ -55,26 +53,19 @@ install() {
 }
 
 install_nvim_optional() {
-    local NEED_CMD PACK CHECK
-    NEED_CMD='pip2 pip3'
-    if has_cmd $NEED_CMD; then
+    local PACK
+    need_cmd pip2 pip3 && {
         PACK='pynvim'
         pip2 show $PACK >&- || pip2 install $PACK
-        pip3 show $PACK >&- || pip3 install $PACK
+        pip3 show $PACK >&- || pip3_ins $PACK
 
         PACK='neovim-remote'
-        pip3 show $PACK >&- || pip3 install $PACK
-    else
-        show_warn "$(info_req_cmd $NEED_CMD)"
-    fi
+        pip3 show $PACK >&- || pip3_ins $PACK
+    }
 
-    NEED_CMD='npm'
-    if has_cmd $NEED_CMD; then
-        PACK='neovim'
-        sudo npm install -g $PACK
-    else
-        show_warn "$(info_req_cmd $NEED_CMD)"
-    fi
+    need_cmd npm && {
+        npm_ins_g neovim
+    }
 }
 
 install_plug_vim() {
@@ -96,14 +87,8 @@ install_fzf() {
 }
 
 config_package() {
-    local NEED_CMD
-    NEED_CMD='curl git pip3 pip'
-
 	echo "Config $NVIM..."
-    has_cmd $NEED_CMD || {
-        show_err "$(info_req_cmd $NEED_CMD)"
-        return
-    }
+    need_cmd curl git pip3 pip || return $?
 
 	# link config
 	[ -e $HOME_CONFIG_DIR ] || mkdir $HOME_CONFIG_DIR

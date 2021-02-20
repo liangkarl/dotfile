@@ -7,7 +7,7 @@ GIT_DIR="$SHELL_CONFIG_DIR/$GIT"
 
 git_install_tig() {
     echo "install tig"
-    sudo apt install -y tig
+    apt_ins tig
 }
 
 git_config_tig() {
@@ -18,10 +18,8 @@ git_config_tig() {
 }
 
 git_install_git() {
-    sudo add-apt-repository ppa:git-core/ppa
-    sudo apt-get update
-    echo "install git"
-    sudo apt install -y $GIT
+    add_ppa_repo ppa:git-core/ppa
+    apt_ins $GIT
 }
 
 git_config_git() {

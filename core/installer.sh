@@ -35,31 +35,58 @@ install_from_sources() {
     return $BAD
 }
 
-apt_ins() {
-    local RET
+__ins_cmd() {
+    local RET INSTALL
     RET=0
-
-    [ $# -eq 0 ] && return $BAD
+    INSTALL="$1"
+    shift
 
     for CMD in $@; do
         echo "installing $CMD"
-        sudo apt install -y "$CMD" >&- || {
-            show_err "$(info_install_failed $CMD)"
-            echo "result from: sudo apt install $CMD"
-            RET=$((RET + 1))
+        has_cmd $CMD && {
+            show_hint "$(info_installed $CMD)"
         }
+        $INSTALL "$CMD" >&- || {
+            show_err "$(info_install_failed $CMD)"
+            echo "result from: $INSTALL $CMD"
+            RET=$((RET + 1))
+            continue
+        }
+        echo "$(info_install_done $CMD)"
     done
     return $RET
 }
 
+apt_ins() {
+    __ins_cmd "sudo apt install -y" "$@"
+}
+
+pip_ins() {
+    __ins_cmd "pip install" "$@"
+}
+
+pip_ins() {
+    __ins_cmd "pip2 install" "$@"
+}
+
+pip3_ins() {
+    __ins_cmd "pip3 install" "$@"
+}
+
+npm_ins_g() {
+    __ins_cmd "sudo npm install -g" "$@"
+}
+
+npm_ins() {
+    __ins_cmd "npm install" "$@"
+}
+
 add_ppa_repo() {
-    local NAME NEED_CMD
+    local NAME
     NAME="$1"
-    NEED_CMD='add-apt-repository'
-    has_cmd $NEED_CMD || {
-        show_err "$(info_req_cmd $NEED_CMD)"
-        return $BAD
-    }
+
+    need_cmd add-apt-repository || return $?
+
     # install_if_no add-apt-repository software-properties-common
     sudo add-apt-repository -y $NAME
     sudo apt update

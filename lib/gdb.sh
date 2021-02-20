@@ -7,38 +7,24 @@ GDB_DIR="$SHELL_CONFIG_DIR/$GDB"
 
 gdb_install_gdb()
 {
-    sudo apt install -y $GDB
+    apt_ins $GDB
 }
 
-gdb_install_gdbgui()
-{
-    local NEED_CMD
+gdb_install_gdbgui() {
+    need_cmd python3 || return $?
 
-    NEED_CMD=python3
-
-	has_cmd $NEED_CMD || {
-        show_err "$(info_req_cmd $NEED_CMD)"
-		return $BAD
-	}
-
-    python3 -m pip install --user pipx
+    pip3_ins pipx
     [ -z "$(echo $PATH | grep $HOME_BIN_DIR)" ] &&
         python3 -m userpath append $HOME_BIN_DIR
 
     # For debian-based OS
-    sudo apt install python3-venv
+    apt_ins python3-venv
 
     pipx install gdbgui
 }
 
 gdb_config_gdbinit() {
-	local NEED_CMD
-
-    NEED_CMD='wget pip'
-	has_cmd $NEED_CMD || {
-        show_err "$(info_req_cmd $NEED_CMD)"
-		return $BAD
-	}
+    need_cmd wget pip || return $?
 
 	echo "Config $GDB..."
     goto $HOME
