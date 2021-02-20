@@ -1,5 +1,6 @@
 # Config reference
 # https://github.com/jonas/tig/blob/master/tigrc
+# https://jonas.github.io/tig/doc/tigrc.5.html
 
 # used for boosting loading speed
 set commit-order = default
@@ -26,14 +27,17 @@ bind status A ?git commit --amend
 # NOTE:
 # `git stash save "stash name"` is deprecated at git 2.16
 # and replaced by `git stash push -m "stash name"`
-bind status S ?git stash save "%(prompt)"
-bind status s ?git stash save "%(prompt)" %(file)
+bind status S ?git stash save "%(prompt [stash all] New stash: )"
+bind status s ?git stash save "%(prompt [stash file] New stash: )" %(file)
 
-bind refs F ?git fetch . HEAD:%(branch)
-bind refs M ?git merge %(branch)
-bind refs $ ?git tag -d %(tag)
+bind refs P ?git fetch . %(repo:head):%(branch)
+bind refs F ?git fetch --all
+bind refs M ?git merge "%(prompt [merge-branch] arguments: )" %(branch)
+bind refs B ?git rebase "%(prompt [rebase-branch] arguments: )" %(branch)
+bind refs D ?git branch -D %(branch)
+bind refs d ?git tag -d %(tag)
 
-bind main ! ?git reset --hard %(commit)
-bind main @ ?git checkout %(commit)
-bind main T ?git tag %(prompt) %(commit)
-bind main B ?git branch %(prompt) %(commit)
+bind main ! ?git reset "%(prompt [reset-commit] arguments: )" %(commit)
+bind main E ?git checkout %(commit)
+bind main T ?git tag "%(prompt New tag: )" %(commit)
+bind main B ?git branch "%(prompt New branch: )" %(commit)
