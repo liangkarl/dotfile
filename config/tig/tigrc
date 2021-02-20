@@ -32,8 +32,8 @@ bind status s ?git stash save "%(prompt [stash file] New stash: )" %(file)
 
 bind refs P ?git fetch . %(repo:head):%(branch)
 bind refs F ?git fetch --all
-bind refs M ?git merge "%(prompt [merge-branch] arguments: )" %(branch)
-bind refs B ?git rebase "%(prompt [rebase-branch] arguments: )" %(branch)
+bind refs M ?git merge "%(prompt [Hint: main branch merges forked branch] arguments: )" %(branch)
+bind refs B ?git rebase "%(prompt [Hint: forked branch rebases main branch] arguments: )" %(branch)
 bind refs D ?git branch -D %(branch)
 bind refs d ?git tag -d %(tag)
 
