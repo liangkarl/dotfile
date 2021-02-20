@@ -36,6 +36,7 @@ bind refs M ?git merge "%(prompt [Hint: main branch merges forked branch] argume
 bind refs B ?git rebase "%(prompt [Hint: forked branch rebases main branch] arguments: )" %(branch)
 bind refs D ?git branch -D %(branch)
 bind refs d ?git tag -d %(tag)
+bind refs U ?git push %(remote) %(branch)
 
 bind main ! ?git reset "%(prompt [reset-commit] arguments: )" %(commit)
 bind main E ?git checkout %(commit)
