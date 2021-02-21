@@ -94,23 +94,28 @@ add_ppa_repo() {
 }
 
 __take_action() {
-    local FORCE ALL FUNC CMD
+    local ALL ARGS ACTION FUNC NAME RET
 
-    CMD="$1"
-    FUNC="$2"
-    FORCE=$(echo $3 | grep force)
-    ALL=$(declare -F | awk '{print $3}' | grep -E "^$FUNC")
+    NAME="$1"
+    ACTION="$2"
+    FUNC="${NAME}_${ACTION}_"
+    ALL=$(declare -F | awk '{print $3}' | grep -E "^${FUNC}")
+    ARGS="$3"
 
-    [ -z $FORCE ] && {
-        has_cmd $CMD && return $BAD
-
-        show_hint "$(info_installed $CMD)"
-        return $BAD
+    [ "$ACTION" == install ] && {
+        local FORCE
+        FORCE=$(echo $ARGS | grep -w f)
+        if has_cmd $NAME && [ -z "$FORCE" ]; then
+            show_hint "$(info_installed $NAME)"
+            return $BAD
+        fi
     }
 
+    RET=0
     for EXEC in $ALL; do
-        $EXEC
+        $EXEC || RET=$((RET + 1))
     done
+    return $RET
 }
 
 __show_list() {
@@ -121,15 +126,15 @@ __show_list() {
 
     while [ $# -ne 0 ]; do
         case $1 in
-            c|-c|--config)
+            config)
                 echo "List config available function(s) as below"
                 declare -F | awk '{print $3}' | grep -E "^${NAME}_config"
                 ;;
-            i|-i|--install)
+            install)
                 echo "List install available function(s) as below"
                 declare -F | awk '{print $3}' | grep -E "^${NAME}_install"
                 ;;
-            r|-r|--remove)
+            remove)
                 echo "List remove available function(s) as below"
                 declare -F | awk '{print $3}' | grep -E "^${NAME}_remove"
                 ;;
@@ -179,7 +184,7 @@ worker() {
                 fi
                 ;;
 			f|-f|--force)
-                ARGS=force
+                ARGS=f
 				;;
             r|-r|--remove)
                 CMD+=' remove'
@@ -232,12 +237,14 @@ worker() {
 
     source $SHELL_LIB_DIR/${NAME}.sh
 
+    RET=0
     for ACTION in $CMD; do
         has_cmd ${NAME}_${ACTION} || {
             show_hint "$NAME: Not support or implement $ACTION yet."
+            RET=$((RET+1))
             continue
         }
-        ${NAME}_${ACTION} $ARGS
+        ${NAME}_${ACTION} $ARGS || RET=$((RET+1))
     done
-    return $GOOD
+    return $RET
 }

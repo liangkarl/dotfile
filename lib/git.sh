@@ -37,10 +37,11 @@ git_install() {
     FORCE="$1"
 
     echo "Start installing $GIT"
-    __take_action $GIT "${GIT}_install_" $FORCE
+    __take_action $GIT install $FORCE
+    return $?
 }
 
-git_remove() {
+git_remove_git() {
     echo "Remove $GIT..."
     sudo apt purge $GIT
 }
@@ -50,9 +51,11 @@ git_config() {
     FORCE="$1"
 
     echo "Config $GIT..."
-    __take_action $GIT "${GIT}_config_" $FORCE
+    __take_action $GIT config $FORCE
+    return $?
 }
 
 git_list() {
     __show_list $GIT $@
+    return $?
 }

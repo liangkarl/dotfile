@@ -38,8 +38,8 @@ gdb_install() {
     FORCE="$1"
 
     echo "Install $GDB..."
-    __take_action $GDB "${GDB}_install_" $FORCE
-    return $GOOD
+    __take_action $GDB install $FORCE
+    return $?
 }
 
 gdb_remove() {
@@ -47,8 +47,8 @@ gdb_remove() {
     FORCE="$1"
 
 	echo "Remove $GDB..."
-    __take_action $GDB "${GDB}_remove_" $FORCE
-    return $GOOD
+    __take_action $GDB remove $FORCE
+    return $?
 }
 
 gdb_config() {
@@ -56,9 +56,11 @@ gdb_config() {
     FORCE="$1"
 
     echo "Configure $GDB..."
-    __take_action $GDB "${GDB}_config_" $FORCE
+    __take_action $GDB config $FORCE
+    return $?
 }
 
 gdb_list() {
     __show_list $GDB $@
+    return $?
 }

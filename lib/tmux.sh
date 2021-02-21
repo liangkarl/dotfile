@@ -53,7 +53,7 @@ tmux_install_tmux() {
     apt_ins $TMUX
 }
 
-tmux_remove() {
+tmux_remove_tmux() {
     echo "Remove $TMUX..."
     sudo apt purge $TMUX
 }
@@ -63,8 +63,8 @@ tmux_install() {
     FORCE="$1"
 
     echo "Install $TMUX..."
-    __take_action $TMUX "${TMUX}_install_" $FORCE
-    return $GOOD
+    __take_action $TMUX install $FORCE
+    return $?
 }
 
 tmux_remove() {
@@ -72,8 +72,8 @@ tmux_remove() {
     FORCE="$1"
 
 	echo "Remove $TMUX..."
-    __take_action $TMUX "${TMUX}_remove_" $FORCE
-    return $GOOD
+    __take_action $TMUX remove $FORCE
+    return $?
 
 	# Remove package itself without system configs
 	# sudo apt remove $TMUX
@@ -91,10 +91,12 @@ tmux_config() {
     FORCE="$1"
 
     echo "Configure $TMUX..."
-    __take_action $TMUX "${TMUX}_config_" $FORCE
+    __take_action $TMUX config $FORCE
+    return $?
 }
 
 tmux_list() {
     __show_list $TMUX $@
+    return $?
 }
 

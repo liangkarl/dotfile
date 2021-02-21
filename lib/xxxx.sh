@@ -6,21 +6,21 @@ XXXX='xxxx'
 XXXX_DIR="$SHELL_CONFIG_DIR/$XXXX"
 
 xxxx_install() {
-    local FORCE
-    FORCE="$1"
+    local ARGS
+    ARGS="$1"
 
     echo "Install $XXXX..."
-    __take_action $XXXX "${XXXX}_install_" $FORCE
-    return $GOOD
+    __take_action $XXXX install $ARGS
+    return $?
 }
 
 xxxx_remove() {
-    local FORCE
-    FORCE="$1"
+    local ARGS
+    ARGS="$1"
 
 	echo "Remove $XXXX..."
-    __take_action $XXXX "${XXXX}_remove_" $FORCE
-    return $GOOD
+    __take_action $XXXX remove $ARGS
+    return $?
 
 	# Remove package itself without system configs
 	# sudo apt remove $XXXX
@@ -34,13 +34,15 @@ xxxx_remove() {
 }
 
 xxxx_config() {
-    local FORCE
-    FORCE="$1"
+    local ARGS
+    ARGS="$1"
 
     echo "Configure $XXXX..."
-    __take_action $XXXX "${XXXX}_config_" $FORCE
+    __take_action $XXXX config $ARGS
+    return $?
 }
 
 xxxx_list() {
     __show_list $XXXX $@
+    return $?
 }
