@@ -26,6 +26,8 @@ call plug#begin('~/.config/nvim/plugged')
 " | lightline, ...    | Show status line                   |
 " | vista.vim         | Function manager                   |
 " | vim-signify       | Show git diff by side              |
+" | tig-explorer      | Show tig inside vim                |
+" | bclose.vim        | Used for tig-explorer.vim          |
 " | vim-del...buffers | Delete hidden buffers              |
 " | fzf, fzf.vim      | Fuzzy searching and other features |
 " | coc.nvim          | LSP clients and lots of features   |
@@ -43,6 +45,8 @@ Plug 'itchyny/lightline.vim'
 Plug 'mengelbrecht/lightline-bufferline'
 Plug 'liuchengxu/vista.vim'
 Plug 'mhinz/vim-signify'
+Plug 'rbgrouleff/bclose.vim'
+Plug 'iberianpig/tig-explorer.vim'
 Plug 'arithran/vim-delete-hidden-buffers'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'

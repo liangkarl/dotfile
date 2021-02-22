@@ -10,6 +10,9 @@ set showcmd
 " Close a split window in Vim without resizing other windows
 set noequalalways
 
+" set no line number in terminal buffer
+autocmd TermOpen * setlocal nonumber norelativenumber
+
 " opening a new file when the current buffer has unsaved changes
 " causes files to be hidden instead of closed
 set hidden
