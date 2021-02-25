@@ -1,7 +1,31 @@
 #!/bin/bash
 
-__ADB=$(which adb)
-__ADB=${__ADB:-./adb.exe}
+__adb_prepare() {
+    local LIST
+    LIST="
+        $(pwd)/adb.exe
+        $(pwd)/adb
+        $(which adb)
+    "
+    [ ! -z "$1" ] && {
+        LIST+=" $1/adb"
+        LIST+=" $1/adb.exe"
+    }
+    for CMD in $LIST; do
+        [ -e $CMD ] && {
+            echo "find adb: $CMD"
+            __ADB=$CMD
+            alias adb=$__ADB
+            return 0
+        }
+    done
+
+    echo "No adb binary available" >&2
+    unset __ADB
+
+    return 128
+}
+__adb_prepare
 
 __adb_animate_star() {
 	local COUNT IMAGE
