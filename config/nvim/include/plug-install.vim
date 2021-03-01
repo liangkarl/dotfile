@@ -46,7 +46,7 @@ Plug 'mengelbrecht/lightline-bufferline'
 Plug 'liuchengxu/vista.vim'
 Plug 'mhinz/vim-signify'
 Plug 'rbgrouleff/bclose.vim'
-Plug 'iberianpig/tig-explorer.vim'
+Plug 'liangkarl/tig-explorer.vim'
 Plug 'arithran/vim-delete-hidden-buffers'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
