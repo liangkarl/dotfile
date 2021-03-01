@@ -52,6 +52,15 @@ inoremap <A-w> <C-Right>
 nnoremap <silent><F3> :FloatermToggle<CR>
 tnoremap <silent><F3> <C-\><C-N>:FloatermToggle<CR>
 
+function! ToggleQuickFix()
+    if empty(filter(getwininfo(), 'v:val.quickfix'))
+        copen
+    else
+        cclose
+    endif
+endfunction
+nnoremap <silent> <space>tq :call ToggleQuickFix()<cr>
+
 " To use `ALT+{h,j,k,l}` to navigate windows from any mode:
 " tnoremap <A-h> <C-\><C-N><C-w>h
 " tnoremap <A-j> <C-\><C-N><C-w>j
