@@ -5,86 +5,64 @@ __to_vm_path() {
 	SRC="$1"
 
 	[ -z "$SRC" ] && return
-	FINAL="$(echo $SRC | sed "s|^$HOME|\0/vm|")"
+
+    if [[ "$SRC" == ~* ]]; then
+        FINAL="$(echo $SRC | sed "s|^~|$HOME/vm|")"
+    else
+	    FINAL="$(echo $SRC | sed "s|^$HOME|\0/vm|")"
+    fi
 
 	echo "$FINAL"
 }
 
-__rsync_cmd() {
-	local SRC DST
-	SRC="$1"
-	DST="${2:-.}"
+# quanta sync
+qsync() {
+    local HOST SRC DST
+    local DIRECT RET
 
-	echo "SRC: $SRC"
-	echo "DST: $DST"
-	echo "================================"
+    [ $# -le 2 ] && {
+        echo "$FUNCNAME HOST:SRC DST"
+        echo "$FUNCNAME SRC... HOST:DST"
+        return 128
+    }
 
-	rsync -hav -r $SRC $DST
+    # TODO: parse different user here
+    SRC=()
+    while [ $# -ne 1 ]; do
+        if [[ "$1" == *":"* ]]; then
+            HOST="${1%:*}"
+            SRC="${1##*:}"
+            SRC=$(__to_vm_path $SRC)
+            DIRECT='in'
+        else
+            SRC+=("$1")
+        fi
+        shift
+    done
+
+    if [[ "$1" == *":"* ]]; then
+        HOST="${1%:*}"
+        DST="${1##*:}"
+        DST="$(__to_vm_path $DST)"
+        DIRECT='out'
+    else
+        DST="$1"
+    fi
+
+    if [ "$DIRECT" == 'in' ]; then
+        __rsync_cmd $HOST:$SRC $DST
+        rsync -hav -r $SRC $DST
+    else
+        rsync -hav -r "${SRC[@]}" $HOST:$DST
+    fi
+    RET=$?
+
+    echo "================================"
+    echo "SRC: ${SRC[@]}"
+    echo "DST: $DST"
+    return $RET
 }
-
-from_saturn() {
-	local SRVR DST SRC
-	SRVR='saturn'
-	SRC=$(__to_vm_path "$1")
-	DST="${2:-files@$(date +%s)}"
-
-	[ $# -eq 0 ] && {
-		declare -f $FUNCNAME
-		return 1
-	}
-
-	__rsync_cmd $SRVR:$SRC $DST
-}
-
-to_saturn() {
-	local DST SRVR SRC
-	SRVR='saturn'
-	SRC="$1"
-	DST=$(__to_vm_path "$2")
-
-	[ $# -eq 0 ] && {
-		declare -f $FUNCNAME
-		return 1
-	}
-
-	[ -z $DST ] && {
-		echo "Copy to where?"
-		return 1
-	}
-	__rsync_cmd $SRC $SRVR:$DST
-}
-
-from_hogwarts() {
-	local SRVR DST SRC
-	SRVR='hogwarts'
-	SRC=$(__to_vm_path "$1")
-	DST="${2:-files@$(date +%s)}"
-
-	[ $# -eq 0 ] && {
-		declare -f $FUNCNAME
-		return 1
-	}
-
-	__rsync_cmd $SRVR:$SRC $DST
-}
-
-to_hogwarts() {
-	local DST SRVR SRC
-	SRVR='hogwarts'
-	SRC="$1"
-	DST=$(__to_vm_path "$2")
-
-	[ $# -eq 0 ] && {
-		declare -f $FUNCNAME
-		return 1
-	}
-
-	[ -z $DST ] && {
-		echo "Copy to where?"
-		return 1
-	}
-	__rsync_cmd $SRC $SRVR:$DST
-}
+complete -F _rsync -o nospace qsync
 
 setup_vpn() {
 	local FILE
