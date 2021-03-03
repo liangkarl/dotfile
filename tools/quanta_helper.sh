@@ -17,10 +17,10 @@ __to_vm_path() {
 
 # quanta sync
 qsync() {
-    local HOST SRC DST
-    local DIRECT RET
+    local HOST SRC LOC DST ARGS
+    local RET
 
-    [ $# -le 2 ] && {
+    [[ $# < 2 ]] && {
         echo "$FUNCNAME HOST:SRC DST"
         echo "$FUNCNAME SRC... HOST:DST"
         return 128
@@ -29,11 +29,13 @@ qsync() {
     # TODO: parse different user here
     SRC=()
     while [ $# -ne 1 ]; do
-        if [[ "$1" == *":"* ]]; then
+        if [[ "$1" == "-"* ]]; then
+            ARGS+=" $1"
+        elif [[ "$1" == *":"* ]]; then
             HOST="${1%:*}"
-            SRC="${1##*:}"
-            SRC=$(__to_vm_path $SRC)
-            DIRECT='in'
+            LOC="${1##*:}"
+            LOC="$(__to_vm_path $LOC)"
+            SRC+=("$HOST:$LOC")
         else
             SRC+=("$1")
         fi
@@ -42,19 +44,14 @@ qsync() {
 
     if [[ "$1" == *":"* ]]; then
         HOST="${1%:*}"
-        DST="${1##*:}"
-        DST="$(__to_vm_path $DST)"
-        DIRECT='out'
+        LOC="${1##*:}"
+        LOC="$(__to_vm_path $LOC)"
+        DST="$HOST:$LOC"
     else
         DST="$1"
     fi
 
-    if [ "$DIRECT" == 'in' ]; then
-        __rsync_cmd $HOST:$SRC $DST
-        rsync -hav -r $SRC $DST
-    else
-        rsync -hav -r "${SRC[@]}" $HOST:$DST
-    fi
+    rsync -hav $ARGS "${SRC[@]}" $DST
     RET=$?
 
     echo "================================"
