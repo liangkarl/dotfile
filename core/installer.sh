@@ -36,19 +36,29 @@ install_from_sources() {
 }
 
 __ins_cmd() {
-    local RET INSTALL
+    local RET INSTALL ARGV
     RET=0
     INSTALL="$1"
     shift
+
+    ARGV=()
+    while :; do
+        if [[ ! "$1" == "-"* ]]; then
+            break
+        fi
+
+        ARGV+=("$1")
+        shift
+    done
 
     for CMD in $@; do
         echo "installing $CMD"
         has_cmd $CMD && {
             show_hint "$(info_installed $CMD)"
         }
-        $INSTALL "$CMD" || {
+        $INSTALL ${ARGV[@]} "$CMD" || {
             show_err "$(info_install_failed $CMD)"
-            echo "result from: $INSTALL $CMD"
+            echo "result from: $INSTALL ${ARGV[@]} $CMD"
             RET=$((RET + 1))
             continue
         }
@@ -58,27 +68,27 @@ __ins_cmd() {
 }
 
 apt_ins() {
-    __ins_cmd "sudo apt install -y" "$@"
+    __ins_cmd "sudo apt install" "-y" $@
 }
 
 pip_ins() {
-    __ins_cmd "pip install" "$@"
+    __ins_cmd "pip install" $@
 }
 
 pip_ins() {
-    __ins_cmd "pip2 install" "$@"
+    __ins_cmd "pip2 install" $@
 }
 
 pip3_ins() {
-    __ins_cmd "pip3 install" "$@"
+    __ins_cmd "pip3 install" $@
 }
 
 npm_ins_g() {
-    __ins_cmd "sudo npm install -g" "$@"
+    __ins_cmd "sudo npm install" "-g" $@
 }
 
 npm_ins() {
-    __ins_cmd "npm install" "$@"
+    __ins_cmd "npm install" $@
 }
 
 deb_ins() {
