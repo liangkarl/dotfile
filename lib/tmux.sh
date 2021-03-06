@@ -5,6 +5,7 @@ source $SHELL_CORE_DIR/core.sh
 
 TMUX='tmux'
 TMUX_DIR="$SHELL_CONFIG_DIR/$TMUX"
+TPM_DIR="$HOME_CONFIG_DIR/$TMUX/plugins/tpm"
 
 tmux_config_tmux() {
     local BASH_COMPL TMUX_COMPL BASHRC
@@ -15,6 +16,9 @@ tmux_config_tmux() {
     goto $HOME
     SRC=$TMUX_DIR
     link $SRC/tmux.conf .tmux.conf
+
+    # install plugins without openning tmux
+    $TPM_DIR/bin/install_plugins
 
     # Add load command to bash_completion
     BASH_COMPL="$HOME/.bash_completion"
@@ -37,12 +41,11 @@ tmux_config_tmux() {
 }
 
 tmux_install_tpm() {
-    local GIT_REPO TPM_DIR
+    local GIT_REPO
 
     need_cmd git || return $?
 
     GIT_REPO='https://github.com/tmux-plugins/tpm'
-    TPM_DIR="$HOME_CONFIG_DIR/$TMUX/plugins/tpm"
     goto $HOME
     git clone $GIT_REPO $TPM_DIR
     back
