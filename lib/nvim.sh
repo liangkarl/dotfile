@@ -22,7 +22,7 @@ install_from_unstable_nvim() {
     apt_ins neovim
 }
 
-install() {
+nvim_install_nvim() {
     local SOURCE
     SOURCE=('stable_nvim' 'unstable_nvim')
 
@@ -49,10 +49,10 @@ install() {
 
     # Remove unnessary dependencies
 	sudo apt autoremove -y
-	config_package
+	# config_package
 }
 
-install_nvim_optional() {
+nvim_install_nvim_optional() {
     local PACK
     need_cmd pip2 pip3 && {
         PACK='pynvim'
@@ -68,12 +68,12 @@ install_nvim_optional() {
     }
 }
 
-install_plug_vim() {
+nvim_install_plug_vim() {
 	local -r URL='https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 	curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs $URL
 }
 
-install_fzf() {
+nvim_install_fzf() {
     local FZF
 
     FZF=fzf
@@ -86,7 +86,7 @@ install_fzf() {
     ~/.fzf/install
 }
 
-config_package() {
+nvim_config_nvim() {
 	echo "Config $NVIM..."
     need_cmd curl git pip3 pip || return $?
 
@@ -101,10 +101,6 @@ config_package() {
 	link $NVIM_DIR/editorconfig .editorconfig
 	link $NVIM_DIR/clang-format.txt .clang-format
     back
-
-    install_plug_vim
-
-    install_fzf
 
 	# for vista.nvim
     has_cmd ctags || {
@@ -129,10 +125,9 @@ config_package() {
 	# ag, ripgrep
 	# snap install ripgrep
 	# sudo apt install silversearcher-ag
-	config_coc_plugin
 }
 
-config_coc_plugin() {
+nvim_config_coc_plugin() {
 	local PACK NPM_PACKAGES EXT_DIR
     local NOTICE
 
@@ -161,4 +156,46 @@ config_coc_plugin() {
     echo "Please exit nvim manually after coc plugins installed." > $NOTICE
 
     nvim +"CocInstall $PACK" $NOTICE
+}
+
+nvim_install() {
+    local ARGS
+    ARGS="$1"
+
+    echo "Install $NVIM..."
+    __take_action $NVIM install $ARGS
+    return $?
+}
+
+nvim_remove() {
+    local ARGS
+    ARGS="$1"
+
+	echo "Remove $NVIM..."
+    __take_action $NVIM remove $ARGS
+    return $?
+
+	# Remove package itself without system configs
+	# sudo apt remove $NVIM
+
+	# Remove package itself & system config
+	# sudo apt purge $NVIM
+
+	# Remove related dependency
+	# sudo apt autoremove
+	# still remain user configs
+}
+
+nvim_config() {
+    local ARGS
+    ARGS="$1"
+
+    echo "Configure $NVIM..."
+    __take_action $NVIM config $ARGS
+    return $?
+}
+
+nvim_list() {
+    __show_list $NVIM $@
+    return $?
 }

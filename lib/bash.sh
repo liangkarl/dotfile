@@ -5,15 +5,7 @@ source $SHELL_CORE_DIR/core.sh
 BASH='bash'
 BASH_DIR="$SHELL_CONFIG_DIR/$BASH"
 
-install() {
-	config_package
-}
-
-uninstall() {
-	echo "Remove $BASH..."
-}
-
-config_package() {
+bash_config_bash() {
     local USR_BASH_DIR BASHRC
     local DIR FILE LIST CMD SRC
 
@@ -76,4 +68,46 @@ config_package() {
     # $SHELL is from environment
     CMD=$(echo $SHELL | grep $BASH)
     [ -z "$CMD" ] && sudo dpkg-reconfigure dash
+}
+
+bash_install() {
+    local ARGS
+    ARGS="$1"
+
+    echo "Install $BASH..."
+    __take_action $BASH install $ARGS
+    return $?
+}
+
+bash_remove() {
+    local ARGS
+    ARGS="$1"
+
+	echo "Remove $BASH..."
+    __take_action $BASH remove $ARGS
+    return $?
+
+	# Remove package itself without system configs
+	# sudo apt remove $BASH
+
+	# Remove package itself & system config
+	# sudo apt purge $BASH
+
+	# Remove related dependency
+	# sudo apt autoremove
+	# still remain user configs
+}
+
+bash_config() {
+    local ARGS
+    ARGS="$1"
+
+    echo "Configure $BASH..."
+    __take_action $BASH config $ARGS
+    return $?
+}
+
+bash_list() {
+    __show_list $BASH $@
+    return $?
 }

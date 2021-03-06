@@ -20,14 +20,12 @@ __prepare__() {
 install_full_list() {
     local INS_LIST FAILED
 
-    INS_LIST=('pack-repos' 'bash' 'git' 'tmux' 'nvim')
+    INS_LIST=('pack-repos' 'tool-kit' 'bash' 'git' 'tmux' 'nvim')
     for NAME in ${INS_LIST[@]}; do
         echo "======================"
         echo "Install: $NAME"
         echo "======================"
-        install_from_script $NAME || {
-            FAILED+=" $NAME"
-        }
+        worker n $NAME i c
     done
 
     if [ -z $FAILED ]; then
