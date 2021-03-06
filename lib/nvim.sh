@@ -133,41 +133,32 @@ config_package() {
 }
 
 config_coc_plugin() {
-	local NPM_PACKAGES EXT_DIR
-    NPM_PACKAGES="
-		coc-html
-		coc-xml
-		coc-json
-		coc-pyright
-		coc-vimlsp
-		coc-sh
-		coc-markdownlint
-		coc-highlight
-		coc-yank
-		coc-lists
-		coc-explorer
-	"
-	EXT_DIR="$HOME/.config/coc/extensions"
+	local PACK NPM_PACKAGES EXT_DIR
+    local NOTICE
 
-    has_cmd npm || {
-        show_err "$(info_req_cmd npm)"
-        return
+    NPM_PACKAGES=(
+        "coc-html"
+        "coc-xml"
+        "coc-json"
+        "coc-pyright"
+        "coc-vimlsp"
+        "coc-sh"
+        "coc-markdownlint"
+        "coc-highlight"
+        "coc-yank"
+        "coc-lists"
+        "coc-explorer"
+    )
+
+    has_cmd nvim || {
+        show_err "$(info_req_cmd nvim)"
+        return 1
     }
-    # install lsp server without coc plugin
-    # sudo npm install -g bash-language-server
-    # sudo npm install -g vim-language-server
 
-	[ -e $EXT_DIR ] || mkdir -p $EXT_DIR
+    NOTICE=/tmp/tmp.words
+    PACK="${NPM_PACKAGES[@]}"
 
-	# Install coc extensions
-	goto $EXT_DIR
-    [ ! -f package.json ] &&
-		echo '{"dependencies":{}}'> package.json
+    echo "Please exit nvim manually after coc plugins installed." > $NOTICE
 
-	# Change extension names to the extensions you need
-	npm install $NPM_PACKAGES \
-		--global-style --ignore-scripts \
-		--no-bin-links --no-package-lock \
-		--only=prod
-	back
+    nvim +"CocInstall $PACK" $NOTICE
 }
