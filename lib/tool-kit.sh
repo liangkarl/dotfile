@@ -8,12 +8,14 @@ TOOLKIT_DIR="$SHELL_CONFIG_DIR/$TOOLKIT"
 
 tool-kit_install_all() {
     local LIST
-    LIST=("p7zip-full" "zip" "tree"
-        "")
+    LIST=("p7zip-full" "zip" "tree")
     apt_ins ${LIST[@]}
 
     LIST=("fd-find")
     npm_ins_g ${LIST[@]}
+
+    LIST=("fd*.deb" "ripgrep*.deb")
+    deb_ins ${LIST[@]}
 }
 
 

@@ -11,6 +11,7 @@ init_env() {
     SHELL_CONFIG_DIR="$DIR/config"
     SHELL_CORE_DIR="$DIR/core"
     SHELL_BIN_DIR="$DIR/bin"
+    SHELL_DEB_DIR="$DIR/etc/linux/deb"
 
     HOME_CONFIG_DIR="$HOME/.config"
     HOME_BIN_DIR="$HOME/bin"

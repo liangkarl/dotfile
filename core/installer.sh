@@ -81,6 +81,15 @@ npm_ins() {
     __ins_cmd "npm install" "$@"
 }
 
+deb_ins() {
+    local LIST DEB_LIST
+    DEB_LIST=()
+    for NAME in $@; do
+        DEB_LIST+=("$SHELL_DEB_DIR/$NAME")
+    done
+    apt_ins ${DEB_LIST[@]}
+}
+
 add_ppa_repo() {
     local NAME
     NAME="$1"
