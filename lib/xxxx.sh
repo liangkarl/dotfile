@@ -4,6 +4,22 @@ source $SHELL_CORE_DIR/core.sh
 
 XXXX='xxxx'
 XXXX_DIR="$SHELL_CONFIG_DIR/$XXXX"
+# XXXX_IS_GROUP=y
+
+xxxx_cleanup() {
+    LIST="
+        XXXX
+        XXXX_DIR
+        xxxx_install
+        xxxx_remove
+        xxxx_config
+        xxxx_list
+        $FUNCNAME
+    "
+    for NAME in $LIST; do
+        unset $NAME
+    done
+}
 
 xxxx_install() {
     local ARGS
