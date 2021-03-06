@@ -46,7 +46,7 @@ __ins_cmd() {
         has_cmd $CMD && {
             show_hint "$(info_installed $CMD)"
         }
-        $INSTALL "$CMD" >&- || {
+        $INSTALL "$CMD" || {
             show_err "$(info_install_failed $CMD)"
             echo "result from: $INSTALL $CMD"
             RET=$((RET + 1))
@@ -239,7 +239,7 @@ worker() {
 
     RET=0
     for ACTION in $CMD; do
-        has_cmd ${NAME}_${ACTION} || {
+        declare -f ${NAME}_${ACTION} &>/dev/null || {
             show_hint "$NAME: Not support or implement $ACTION yet."
             RET=$((RET+1))
             continue
