@@ -68,24 +68,30 @@ has_cmd() {
     return ${#FAILED_CMD[@]}
 }
 
+# $0 link name list...
 setup_version() {
     local LINK NAME LIST PRIORITY
+    local TIMEOUT
+
+    if [[ $# < 3 ]]; then
+        show_err "At least 3 vars: '$@'"
+        return $BAD
+    fi
+
     LINK=$1
     NAME=$2
-    # Seperated by " "
-    LIST="$3"
+    shift 2
+    LIST=$@ # Seperated by " "
 
-    [ -z "$LINK" ] || [ -z "$NAME" ] || [ -z "LIST" ] && {
-        show_err "invaild vars: [$LIST][$NAME][$LIST]"
-            return $BAD
-        }
-
-    PRIORITY=10
+    PRIORITY=101 # prevent conflict with other priority numbers
     for LOCATION in $LIST; do
         sudo update-alternatives --install $LINK $NAME $LOCATION $PRIORITY
-        PRIORITY=$((PRIORITY + 10))
+        PRIORITY=$((PRIORITY + 100))
     done
-    sudo update-alternatives --config $NAME
+
+    TIMEOUT=30
+    echo "Auto skip after $TIMEOUT secs"
+    timeout $TIMEOUT sudo update-alternatives --config $NAME
 }
 
 is_abs_path() {
