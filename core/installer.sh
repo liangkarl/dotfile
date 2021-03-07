@@ -24,10 +24,8 @@ install_from_sources() {
 
     for SRC in ${SOURCE[@]}; do
         install_from_${SRC}
-        has_cmd $CMD && {
-            show_good "Install $CMD successfully"
-            return $GOOD
-        }
+        check_install_cmd $CMD && return $?
+
         echo "Try installing $CMD from $SRC failed"
     done
 
@@ -37,7 +35,6 @@ install_from_sources() {
 
 __ins_cmd() {
     local RET INSTALL ARGV
-    RET=0
     INSTALL="$1"
     shift
 
@@ -51,11 +48,11 @@ __ins_cmd() {
         shift
     done
 
+    RET=0
     for CMD in $@; do
-        echo "installing $CMD"
-        has_cmd $CMD && {
-            show_hint "$(info_installed $CMD)"
-        }
+        echo "Installing $CMD"
+        already_has_cmd $CMD
+
         $INSTALL ${ARGV[@]} "$CMD" || {
             show_err "$(info_install_failed $CMD)"
             echo "result from: $INSTALL ${ARGV[@]} $CMD"
@@ -114,6 +111,7 @@ add_ppa_repo() {
 
 __take_action() {
     local ALL ARGS ACTION FUNC NAME RET
+    local FORCE
 
     NAME="$1"
     ACTION="$2"
@@ -122,12 +120,14 @@ __take_action() {
     ARGS="$3"
 
     [ "$ACTION" == install ] && {
-        local FORCE
         FORCE=$(echo $ARGS | grep -w f)
-        if has_cmd $NAME && [ -z "$FORCE" ]; then
-            show_hint "$(info_installed $NAME)"
-            return $BAD
-        fi
+        already_has_cmd $NAME && {
+            if [ ! -z "$FORCE" ]; then
+                return $BAD
+            fi
+
+            echo "Force to install: $NAME"
+        }
     }
 
     RET=0

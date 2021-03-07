@@ -7,20 +7,14 @@ FASD='fasd'
 FASD_DIR="$SHELL_CONFIG_DIR/$FASD"
 
 install() {
-	has_cmd $FASD && {
-		show_hint "$(info_installed $FASD)"
-		return $BAD
-	}
+    already_has_cmd $FASD && return $?
 
     echo "Install $FASD..."
     add_ppa_repo "ppa:aacebedo/fasd"
     sudo apt update
     sudo apt install -y $FASD
 
-    has_cmd $FASD || {
-        show_err $(info_install_failed $FASD)
-        return $BAD
-    }
+    check_install_cmd $FASD || return $?
 
     config_package
 }

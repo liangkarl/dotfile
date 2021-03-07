@@ -26,26 +26,17 @@ nvim_install_nvim() {
     local SOURCE
     SOURCE=('stable_nvim' 'unstable_nvim')
 
-    has_cmd $NVIM && {
-        show_hint "$(info_installed $NVIM)"
-        return
-    }
+    already_has_cmd $NVIM && return $?
 
 	echo "Start installing $NVIM"
 
     for SRC in ${SOURCE[@]}; do
         install_from_${SRC}
-        has_cmd $NVIM && {
-            show_good "Install $NVIM successfully"
-            break
-        }
+        check_install_cmd $NVIM && return $?
         show_err "Install $NVIM from $SRC failed"
     done
 
-    has_cmd $NVIM || {
-        show_err "No way to install $NVIM"
-        return
-    }
+    check_install_cmd $NVIM || return $?
 
     # Remove unnessary dependencies
 	sudo apt autoremove -y
@@ -77,10 +68,7 @@ nvim_install_fzf() {
     local FZF
 
     FZF=fzf
-    has_cmd $FZF && {
-        show_hint "$(info_installed $FZF)"
-        return
-    }
+    already_has_cmd $FZF && return $?
 
     git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
     ~/.fzf/install
@@ -103,9 +91,9 @@ nvim_config_nvim() {
     back
 
 	# for vista.nvim
-    has_cmd ctags || {
+    already_has_cmd catgs || {
         echo "install ctags for vista.nvim"
-        sudo apt install -y ctags
+        apt_ins ctags
     }
 
     # for float term
@@ -145,10 +133,7 @@ nvim_config_coc_plugin() {
         "coc-explorer"
     )
 
-    has_cmd nvim || {
-        show_err "$(info_req_cmd nvim)"
-        return 1
-    }
+    need_cmd $NVIM || return $?
 
     NOTICE=/tmp/tmp.words
     PACK="${NPM_PACKAGES[@]}"

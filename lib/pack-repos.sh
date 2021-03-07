@@ -6,13 +6,13 @@ PACK_REPOS_NAME=('npm' 'yarn' 'pip' 'pip3' 'brew')
 
 install_npm_from_npmjs_org()
 {
-    has_cmd curl || return
+    already_has_cmd curl || return $?
     curl http://npmjs.org/install.sh | sh
 }
 
 install_npm_from_nodesource()
 {
-    has_cmd curl || return
+    already_has_cmd curl || return $?
 	curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 	sudo apt install nodejs
 }
@@ -44,10 +44,8 @@ install_brew_from_github()
 	local NEED_CMD
     local HOMEBREW
     NEED_CMD='curl wget file git'
-    has_cmd "$NEED_CMD" || {
-        show_err "$(info_req_cmd $NEED_CMD)"
-        return
-    }
+    need_cmd $NEED_CMD || return $?
+
 	sudo apt install build-essential
 
     HOMEBREW=$HOME/.linuxbrew
@@ -82,24 +80,16 @@ install()
     echo "Install ${PACK_REPOS_NAME[@]}..."
 
     for NAME in ${PACK_REPOS_NAME[@]}; do
-        has_cmd $NAME && {
-            show_hint "$(info_installed $NAME)"
-            continue
-        }
+        already_has_cmd $NAME && continue
 
         echo "Install $NAME now"
 
         FROM=${NAME}_source
         for SRC in ${!FROM}; do
+            echo "Install $NAME from $SRC"
             install_${NAME}_from_${SRC}
-            has_cmd $NAME && {
-                echo "Install $NAME successfully"
-                break
-            }
-            echo "Install $NAME from $SRC failed">&2
+            check_install_cmd $NAME && break
         done
-
-        has_cmd $NAME || show_err "No way to install $NAME">&2
     done
 }
 

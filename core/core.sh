@@ -36,36 +36,88 @@ link() {
     ln -sv $SRC $DST
 }
 
-need_cmd() {
-    [ $# -eq 0 ] && return $BAD
+# check cmds after finished installization & return num of non-installed cmds
+check_install_cmd() {
+    local RET CMD
 
-    has_cmd $@ || {
-        show_err "$(info_req_cmd $@)"
-        return $BAD
-    }
-    return $GOOD
+    [[ $# == 0 ]] && return $BAD
+
+    CMD=($(__has_cmd $@))
+    RET=${#CMD[@]}
+    if [[ $RET > 0 ]]; then
+        show_err "$(info_install_failed ${CME[@]})"
+    else
+        show_good "$(info_install_done) $@"
+    fi
+    return $RET
 }
 
-has_cmd() {
+# check cmds & return num of non-installed cmds
+already_has_cmd() {
+    local CMD RET ALL
+
+    [[ $# == 0 ]] && return $BAD
+
+    # check cmds
+    CMD=($(__has_cmd $@))
+    RET=${#CMD[@]}
+
+    # if all cmds if installed
+    if [[ $RET == 0 ]]; then
+        show_hint "$(info_installed $@)"
+        return $RET
+    fi
+
+    # some of cmds are not installed
+    ## partial cmds installed
+    if [[ $RET != $# ]]; then
+        ALL=$@
+        for VAR in ${CMD[@]}; do
+            CMD=${ALL/$VAR/}
+        done
+        CMD=($CMD)
+        RET=${#CMD[@]}
+    fi
+
+    ## if all cmds not installed
+    return $RET
+}
+
+# check cmd & return num of needed cmds
+need_cmd() {
+    local RET CMD
+
+    [[ $# == 0 ]] && return $BAD
+
+    CMD=($(__has_cmd $@))
+    RET=${#CMD[@]}
+    [[ $RET > 0 ]] && {
+        show_err "$(info_req_cmd ${CMD[@]})"
+    }
+    return $RET
+}
+
+# Check command(s) & echo invalid command(s)
+__has_cmd() {
     local LIST TEST FAIL
     TEST='command -v'
 
-    [ $# -eq 0 ] && {
-        FAILED_CMD=''
-        return $BAD
+    [[ $# == 0 ]] && {
+        echo "null"
+        return
     }
 
-    if [ $# -gt 1 ]; then
+    FAIL=()
+    if [[ $# > 1 ]]; then
         LIST="$@"
         for CMD in $LIST; do
-            $TEST $CMD &>/dev/null || FAIL+=" $CMD"
+            $TEST $CMD &>/dev/null || FAIL+=($CMD)
         done
     else
-        $TEST "$@" &> /dev/null || FAIL=$@
+        $TEST "$@" &> /dev/null || FAIL=($@)
     fi
 
-    FAILED_CMD=($FAIL)
-    return ${#FAILED_CMD[@]}
+    echo ${FAIL[@]}
 }
 
 # $0 link name list...
