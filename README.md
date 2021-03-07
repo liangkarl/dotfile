@@ -2,10 +2,10 @@
 
 ## Introduce
 
-  Since I hate re-typing every command while installing a new Ubuntu system from
-zero, I tried to write some simple script before, but they are difficult to maintain
-or modify after system update or other kind of circumstances. I want to try another
-way to break such goddamn infinite loop.
+  Since I hate re-typing every command while installing a new Ubuntu system
+from zero, I tried to write some simple scripts before, but they are difficult
+to maintain or modify after system update or other kind of circumstances. I
+want to try another way to break such goddamn infinite loop.
 
 ## Goal
 
@@ -16,14 +16,21 @@ way to break such goddamn infinite loop.
 
 ## Include
 
-tmux
-git
+tmux (with tpm)
+git / tig
 bash
+nvim (with coc)
+gcc
+python
+ccls
+clang / llvm
+some small tools
 (still adding)
 
-## Platform
+## OS & Shell
 
-Ubuntu 18.04
+Ubuntu 16.04 / bash
+Ubuntu 18.04 / bash
 
 ## Usage
 
@@ -31,7 +38,7 @@ Ubuntu 18.04
 
 Execute `install.sh`
 
-### Manual Install
+### Manually Install
 
 1. Set environment
 
@@ -42,10 +49,15 @@ Execute `install.sh`
 2. Choose the application you want. For example
 
 ```bash=
+# old ways
 . lib/git.sh
 install
+
+# new ways
+# type 'worker' to print help
+worker n git i # install git
 ```
 
 ## Notice
 
-Still on progress, many bugs, many works needed to do.
+Still develop in progress, many bugs, many works there.
