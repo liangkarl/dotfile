@@ -5,41 +5,50 @@
 # TARGET_DIR=$(fasd -d $@)
 TARGET_NAME="$1"
 
-if [ -z "$TARGET_NAME" ]; then
-	TOP_NAME=$(tmux ls 2>&- | awk 'NR==1{print $1}' | tr -d : 2>&-)
-	if [ -z "$TOP_NAME" ]; then
-		tmux new -s $USER
-	else
-		echo "enter session: $TOP_NAME"
-		if [ -z "$TMUX" ]; then
-			tmux attach -t $TOP_NAME
-		else
-			TMUX='' tmux switch-client -t $TOP_NAME
+__find_session() {
+	local sess
+
+	[[ $# == 0 ]] && return 1
+
+	sess=($(tmux ls -F'#S'))
+	[[ ${#sess[@]} == 0 ]] && return 1
+
+	for name in ${sess[@]}; do
+		if [[ "$name" == "$1" ]]; then
+			return 0
 		fi
+	done
+	return 1
+}
+
+parse() {
+	local sess target argv cmd
+	target=${1:-$USER}
+	sess=($(tmux ls -F'#S'))
+
+	# session amount == 0 || not found
+	if ! __find_session $target; then
+		cmd='tmux new'
+		argv="-d -s $target"
+		[ -d $target ] && argv+=" -c $target"
+		$cmd $argv
 	fi
 
-else # TARGET_NAME isn't null
-	if [ -d "$TARGET_NAME" ]; then # is a dir path
-		TARGET_DIR="$TARGET_NAME"
-		TARGET_NAME=$(basename "$TARGET_NAME")
-	else # is a name
-		TARGET_DIR=$HOME
+	# session amount != 0
+	cmd=''
+	argv=''
+	if [ -z "$TMUX" ]; then # outside
+		cmd='tmux attach'
+	else # inside
+		TMUX=''
+		cmd="tmux switch-client"
 	fi
+	argv="-t $target"
 
-	WANTED_NAME=$(tmux ls | awk '{print $1}' | tr -d : | grep "$TARGET_NAME" 2>&-)
-	if [ -z "$WANTED_NAME" ]; then
-		echo "create session: $TARGET_NAME"
-		if [ -z "$TMUX" ]; then
-			tmux new -s "$TARGET_NAME" -c "$TARGET_DIR"
-		else
-			tmux new -d -s "$TARGET_NAME" -c "$TARGET_DIR"
-			TMUX='' tmux switch-client -t "$TARGET_NAME"
-		fi
-	else
-		if [ -z "$TMUX" ]; then
-			tmux attach -t "$WANTED_NAME"
-		else
-			TMUX='' tmux switch-client -t "$WANTED_NAME"
-		fi
-	fi
-fi
+	unset parse __find_session TARGET_NAME
+	$cmd $argv
+	# check inside or outside tmux
+	exit $?
+}
+
+parse $@
