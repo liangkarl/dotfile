@@ -15,6 +15,37 @@ __to_vm_path() {
 	echo "$FINAL"
 }
 
+qhint() {
+    local INPUT CMD STR
+
+    [[ $# == 0 ]] && {
+        echo "$FUNCNAME dir/file"
+        return 1
+    }
+
+    INPUT="$1"
+    [ ! -e $INPUT ] && {
+        echo "No exist: $INPUT"
+        return 128
+    }
+
+    if [ -d $INPUT ]; then
+        INPUT=$(cd $INPUT; pwd)
+    else
+        INPUT=$(cd $(dirname $INPUT); pwd)/$(basename $INPUT)
+    fi
+
+    CMD='qsync'
+    STR='paste_here'
+    echo "Note: Manually add options by yourself, like -r for dir"
+    echo "Copy from:"
+    echo "$CMD   $HOSTNAME:$INPUT   $STR"
+    echo ""
+    echo "Copy to:"
+    echo "$CMD   $STR   $HOSTNAME:$INPUT"
+    return 0
+}
+
 # quanta sync
 qsync() {
     local HOST SRC LOC DST ARGS
