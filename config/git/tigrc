@@ -12,7 +12,7 @@ set main-view = line-number:no,interval=5 \
                 author:full,width=15 id:yes \
                 commit-title:yes,graph,refs,overflow=no
 set blame-view = id:yes,color date:relative-compact \
-                 file-name:auto author:abbreviated \
+                 file-name:no author:abbreviated \
                  line-number:yes,interval=1 text
 set refs-view = line-number:no \
                 date:custom,format="%m/%d/%y %H:%M" date:relative-compact \
