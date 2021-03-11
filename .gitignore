@@ -8,6 +8,8 @@ config/nvim/undo/
 
 # Ignore the test file
 config/nvim/init.min.vim
+config/nvim/site/
+config/nvim/shada/
 
 *.log
 .netrwhist
