@@ -23,18 +23,29 @@ __find_session() {
 
 parse() {
 	local sess target argv cmd
-	target=${1:-$USER}
 	sess=($(tmux ls -F'#S'))
 
-	# session amount == 0 || not found
-	if ! __find_session $target; then
-		cmd='tmux new'
-		argv="-d -s $target"
-		[ -d $target ] && argv+=" -c $target"
-		$cmd $argv
+	cmd=''
+	argv=''
+	if [[ $# == 0 ]]; then
+		# session amount == 0
+		if [[ ${#sess[@]} != 0 ]]; then
+			target=${sess[0]}
+		else
+			target=$USER
+			cmd='tmux new'
+			argv="-d -s $target -c $HOME"
+		fi
+	else
+		target=$1
+		if ! __find_session $target; then
+			cmd='tmux new'
+			argv="-d -s $target"
+			[ -d $target ] && argv+=" -c $target"
+		fi
 	fi
+	$cmd $argv
 
-	# session amount != 0
 	cmd=''
 	argv=''
 	if [ -z "$TMUX" ]; then # outside
