@@ -4,7 +4,7 @@ __help_mtk_make() {
     cat << USAGE
 SYNOPSIS:
 $1 [-k|k|kernel] [-v|v|vendor] [-s|s|system] [-m|m|merge]
-$1 [-ak|ak|add-kernel] [-av|av|add-vendor] [-as|as|add-system]
+$1 [-ak|ak|add-kernel config] [-av|av|add-vendor config] [-as|as|add-system config]
 $1 [-l|l|list]
 
 DESCRIPTION:
@@ -14,39 +14,54 @@ and vndr if you keep using these commands.
 USAGE
 }
 
+# Assume user has sourced envsetup.sh
 mtk-make() {
     local MERGE_CMD
     local CMD_LIST RET
     local SPLIT_BUILD MERGED_OUT_DIR
+    local ARGV
 
     [ $# -eq 0 ] && {
         __help_mtk_make $FUNCNAME
         return 1
     }
 
-    [ -z "${TARGET_PRODUCT}" ] && {
-        echo "No lunch config?" >&2
-        return 128
-    }
-
-    MTK_CURRENT_LUNCH=${TARGET_PRODUCT}-${TARGET_BUILD_VARIANT}
     CMD_LIST=()
-    for ARGV in $@; do
+    while [ $# -ne 0 ]; do
+        ARGV="$1"
         case "$ARGV" in
             ak|-ak|add-kernel)
-                MTK_KERNEL_LUNCH=$MTK_CURRENT_LUNCH
+                shift
+                MTK_KERNEL_LUNCH="$1"
+                lunch $MTK_KERNEL_LUNCH || {
+                    __help_mtk_make
+                    return 128
+                }
+
                 MTK_MAKE_KERNEL_OUT_DIR=$ANDROID_PRODUCT_OUT
                 echo "kernel lunch added: $MTK_KERNEL_LUNCH"
                 echo "kernel out added: $MTK_MAKE_KERNEL_OUT_DIR"
                 ;;
             av|-av|add-vendor)
-                MTK_VENDOR_LUNCH=$MTK_CURRENT_LUNCH
+                shift
+                MTK_VENDOR_LUNCH="$1"
+                lunch $MTK_VENDOR_LUNCH || {
+                    __help_mtk_make
+                    return 128
+                }
+
                 MTK_MAKE_VENDOR_OUT_DIR=$ANDROID_PRODUCT_OUT
                 echo "vendor lunch added: $MTK_VENDOR_LUNCH"
                 echo "vendor out added: $MTK_MAKE_VENDOR_OUT_DIR"
                 ;;
             as|-as|add-system)
-                MTK_SYSTEM_LUNCH=$MTK_CURRENT_LUNCH
+                shift
+                MTK_SYSTEM_LUNCH="$1"
+                lunch $MTK_SYSTEM_LUNCH || {
+                    __help_mtk_make
+                    return 128
+                }
+
                 MTK_MAKE_SYSTEM_OUT_DIR=$ANDROID_PRODUCT_OUT
                 echo "system lunch added: $MTK_SYSTEM_LUNCH"
                 echo "system out added: $MTK_MAKE_SYSTEM_OUT_DIR"
@@ -116,7 +131,13 @@ mtk-make() {
                 __help_mtk_make $FUNCNAME
                 return 128
         esac
+        shift
     done
+
+    [ -z "${TARGET_PRODUCT}" ] && {
+        echo "No lunch config?" >&2
+        return 128
+    }
 
     RET=''
     echo ${CMD_LIST[@]}
@@ -132,3 +153,4 @@ mtk-make() {
 
     return 0;
 }
+complete -F _lunch mtk-make
