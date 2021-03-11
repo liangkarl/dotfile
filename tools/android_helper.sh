@@ -6,14 +6,14 @@ init-krnl-env() {
     local ANDROID_DIR
     local GEN_DB_PY COMPILE_DB
 
-	[ -z $ANDROID_PRODUCT_OUT ] && {
+	[ -z "$ANDROID_PRODUCT_OUT" ] && {
 		echo "No lunch config?" >&2
 		return 128
 	}
 
     KERNEL_DIR="$1"
-    [ -z "$KERNEL_DIR" ] && {
-        echo "Where is kernel dir?" >&2
+    [ ! -d "$KERNEL_DIR" ] && {
+        echo "Invalid kernel dir path: $KERNEL_DIR" >&2
         return 128
     }
 
@@ -32,7 +32,7 @@ init-krnl-env() {
     cd - &> /dev/null
 
     GEN_DB_PY=gen_compile_commands.py
-    for DIR in "." "$KERNEL_DIR/scripts" "$ANDROID_DIR"; do
+    for DIR in "$(pwd)" "$KERNEL_DIR/scripts" "$ANDROID_DIR"; do
         [ -e $DIR/$GEN_DB_PY ] && {
             GEN_DB_PY=$DIR/$GEN_DB_PY
             break
