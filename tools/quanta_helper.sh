@@ -92,6 +92,28 @@ qsync() {
 }
 complete -F _rsync -o nospace qsync
 
+add-template() {
+    [[ $# == 0 ]] && {
+        declare -f $FUNCNAME
+        return
+    }
+    git config commit.template $@
+}
+
+dir-size() {
+    [[ $# == 0 ]] && {
+        declare -f $FUNCNAME
+        return
+    }
+    du -sh $@
+}
+
+# Only customized for pobu vm clients
+disk-usage() {
+    [[ $# > 0 ]] && echo "warn: no need for input args"
+    df -Thx tmpfs
+}
+
 setup_vpn() {
 	local FILE
 	FILE="$HOME/.config/openvpn/client.ovpn"
