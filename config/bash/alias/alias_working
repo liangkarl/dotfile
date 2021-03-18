@@ -6,3 +6,6 @@ alias pwr='set +f; __exe_by_powershell '; __exe_by_powershell() {
 	powershell.exe -c "$CMD"
 	set -f
 }
+
+alias knock='__knock_helper '
+complete -F __knock_helper_compl knock
