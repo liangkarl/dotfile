@@ -1,0 +1,20 @@
+# Place title below
+
+[Description]
+# Describe issue here
+
+[Customer Impact]
+# If affect customers application, describe here
+None
+
+[Change Description]
+# Describe change here
+
+[Affected Area]
+# 1. boot? kernel? userspace? script? (by architecture)
+# 2. wifi? BT? touch? (by function name)
+# 3. mp6050? bcmXXXX? (by module name)
+
+[Side effect of the change]
+# Describe known side effect here
+None
