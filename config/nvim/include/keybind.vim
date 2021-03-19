@@ -189,6 +189,10 @@ nmap <Leader>mc <Plug>CloseMarkbar
 " Toggle comment
 noremap <silent><Leader>gg :Commentary<CR>
 
+" Plugin: alternate-toggler
+" Toggle boolean
+nnoremap <silent> <leader>vv :ToggleAlternate<CR>
+
 " Plugin: coc
 " for debug coc LSP
 nnoremap <Leader>o :CocCommand workspace.showOutput<CR>
