@@ -98,6 +98,7 @@ Plug 'osyo-manga/vim-anzu'
 " | vim-commentary   | Comment codes easily                 |
 " | auto.pairs       | Auto-balance pairs                   |
 " | vim-table-mode   | Draw text-styled table easily        |
+" | alter...-toggler | switch boolean value, true <-> false |
 " |------------------+--------------------------------------|
 " NOTE:
 " Multiple cursor editing is fasion, but not sure of the benifits
@@ -106,6 +107,7 @@ Plug 'terryma/vim-expand-region'
 Plug 'tpope/vim-commentary'
 Plug 'Krasjet/auto.pairs'
 Plug 'dhruvasagar/vim-table-mode'
+Plug 'rmagatti/alternate-toggler'
 
 " 2.5 Others
 " |--------------+---------------------------------|
