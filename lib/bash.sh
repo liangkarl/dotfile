@@ -66,8 +66,9 @@ bash_config_bash() {
     back # $USR_BASH_DIR
 
     # $SHELL is from environment
-    CMD=$(echo $SHELL | grep $BASH)
-    [ -z "$CMD" ] && sudo dpkg-reconfigure dash
+    if [[ "$SHELL" == 'dash' ]]; then
+        sudo dpkg-reconfigure dash
+    fi
 }
 
 bash_install() {
