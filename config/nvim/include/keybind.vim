@@ -49,8 +49,8 @@ inoremap <A-w> <C-Right>
 
 " Open terminal
 " PS. you can use the terminal as debug console
-nnoremap <silent><F3> :FloatermToggle<CR>
-tnoremap <silent><F3> <C-\><C-N>:FloatermToggle<CR>
+nnoremap <silent> <C-z> :ToggleTerminal<Enter>
+tnoremap <silent> <C-z> <C-\><C-n>:ToggleTerminal<Enter>
 
 function! ToggleQuickFix()
     if empty(filter(getwininfo(), 'v:val.quickfix'))
