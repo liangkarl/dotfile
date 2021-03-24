@@ -101,8 +101,9 @@ Plug 'osyo-manga/vim-anzu'
 " | alter...-toggler | switch boolean value, true <-> false |
 " |------------------+--------------------------------------|
 " NOTE:
-" Multiple cursor editing is fasion, but not sure of the benifits
+" 1. Multiple cursor editing is fasion, but not sure of the benifits
 " Plug 'terryma/vim-multiple-cursors'
+" 2. alternate-toggler is for nvim 0.5.0 or newer version
 Plug 'terryma/vim-expand-region'
 Plug 'tpope/vim-commentary'
 Plug 'Krasjet/auto.pairs'
@@ -116,8 +117,11 @@ Plug 'rmagatti/alternate-toggler'
 " | open-browser | Open URL from vim               |
 " | vim-floaterm | Open terminal with float window |
 " |--------------+---------------------------------|
+" NOTE:
+" Though floaterm is fashion, it's too complicated for me
+" Plug 'voldikss/vim-floaterm'
 Plug 'tyru/open-browser.vim'
-Plug 'voldikss/vim-floaterm'
+Plug 'caenrique/nvim-toggle-terminal'
 
 """ 3. Language Support
 
