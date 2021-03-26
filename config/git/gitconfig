@@ -2,4 +2,10 @@
 	email = liang.karl@outlook.com
 	name = Karl Liang
 [core]
-	editor = vim
+	editor = nvim
+[difftool]
+	prompt = true
+[diff]
+	tool = nvim
+[difftool "nvim"]
+	cmd = nvim -d \"$LOCAL\" \"$REMOTE\"
