@@ -3,7 +3,7 @@
 __help_mtk_make() {
     cat << USAGE
 SYNOPSIS:
-$1 [-k|k|kernel] [-v|v|vendor] [-s|s|system] [-m|m|merge]
+$1 [-k|k|kernel] [-v|v|vendor] [-s|s|system] [-m|m|merge [split-build-script]]
 $1 [-ak|ak|add-kernel config] [-av|av|add-vendor config] [-as|as|add-system config]
 $1 [-l|l|list]
 
@@ -93,7 +93,17 @@ mtk-make() {
                 CMD_LIST+=("make -j24 vnd_images")
                 ;;
             m|-m|merge)
-                SPLIT_BUILD=$MTK_MAKE_SYSTEM_OUT_DIR/images/split_build.py
+                # SPLIT_BUILD=$MTK_MAKE_SYSTEM_OUT_DIR/images/split_build.py
+                shift
+
+                if [[ -f "$1" ]]; then
+                    echo "set up split build script path: $1"
+                    SPLIT_BUILD="$1"
+                    shift
+                else
+                    SPLIT_BUILD="$MTK_MAKE_SYSTEM_OUT_DIR/images/split_build.py"
+                fi
+
                 MERGED_OUT_DIR=$MTK_MAKE_KERNEL_OUT_DIR/merged
                 echo "========================================="
                 echo "Make sure these pathes are correct or not"
@@ -110,6 +120,7 @@ mtk-make() {
                 MERGE_CMD+="--output-dir $MERGED_OUT_DIR"
                 CMD_LIST+=("rm -rf $MERGED_OUT_DIR")
                 CMD_LIST+=("$MERGE_CMD")
+                continue
                 ;;
             c*|-c*|clean)
                 echo "-c | -c *) not support yet"
