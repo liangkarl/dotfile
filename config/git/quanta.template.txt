@@ -1,19 +1,23 @@
-# Place title below
+# Place title above
 
 [Description]
-# Describe issue here
+# 1. BugFix: What happend to the device or source codes?
+# 2. Enhancement: Why we need the improvement?
+# 3. Porting, NewFeature: Why we need this feature or component?
 
 [Customer Impact]
-# If affect customers application, describe here
+# No matter good or bad, if this commit would affect customer's
+# application, describe here. To provide more information when
+# review commit on Gerrit.
 None
 
 [Change Description]
-# Describe change here
+# Describe what you change here
 
 [Affected Area]
-# 1. boot? kernel? userspace? script? (by architecture)
-# 2. wifi? BT? touch? (by function name)
-# 3. mp6050? bcmXXXX? (by module name)
+# 1. By arch: Android system? Linux kernel? bootloader? script?
+# 2. By function: Wifi? BT? touch?
+# 3. By module: MP-6050? BCM-XXXX? TI-XXXX?
 
 [Side effect of the change]
 # Describe known side effect here
