@@ -1,9 +1,15 @@
-# Place title above
+
+# Add short commit message above
+# Make the whole string within 72 char as possible as you can
+# eg 1, Fix compliant error of xxx file
+# eg 2, Improve xxx function
 
 [Description]
 # 1. BugFix: What happend to the device or source codes?
 # 2. Enhancement: Why we need the improvement?
 # 3. Porting, NewFeature: Why we need this feature or component?
+# eg 1, Compile failed if turn on xxx config
+# eg 2, Current xxx value couldn't meet the spec criteria
 
 [Customer Impact]
 # No matter good or bad, if this commit would affect customer's
@@ -13,11 +19,16 @@ None
 
 [Change Description]
 # Describe what you change here
+# eg 1, add xxx files to fix yyy problem
+# eg 2, modify xxx to yyy value, requested by customer.
 
 [Affected Area]
-# 1. By arch: Android system? Linux kernel? bootloader? script?
-# 2. By function: Wifi? BT? touch?
-# 3. By module: MP-6050? BCM-XXXX? TI-XXXX?
+# 1. By domain: system? kernel? bootloader? build system? ...
+# 2. By function: Wifi? BT? touch panel? ...
+# 3. By HW component: MP-6050? APS-XXXX? TI-XXXX? ...
+# 4. By SW framework: XXX service? XXX driver? XXX package? xxx HAL?
+# eg 1, kernel, g-sensor, MPU-6050, driver&dts
+# eg 2, system, Wifi, BCM4342, hal
 
 [Side effect of the change]
 # Describe known side effect here
