@@ -96,41 +96,70 @@ __merge_cmd() {
     return $?
 }
 
+__mtk_make_exe_cmds() {
+    local cmd_list
+    local cmd ret i
+
+    cmd_list=("$@")
+    ret=0
+    for((i = 0; i < ${#cmd_list[@]}; i++)); do
+        cmd=${cmd_list[$i]}
+        echo "$cmd"
+        $cmd || {
+            ret=$?
+            echo "failed at: $cmd" >&2
+            break
+        }
+    done
+
+    return $ret
+}
+
 __mtk_make_boot() {
-    __mtk_lunch boot || return $?
+    local cmd_list
 
-    rm -rf $MTK_MAKE_KERNEL_OUT_DIR/obj/KERNEL_OBJ
-    rm -rf $MTK_MAKE_KERNEL_OUT_DIR/images/krn*
+    cmd_list=()
+    cmd_list+=("__mtk_lunch kernel")
+    cmd_list+=("rm -rf $MTK_MAKE_KERNEL_OUT_DIR/obj/KERNEL_OBJ")
+    cmd_list+=("rm -rf $MTK_MAKE_KERNEL_OUT_DIR/images/krn*")
+    cmd_list+=("make -j24 krn_images")
 
-    make -j24 krn_images
+    __mtk_make_exe_cmds "${cmd_list[@]}"
     return $?
 }
 
 __mtk_make_vendor() {
-    __mtk_lunch vendor || return $?
+    local cmd_list
 
+    cmd_list=()
+    cmd_list+=("__mtk_lunch vendor")
     # prevent remove kernel obj while having same config with kernel
-    rm -rf $MTK_MAKE_VENDOR_OUT_DIR/obj/[!KERNEL_OBJ]
-    rm -rf $MTK_MAKE_VENDOR_OUT_DIR/images/vnd*
+    cmd_list+=("rm -rf $MTK_MAKE_VENDOR_OUT_DIR/obj/[!KERNEL_OBJ]")
+    cmd_list+=("rm -rf $MTK_MAKE_VENDOR_OUT_DIR/images/vnd*")
+    cmd_list+=("make -j24 vnd_images")
 
-    make -j24 vnd_images
+    __mtk_make_exe_cmds "${cmd_list[@]}"
     return $?
 }
 
 __mtk_make_system() {
-    __mtk_lunch system || return $?
+    local cmd_list
 
-    rm -rf $MTK_MAKE_SYSTEM_OUT_DIR/obj
-    rm -rf $MTK_MAKE_SYSTEM_OUT_DIR/images
+    cmd_list=()
+    cmd_list+=("__mtk_lunch system")
+    cmd_list+=("rm -rf $MTK_MAKE_SYSTEM_OUT_DIR/obj")
+    cmd_list+=("rm -rf $MTK_MAKE_SYSTEM_OUT_DIR/images")
+    cmd_list+=("make -j24 sys_images")
 
-    make -j24 sys_images
+    __mtk_make_exe_cmds "${cmd_list[@]}"
     return $?
 }
 
 # Assume user has sourced envsetup.sh
 mtk-make() {
-    local cmd_list cmd
-    local ret argv
+    local cmd_list
+    local argv
+    local -i ret
 
     [ $# -eq 0 ] && {
         __help_mtk_make $FUNCNAME
@@ -193,18 +222,18 @@ mtk-make() {
         shift
     done
 
-    ret=''
-    time {
-        for((i = 0; i < ${#cmd_list[@]}; i++)); do
-            cmd=${cmd_list[$i]}
-            echo "$cmd"
-            $cmd || {
-                ret=$?
-                echo "failed at: $cmd" >&2
-                return $ret
-            }
-        done
-    }
-    return 0;
+    local -i begin end intv
+    begin=$(date +%s)
+    __mtk_make_exe_cmds "${cmd_list[@]}"
+    ret=$?
+    end=$(date +%s)
+    intv=$((end - begin))
+    echo "total comsumed time: $(date -d@${intv} -u +%H:%M:%S)"
+
+    return $ret;
 }
+
+if [ -f build/envsetup.sh ]; then
+    . build/envsetup.sh
+fi
 complete -F _lunch mtk-make
