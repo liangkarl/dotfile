@@ -159,7 +159,7 @@ __mtk_make_system() {
 mtk-make() {
     local cmd_list
     local argv
-    local -i ret
+    local -i timer
 
     [ $# -eq 0 ] && {
         __help_mtk_make $FUNCNAME
@@ -222,15 +222,12 @@ mtk-make() {
         shift
     done
 
-    local -i begin end intv
-    begin=$(date +%s)
-    __mtk_make_exe_cmds "${cmd_list[@]}"
-    ret=$?
-    end=$(date +%s)
-    intv=$((end - begin))
-    echo "total comsumed time: $(date -d@${intv} -u +%H:%M:%S)"
+    timer=$(date +%s)
+    __mtk_make_exe_cmds "${cmd_list[@]}" || return $?
+    timer="$(date +%s)-$timer"
+    echo "total comsumed time: $(date -d@$((timer)) -u +%H:%M:%S)"
 
-    return $ret;
+    return 0;
 }
 
 if [ -f build/envsetup.sh ]; then
