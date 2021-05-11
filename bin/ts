@@ -6,7 +6,7 @@
 TARGET_NAME="$1"
 
 __find_session() {
-	local sess
+	local sess name
 
 	[[ $# == 0 ]] && return 1
 
@@ -22,43 +22,39 @@ __find_session() {
 }
 
 parse() {
-	local sess target argv cmd
-	sess=($(tmux ls -F'#S'))
+	local sess name argv cmd
 
+	sess=($(tmux ls -F'#S'))
 	cmd=''
 	argv=''
 	if [[ $# == 0 ]]; then
-		# session amount == 0
 		if [[ ${#sess[@]} != 0 ]]; then
-			target=${sess[0]}
-		else
-			target=$USER
+			name=${sess[0]}
+		else # no existed session
+			name=$(date +%x)
 			cmd='tmux new'
-			argv="-d -s $target -c $HOME"
+			argv="-d -s $name -c $HOME"
 		fi
 	else
-		target=$1
-		if ! __find_session $target; then
+		name=$(basename $1)
+		if ! __find_session $name; then
 			cmd='tmux new'
-			argv="-d -s $target"
-			[ -d $target ] && argv+=" -c $target"
+			argv="-d -s $name"
+			[ -d "$1" ] && argv+=" -c $1"
 		fi
 	fi
 	$cmd $argv
 
-	cmd=''
-	argv=''
+	argv="-t $name"
+	# check inside or outside tmux
 	if [ -z "$TMUX" ]; then # outside
 		cmd='tmux attach'
 	else # inside
 		TMUX=''
 		cmd="tmux switch-client"
 	fi
-	argv="-t $target"
-
-	unset parse __find_session TARGET_NAME
 	$cmd $argv
-	# check inside or outside tmux
+
 	exit $?
 }
 
