@@ -190,16 +190,19 @@ mtk-make() {
             ak|-ak|add-kernel)
                 shift
                 MTK_KERNEL_LUNCH="$1"
+                MTK_MAKE_KERNEL_OUT_DIR=''
                 echo "kernel lunch added: $MTK_KERNEL_LUNCH"
                 ;;
             av|-av|add-vendor)
                 shift
                 MTK_VENDOR_LUNCH="$1"
+                MTK_MAKE_VENDOR_OUT_DIR=''
                 echo "vendor lunch added: $MTK_VENDOR_LUNCH"
                 ;;
             as|-as|add-system)
                 shift
                 MTK_SYSTEM_LUNCH="$1"
+                MTK_MAKE_SYSTEM_OUT_DIR=''
                 echo "system lunch added: $MTK_SYSTEM_LUNCH"
                 ;;
             k|-k|kernel)
