@@ -31,18 +31,35 @@ MTK_SYSTEM_LUNCH="sys_mssi_t_64_ab_p-userdebug"
 
 __help_mtk_make() {
     cat << USAGE
+NAME:
+
+    $1 - a helper script for MTK build system.
+
 SYNOPSIS:
 
-$1 [-k|k|kernel] [-v|v|vendor] [-s|s|system] [-m|m|merge [split-build-script]]
-$1 [-ak|ak|add-kernel config] [-av|av|add-vendor config] [-as|as|add-system config]
-$1 [-l|l|list]
+    $1 [-k|k|kernel] [-v|v|vendor] [-s|s|system]
+    $1 [-m|m|merge [split-build-script]]
+    $1 [-ak|ak|add-kernel config] [-av|av|add-vendor config] [-as|as|add-system config]
+    $1 [-l|l|list]
 
 DESCRIPTION:
 
-    $1 is a helper script for MTK build system. The script provides many
-functions, like changing lunch config automatically between different builds,
-stopping at failed command once error occurred, replacing original make command
-with more simple string and show the total comsumed time of make process
+    k, v, s - compile kernel, vendor or system
+
+    m - execute MTK sign script to generate whole images for flash tool
+
+    ak, av, as - add lunch config of kernel, vendor or system, this option wouldn't
+                 lunch config actually, only recording the config name. These lunch
+                 configs would be activated when 'k' 'v' or 's' options is added.
+
+    l - list current config and output dir location. Output dir only appreared after
+        compile source codes.
+
+EXAMPLE:
+
+    $ $1 ak vnd_qbert-userdebug     # add kernel config
+    $ $1 l          # show config and output info
+    $ $1 k v s m    # compile kernel, vendor, system and merge images
 
 USAGE
 }
