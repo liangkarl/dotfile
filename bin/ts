@@ -28,7 +28,7 @@ __find_session() {
 }
 
 parse() {
-	local sess name argv cmd
+	local sess name argv cmd path
 
 	cmd=''
 	argv=''
@@ -43,11 +43,12 @@ parse() {
 			argv="-d -s $name -c $HOME"
 		fi
 	else
-		name=$(basename $1)
+		path=$name	# Assume name a path of dir
+		name=$(basename $path)
 		if ! __find_session $name ${sess[@]}; then
 			cmd='tmux new'
 			argv="-d -s $name"
-			[ -d "$1" ] && argv+=" -c $1"
+			[ -d "$path" ] && argv+=" -c $(cd $path; pwd)"
 		fi
 	fi
 	$cmd $argv
