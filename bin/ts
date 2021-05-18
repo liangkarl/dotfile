@@ -8,13 +8,19 @@ TARGET_NAME="$1"
 __find_session() {
 	local sess name
 
-	[[ $# == 0 ]] && return 1
+	if (( $# <= 0 )); then
+		return 1
+	fi
 
-	sess=($(tmux ls -F'#S'))
-	[[ ${#sess[@]} == 0 ]] && return 1
+	name="$1"; shift 1
+	sess=("$@")
+	if (( ${#sess[@]} == 0 )); then
+		return 1
+	fi
 
-	for name in ${sess[@]}; do
-		if [[ "$name" == "$1" ]]; then
+	local session
+	for session in ${sess[@]}; do
+		if [[ "$session" == "$name" ]]; then
 			return 0
 		fi
 	done
@@ -24,11 +30,12 @@ __find_session() {
 parse() {
 	local sess name argv cmd
 
-	sess=($(tmux ls -F'#S'))
 	cmd=''
 	argv=''
-	if [[ $# == 0 ]]; then
-		if [[ ${#sess[@]} != 0 ]]; then
+	name="$1"
+	sess=($(tmux ls -F'#S' 2>&-))
+	if (( $# == 0 )); then
+		if (( ${#sess[@]} != 0 )); then
 			name=${sess[0]}
 		else # no existed session
 			name=$(date +%x)
@@ -37,7 +44,7 @@ parse() {
 		fi
 	else
 		name=$(basename $1)
-		if ! __find_session $name; then
+		if ! __find_session $name ${sess[@]}; then
 			cmd='tmux new'
 			argv="-d -s $name"
 			[ -d "$1" ] && argv+=" -c $1"
