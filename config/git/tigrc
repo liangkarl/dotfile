@@ -22,23 +22,33 @@ set tree-view = line-number:no,interval=5 id:yes,color \
                 date:custom,format="%m/%d/%y %H:%M" date:relative-compact \
                 file-name
 
-bind status D ?git checkout %(file)
-bind status A ?git commit --amend
+# used for leader key
+bind generic m none
+bind generic M view-main
+
+bind status m! ?git checkout %(file)
+bind status ma ?git commit --amend -C HEAD
+bind status mA ?git commit --amend
 # NOTE:
 # `git stash save "stash name"` is deprecated at git 2.16
 # and replaced by `git stash push -m "stash name"`
-bind status S ?git stash save "%(prompt [stash all] New stash: )"
-bind status s ?git stash save "%(prompt [stash file] New stash: )" %(file)
+bind status my ?git stash save "%(prompt [file] name: )" %(file)
+bind status mY ?git stash save "%(prompt [all] name: )"
 
-bind refs P ?git fetch . %(repo:head):%(branch)
-bind refs F ?git fetch --all
-bind refs M ?git merge "%(prompt [Hint: main branch merges forked branch] arguments: )" %(branch)
-bind refs B ?git rebase "%(prompt [Hint: forked branch rebases main branch] arguments: )" %(branch)
-bind refs D ?git branch -D %(branch)
-bind refs d ?git tag -d %(tag)
-bind refs U ?git push %(remote) %(branch)
+bind refs mf ?git fetch %(remote) %(branch)
+bind refs mF ?git fetch --all
+bind refs md ?git tag -d %(tag)
+bind refs mD ?git branch -D %(ref)
+bind refs mm ?git merge %(ref)
+bind refs mb ?git rebase %(ref)
+bind refs mp ?git push %(remote) %(branch)
+bind refs mP ?git push %(remote) HEAD:refs/for/%(branch)
 
-bind main ! ?git reset "%(prompt [reset-commit] arguments: )" %(commit)
-bind main E ?git checkout %(commit)
-bind main T ?git tag "%(prompt New tag: )" %(commit)
-bind main B ?git branch "%(prompt New branch: )" %(commit)
+bind main ms ?git reset %(commit)
+bind main mS ?git reset --hard %(commit)
+bind main mc ?git checkout %(commit)
+bind main ma !git branch "%(prompt new branch: )" %(commit)
+bind main mA !git tag "%(prompt new tag: )" %(commit)
+bind main mr ?git revert --no-edit %(commit)
+bind main mR ?git revert %(commit)
+bind main mb ?git rebase -i %(commit)
