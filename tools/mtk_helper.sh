@@ -81,6 +81,7 @@ __mtk_lunch() {
 
 __merge_cmd() {
     local split_build merged_dir
+    local in cmd
 
     if [ "$MTK_MAKE_KERNEL_OUT_DIR" == "" ]; then
         __mtk_lunch kernel || return $?
@@ -92,8 +93,9 @@ __merge_cmd() {
         __mtk_lunch system || return $?
     fi
 
-    split_build=${1:-$MTK_MAKE_SYSTEM_OUT_DIR/images/split_build.py}
+    in="$1"
     merged_dir=$MTK_MAKE_KERNEL_OUT_DIR/merged
+    split_build=$MTK_MAKE_SYSTEM_OUT_DIR/images/split_build.py
 
     echo "========================================="
     echo "Make sure these pathes are correct"
@@ -105,11 +107,17 @@ __merge_cmd() {
     echo "========================================="
 
     rm -rf $merged_dir
-    python $split_build \
-        --system-dir $MTK_MAKE_SYSTEM_OUT_DIR/images \
-        --vendor-dir $MTK_MAKE_VENDOR_OUT_DIR/images \
-        --kernel-dir $MTK_MAKE_KERNEL_OUT_DIR/images \
-        --output-dir $merged_dir
+    cmd="python $split_build"
+    cmd+=" --system-dir $MTK_MAKE_SYSTEM_OUT_DIR/images"
+    cmd+=" --vendor-dir $MTK_MAKE_VENDOR_OUT_DIR/images"
+    cmd+=" --kernel-dir $MTK_MAKE_KERNEL_OUT_DIR/images"
+    cmd+=" --output-dir $merged_dir"
+
+    if [[ "$in" == "ota" ]]; then
+        cmd+=" --otapackage"
+    fi
+
+    eval $cmd
     return $?
 }
 
@@ -215,14 +223,10 @@ mtk-make() {
                 cmd_list+=("__mtk_make_vendor")
                 ;;
             m|-m|merge)
-                shift
-                argv="$1"
-                if [ -f "$argv" ]; then
-                    cmd_list+=("__merge_cmd $argv")
-                else
-                    cmd_list+=("__merge_cmd")
-                    continue
-                fi
+                cmd_list+=("__merge_cmd")
+                ;;
+            om|-mo|merge-ota)
+                cmd_list+=("__merge_cmd ota")
                 ;;
             l|-l|list)
                 echo "List lunch config:"
