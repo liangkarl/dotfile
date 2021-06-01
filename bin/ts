@@ -35,9 +35,7 @@ parse() {
 	name="$1"
 	sess=($(tmux ls -F'#S' 2>&-))
 	if (( $# == 0 )); then
-		if (( ${#sess[@]} != 0 )); then
-			name=${sess[0]}
-		else # no existed session
+		if (( ${#sess[@]} == 0 )); then
 			name=$(date +%x)
 			cmd='tmux new'
 			argv="-d -s $name -c $HOME"
@@ -53,7 +51,10 @@ parse() {
 	fi
 	$cmd $argv
 
-	argv="-t $name"
+	if [ -n "$name" ]; then
+		argv="-t $name"
+	fi
+
 	# check inside or outside tmux
 	if [ -z "$TMUX" ]; then # outside
 		cmd='tmux attach'
