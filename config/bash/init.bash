@@ -33,44 +33,40 @@ __customize_ps1() {
     export PS1
 }
 
+# $FUNCNAME [name]
 __knock_helper() {
-    local NAME FILE
-    local LIST DONE
-    local POSTFIX='_helper.sh'
+    local list
+    local postfix='_helper.sh'
 
-    LIST=($(ls ${SHELL_DIR}/tools/*${POSTFIX}))
-    if [ -z "$LIST" ]; then
+    list=($(ls ${SHELL_DIR}/tools/*${postfix}))
+    if [[ "$list" == '' ]]; then
         return 128
     fi
 
-    for ((i = 0; i < $#; i++)); do
-        DONE=n
-        for ((j = 0; j < ${#LIST[@]}; j++)); do
-            FILE=$(basename ${LIST[$j]})
-            NAME=${FILE//${POSTFIX}/}
-            if [[ "$1" == $NAME ]]; then
-                echo "call helper: $NAME"
-                . ${LIST[$j]}
-                DONE=y
-                break
-            fi
-        done
+    local i j
+    local name file
 
-        if [[ $DONE != y ]]; then
-            echo "unsupport helper: $1"
-            return 128
+    for ((j = 0; j < ${#list[@]}; j++)); do
+        file=$(basename ${list[$j]})
+        name=${file//${postfix}}
+        if [[ "$1" == $name ]]; then
+            echo "call helper: $name"
+            . ${list[$j]}
+            return 0
         fi
-        shift
     done
+
+    echo "unsupport helper: $name"
+    return 128
 }
 
 __knock_helper_compl() {
-    local LIST POSTFIX
-    POSTFIX='_helper.sh'
-    LIST="$(cd ${SHELL_DIR}/tools/ && { ls *${POSTFIX} | sed "s/$POSTFIX//g"; })"
+    local list postfix
+    postfix='_helper.sh'
+    list="$(cd ${SHELL_DIR}/tools/ 2>&- && ls *${postfix})"
+    list=${list//$postfix}
 
-    COMPREPLY=($(compgen -W "$LIST" "${COMP_WORDS[1]}"))
+    COMPREPLY=($(compgen -W "$list" "${COMP_WORDS[1]}"))
 }
 
 __customize_ps1
-unset -f __customize_ps1
