@@ -70,22 +70,3 @@ __knock_helper_compl() {
 }
 
 __customize_ps1
-
-readline-brackets() {
-    local current_row
-
-    IFS=';' read -sdR -p $'\E[6n' ROW COL
-    current_row="${ROW#*[}"
-    tput cup $((current_row-2)) 0
-
-    READLINE_LINE="${READLINE_LINE:0:$READLINE_POINT}${1}${READLINE_LINE:$READLINE_POINT}"
-    ((READLINE_POINT+=1))
-}
-
-
-bind -x '"\"" : "readline-brackets \"\""'
-bind -x $'"\047" : "readline-brackets \\\047\\\047"' # SINGLE QUOTE
-bind -x '"(" : "readline-brackets \(\)"'
-bind -x '"[" : "readline-brackets []"'
-bind -x '"{" : "readline-brackets {}"'
-# bind -x '"<" : "readline-brackets \<\>"'
