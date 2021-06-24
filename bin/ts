@@ -7,11 +7,10 @@ TARGET_NAME="$1"
 
 parse() {
 	local sess name argv cmd path
-	local sname
 
 	cmd=''
 	argv=''
-	path="$1"
+	path="$(cd $1 2>&-; pwd)"
 	sess=($(tmux ls -F'#S' 2>&-))
 	if (( $# == 0 )); then
 		if (( ${#sess[@]} == 0 )); then
@@ -20,20 +19,12 @@ parse() {
 			argv="-d -s $name -c $HOME"
 		fi
 	else
-		name="$(basename $path)"	# Assume name a path of dir
-		for sname in ${sess[@]}; do
-			if [[ "$name" == "$sname" ]]; then
-				name=''
-				break
-			fi
-		done
-
-		if [[ "$name" != '' ]]; then
+		name="$(basename $TARGET_NAME)"	# Assume name a path of dir
+		if tmux has-seesion -t $name 2>&-; then
+			name=''
+		else
 			cmd='tmux new'
-			argv="-d -s $name"
-			if [ -d "$path" ]; then
-				argv+=" -c $(cd $path; pwd)"
-			fi
+			argv="-d -s $name -c $path"
 		fi
 	fi
 	$cmd $argv
@@ -50,7 +41,7 @@ parse() {
 	fi
 	$cmd $argv
 
-	exit $?
+	return $?
 }
 
 parse $@
