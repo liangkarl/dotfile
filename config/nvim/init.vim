@@ -24,6 +24,7 @@ set showtabline=2
 " Set up font for special characters
 set guifont=SauceCodePro\ Nerd\ Font\ Mono
 
+set diffopt+=algorithm:histogram
 " backup/swap/undo files
 " set directory=~/.config/nvim/swap//,.,~/tmp,/var/tmp,/tmp
 set noswapfile
