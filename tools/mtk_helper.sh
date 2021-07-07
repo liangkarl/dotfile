@@ -24,10 +24,11 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-# set default lunch config here
-MTK_KERNEL_LUNCH="vnd_qbert-userdebug"
-MTK_VENDOR_LUNCH="vnd_qbert-userdebug"
-MTK_SYSTEM_LUNCH="sys_mssi_t_64_ab_p-userdebug"
+. lunch.list
+
+MTK_KERNEL_LUNCH=${kernel_lunch:-vnd_qbert-userdebug}
+MTK_VENDOR_LUNCH=${vendor_lunch:-vnd_qbert-userdebug}
+MTK_SYSTEM_LUNCH=${sys_lunch:-sys_mssi_t_64_ab_p-userdebug}
 
 __help_mtk_make() {
     cat << USAGE
@@ -38,7 +39,7 @@ NAME:
 SYNOPSIS:
 
     $1 [-k|k|kernel] [-v|v|vendor] [-s|s|system]
-    $1 [-m|m|merge [split-build-script]]
+    $1 [-m|m|merge] [-mo|mo|merge-ota]
     $1 [-ak|ak|add-kernel config] [-av|av|add-vendor config] [-as|as|add-system config]
     $1 [-l|l|list]
 
