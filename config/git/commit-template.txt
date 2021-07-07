@@ -4,23 +4,24 @@
 #    | proj |        short message          |
 # eg, Qbert: Fix compliant error of xxx file
 
+#
 ### MUST NEED BELOW INFORMATION ###
 #
 [Description]
 # 1. BugFix, Improvement: What happend to original design?
-# eg, Current xxx value couldn't meet the spec criteria
+#    Eg, Current xxx value couldn't meet the spec criteria
 # 2. Porting, NewFeature: Why we need to add such changes?
-# eg 1, No support for 2nd source driver of wifi module
-# eg 2, Add xxx feature due to customer's request
+#    Eg, No support for 2nd source driver of wifi module
+#    Eg, Add xxx feature due to customer's request
 
 [Change Description]
-# Describe what you change here
-# eg 1, add xxx files to fix yyy problem
-# eg 2, modify xxx to yyy value.
-#
-# NOTE: IT'S DESCRIPTION FOR HUMAN !!! NOT CHANGE LIST !!!
-# git log --stat ==> CHANGE LIST
+# 1. Describe what you change here
+#    Eg, add xxx files to fix yyy problem
+#    Eg, modify xxx to yyy value.
+# 2. DESCRIPTION IS FOR HUMAN READ !!! NOT CHANGE LIST !!!
+#    "git log --stat" ==> CHANGE LIST
 
+#
 ### ADD BELOW INFORMATION FOR OPTION ###
 #
 # [Affected Area]
@@ -28,8 +29,8 @@
 # 2. By function: Wifi? BT? touch panel? ...
 # 3. By HW component: MP-6050? APS-XXXX? TI-XXXX? ...
 # 4. By SW framework: XXX service? XXX driver? XXX package? xxx HAL?
-# eg 1, kernel, g-sensor, MPU-6050, driver&dts
-# eg 2, system, Wifi, BCM4342, hal
+#    Eg, kernel, g-sensor, MPU-6050, driver&dts
+#    Eg, system, Wifi, BCM4342, hal
 #
 # [Side effect]
-# Describe known side effect here
+# 1. Describe known side effect here
