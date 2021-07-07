@@ -186,13 +186,13 @@ mtk-make() {
     local argv
     local -i timer
 
-    [ $# -eq 0 ] && {
+    (( $# == 0 )) && {
         __help_mtk_make $FUNCNAME
         return 1
     }
 
     cmd_list=()
-    while [ $# -ne 0 ]; do
+    while (( $# != 0 )); do
         argv="$1"
         case "$argv" in
             ak|-ak|add-kernel)
