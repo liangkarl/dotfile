@@ -32,7 +32,7 @@ init-krnl-env() {
     cd - &> /dev/null
 
     gen_db_py=gen_compile_commands.py
-    for dir in "$(pwd)" "$kernel_dir/scripts" "$android_dir"; do
+    for dir in "$(pwd)" "$kernel_dir/scripts" "$android_dir" "$SHELL_DIR/tools"; do
         [ -e $dir/$gen_db_py ] && {
             gen_db_py=$dir/$gen_db_py
             break
