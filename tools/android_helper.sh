@@ -20,13 +20,13 @@ init-krnl-env() {
     cd $KERNEL_DIR
     KERNEL_DIR=$(pwd)
     ANDROID_DIR="$(dirname $KERNEL_DIR)"
+    KERNEL_OBJ_DIR=${ANDROID_PRODUCT_OUT}/obj/KERNEL_OBJ
 
     echo "Linux kernel build out dir: $KERNEL_OBJ_DIR"
     echo "Linux kernel dir: $KERNEL_DIR"
     echo "Android dir: $ANDROID_DIR"
     echo "-------------------------------------------------------------------"
 
-    KERNEL_OBJ_DIR=${ANDROID_PRODUCT_OUT}/obj/KERNEL_OBJ
     echo "Link build dir."
     ln -svf $KERNEL_OBJ_DIR build
     cd - &> /dev/null
