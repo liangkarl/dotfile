@@ -1,0 +1,27 @@
+# Explain:
+# Glob 模式就像是 Shell 所使用的簡化版正規運算式（regular expressions）
+# 1. 一個星號（*）匹配零個或多個字元
+# 2. [abc] 匹配中括弧內的其中一個字元（此例為 a、b、c）
+# 3. 問號（?）匹配單一個字元
+# 4. 中括孤內的字以連字號連接（如：[0-9]）用來匹配任何在該範圍內的字元（此例為 0 到 9）
+# 5. 你也可以使用二個星號用來匹配巢狀目錄；a/**/z 將會匹配到 a/z、a/b/z、a/b/c/z 等等。
+#
+# Example:
+# 不要追蹤檔名為 .a 結尾的檔案
+# *.a
+# 但是要追蹤 lib.a，即使上面已指定忽略所有的 .a 檔案
+# !lib.a
+#
+# 只忽略根目錄下的 TODO 檔案，不包含子目錄下的 TODO
+# /TODO
+#
+# 忽略 build/ 目錄下所有檔案
+# build/
+#
+# 忽略 doc/notes.txt，但不包含 doc/server/arch.txt
+# doc/*.txt
+#
+# 忽略所有在 doc/ 目錄底下的 .pdf 檔案
+# doc/**/*.pdf
+
+.ccls-cache/
