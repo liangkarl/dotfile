@@ -1,0 +1,60 @@
+# Config reference
+# https://github.com/jonas/tig/blob/master/tigrc
+# https://jonas.github.io/tig/doc/tigrc.5.html
+
+# used for boosting loading speed
+set commit-order = default
+set main-view-commit-title-graph = v1
+
+# Addjust the column width of author
+set main-view = line-number:no,interval=5 \
+                date:custom,format="%m/%d/%y %H:%M" date:relative-compact \
+                author:full,width=15 id:yes \
+                commit-title:yes,graph,refs,overflow=no
+set blame-view = id:yes,color date:relative-compact \
+                 file-name:no author:abbreviated \
+                 line-number:yes,interval=1 text
+set refs-view = line-number:no \
+                date:custom,format="%m/%d/%y %H:%M" date:relative-compact \
+				ref id:yes,color commit-title
+set tree-view = line-number:no,interval=5 id:yes,color \
+                mode author:full file-size \
+                date:custom,format="%m/%d/%y %H:%M" date:relative-compact \
+                file-name
+
+# used for leader key
+bind generic m none
+bind generic M view-main
+
+bind status m! ?git checkout %(file)
+bind status ma ?git commit --amend -C HEAD
+bind status mA ?git commit --amend
+# NOTE:
+# `git stash save "stash name"` is deprecated at git 2.16
+# and replaced by `git stash push -m "stash name"`
+bind status my ?git stash save "%(prompt [file] name: )" %(file)
+bind status mY ?git stash save "%(prompt [all] name: )"
+
+bind refs mf ?git fetch %(remote) %(branch)
+bind refs mF ?git fetch --all
+bind refs md ?git branch -D %(ref)
+bind refs mD ?git tag -d %(tag)
+bind refs mm ?git merge %(ref)
+bind refs mM ?git merge --no-commit --no-ff %(ref)
+bind refs mb ?git rebase %(ref)
+bind refs mp ?git push %(remote) %(branch)
+bind refs mP ?git push %(remote) HEAD:refs/for/%(branch)
+bind refs mc ?git checkout %(ref)
+bind refs mC ?git checkout -m %(ref)
+bind refs m> ?git fetch . HEAD:%(ref)
+
+bind main ms ?git reset %(commit)
+bind main mS ?git reset --hard %(commit)
+bind main mc ?git checkout %(commit)
+bind main ma !git branch "%(prompt new branch: )" %(commit)
+bind main mA !git tag "%(prompt new tag: )" %(commit)
+bind main mr ?git revert --no-edit %(commit)
+bind main mR ?git revert %(commit)
+bind main mb ?git rebase -i %(commit)
+bind main mp ?git cherry-pick -s %(commit)
+bind main mP ?git format-patch -k --binary --histogram -1 -o . %(commit)
