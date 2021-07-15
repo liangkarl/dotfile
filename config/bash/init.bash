@@ -88,6 +88,16 @@ __import_alias() {
     done
 }
 
+__import_plugin() {
+    local plugin_dir="${XDG_CONFIG_HOME}/bash/plugin"
+    local file
+
+    for file in $plugin_dir/*; do
+        source $file
+    done
+}
+
 __custom_prompt
 __import_completion
 __import_alias
+__import_plugin
