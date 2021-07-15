@@ -1,6 +1,0 @@
-COMPLETION_DIR="$HOME/.config/bash/completion/"
-LIST="$(ls $COMPLETION_DIR)"
-for FILE in $LIST; do
-	. $COMPLETION_DIR/$FILE
-done
-unset LIST COMPLETION_DIR

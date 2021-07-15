@@ -69,4 +69,24 @@ __knock_helper_compl() {
     COMPREPLY=($(compgen -W "$list" "${COMP_WORDS[1]}"))
 }
 
+__import_completion() {
+    local completion_dir="$HOME/.config/bash/completion"
+    local file
+
+    for file in $completion_dir/*; do
+        source $file
+    done
+}
+
+__import_alias() {
+    local alias_dir="$HOME/.config/bash/alias"
+    local file
+
+    for file in $alias_dir/*; do
+        source $file
+    done
+}
+
 __customize_ps1
+__import_completion
+__import_alias
