@@ -15,6 +15,30 @@
 # limitations under the License.
 #
 
+# Zsh needs bashcompinit called to support bash-style completion.
+function enable_zsh_completion() {
+    # Don't override user's options if bash-style completion is already enabled.
+    if ! declare -f complete >/dev/null; then
+        autoload -U compinit && compinit
+        autoload -U bashcompinit && bashcompinit
+    fi
+}
+
+function validate_current_shell() {
+    local current_sh="$(ps -o command -p $$)"
+    case "$current_sh" in
+        *bash*)
+            function check_type() { type -t "$1"; }
+            ;;
+        *zsh*)
+            function check_type() { type "$1"; }
+            enable_zsh_completion ;;
+        *)
+            echo -e "WARNING: Only bash and zsh are supported.\nUse of other shell would lead to erroneous results."
+            ;;
+    esac
+}
+
 _adb() {
     if ! check_type "$1" >/dev/null; then
         return
@@ -491,7 +515,7 @@ _adb_util_complete_local_file()
     fi
 }
 
-
+validate_current_shell
 if [[ $(check_type compopt) == "builtin" ]]; then
     complete -F _adb adb
 else
