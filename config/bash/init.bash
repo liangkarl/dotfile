@@ -71,7 +71,7 @@ __knock_helper_compl() {
 }
 
 __import_completion() {
-    local completion_dir="$HOME/.config/bash/completion"
+    local completion_dir="${XDG_CONFIG_HOME}/bash/completion"
     local file
 
     for file in $completion_dir/*; do
@@ -80,7 +80,7 @@ __import_completion() {
 }
 
 __import_alias() {
-    local alias_dir="$HOME/.config/bash/alias"
+    local alias_dir="${XDG_CONFIG_HOME}/bash/alias"
     local file
 
     for file in $alias_dir/*; do
