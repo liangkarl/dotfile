@@ -10,6 +10,7 @@ export SOONG_GEN_COMPDB_DEBUG=1
 
 # FIXME: hard code here
 export SHELL_DIR=$HOME/shell
+export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-${HOME}/.config}
 
 __custom_prompt() {
     local white='\[\033[01;38m\]'
