@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# $FUNCNAME [name]
+__knock_helper() {
+    local list
+    local postfix='_helper.sh'
+
+    list=($(ls ${SHELL_DIR}/tools/*${postfix}))
+    if [[ "$list" == '' ]]; then
+        return 128
+    fi
+
+    local i j
+    local name file
+
+    for ((j = 0; j < ${#list[@]}; j++)); do
+        file=$(basename ${list[$j]})
+        name=${file//${postfix}}
+        if [[ "$1" == $name ]]; then
+            echo "call helper: $name"
+            . ${list[$j]}
+            return 0
+        fi
+    done
+
+    echo "unsupport helper: $name"
+    return 128
+}
+
+__knock_helper_compl() {
+    local list postfix
+    postfix='_helper.sh'
+    list="$(cd ${SHELL_DIR}/tools/ 2>&- && ls *${postfix})"
+    list=${list//$postfix}
+
+    COMPREPLY=($(compgen -W "$list" "${COMP_WORDS[1]}"))
+}
