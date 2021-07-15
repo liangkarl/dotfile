@@ -31,3 +31,6 @@ compile_commands.json
 .ccls
 .ccls-root
 .ccls-cache/
+
+# clangd
+.clangd
