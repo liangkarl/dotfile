@@ -24,4 +24,10 @@
 # 忽略所有在 doc/ 目錄底下的 .pdf 檔案
 # doc/**/*.pdf
 
+# LSP command database
+compile_commands.json
+
+# ccls
+.ccls
+.ccls-root
 .ccls-cache/
