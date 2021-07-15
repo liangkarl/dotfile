@@ -11,7 +11,7 @@ export SOONG_GEN_COMPDB_DEBUG=1
 # FIXME: hard code here
 export SHELL_DIR=$HOME/shell
 
-__customize_ps1() {
+__custom_prompt() {
     local white='\[\033[01;38m\]'
     local blue='\[\033[01;34m\]'
     local yellow='\[\033[38;5;11m\]'
@@ -87,6 +87,6 @@ __import_alias() {
     done
 }
 
-__customize_ps1
+__custom_prompt
 __import_completion
 __import_alias
