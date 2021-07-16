@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Assume user has source envsetup.sh already
-init-krnl-env() {
+setup_kernel_cmddb() {
     local kernel_dir kernel_obj_dir
     local android_dir
     local gen_db_py compile_db
