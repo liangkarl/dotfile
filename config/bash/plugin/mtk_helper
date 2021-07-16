@@ -24,7 +24,9 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-. lunch.list
+if [[ -e lunch.list ]]; then
+	source lunch.list
+fi
 
 MTK_KERNEL_LUNCH=${kernel_lunch:-vnd_qbert-userdebug}
 MTK_VENDOR_LUNCH=${vendor_lunch:-vnd_qbert-userdebug}
@@ -226,7 +228,7 @@ mtk-make() {
     return 0;
 }
 
-if [ -f build/envsetup.sh ]; then
-    . build/envsetup.sh
-fi
-complete -F _lunch mtk-make
+# if [ -f build/envsetup.sh ]; then
+#     . build/envsetup.sh
+# fi
+# complete -F _lunch mtk-make
