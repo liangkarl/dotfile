@@ -14,3 +14,7 @@ fi
 echo "Copy config to $target"
 cp -r ${config_dir} ${target}/
 rm -f ${target}/${self}
+
+echo -n "Add path of shell dir: "
+echo "export SHELL_DIR=$(readlink -e ${config_dir}/..)" |
+        tee ${target}/bash/config
