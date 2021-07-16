@@ -4,11 +4,13 @@
 
 # Copy config to right place
 target="${XDG_CONFIG_HOME:-${HOME}/.config}"
-config="$(dirname $0)"
+self="$(basename $0)"
+config_dir="$(dirname $0)"
 
 if [[ ! -e "$target" ]]; then
     mkdir $target
 fi
 
-# FIXME: don't copy this script
-cp -vr ${config}/* $target/
+echo "Copy config to $target"
+cp -r ${config_dir} ${target}/
+rm -f ${target}/${self}
