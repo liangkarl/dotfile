@@ -120,8 +120,8 @@ build_image() {
         k|-k|kernel)
             cmd_list+=("lunch $kernel_lunch")
             cmd_list+=('kernel_out_dir=$ANDROID_PRODUCT_OUT')
-            cmd_list+=("rm -rf $kernel_out_dir/obj/KERNEL_OBJ")
-            cmd_list+=("rm -rf $kernel_out_dir/images/krn*")
+            cmd_list+=('rm -rf ${kernel_out_dir}/obj/KERNEL_OBJ')
+            cmd_list+=('rm -rf ${kernel_out_dir}/images/krn*')
             cmd_list+=("make -j24 krn_images")
             if [[ -e "$(readlink -e "$kernel_dir")" ]]; then
                 cmd_list+=("setup_kernel_cmddb $kernel_dir")
@@ -130,8 +130,8 @@ build_image() {
         s|-s|system)
             cmd_list+=("lunch $system_lunch")
             cmd_list+=('system_out_dir=$ANDROID_PRODUCT_OUT')
-            cmd_list+=("rm -rf $system_out_dir/obj")
-            cmd_list+=("rm -rf $system_out_dir/images")
+            cmd_list+=('rm -rf ${system_out_dir}/obj')
+            cmd_list+=('rm -rf ${system_out_dir}/images')
             cmd_list+=("make -j24 sys_images")
             cmd_list+=("create_cmd_db system")
             ;;
@@ -139,8 +139,8 @@ build_image() {
             cmd_list+=("lunch $vendor_lunch")
             cmd_list+=('vendor_out_dir=$ANDROID_PRODUCT_OUT')
             # avoid to remove kernel obj with same config name
-            cmd_list+=("rm -rf $vendor_out_dir/obj/[!KERNEL_OBJ]")
-            cmd_list+=("rm -rf $vendor_out_dir/images/vnd*")
+			cmd_list+=('rm -rf ${vendor_out_dir}/obj/!(KERNEL_OBJ)')
+            cmd_list+=('rm -rf ${vendor_out_dir}/images/vnd*')
             cmd_list+=("make -j24 vnd_images")
             cmd_list+=("create_cmd_db vendor")
             ;;
