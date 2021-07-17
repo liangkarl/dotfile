@@ -62,10 +62,6 @@ setup_kernel_cmddb() {
     chmod +x $gen_db_py
     ./$gen_db_py
 
-    echo "replace file pathes"
-    sed -i "s|$kernel_obj_dir|$kernel_dir|g" $compile_db
-    sed -i 's/[ \t]*$//g' $compile_db
-
     echo "copy commands db to $kernel_dir/$compile_db"
     cp -f $compile_db $kernel_dir
     cd - &> /dev/null
