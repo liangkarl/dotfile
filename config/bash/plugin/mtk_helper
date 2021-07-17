@@ -24,26 +24,21 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-if [[ -e lunch.list ]]; then
-	source lunch.list
-fi
+usage() {
+    local name
+    name="$1"
 
-MTK_KERNEL_LUNCH=${kernel_lunch:-vnd_qbert-userdebug}
-MTK_VENDOR_LUNCH=${vendor_lunch:-vnd_qbert-userdebug}
-MTK_SYSTEM_LUNCH=${sys_lunch:-sys_mssi_t_64_ab_p-userdebug}
-
-__help_mtk_make() {
     cat << USAGE
 NAME:
 
-    $1 - a helper script for MTK build system.
+    $name - a helper script for MTK build system.
 
 SYNOPSIS:
 
-    $1 [-k|k|kernel] [-v|v|vendor] [-s|s|system]
-    $1 [-m|m|merge] [-mo|mo|merge-ota]
-    $1 [-ak|ak|add-kernel config] [-av|av|add-vendor config] [-as|as|add-system config]
-    $1 [-l|l|list]
+    $name [-k|k|kernel] [-v|v|vendor] [-s|s|system]
+    $name [-m|m|merge] [-mo|mo|merge-ota]
+    $name [-ak|ak|add-kernel config] [-av|av|add-vendor config] [-as|as|add-system config]
+    $name [-l|l|list]
 
 DESCRIPTION:
 
@@ -60,53 +55,14 @@ DESCRIPTION:
 
 EXAMPLE:
 
-    $ $1 ak vnd_qbert-userdebug     # add kernel config
-    $ $1 l          # show config and output info
-    $ $1 k v s m    # compile kernel, vendor, system and merge images
+    $ $name ak vnd_qbert-userdebug     # add kernel config
+    $ $name l          # show config and output info
+    $ $name k v s m    # compile kernel, vendor, system and merge images
 
 USAGE
 }
 
-__mtk_make_merge() {
-    local split_build merged_dir
-    local argv cmd
-
-    if [ "$MTK_MAKE_KERNEL_OUT_DIR" == "" ]; then
-        lunch $MTK_KERNEL_LUNCH || return $?
-    fi
-    if [ "$MTK_MAKE_VENDOR_OUT_DIR" == "" ]; then
-        lunch $MTK_VENDOR_LUNCH || return $?
-    fi
-    if [ "$MTK_MAKE_SYSTEM_OUT_DIR" == "" ]; then
-        lunch $MTK_SYSTEM_LUNCH || return $?
-    fi
-
-    argv="$1"
-    merged_dir="$(readlink -f final-images)"
-    split_build=$MTK_MAKE_SYSTEM_OUT_DIR/images/split_build.py
-
-    echo "========================================="
-    echo "Make sure these pathes are correct"
-    echo "split_build: $split_build"
-    echo "kernel: $MTK_MAKE_KERNEL_OUT_DIR"
-    echo "vendor: $MTK_MAKE_VENDOR_OUT_DIR"
-    echo "system: $MTK_MAKE_SYSTEM_OUT_DIR"
-    echo "out: $merged_dir"
-    echo "========================================="
-
-    rm -rf $merged_dir
-    cmd="python $split_build"
-    cmd+=" --system-dir $MTK_MAKE_SYSTEM_OUT_DIR/images"
-    cmd+=" --vendor-dir $MTK_MAKE_VENDOR_OUT_DIR/images"
-    cmd+=" --kernel-dir $MTK_MAKE_KERNEL_OUT_DIR/images"
-    cmd+=" --output-dir $merged_dir"
-    cmd+=" ${argv}"
-
-    eval $cmd
-    return $?
-}
-
-__mtk_make_exe_cmds() {
+enter() {
     local cmd_list
     local cmd ret i
 
@@ -125,37 +81,72 @@ __mtk_make_exe_cmds() {
     return $ret
 }
 
-__mtk_make_cmd_hub() {
+split_build() {
+    local split_build merged_dir
+    local argv cmd
+
+    if [ "$kernel_out_dir" == "" ]; then
+        lunch $kernel_lunch || return $?
+    fi
+    if [ "$vendor_out_dir" == "" ]; then
+        lunch $vendor_lunch || return $?
+    fi
+    if [ "$system_out_dir" == "" ]; then
+        lunch $system_lunch || return $?
+    fi
+
+    argv="$1"
+    merged_dir="$(readlink -f final-images)"
+    split_build=$system_out_dir/images/split_build.py
+
+    rm -rf $merged_dir
+    cmd="python $split_build"
+    cmd+=" --system-dir $system_out_dir/images"
+    cmd+=" --vendor-dir $vendor_out_dir/images"
+    cmd+=" --kernel-dir $kernel_out_dir/images"
+    cmd+=" --output-dir $merged_dir"
+    cmd+=" ${argv}"
+
+    enter "$cmd"
+    return $?
+}
+
+build_image() {
     local cmd_list
 
     cmd_list=()
     argv="$1"
     case "$argv" in
         k|-k|kernel)
-            cmd_list+=("lunch $MTK_KERNEL_LUNCH")
-            cmd_list+=('MTK_MAKE_KERNEL_OUT_DIR=$ANDROID_PRODUCT_OUT')
-            cmd_list+=("rm -rf $MTK_MAKE_KERNEL_OUT_DIR/obj/KERNEL_OBJ")
-            cmd_list+=("rm -rf $MTK_MAKE_KERNEL_OUT_DIR/images/krn*")
+            cmd_list+=("lunch $kernel_lunch")
+            cmd_list+=('kernel_out_dir=$ANDROID_PRODUCT_OUT')
+            cmd_list+=("rm -rf $kernel_out_dir/obj/KERNEL_OBJ")
+            cmd_list+=("rm -rf $kernel_out_dir/images/krn*")
             cmd_list+=("make -j24 krn_images")
+            if [[ -e "$(readlink -e "$kernel_dir")" ]]; then
+                cmd_list+=("setup_kernel_cmddb $kernel_dir")
+            fi
             ;;
         s|-s|system)
-            cmd_list+=("lunch $MTK_SYSTEM_LUNCH")
-            cmd_list+=('MTK_MAKE_SYSTEM_OUT_DIR=$ANDROID_PRODUCT_OUT')
-            cmd_list+=("rm -rf $MTK_MAKE_SYSTEM_OUT_DIR/obj")
-            cmd_list+=("rm -rf $MTK_MAKE_SYSTEM_OUT_DIR/images")
+            cmd_list+=("lunch $system_lunch")
+            cmd_list+=('system_out_dir=$ANDROID_PRODUCT_OUT')
+            cmd_list+=("rm -rf $system_out_dir/obj")
+            cmd_list+=("rm -rf $system_out_dir/images")
             cmd_list+=("make -j24 sys_images")
+            cmd_list+=("create_cmd_db system")
             ;;
         v|-v|vendor)
-            cmd_list+=("lunch $MTK_VENDOR_LUNCH")
-            cmd_list+=('MTK_MAKE_VENDOR_OUT_DIR=$ANDROID_PRODUCT_OUT')
+            cmd_list+=("lunch $vendor_lunch")
+            cmd_list+=('vendor_out_dir=$ANDROID_PRODUCT_OUT')
             # avoid to remove kernel obj with same config name
-            cmd_list+=("rm -rf $MTK_MAKE_VENDOR_OUT_DIR/obj/[!KERNEL_OBJ]")
-            cmd_list+=("rm -rf $MTK_MAKE_VENDOR_OUT_DIR/images/vnd*")
+            cmd_list+=("rm -rf $vendor_out_dir/obj/[!KERNEL_OBJ]")
+            cmd_list+=("rm -rf $vendor_out_dir/images/vnd*")
             cmd_list+=("make -j24 vnd_images")
+            cmd_list+=("create_cmd_db vendor")
             ;;
     esac
 
-    __mtk_make_exe_cmds "${cmd_list[@]}" || return $?
+    enter "${cmd_list[@]}" || return $?
 }
 
 # Assume user has sourced envsetup.sh
@@ -164,10 +155,25 @@ mtk-make() {
     local argv
     local -i timer
 
-    (( $# == 0 )) && {
-        __help_mtk_make $FUNCNAME
+    if (( $# == 0 )); then
+        usage $FUNCNAME
         return 1
-    }
+    fi
+
+    if [[ ! -z "$(declare -F lunch)" ]]; then
+        # FIXME: need to complete cmd before exe mtk-make
+        complete -F _lunch mtk-make
+    elif [[ -f build/envsetup.sh ]]; then # no lunch func
+        source build/envsetup.sh
+    fi
+
+    if [[ -e lunch.list ]]; then
+        source lunch.list
+    fi
+
+    kernel_lunch=${kernel_lunch:-vnd_tb8173p1_64_bsp-userdebug}
+    vendor_lunch=${vendor_lunch:-vnd_tb8173p1_64_bsp-userdebug}
+    system_lunch=${sys_lunch:-sys_mssi_t_64_ab-userdebug}
 
     cmd_list=()
     while (( $# != 0 )); do
@@ -175,60 +181,70 @@ mtk-make() {
         case "$argv" in
             ak|-ak|add-kernel)
                 shift
-                MTK_KERNEL_LUNCH="$1"
-                MTK_MAKE_KERNEL_OUT_DIR=''
-                echo "kernel lunch added: $MTK_KERNEL_LUNCH"
+                kernel_lunch="$1"
+                kernel_out_dir=''
+                echo "kernel lunch added: $kernel_lunch"
                 ;;
             av|-av|add-vendor)
                 shift
-                MTK_VENDOR_LUNCH="$1"
-                MTK_MAKE_VENDOR_OUT_DIR=''
-                echo "vendor lunch added: $MTK_VENDOR_LUNCH"
+                vendor_lunch="$1"
+                vendor_out_dir=''
+                echo "vendor lunch added: $vendor_lunch"
                 ;;
             as|-as|add-system)
                 shift
-                MTK_SYSTEM_LUNCH="$1"
-                MTK_MAKE_SYSTEM_OUT_DIR=''
-                echo "system lunch added: $MTK_SYSTEM_LUNCH"
+                system_lunch="$1"
+                system_out_dir=''
+                echo "system lunch added: $system_lunch"
                 ;;
             k|-k|kernel|\
             s|-s|system|\
             v|-v|vendor)
-                cmd_list+=("__mtk_make_cmd_hub $argv")
+                cmd_list+=("build_image $argv")
                 ;;
             m|-m|merge)
-                cmd_list+=("__mtk_make_merge")
+                cmd_list+=("split_build")
                 ;;
             o|-o|ota)
-                cmd_list+=("__mtk_make_merge --otapackage")
+                cmd_list+=("split_build --otapackage")
                 ;;
             l|-l|list)
+                if [[ -z "$kernel_out_dir" ]]; then
+                    lunch $kernel_lunch 2>&-
+                    kernel_out_dir=$ANDROID_PRODUCT_OUT
+                fi
+
+                if [[ -z "$vendor_out_dir" ]]; then
+                    lunch $vendor_lunch 2>&-
+                    vendor_out_dir=$ANDROID_PRODUCT_OUT
+                fi
+
+                if [[ -z "$system_out_dir" ]]; then
+                    lunch $system_lunch 2>&-
+                    system_out_dir=$ANDROID_PRODUCT_OUT
+                fi
+
                 echo "List lunch config:"
-                echo "kernel: $MTK_KERNEL_LUNCH"
-                echo "vendor: $MTK_VENDOR_LUNCH"
-                echo "system: $MTK_SYSTEM_LUNCH"
+                echo "kernel: $kernel_lunch"
+                echo "vendor: $vendor_lunch"
+                echo "system: $system_lunch"
                 echo "List out dir:"
-                echo "kernel: $MTK_MAKE_KERNEL_OUT_DIR"
-                echo "vendor: $MTK_MAKE_VENDOR_OUT_DIR"
-                echo "system: $MTK_MAKE_SYSTEM_OUT_DIR"
+                echo "kernel: $kernel_out_dir"
+                echo "vendor: $vendor_out_dir"
+                echo "system: $system_out_dir"
                 return 0
                 ;;
             *)
-                __help_mtk_make $FUNCNAME
+                usage $FUNCNAME
                 return 128
         esac
         shift
     done
 
     timer=$(date +%s)
-    __mtk_make_exe_cmds "${cmd_list[@]}" || return $?
+    enter "${cmd_list[@]}" || return $?
     timer="$(date +%s)-$timer"
     echo "total comsumed time: $(date -d@$((timer)) -u +%H:%M:%S)"
 
     return 0;
 }
-
-# if [ -f build/envsetup.sh ]; then
-#     . build/envsetup.sh
-# fi
-# complete -F _lunch mtk-make
