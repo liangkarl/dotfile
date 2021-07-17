@@ -17,14 +17,12 @@ setup_kernel_cmddb() {
         return 128
     }
 
-    cd $kernel_dir
-    kernel_dir=$(pwd)
-    android_dir="$(dirname $kernel_dir)"
+    kernel_dir=$(readlink -e $kernel_dir)
     kernel_obj_dir=${ANDROID_PRODUCT_OUT}/obj/KERNEL_OBJ
 
+    cd $kernel_dir
     echo "linux kernel build out dir: $kernel_obj_dir"
     echo "linux kernel dir: $kernel_dir"
-    echo "android dir: $android_dir"
     echo "-------------------------------------------------------------------"
 
     echo "Link build dir."
