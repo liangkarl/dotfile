@@ -151,6 +151,7 @@ build_image() {
 
 # Assume user has sourced envsetup.sh
 mtk-make() {
+    local -r build_conf='build.conf'
     local cmd_list
     local argv
     local -i timer
@@ -167,8 +168,8 @@ mtk-make() {
         source build/envsetup.sh
     fi
 
-    if [[ -e lunch.list ]]; then
-        source lunch.list
+    if [[ -e "$build_conf" ]]; then
+        source $build_conf
     fi
 
     kernel_lunch=${kernel_lunch:-vnd_tb8173p1_64_bsp-userdebug}

@@ -1,24 +1,35 @@
 #!/bin/bash
 
 # Assume user has source envsetup.sh already
+# $0 KERNEL_DIR KERNEL_OBJ_DIR
 setup_kernel_cmddb() {
+    local -r build_conf='build.conf'
     local kernel_dir kernel_obj_dir
     local android_dir
     local gen_db_py compile_db
 
-    [ -z "$ANDROID_PRODUCT_OUT" ] && {
-        echo "No lunch config?" >&2
-        return 128
-    }
+    if [[ -e "$build_conf" ]]; then
+        source $build_conf
+    fi
 
-    kernel_dir="$1"
-    [ ! -d "$kernel_dir" ] && {
-        echo "invalid kernel dir path: $kernel_dir" >&2
+    kernel_dir="${1:-$kernel_dir}"
+    if [[ ! -e "$kernel_dir" ]]; then
+        echo "invalid kernel dir path: $kernel_dir"
         return 128
-    }
-
+    fi
     kernel_dir=$(readlink -e $kernel_dir)
-    kernel_obj_dir=${ANDROID_PRODUCT_OUT}/obj/KERNEL_OBJ
+
+    kernel_obj_dir="$2"
+    if [[ -z "$kernel_obj_dir" ]]; then
+        if [[ -z "$ANDROID_PRODUCT_OUT" ]]; then
+            if [[ -z "$kernel_lunch" ]] || [[ -z "$(declare -F lunch)" ]]; then
+                echo "no lunch config?" >&2
+                return 128
+            fi
+            lunch $kernel_lunch
+        fi
+        kernel_obj_dir=${ANDROID_PRODUCT_OUT}/obj/KERNEL_OBJ
+    fi
 
     cd $kernel_dir
     echo "linux kernel build out dir: $kernel_obj_dir"
@@ -132,8 +143,8 @@ create_cmd_db() {
     for ((i = 0; i < size; i++)); do
         if [[ -e ${projects[$i]} ]]; then
             echo $ccls_config > ${projects[$i]}/$dot_ccls
-		else
-			echo "no found: ${projects[$i]}"
+        else
+            echo "no found: ${projects[$i]}"
         fi
     done
     echo "done"
