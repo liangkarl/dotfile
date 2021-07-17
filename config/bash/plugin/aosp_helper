@@ -6,10 +6,10 @@ setup_kernel_cmddb() {
     local android_dir
     local gen_db_py compile_db
 
-	[ -z "$ANDROID_PRODUCT_OUT" ] && {
-		echo "No lunch config?" >&2
-		return 128
-	}
+    [ -z "$ANDROID_PRODUCT_OUT" ] && {
+        echo "No lunch config?" >&2
+        return 128
+    }
 
     kernel_dir="$1"
     [ ! -d "$kernel_dir" ] && {
@@ -58,4 +58,85 @@ setup_kernel_cmddb() {
     echo "copy commands db to $kernel_dir/$compile_db"
     cp -f $compile_db $kernel_dir
     cd - &> /dev/null
+}
+
+# create a cmd_db here
+# link_cmdb PLACE PROJECT_LIST
+create_cmd_db() {
+    local -r cmd_db='compile_commands.json'
+
+    if [[ -z "$1" ]]; then
+        return 128
+    fi
+
+    local cmd_db_loc rel_cmd_db
+    local rel_cmd_db rel_copy_cmd_db
+    local wanted_place
+    local dir
+
+    rel_copy_cmd_db='cmd-db'
+    cmd_db_loc=()
+    cmd_db_loc+=("out/soong/development/ide/compdb")
+    cmd_db_loc+=("out/development/ide/compdb")
+
+    for dir in ${cmd_db_loc[@]}; do
+        if [[ -e $dir/$cmd_db ]]; then
+            rel_cmd_db="$dir/$cmd_db"
+        fi
+    done
+
+    if [[ -z $rel_cmd_db ]]; then
+        echo "no available $cmd_db"
+        return 0
+    fi
+
+
+    # 1st stage
+    # copy command DB
+    if [[ ! -e $rel_copy_cmd_db ]]; then
+        mkdir $rel_copy_cmd_db
+    fi
+
+    wanted_place="$(readlink -f "$rel_copy_cmd_db/$1")"
+    rel_copy_cmd_db="$wanted_place/$cmd_db"
+
+    if [[ ! -e $wanted_place ]]; then
+        mkdir -p $wanted_place
+    elif [[ -e "$rel_copy_cmd_db" ]]; then
+        if diff $rel_copy_cmd_db $rel_cmd_db; then
+            echo "command database: $rel_copy_cmd_db"
+            return 0
+        fi
+    fi
+
+    cp $rel_cmd_db $wanted_place
+    echo "command database: $rel_copy_cmd_db"
+
+    # 2nd stage
+    # create .ccls for projects
+    shift
+    if (( $# == 0 )); then
+        return 0
+    fi
+
+    local projects size
+    local dot_ccls ccls_config
+    local i
+
+    dot_ccls='.ccls'
+    ccls_config="{\"compilationDatabaseDirectory\": \"$rel_copy_cmd_db\"}"
+
+    projects=("$@")
+    size=${#projects[@]}
+    echo "create $dot_ccls for $size project(s)"
+    for ((i = 0; i < size; i++)); do
+        if [[ -e ${projects[$i]} ]]; then
+            echo $ccls_config > ${projects[$i]}/$dot_ccls
+		else
+			echo "no found: ${projects[$i]}"
+        fi
+    done
+    echo "done"
+
+    return 0
 }
