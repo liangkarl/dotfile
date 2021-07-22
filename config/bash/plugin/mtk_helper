@@ -46,6 +46,8 @@ DESCRIPTION:
 
     m - execute MTK sign script to generate whole images for flash tool
 
+    d - load build.conf setup
+
     ak, av, as - add lunch config of kernel, vendor or system, this option wouldn't
                  lunch config actually, only recording the config name. These lunch
                  configs would be activated when 'k' 'v' or 's' options is added.
@@ -139,7 +141,7 @@ build_image() {
             cmd_list+=("lunch $vendor_lunch")
             cmd_list+=('vendor_out_dir=$ANDROID_PRODUCT_OUT')
             # avoid to remove kernel obj with same config name
-			cmd_list+=('rm -rf ${vendor_out_dir}/obj/!(KERNEL_OBJ)')
+            cmd_list+=('rm -rf ${vendor_out_dir}/obj/!(KERNEL_OBJ)')
             cmd_list+=('rm -rf ${vendor_out_dir}/images/vnd*')
             cmd_list+=("make -j24 vnd_images")
             cmd_list+=("create_cmd_db vendor")
@@ -168,10 +170,6 @@ mtk-make() {
         source build/envsetup.sh
     fi
 
-    if [[ -e "$build_conf" ]]; then
-        source $build_conf
-    fi
-
     kernel_lunch=${kernel_lunch:-vnd_tb8173p1_64_bsp-userdebug}
     vendor_lunch=${vendor_lunch:-vnd_tb8173p1_64_bsp-userdebug}
     system_lunch=${sys_lunch:-sys_mssi_t_64_ab-userdebug}
@@ -197,6 +195,11 @@ mtk-make() {
                 system_lunch="$1"
                 system_out_dir=''
                 echo "system lunch added: $system_lunch"
+                ;;
+            d|-d|default)
+                if [[ -e "$build_conf" ]]; then
+                    source $build_conf
+                fi
                 ;;
             k|-k|kernel|\
             s|-s|system|\
