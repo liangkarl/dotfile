@@ -1,7 +1,5 @@
-[user]
-#	email = liang.karl@outlook.com
-	email = karl.liang@quantatw.com
-	name = Karl Liang
+# [user]
+#     name and email can be changed in different projects
 [color]
 	ui = auto
 [core]
