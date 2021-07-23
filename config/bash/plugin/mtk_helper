@@ -172,7 +172,7 @@ mtk-make() {
 
     kernel_lunch=${kernel_lunch:-vnd_tb8173p1_64_bsp-userdebug}
     vendor_lunch=${vendor_lunch:-vnd_tb8173p1_64_bsp-userdebug}
-    system_lunch=${sys_lunch:-sys_mssi_t_64_ab-userdebug}
+    system_lunch=${system_lunch:-sys_mssi_t_64_ab-userdebug}
 
     cmd_list=()
     while (( $# != 0 )); do
