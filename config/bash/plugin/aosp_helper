@@ -110,7 +110,7 @@ create_cmd_db() {
     if [[ ! -e $wanted_place ]]; then
         mkdir -p $wanted_place
     elif [[ -e "$rel_copy_cmd_db" ]]; then
-        if diff $rel_copy_cmd_db $rel_cmd_db; then
+        if cmp $rel_copy_cmd_db $rel_cmd_db >&-; then
             echo "command database: $rel_copy_cmd_db"
             return 0
         fi
