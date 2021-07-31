@@ -1,15 +1,22 @@
-#!/bin/bash
+#!/bin/sh
 
-[ -z "$1" ] && {
-  NAME=$(basename $0)
-  cat << \
-USAGE
-Usage: "$NAME [filename]"
+usage() {
+	cat << USAGE
+Replace windows line break to POSIX style
+
+Usage: $(basename $0) [file]
+
 Example:
   $ fromdos dos.txt
-  $ ls
-  dos.txt dos.txt.bak
 USAGE
-} || {
-  sed -i.bak 's/\r$//' $1
+	return 1
 }
+
+
+if [[ ! -f "$1" ]]; then
+	usage
+else
+	sed -i 's/\r$//' $1
+fi
+
+exit $?
