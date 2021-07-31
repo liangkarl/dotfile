@@ -1,0 +1,237 @@
+#!/bin/bash
+
+# MIT License
+# -----------
+# Copyright (c) 2021 Karl Liang
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation
+# files (the "Software"), to deal in the Software without
+# restriction, including without limitation the rights to use,
+# copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following
+# conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+
+usage() {
+	local name
+	name="${1:-$(basename $0 2>&-)}"
+
+	cat << USAGE
+NAME:
+
+	$name - a helper script for MTK build system.
+
+SYNOPSIS:
+
+	$name [-k|k|kernel] [-v|v|vendor] [-s|s|system]
+	$name [-m|m|merge] [-mo|mo|merge-ota]
+
+DESCRIPTION:
+
+	k, v, s - compile kernel, vendor or system
+
+	m, o - generate whole images or otapackage.zip
+
+EXAMPLE:
+
+	$ $name k v s m	# compile kernel, vendor, system and merge images
+
+USAGE
+}
+
+enter() {
+	local cmd_list
+	local cmd ret i
+
+	# set -e && trap EXIT to show failed command?
+	cmd_list=("$@")
+	ret=0
+	for ((i = 0; i < ${#cmd_list[@]}; i++)); do
+		cmd=${cmd_list[$i]}
+		echo "$cmd"
+		if ! eval $cmd; then
+			ret=$?
+			echo "failed at: $cmd" >&2
+			return 29
+		fi
+	done
+}
+
+split_build() {
+	local split_build merged_dir
+	local cmd
+
+	if [[ -z "$kernel_out_dir" ]]; then
+		echo "get out dir of kernel"
+		lunch $kernel_lunch
+		kernel_out_dir=$ANDROID_PRODUCT_OUT
+	fi
+	if [[ -z "$vendor_out_dir" ]]; then
+		echo "get out dir of vendor"
+		lunch $vendor_lunch
+		vendor_out_dir=$ANDROID_PRODUCT_OUT
+	fi
+	if [[ -z "$system_out_dir" ]]; then
+		echo "get out dir of system"
+		lunch $system_lunch
+		system_out_dir=$ANDROID_PRODUCT_OUT
+	fi
+
+	merged_dir="$(readlink -f final-images)"
+	split_build=$system_out_dir/images/split_build.py
+
+	rm -rf $merged_dir
+	cmd="python $split_build"
+	cmd+=" --system-dir $system_out_dir/images"
+	cmd+=" --vendor-dir $vendor_out_dir/images"
+	cmd+=" --kernel-dir $kernel_out_dir/images"
+	cmd+=" --output-dir $merged_dir"
+	cmd+=" $1"
+
+	enter "$cmd"
+}
+
+build_kernel() {
+	local cmd_list
+
+	cmd_list+=("lunch $kernel_lunch")
+	cmd_list+=('kernel_out_dir=$ANDROID_PRODUCT_OUT')
+	cmd_list+=('rm -rf ${kernel_out_dir}/obj/KERNEL_OBJ')
+	cmd_list+=('rm -rf ${kernel_out_dir}/images/krn*')
+	cmd_list+=("make -j24 krn_images")
+	# FIXME: move cmd db feature to somewhere else
+	# if [[ -e "$(readlink -e "$kernel_dir")" ]]; then
+	# 	cmd_list+=("setup_kernel_cmddb $kernel_dir")
+	# fi
+
+	enter "${cmd_list[@]}"
+}
+
+build_system() {
+	local cmd_list
+
+	cmd_list+=("lunch $system_lunch")
+	cmd_list+=('system_out_dir=$ANDROID_PRODUCT_OUT')
+	cmd_list+=('rm -rf ${system_out_dir}/obj')
+	cmd_list+=('rm -rf ${system_out_dir}/images')
+	cmd_list+=("make -j24 sys_images")
+	# FIXME: move cmd db feature to somewhere else
+	# cmd_list+=("create_cmd_db system")
+
+	enter "${cmd_list[@]}"
+}
+
+build_vendor() {
+	local cmd_list
+
+	cmd_list+=("lunch $vendor_lunch")
+	cmd_list+=('vendor_out_dir=$ANDROID_PRODUCT_OUT')
+	# avoid to remove kernel obj with same config name
+	cmd_list+=('rm -rf ${vendor_out_dir}/obj/!(KERNEL_OBJ)')
+	cmd_list+=('rm -rf ${vendor_out_dir}/images/vnd*')
+	cmd_list+=("make -j24 vnd_images")
+	# FIXME: move cmd db feature to somewhere else
+	# cmd_list+=("create_cmd_db vendor")
+
+	enter "${cmd_list[@]}"
+}
+
+show_info() {
+	# show consumed time
+	echo "total consumed time: $(date -d@${interval} -u +%H:%M:%S)"
+
+	# show build note
+	if [[ -e "$1" ]]; then
+		if [[ $(type -t mdr) == "file" ]]; then
+			# with markdown render
+			mdr $1
+		else
+			cat $1
+		fi
+	fi
+}
+
+# Global variables:
+# kernel_lunch vendor_lunch system_lunch
+# kernel_out_dir vendor_out_dir system_out_dir
+# kernel_dir
+
+declare -r envsetup_sh='build/envsetup.sh'
+declare -i timer
+declare cmd_list argv
+# export all functions
+set -a
+
+# check input parameters
+if (( $# == 0 )); then
+	echo "no more actions"
+	exit
+fi
+
+# check basic required command
+if [[ "$(type -t lunch)" != "function" ]] &&
+		! source $envsetup_sh 2>&-; then
+	echo "no 'lunch' for execution" >&2
+	exit 249
+fi
+
+# parse options
+cmd_list=()
+while (( $# != 0 )); do
+	argv="$1"
+	case "$argv" in
+		m|-m|merge)
+			cmd_list+=("split_build")
+			;;
+		o|-o|ota)
+			cmd_list+=("split_build --otapackage")
+			;;
+		k|-k|kernel)
+			cmd_list+=("build_kernel")
+			;;
+		s|-s|system)
+			cmd_list+=("build_system")
+			;;
+		v|-v|vendor)
+			cmd_list+=("build_vendor")
+			;;
+		h|-h|help)
+			usage
+			exit
+			;;
+		*)
+			usage
+			exit 248
+	esac
+	shift
+done
+
+# write build note
+note="/tmp/buildnote.md"
+trap "set +a; show_info $note" EXIT
+read -p "show a note after complete this build? (Y/n) " ans
+if [[ "$ans" != 'n' ]]; then
+	echo -e "\n# build-info" >> $note
+	echo -e "* date time: $(date '+%D - %T')" >> $note
+	echo -e "* location: $(pwd)" >> $note
+	echo -e "\n# note\n\n" >> $note
+	# go to end of file
+	vim "+$" $note
+fi
+
+# execute commands
+interval=$(date +%s)
+enter "${cmd_list[@]}"
+((interval= $(date +%s) - ${interval}))
