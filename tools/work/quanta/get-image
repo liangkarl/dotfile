@@ -1,0 +1,95 @@
+#!/bin/bash
+#
+# Config file sample:
+#   # required
+#   remote='hogwarts'
+#   remote_root=(
+#   "path/one"
+#   "path/two"
+#   )
+#   remote_out='final-images'
+#
+#   # optional
+#   default_local_dir="images@$(date +%Y%m%d-%H%M%S)"
+#   default_remote_files=(
+#   "aaa.img"
+#   "bbb.bin"
+#   "ccc.xz"
+#   )
+
+usage() {
+	cat << USAGE
+Get images from remote server
+
+Usage:
+$(basename $0) [-s SourceFile] [-d TargetDir]
+USAGE
+}
+
+# read default conf
+conf='image.conf'
+if [[ -e $conf ]]; then
+	source $conf
+fi
+
+# no check for required variables, so don't mess them
+
+# check optional variables
+default_local_dir=${default_local_dir:-.}
+if (( ${#default_remote_files[@]} == 0 )); then
+	default_remote_files="*"
+else
+	default_remote_files="{${default_remote_files[@]}}"
+	default_remote_files="${default_remote_files// /,}"
+fi
+
+# parse options
+if (( $# == 0 )); then
+	usage
+	exit 1
+fi
+
+while (( $# != 0 )); do
+	case $1 in
+		-d)
+			shift
+			local_dir=$1
+			;;
+		-s)
+			shift
+			remote_file=$1
+			;;
+		*)
+			usage
+			exit 2
+	esac
+	shift
+done
+
+# print select menu & get answer
+root=''
+list_len=${#remote_root[@]}
+if (( $list_len != 1 )); then
+	PS3="Select an option from 1 to ${list_len}: "
+	select item in "${remote_root[@]}"; do
+		# $REPLY is what user entered
+		# $item is limited in list values
+		if [[ -z $item ]]; then
+			echo "exit with '$REPLY'"
+			exit 3
+		fi
+		root=$item
+		echo "remote dir: $root"
+		break
+	done
+else
+	root="${remote_root[0]}"
+fi
+
+# execute command
+out="$remote_out"
+local_dir="${local_dir:-$default_local_dir}"
+remote_file="${remote_file:-$default_remote_files}"
+cmd="rsync -Pv ${remote}:${root}/${out}/${remote_file} ${local_dir}/"
+echo $cmd
+eval $cmd
