@@ -1,2 +1,5 @@
 # https://mesonbuild.com/Getting-meson.html#installing-meson-with-pip
 sudo pip3 install meson
+
+# https://github.com/mrchimp/mdr
+sudo npm install -g mdr
