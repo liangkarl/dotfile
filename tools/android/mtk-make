@@ -139,7 +139,7 @@ build_vendor() {
 	cmd_list+=("lunch $vendor_lunch")
 	cmd_list+=('vendor_out_dir=$ANDROID_PRODUCT_OUT')
 	# avoid to remove kernel obj with same config name
-	cmd_list+=('rm -rf ${vendor_out_dir}/obj/!(KERNEL_OBJ)')
+	cmd_list+=('rm -rf ${vendor_out_dir}/obj/!\(KERNEL_OBJ\)')
 	cmd_list+=('rm -rf ${vendor_out_dir}/images/vnd*')
 	cmd_list+=("make -j24 vnd_images")
 	# FIXME: move cmd db feature to somewhere else
