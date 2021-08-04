@@ -55,17 +55,12 @@ enter() {
 	local cmd_list
 	local cmd ret i
 
-	# set -e && trap EXIT to show failed command?
 	cmd_list=("$@")
 	ret=0
 	for ((i = 0; i < ${#cmd_list[@]}; i++)); do
 		cmd=${cmd_list[$i]}
 		echo "$cmd"
-		if ! eval $cmd; then
-			ret=$?
-			echo "failed at: $cmd" >&2
-			return 29
-		fi
+		eval $cmd
 	done
 }
 
@@ -149,17 +144,20 @@ build_vendor() {
 }
 
 show_info() {
+	# global var: note, interval
+
 	# show consumed time
 	echo "total consumed time: $(date -d@${interval} -u +%H:%M:%S)"
 
 	# show build note
-	if [[ -e "$1" ]]; then
+	if [[ -e "$note" ]]; then
 		if [[ $(type -t mdr) == "file" ]]; then
 			# with markdown render
-			mdr $1
+			mdr $note
 		else
-			cat $1
+			cat $note
 		fi
+		rm -f $note
 	fi
 }
 
@@ -171,14 +169,25 @@ show_info() {
 declare -r envsetup_sh='build/envsetup.sh'
 declare -i timer
 declare cmd_list argv
+declare raw_cmd
+
 # export all functions
 set -a
+# exit on error
+set -e
+# make ERR trap inherit shell function
+set -E
+# return while meet unset variables
+# set -u
+# return error, once the first pipline command is failed
+# set -o pipefail
 
 # check input parameters
 if (( $# == 0 )); then
 	echo "no more actions"
 	exit
 fi
+raw_cmd="$(basename $0) $@"
 
 # check basic required command
 if [[ "$(type -t lunch)" != "function" ]] &&
@@ -218,15 +227,20 @@ while (( $# != 0 )); do
 	shift
 done
 
+# set EXIT & ERR trap
+trap 'show_info' EXIT
+trap 'echo "failed at: $cmd" >&2; show_info' ERR
+
 # write build note
-note="/tmp/buildnote.md"
-trap "set +a; show_info $note" EXIT
+note="/tmp/buildnote-${RANDOM}.md"
 read -p "show a note after complete this build? (Y/n) " ans
 if [[ "$ans" != 'n' ]]; then
-	echo -e "\n# build-info" >> $note
+	# create a new file
+	echo -e "# build-info" > $note
 	echo -e "* date time: $(date '+%D - %T')" >> $note
 	echo -e "* location: $(pwd)" >> $note
-	echo -e "\n# note\n\n" >> $note
+	echo -e "* commad: ${raw_cmd}" >> $note
+	echo -e "\n# note\n" >> $note
 	# go to end of file
 	vim "+$" $note
 fi
@@ -234,4 +248,4 @@ fi
 # execute commands
 interval=$(date +%s)
 enter "${cmd_list[@]}"
-((interval= $(date +%s) - ${interval}))
+interval=$(($(date +%s) - ${interval}))
