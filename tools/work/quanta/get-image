@@ -86,10 +86,37 @@ else
 	root="${remote_root[0]}"
 fi
 
-# execute command
+# assign customized parameters
+argv='-'
+argv+='a'	# shortcut of -r, -l, -p, -t, -g, -o, -D
+			# recurise, link, preserve most file attributes
+argv+='h'	# output human readable numbers
+argv+='z'	# compress file data
+argv+='v'	# verbose
+argv+='u'	# only update modified data and skip no changed files
+argv+='S'	# handle sparse files efficiently
+argv+=' --progress'
+			# show progress while transferring data
+argv+=' --delete'
+			# remove dst files not existed in src dir
+argv+=' --partial-dir=.rsync-partial'
+			# partial files can keep last download progess before interrupt
+#argv+=' --inplace'
+			# update dst files in-place instead of temp dir
+
+# confirm dry-run result
 out="$remote_out"
 local_dir="${local_dir:-$default_local_dir}"
 remote_file="${remote_file:-$default_remote_files}"
-cmd="rsync -Pv ${remote}:${root}/${out}/${remote_file} ${local_dir}/"
+cmd="rsync -n ${argv} ${remote}:${root}/${out}/${remote_file} ${local_dir}/"
 echo $cmd
+eval $cmd
+read -p "Is this dry-run result correct? (Y/n) " ans
+if [[ "${ans,,}" == 'n' ]]; then
+	echo "stop rsync" >&2
+	exit 255
+fi
+
+# execute command
+cmd="rsync ${argv} ${remote}:${root}/${out}/${remote_file} ${local_dir}/"
 eval $cmd
