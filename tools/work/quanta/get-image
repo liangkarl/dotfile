@@ -26,21 +26,20 @@ $(basename $0) [-s SourceFile] [-d TargetDir]
 USAGE
 }
 
+# search parent dir for image.conf
 search_config() {
-	# search parent dir for image.conf
-	local dir search conf
+	local dir conf
 
 	# search image.conf
 	dir=$(pwd)
-	search='fd -t f -e conf -d 1 image'
+	conf='image.conf'
 	while [[ "$dir" != '/' ]]; do
-		conf="$($search $dir)"
-		if [[ ! -z "$conf" ]]; then
-			echo ${conf}
+		if [[ -e "${dir}/${conf}" ]]; then
+			echo ${dir}/${conf}
 			return 0
 		fi
 
-		dir="$(readlink -e $(dirname $dir) 2>&-)"
+		dir="$(readlink -e ${dir}/.. 2>&-)"
 	done
 
 	echo ""
@@ -54,6 +53,7 @@ conf="$(search_config)"
 if [[ -z "$conf" ]]; then
 	echo "failed to find config" >&2
 else
+	echo "load: ${conf}"
 	source $conf
 fi
 
