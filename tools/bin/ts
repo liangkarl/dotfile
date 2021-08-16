@@ -5,12 +5,39 @@
 # TARGET_DIR=$(fasd -d $@)
 TARGET_NAME="$1"
 
+# project.conf:
+# project='aaa'
+# codebase=('code_0','code_1')
+
+search_config() {
+	local dir conf
+
+	dir="$1"
+	if [[ ! -d "$dir" ]]; then
+		echo ""
+		return 110
+	fi
+
+	conf='project.conf'
+	while [[ "$dir" != '/' ]]; do
+		if [[ -f "${dir}/${conf}" ]]; then
+			echo ${dir}/${conf}
+			return 0
+		fi
+
+		dir=$(readlink -e ${dir}/.. 2>&-)
+	done
+
+	echo ""
+	return 128
+}
+
 parse() {
 	local sess name argv cmd path
+	local conf
 
 	cmd=''
 	argv=''
-	path="$(cd $1 2>&-; pwd)"
 	sess=($(tmux ls -F'#S' 2>&-))
 	if (( $# == 0 )); then
 		if (( ${#sess[@]} == 0 )); then
@@ -19,13 +46,27 @@ parse() {
 			argv="-d -s $name -c $HOME"
 		fi
 	else
-		name="$(basename $TARGET_NAME)"	# Assume name a path of dir
-		if tmux has-seesion -t $name 2>&-; then
-			name=''
+		path="$(readlink -e "$1" 2>&-)"
+		conf="$(search_config $path)"
+		if [[ ! -z "$conf" ]]; then
+			# don't mess up project.conf due to no check
+			source $conf
+			name="$project>$(basename $TARGET_NAME)"	# Assume name a path of dir
 		else
-			cmd='tmux new'
-			argv="-d -s $name -c $path"
+			name="$(basename $TARGET_NAME)"	# Assume name a path of dir
 		fi
+
+		# NOTE:
+		# attaching existed session is removed
+		# for now, always create new session
+		index=1
+		while tmux has-session -t $name 2>&-; do
+			name="${name}#${index}"
+			$((index++))
+		done
+
+		cmd='tmux new'
+		argv="-d -s $name -c $path"
 	fi
 	$cmd $argv
 
