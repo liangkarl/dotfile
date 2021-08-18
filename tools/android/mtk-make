@@ -233,17 +233,33 @@ trap 'echo "failed at: $cmd" >&2; show_info' ERR
 
 # write build note
 note="/tmp/buildnote-${RANDOM}.md"
-read -p "show a note after complete this build? (Y/n) " ans
-if [[ "$ans" != 'n' ]]; then
-	# create a new file
-	echo -e "# build-info" > $note
-	echo -e "* date time: $(date '+%D - %T')" >> $note
-	echo -e "* location: $(pwd)" >> $note
-	echo -e "* commad: ${raw_cmd}" >> $note
-	echo -e "\n# note\n" >> $note
-	# go to end of file
-	vim "+$" $note
-fi
+echo -e "# build-info" > $note
+echo -e "* date time: $(date '+%D - %T')" >> $note
+echo -e "* location: $(pwd)" >> $note
+echo -e "* commad: ${raw_cmd}" >> $note
+
+PS3="select an option to create build note > "
+select option in 'new-note' 'restore-note'\
+					'ignore' 'exit'; do
+	case $option in
+		"new-note") # new build note
+			echo -e "\n# note\n" >> $note
+			# go to end of file
+			vim "+$" $note
+			break
+			;;
+		"restore-note") # restore old note
+			echo "not implement yet"
+			;;
+		"ignore") # no needs for build note
+			echo "use default build note"
+			break
+			;;
+		"exit")
+			exit
+			;;
+	esac
+done
 
 # execute commands
 interval=$(date +%s)
