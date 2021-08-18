@@ -79,6 +79,9 @@ while (( $# != 0 )); do
 			shift
 			remote_file=$1
 			;;
+		-i)
+			local_dir='override-folder'
+			;;
 		*)
 			usage
 			exit 2
