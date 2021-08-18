@@ -145,8 +145,10 @@ build_vendor() {
 
 show_info() {
 	# global var: note, interval
+	interval=$(($(date +%s) - ${interval}))
 
 	# show consumed time
+	echo ""
 	echo "total consumed time: $(date -d@${interval} -u +%H:%M:%S)"
 
 	# show build note
@@ -231,6 +233,9 @@ done
 trap 'show_info' EXIT
 trap 'echo "failed at: $cmd" >&2' ERR
 
+# start counter
+interval=$(date +%s)
+
 # write build note
 note="/tmp/buildnote-${RANDOM}.md"
 echo -e "# build-info" > $note
@@ -262,6 +267,4 @@ select option in 'new-note' 'restore-note'\
 done
 
 # execute commands
-interval=$(date +%s)
 enter "${cmd_list[@]}"
-interval=$(($(date +%s) - ${interval}))
