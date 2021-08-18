@@ -229,7 +229,7 @@ done
 
 # set EXIT & ERR trap
 trap 'show_info' EXIT
-trap 'echo "failed at: $cmd" >&2; show_info' ERR
+trap 'echo "failed at: $cmd" >&2' ERR
 
 # write build note
 note="/tmp/buildnote-${RANDOM}.md"
