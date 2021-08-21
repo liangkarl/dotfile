@@ -33,34 +33,23 @@ __custom_prompt() {
     export PS1
 }
 
-__import_completion() {
-    local completion_dir="${XDG_CONFIG_HOME}/bash/completion"
-    local file
+__source_configs() {
+    local list=()
+    local dir file path
 
-    for file in $completion_dir/*; do
-        source $file
-    done
-}
+    # add bash related config dir
+    list+=('completion')
+    list+=('alias')
+    list+=('plugin')
 
-__import_alias() {
-    local alias_dir="${XDG_CONFIG_HOME}/bash/alias"
-    local file
-
-    for file in $alias_dir/*; do
-        source $file
-    done
-}
-
-__import_plugin() {
-    local plugin_dir="${XDG_CONFIG_HOME}/bash/plugin"
-    local file
-
-    for file in $plugin_dir/*; do
-        source $file
+    # source target config files
+    path="${XDG_CONFIG_HOME}/bash"
+    for dir in ${list[@]}; do
+        for file in $(ls ${path}/${dir}); do
+            source ${path}/${dir}/${file}
+        done
     done
 }
 
 __custom_prompt
-__import_completion
-__import_alias
-__import_plugin
+__source_configs
