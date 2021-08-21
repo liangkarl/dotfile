@@ -9,3 +9,6 @@ alias pwr='set +f; __exe_by_powershell '; __exe_by_powershell() {
 
 alias knock='__knock_helper '
 complete -F __knock_helper_compl knock
+
+alias wadb='adb wait-for-device'
+alias logcat='wadb shell logcat -v color'
