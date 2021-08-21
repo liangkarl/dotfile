@@ -1,6 +1,10 @@
+# list files
 alias ls='ls -v --group-directories-first -N --color=auto'
 alias ll='ls -l'
 alias la='ls -a'
+alias tree='tree --dirsfirst -h'
+
+# misc
 alias cls='clear'
 alias rsync='rsync -av -h --progress'
-alias tree='tree --dirsfirst -h'
+alias less='less -R'
