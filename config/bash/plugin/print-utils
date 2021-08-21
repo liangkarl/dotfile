@@ -1,0 +1,39 @@
+#!/bin/bash
+
+pr_good() {
+	local green='\033[1;32m'
+	local nc='\033[0m' # No Color
+	echo -e "${green}$@${nc}"
+	return 0
+}
+
+pr_hint() {
+	local white='\033[1;37m'
+	local nc='\033[0m' # No Color
+	echo -e "${white}$@${nc}"
+	return 0
+}
+
+pr_warn() {
+	local yellow='\033[1;33m'
+	local nc='\033[0m' # No Color
+	echo -e "${yellow}$@${nc}" >&2
+	return 0
+}
+
+pr_info() {
+	echo $@
+	return 0
+}
+
+pr_err() {
+	local red='\033[1;31m'
+	local nc='\033[0m' # No Color
+	echo -e "${red}$@${nc}" >&2
+	return 1
+}
+
+pr_bad() {
+	pr_err "$@"
+	return 1
+}
