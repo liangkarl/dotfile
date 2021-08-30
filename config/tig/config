@@ -27,7 +27,7 @@ bind generic m none
 bind generic M view-main
 
 bind status m! ?git checkout %(file)
-bind status ma ?git commit --amend -C HEAD
+bind status ma ?git commit --amend --no-edit
 bind status mA ?git commit --amend
 # NOTE:
 # `git stash save "stash name"` is deprecated at git 2.16
