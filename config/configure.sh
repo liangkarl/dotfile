@@ -18,3 +18,10 @@ rm -f ${target}/${self}
 echo -n "Add path of shell dir: "
 echo "export SHELL_DIR=$(readlink -e ${config_dir}/..)" |
         tee ${target}/bash/config
+
+bashrc=~/.bashrc
+import="source ${target}/bash/init.bash"
+has_init="$(cat ${bashrc} | grep "${import}")"
+if [[ -z "$has_init" ]]; then
+    echo $import >> ${bashrc}
+fi
