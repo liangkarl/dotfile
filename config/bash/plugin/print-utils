@@ -6,6 +6,7 @@ pr_good() {
 	echo -e "${green}$@${nc}"
 	return 0
 }
+export -f pr_good
 
 pr_hint() {
 	local white='\033[1;37m'
@@ -13,6 +14,7 @@ pr_hint() {
 	echo -e "${white}$@${nc}"
 	return 0
 }
+export -f pr_hint
 
 pr_warn() {
 	local yellow='\033[1;33m'
@@ -20,11 +22,13 @@ pr_warn() {
 	echo -e "${yellow}$@${nc}" >&2
 	return 0
 }
+export -f pr_warn
 
 pr_info() {
 	echo $@
 	return 0
 }
+export -f pr_info
 
 pr_err() {
 	local red='\033[1;31m'
@@ -32,8 +36,10 @@ pr_err() {
 	echo -e "${red}$@${nc}" >&2
 	return 1
 }
+export -f pr_err
 
 pr_bad() {
 	pr_err "$@"
 	return 1
 }
+export -f pr_bad
