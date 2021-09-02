@@ -1,0 +1,93 @@
+#!/bin/bash
+
+set -eE
+
+# usage
+usage() {
+	cat << \
+USAGE
+
+NAME:
+$(basename $0) - a small format tool for text-based files
+
+SYNOPSIS:
+$(basename $0) [-h] [-b] [-u] [-c] [-s] FILE...
+
+OPTIONS:
+	-h: help
+	-b: assign backup file suffix
+	-u: convert windows line break to linuxs
+	-c: trim ANSI color codes
+	-s: trim trailing spaces
+
+USAGE
+}
+
+# convert LB from windows -> unix
+to_unix_lb() {
+	sed -i"${bak}" 's/\r$//g' $1
+}
+
+# ansi color -> no ansi color
+trim_ansi_color() {
+	sed -i"${bak}" 's/\x1b\[[0-9;]*m//g' $1
+}
+
+# remove trailing space
+trim_space() {
+	sed -i"${bak}" 's/[[:space:]]\+$//g' $1
+}
+
+# main
+## check options
+if (( $# == 0 )); then
+	usage
+	exit 1
+fi
+
+bak=''
+section="$1"
+cmd=''
+while (( $# != 0 )); do
+	case $1 in
+		-u)
+			if [[ "$section" != "$1" ]]; then
+				section='-u'
+				cmd+=';'
+			fi
+			cmd+="to_unix_lb"
+			;;
+		-c)
+			if [[ "$section" != "$1" ]]; then
+				section='-c'
+				cmd+=';'
+			fi
+			cmd+="trim_ansi_color"
+			;;
+		-s)
+			if [[ "$section" != "$1" ]]; then
+				section='-s'
+				cmd+=';'
+			fi
+			cmd+="trim_space"
+			;;
+		-b)
+			shift
+			cmd+="bak='.$1'"
+			;;
+		-h)
+			usage
+			exit 0
+			;;
+		-*)
+			usage
+			exit 2
+			;;
+		*)
+			cmd+=" $1"
+	esac
+	shift
+done
+
+## execute functions
+eval $cmd
