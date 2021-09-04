@@ -5,7 +5,7 @@ call plug#begin('~/.config/nvim/plugged')
 " | Plug              | Desc                               |
 " |-------------------+------------------------------------|
 " | vim-which-key     | Display key-binding menu           |
-" | vim-startify      | Show start screen                  |
+" | dashboard-nvim    | Show start screen                  |
 " | lightline, ...    | Show status line                   |
 " | vim-signify       | Show git diff by side              |
 " | tig-explorer      | Show tig inside vim                |
@@ -23,7 +23,7 @@ call plug#begin('~/.config/nvim/plugged')
 " Neomake is a plugin for Vim/Neovim to asynchronously run programs.
 " Plug 'neomake/neomake'
 Plug 'liuchengxu/vim-which-key'
-Plug 'mhinz/vim-startify'
+Plug 'glepnir/dashboard-nvim'
 Plug 'itchyny/lightline.vim'
 Plug 'mengelbrecht/lightline-bufferline'
 Plug 'mhinz/vim-signify'
