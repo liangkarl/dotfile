@@ -1,5 +1,10 @@
 -- init.lua
 
+-- Plugin: which-key
+-- https://github.com/folke/which-key.nvim
+-- Run ':checkhealth which_key' to see if there's any conflicting
+-- keymaps that will prevent triggering WhichKey
+require("which-key").setup {}
 
 -- Plugin: nvim-tree.lua
 -- default will show icon by default if no icon is provided
