@@ -24,10 +24,7 @@ call plug#begin('~/.config/nvim/plugged')
 " Plug 'neomake/neomake'
 Plug 'folke/which-key.nvim'
 Plug 'glepnir/dashboard-nvim'
-Plug 'itchyny/lightline.vim'
-Plug 'mengelbrecht/lightline-bufferline'
 Plug 'mhinz/vim-signify'
-Plug 'rbgrouleff/bclose.vim'
 Plug 'liangkarl/tig-explorer.vim'
 Plug 'arithran/vim-delete-hidden-buffers'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -35,7 +32,6 @@ Plug 'junegunn/fzf.vim'
 " Build the extra binary if cargo exists on your system.
 Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary' }
 Plug 'roxma/vim-tmux-clipboard'
-Plug 'simrat39/symbols-outline.nvim'
 Plug 'neovim/nvim-lspconfig'
 Plug 'kyazdani42/nvim-tree.lua'
 
@@ -83,7 +79,6 @@ Plug 'Krasjet/auto.pairs'
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'rmagatti/alternate-toggler'
 Plug 'tyru/open-browser.vim'
-Plug 'caenrique/nvim-toggle-terminal'
 
 """ 4. Language Support (LSP) """
 " |------------------+------------------------------|
@@ -101,9 +96,17 @@ Plug 'caenrique/nvim-toggle-terminal'
 " NOTE:
 " Though dense-analysis/ale is really slow, it's an important plugin
 " dense-analysis/ale
-Plug 'rhysd/vim-clang-format'
-Plug 'm-pilia/vim-ccls'
 " We recommend updating the parsers on update
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
+""" Deprecated """
+" https://github.com/stevearc/aerial.nvim
+Plug 'simrat39/symbols-outline.nvim'
+Plug 'itchyny/lightline.vim'
+Plug 'mengelbrecht/lightline-bufferline'
+Plug 'rbgrouleff/bclose.vim'
+Plug 'rhysd/vim-clang-format'
+Plug 'm-pilia/vim-ccls'
+Plug 'caenrique/nvim-toggle-terminal'
 
 call plug#end()
