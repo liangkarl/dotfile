@@ -138,21 +138,28 @@ xmap <leader>q <plug>(QuickScopeToggle)
 let g:qs_buftype_blacklist = ['terminal', 'nofile']
 
 " Plugin: fzf
-nnoremap <Leader>fb :FzfBuffers<CR>
-" Recently open file
-nnoremap <Leader>fr :FzfHistory<CR>
-" Search history
-nnoremap <Leader>fs :FzfHistory/<CR>
-nnoremap <Leader>fc :FzfCommands<CR>
-nnoremap <Leader>f? :FzfMaps<CR>
-" List bookmarks
-" |----------+----------------------|
-" | ORIG CMD | explain              |
-" |----------+----------------------|
-" | mx       | toggle bookmark 'x'  |
-" | 'mx      | jump to bookmark 'x' |
-" |----------+----------------------|
-nnoremap <Leader>fm :FzfMarks<CR>
+if g:fuzzy_finder == 'fzf'
+  nnoremap <Leader>fb :FzfBuffers<CR>
+  " Recently open file
+  nnoremap <Leader>fr :FzfHistory<CR>
+  " Search history
+  nnoremap <Leader>fs :FzfHistory/<CR>
+  nnoremap <Leader>fc :FzfCommands<CR>
+  nnoremap <Leader>f? :FzfMaps<CR>
+  nnoremap <Leader>fm :FzfMarks<CR>
+endif
+
+" Plugin: vim-clap
+if g:fuzzy_finder == 'clap'
+  nnoremap <Leader>fb :Clap buffers<CR>
+  " Recently open file
+  nnoremap <Leader>fr :Clap history<CR>
+  " Search history
+  nnoremap <Leader>fs :Clap hist/<CR>
+  nnoremap <Leader>fc :Clap hist:<CR>
+  nnoremap <Leader>f? :Clap maps<CR>
+  nnoremap <Leader>fm :Clap marks<CR>
+endif
 
 " Plugin: tig-explorer
 " open tig with current file
