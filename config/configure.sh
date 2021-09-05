@@ -4,9 +4,9 @@ set -eE -o functrace
 
 # show error command & line
 failure() {
-  local lineno=$1
-  local msg=$2
-  echo "Failed at $lineno: $msg"
+    local lineno=$1
+    local msg=$2
+    echo "Failed at $lineno: $msg"
 }
 trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
 
@@ -15,6 +15,10 @@ config_dir="${XDG_CONFIG_HOME:-${HOME}/.config}"
 if [[ ! -e "$config_dir" ]]; then
     mkdir $config_dir
 fi
+
+# backup old git name & email
+backup_name="$(git config --global user.name 2>&- || true)"
+backup_email="$(git config --global user.email 2>&- || true)"
 
 # copy config files
 self="$(basename $0)"
@@ -32,7 +36,7 @@ echo "export SHELL_DIR=$(readlink -e ${self_dir}/..)" |
 echo "-- import setup in .bashrc --"
 bashrc=~/.bashrc
 import="source ${config_dir}/bash/init.bash"
-has_init="$(cat ${bashrc} | grep "${import}")"
+has_init="$(cat ${bashrc} | grep "${import}" || true)"
 if [[ -z "$has_init" ]]; then
     echo $import >> ${bashrc}
 fi
@@ -44,11 +48,31 @@ if [[ -z "$(which git)" ]]; then
     echo "warning: please install git to config username & email."
     exit
 fi
-read -p 'give me a name for git in user-level config. (empty to ignore): ' name
-if [[ -n "$name" ]]; then
+
+if [[ -n "$backup_name" ]]; then
+    read -p "keep old git user name: '${backup_name}'? [Y/n] " ans
+    if [[ "${ans,,}" != 'n' ]]; then
+        name=$backup_name
+    else
+        read -p 'save new git user name: [empty to skip] ' name
+    fi
+else
+    read -p 'save new git user name: [empty to skip] ' name
+fi
+if [[ -n "${name}" ]]; then
     git config --global user.name "$name"
 fi
-read -p 'give me an email for git in user-level config. (empty to ignore): ' email
-if [[ -n "$email" ]]; then
+
+if [[ -n "$backup_email" ]]; then
+    read -p "keep old git user email: '${backup_email}'? [Y/n] " ans
+    if [[ "${ans,,}" != 'n' ]]; then
+        email=$backup_email
+    else
+        read -p 'save new git user email: [empty to skip] ' email
+    fi
+else
+    read -p 'save new git user email: [empty to skip] ' email
+fi
+if [[ -n "${email}" ]]; then
     git config --global user.email "$email"
 fi
