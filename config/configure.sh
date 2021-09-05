@@ -41,6 +41,9 @@ if [[ -z "$has_init" ]]; then
     echo $import >> ${bashrc}
 fi
 
+# link user-level config of EditorConfig
+ln -sf ${config_dir}/nvim/editorconfig ~/.editorconfig
+
 # add username & email to git config
 echo "-- setup git config --"
 git_dir=${config_dir}/git
