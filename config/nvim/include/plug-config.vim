@@ -54,6 +54,13 @@ let g:strip_whitelines_at_eof=1
 " let g:show_spaces_that_precede_tabs=1
 
 " Plugin: fzf - fuzzy finder
+" NOTE:
+" To reduce fzf error due to preview cmd, we have two choices
+" 1. update kernel version (could fix this issue)
+" 2. disable preview feature (workaround)
+" We choose 2nd choice here. https://github.com/junegunn/fzf/issues/1486
+"
+" Empty value to disable preview window altogether
+let g:fzf_preview_window = []
 " e.g. let g:fzf_command_prefix = 'Fzf' and you have FzfFiles, etc.
 let g:fzf_command_prefix = 'Fzf'
-
