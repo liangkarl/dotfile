@@ -48,7 +48,6 @@ Plug 'navarasu/onedark.nvim'
 " | Plug                  | Desc                                                |
 " |-----------------------+-----------------------------------------------------|
 " | editorconfig-vim      | Open specific lang file with their own coding style |
-" | vim-markbar           | Show bookmarks. PS. vim-signature is too slow       |
 " | vim-better-whitespace | Show trailing space                                 |
 " | vim-matchup           | Enhance '%' matchup, like if-endif, etc             |
 " | quick-scope           | To improve 'move' efficiency by highlight char      |
@@ -70,7 +69,6 @@ Plug 'navarasu/onedark.nvim'
 " Though floaterm is fashion, it's too complicated for me
 " Plug 'voldikss/vim-floaterm'
 Plug 'editorconfig/editorconfig-vim'
-Plug 'Yilin-Yang/vim-markbar'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'andymass/vim-matchup'
 Plug 'unblevable/quick-scope'

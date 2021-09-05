@@ -176,12 +176,6 @@ nnoremap <silent><Leader>tr :TableModeRealign<CR>
 " Tableize
 noremap <Leader>tz :Tableize/,
 
-" Plugin: vim-marker
-nmap <Leader>mm <Plug>ToggleMarkbar
-" the following are unneeded if ToggleMarkbar is mapped
-nmap <Leader>mo <Plug>OpenMarkbar
-nmap <Leader>mc <Plug>CloseMarkbar
-
 " Plugin: Commentary
 " Toggle comment
 noremap <silent><Leader>gg :Commentary<CR>
