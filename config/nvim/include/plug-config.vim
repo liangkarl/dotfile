@@ -64,3 +64,6 @@ let g:strip_whitelines_at_eof=1
 let g:fzf_preview_window = []
 " e.g. let g:fzf_command_prefix = 'Fzf' and you have FzfFiles, etc.
 let g:fzf_command_prefix = 'Fzf'
+
+""" Extra plugin setup """
+let g:fuzzy_finder = 'clap'

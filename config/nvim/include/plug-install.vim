@@ -32,6 +32,8 @@ Plug 'liangkarl/tig-explorer.vim'
 Plug 'arithran/vim-delete-hidden-buffers'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
+" Build the extra binary if cargo exists on your system.
+Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary' }
 Plug 'roxma/vim-tmux-clipboard'
 Plug 'simrat39/symbols-outline.nvim'
 Plug 'neovim/nvim-lspconfig'
