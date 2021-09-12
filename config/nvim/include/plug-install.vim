@@ -24,7 +24,6 @@ call plug#begin('~/.config/nvim/plugged')
 " | vim-startify      | Show start screen                  |
 " | gruvbox           | Theme                              |
 " | lightline, ...    | Show status line                   |
-" | vista.vim         | Function manager                   |
 " | vim-signify       | Show git diff by side              |
 " | tig-explorer      | Show tig inside vim                |
 " | bclose.vim        | Used for tig-explorer.vim          |
@@ -43,7 +42,6 @@ Plug 'mhinz/vim-startify'
 Plug 'morhetz/gruvbox'
 Plug 'itchyny/lightline.vim'
 Plug 'mengelbrecht/lightline-bufferline'
-Plug 'liuchengxu/vista.vim'
 Plug 'mhinz/vim-signify'
 Plug 'rbgrouleff/bclose.vim'
 Plug 'liangkarl/tig-explorer.vim'

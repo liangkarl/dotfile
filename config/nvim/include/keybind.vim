@@ -132,9 +132,6 @@ nmap # <Plug>(anzu-sharp-with-echo)
 map n <Plug>(is-nohl)<Plug>(anzu-n-with-echo)
 map N <Plug>(is-nohl)<Plug>(anzu-N-with-echo)
 
-" Plugin: Vista.vim
-nnoremap <silent><F2> :Vista!!<CR>
-
 " Plugin: quick-scope
 nmap <leader>q <plug>(QuickScopeToggle)
 xmap <leader>q <plug>(QuickScopeToggle)
