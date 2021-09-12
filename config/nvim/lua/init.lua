@@ -1,5 +1,13 @@
 -- init.lua
 
+-- Plugin: nvim-tree
+-- https://github.com/kyazdani42/nvim-tree.lua
+vim.g.nvim_tree_auto_open = 1
+vim.g.nvim_tree_auto_close = 1
+vim.g.nvim_tree_quit_on_open = 1
+vim.g.nvim_tree_hide_dotfiles = 1
+vim.g.nvim_tree_icon_padding = ' '
+
 -- Plugin: which-key
 -- https://github.com/folke/which-key.nvim
 -- Run ':checkhealth which_key' to see if there's any conflicting
