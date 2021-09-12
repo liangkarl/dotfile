@@ -216,6 +216,10 @@ nnoremap <silent> <leader>vv :ToggleAlternate<CR>
 " go to impl
 " go to reference
 
+" Plugin: symbols-outline
+" Guide: https://github.com/simrat39/symbols-outline.nvim
+nmap <silent> <Leader>m2 :SymbolsOutline<CR>
+
 " Plugin: coc-clangd
 " Resolve symbol info under the cursor
 " Switch between source/header files
