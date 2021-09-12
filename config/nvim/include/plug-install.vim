@@ -13,6 +13,7 @@ call plug#begin('~/.config/nvim/plugged')
 " | vim-del...buffers | Delete hidden buffers              |
 " | fzf, fzf.vim      | Fuzzy searching and other features |
 " | vim-tmux-clip...  | Share clipboard between tmux, vim  |
+" | nvim-lspconfig    | LSP config for nvim                |
 " |-------------------+------------------------------------|
 " NOTE:
 " vim-airline has poor performance
@@ -30,6 +31,7 @@ Plug 'arithran/vim-delete-hidden-buffers'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'roxma/vim-tmux-clipboard'
+Plug 'neovim/nvim-lspconfig'
 
 """ 2. Themes """
 Plug 'sainnhe/sonokai'
