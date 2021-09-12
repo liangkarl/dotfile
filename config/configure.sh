@@ -17,8 +17,8 @@ if [[ ! -e "$config_dir" ]]; then
 fi
 
 # backup old git name & email
-backup_name="$(set +eE; git config --global user.name 2>&-)"
-backup_email="$(set +eE; git config --global user.email 2>&-)"
+backup_name="$(git config --global user.name 2>&- || true)"
+backup_email="$(git config --global user.email 2>&- || true)"
 
 # copy config files
 self="$(basename $0)"
@@ -36,7 +36,7 @@ echo "export SHELL_DIR=$(readlink -e ${self_dir}/..)" |
 echo "-- import setup in .bashrc --"
 bashrc=~/.bashrc
 import="source ${config_dir}/bash/init.bash"
-has_init="$(cat ${bashrc} | grep "${import}")"
+has_init="$(cat ${bashrc} | grep "${import}" || true)"
 if [[ -z "$has_init" ]]; then
     echo $import >> ${bashrc}
 fi
