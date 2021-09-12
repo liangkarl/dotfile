@@ -35,6 +35,13 @@ Plug 'roxma/vim-tmux-clipboard'
 Plug 'neovim/nvim-lspconfig'
 Plug 'kyazdani42/nvim-tree.lua'
 
+" auto completion
+Plug 'hrsh7th/nvim-cmp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'saadparwaiz1/cmp_luasnip' ""-- Snippets source for nvim-cmp
+Plug 'L3MON4D3/LuaSnip' ""-- Snippets plugin
+
 """ 2. Themes """
 Plug 'sainnhe/sonokai'
 Plug 'marko-cerovac/material.nvim'

@@ -137,3 +137,7 @@ lspconfig.ccls.setup {
     };
   }
 }
+
+-- Plugin: nvim-cmp
+-- https://github.com/hrsh7th/nvim-cmp/
+require('nvim-cmp')
