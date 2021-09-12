@@ -84,7 +84,6 @@ Plug 'caenrique/nvim-toggle-terminal'
 " | Plug              | Desc                         |
 " |-------------------+------------------------------|
 " | vim-clang-format  | format codes by clang-format |
-" | vim-...-highlight | C/C++ syntex highlight       |
 " | vim-ccls          | Provide uniq 'ccls' features |
 " |-------------------+------------------------------|
 " TODO:
@@ -96,7 +95,6 @@ Plug 'caenrique/nvim-toggle-terminal'
 " Though dense-analysis/ale is really slow, it's an important plugin
 " dense-analysis/ale
 Plug 'rhysd/vim-clang-format'
-Plug 'jackguo380/vim-lsp-cxx-highlight'
 Plug 'm-pilia/vim-ccls'
 
 call plug#end()
