@@ -15,6 +15,7 @@ call plug#begin('~/.config/nvim/plugged')
 " | vim-tmux-clip...  | Share clipboard between tmux, vim  |
 " | symbols-outline   | Function manager, like tagbar      |
 " | nvim-lspconfig    | LSP config for nvim                |
+" | nvim-tree         | File explorer                      |
 " |-------------------+------------------------------------|
 " NOTE:
 " vim-airline has poor performance
@@ -34,6 +35,7 @@ Plug 'junegunn/fzf.vim'
 Plug 'roxma/vim-tmux-clipboard'
 Plug 'simrat39/symbols-outline.nvim'
 Plug 'neovim/nvim-lspconfig'
+Plug 'kyazdani42/nvim-tree.lua'
 
 """ 2. Themes """
 Plug 'sainnhe/sonokai'
