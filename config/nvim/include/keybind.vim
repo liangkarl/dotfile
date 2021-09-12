@@ -47,11 +47,6 @@ inoremap <A-l> <Right>
 inoremap <A-b> <C-Left>
 inoremap <A-w> <C-Right>
 
-" Open terminal
-" PS. you can use the terminal as debug console
-nnoremap <silent> <C-z> :ToggleTerminal<Enter>
-tnoremap <silent> <C-z> <C-\><C-n>:ToggleTerminal<Enter>
-
 function! ToggleQuickFix()
     if empty(filter(getwininfo(), 'v:val.quickfix'))
         copen
@@ -60,14 +55,6 @@ function! ToggleQuickFix()
     endif
 endfunction
 nnoremap <silent> <space>tq :call ToggleQuickFix()<cr>
-
-" To use `ALT+{h,j,k,l}` to navigate windows from any mode:
-" tnoremap <A-h> <C-\><C-N><C-w>h
-" tnoremap <A-j> <C-\><C-N><C-w>j
-" tnoremap <A-k> <C-\><C-N><C-w>k
-" tnoremap <A-l> <C-\><C-N><C-w>l
-" To map <Esc> to exit terminal-mode:
-tnoremap <Esc> <C-\><C-n>
 
 " Add keybind for system clipboard.
 " There are two different clipboards for Linux and only one for Win

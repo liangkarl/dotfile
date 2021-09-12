@@ -37,9 +37,6 @@ let g:at_custom_alternates = {
 \   '1': '0'
 \}
 
-" Plugin: nvim-toggle-terminal
-au TermEnter * let $GIT_EDITOR='nvr'
-
 " Plugin: vim-commentary
 au FileType c,cpp,cc,h setlocal commentstring=//\ %s
 
