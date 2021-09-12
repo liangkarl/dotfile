@@ -8,46 +8,6 @@ let g:lightline.tabline          = {'left': [['buffers']], 'right': [['close']]}
 let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
 let g:lightline.component_type   = {'buffers': 'tabsel'}
 
-" Plugin: Vista.vim
-function! NearestMethodOrFunction() abort
-  return get(b:, 'vista_nearest_method_or_function', '')
-endfunction
-set statusline+=%{NearestMethodOrFunction()}
-
-" Show the nearest function in your statusline automatically,
-autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
-
-" Show those pretty symbols.
-let g:vista#renderer#enable_icon = 1
-
-" The default icons can't be suitable for all the filetypes, you can extend it as you wish.
-let g:vista#renderer#icons = {
-\   "function": "\uf794",
-\   "variable": "\uf71b",
-\  }
-
-" To enable fzf's preview window set g:vista_fzf_preview.
-" The elements of g:vista_fzf_preview will be passed as arguments to fzf#vim#with_preview()
-" For example:
-let g:vista_fzf_preview = ['right:50%']
-
-" Set executives
-let g:vista#executives = ['coc']
-
-" set up files
-let g:vista_executive_for = {
-\	'typescript': 'coc',
-\	'javascript': 'coc',
-\	'vim': 'coc',
-\	'cpp': 'coc',
-\	'c': 'coc',
-\	'html': 'coc',
-\	'css': 'coc',
-\	'python': 'coc'
-\  }
-
-let g:vista_sidebar_width = 40
-
 " Plugin: Startify
 " Show startify when there is no opened buffers
 autocmd BufDelete * if empty(filter(tabpagebuflist(), '!buflisted(v:val)')) && bufname() == "" | Startify | endif
