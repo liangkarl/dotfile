@@ -82,12 +82,13 @@ Plug 'tyru/open-browser.vim'
 Plug 'caenrique/nvim-toggle-terminal'
 
 """ 4. Language Support (LSP) """
-" |-------------------+------------------------------|
-" | Plug              | Desc                         |
-" |-------------------+------------------------------|
-" | vim-clang-format  | format codes by clang-format |
-" | vim-ccls          | Provide uniq 'ccls' features |
-" |-------------------+------------------------------|
+" |------------------+------------------------------|
+" | Plug             | Desc                         |
+" |------------------+------------------------------|
+" | vim-clang-format | format codes by clang-format |
+" | nvim-treesitter  | syntex highlight tools       |
+" | vim-ccls         | Provide uniq 'ccls' features |
+" |------------------+------------------------------|
 " TODO:
 " autocompletion seems better in clangd, instead of ccls
 " Try to switch multi LSP in config
@@ -98,5 +99,7 @@ Plug 'caenrique/nvim-toggle-terminal'
 " dense-analysis/ale
 Plug 'rhysd/vim-clang-format'
 Plug 'm-pilia/vim-ccls'
+" We recommend updating the parsers on update
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 call plug#end()
