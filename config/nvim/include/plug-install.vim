@@ -64,7 +64,6 @@ Plug 'navarasu/onedark.nvim'
 " | vim-table-mode        | Draw text-styled table easily                       |
 " | alter...-toggler      | switch boolean value, true <-> false                |
 " | open-browser          | Open URL from vim                                   |
-" | nvim-toggle-terminal  | Open terminal with float window                     |
 " |-----------------------+-----------------------------------------------------|
 " NOTE:
 " vim_current_word is hard to setup blacklist and highlight style
@@ -114,6 +113,5 @@ Plug 'mengelbrecht/lightline-bufferline'
 Plug 'rbgrouleff/bclose.vim'
 Plug 'rhysd/vim-clang-format'
 Plug 'm-pilia/vim-ccls'
-Plug 'caenrique/nvim-toggle-terminal'
 
 call plug#end()
