@@ -5,6 +5,7 @@ source ~/.config/nvim/include/theme/material.vim
 source ~/.config/nvim/include/theme/gruvbox-material.vim
 source ~/.config/nvim/include/theme/onedark.vim
 source ~/.config/nvim/include/theme/sonokai.vim
+luafile ~/.config/nvim/lua/init.lua
 
 set number
 " show the cursor position all the time
