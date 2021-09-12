@@ -22,7 +22,6 @@ call plug#begin('~/.config/nvim/plugged')
 " |-------------------+------------------------------------|
 " | vim-which-key     | Display key-binding menu           |
 " | vim-startify      | Show start screen                  |
-" | gruvbox           | Theme                              |
 " | lightline, ...    | Show status line                   |
 " | vim-signify       | Show git diff by side              |
 " | tig-explorer      | Show tig inside vim                |
@@ -39,7 +38,6 @@ call plug#begin('~/.config/nvim/plugged')
 " Plug 'neomake/neomake'
 Plug 'liuchengxu/vim-which-key'
 Plug 'mhinz/vim-startify'
-Plug 'morhetz/gruvbox'
 Plug 'itchyny/lightline.vim'
 Plug 'mengelbrecht/lightline-bufferline'
 Plug 'mhinz/vim-signify'
@@ -50,6 +48,12 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'roxma/vim-tmux-clipboard'
+
+""" 2. Themes """
+Plug 'sainnhe/sonokai'
+Plug 'marko-cerovac/material.nvim'
+Plug 'sainnhe/gruvbox-material'
+Plug 'navarasu/onedark.nvim'
 
 """ 2. General Editor Tools
 

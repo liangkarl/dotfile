@@ -1,6 +1,10 @@
 source ~/.config/nvim/include/plug-install.vim
 source ~/.config/nvim/include/plug-config.vim
 source ~/.config/nvim/include/keybind.vim
+source ~/.config/nvim/include/theme/material.vim
+source ~/.config/nvim/include/theme/gruvbox-material.vim
+source ~/.config/nvim/include/theme/onedark.vim
+source ~/.config/nvim/include/theme/sonokai.vim
 
 set number
 " show the cursor position all the time
@@ -48,7 +52,7 @@ if (has("termguicolors"))
   set termguicolors
 endif
 
-colorscheme gruvbox
+colorscheme material
 
 hi cursorline cterm=underline ctermbg=NONE
 hi cursorline gui=underline guibg=NONE guifg=BURLYWOOD
