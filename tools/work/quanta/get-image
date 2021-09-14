@@ -117,15 +117,16 @@ argv+='h'	# output human readable numbers
 argv+='z'	# compress file data
 argv+='v'	# verbose
 argv+='u'	# only update modified data and skip no changed files
-argv+='S'	# handle sparse files efficiently
 argv+=' --progress'
 			# show progress while transferring data
 argv+=' --delete'
 			# remove dst files not existed in src dir
-argv+=' --partial-dir=.rsync-partial'
-			# partial files can keep last download progess before interrupt
-#argv+=' --inplace'
+# incompatible with '--partial-dir' & '-S'
+argv+=' --inplace'
 			# update dst files in-place instead of temp dir
+#argv+=' --partial-dir=.rsync-partial'
+			# partial files can keep last download progess before interrupt
+#argv+='S'	# handle sparse files efficiently
 
 # confirm remote file list
 out="$remote_out"
