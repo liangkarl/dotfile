@@ -1,0 +1,44 @@
+#!/bin/bash
+
+#
+# Create an float terminal window in tmux
+#
+# NOTE: This script should be used in tmux keybind
+#
+
+# detect current session & window name
+session="$(tmux display-message -p '#S')"
+window="$(tmux display-message -p '#W')"
+
+# default session name
+float_session="__float__"
+float_conf="${XDG_CONFIG_HOME}/tmux/float-window.conf"
+
+if [[ "${session}" == "${float_session}" ]]; then
+	tmux detach-client
+	exit
+fi
+
+# create session with assigned .conf
+if ! tmux has-session -t ${float_session}; then
+	tmux new-session -f ${float_conf} -d -c $(pwd) -s ${float_session}
+fi
+
+# attach session
+popup_cmd="tmux -f ${float_conf} attach-session -t ${float_session} \; "
+if tmux list-windows -t ${float_session} \
+	    | awk '/'${window}'/{print $2}' \
+	    | grep -q ${window}; then
+    # should always unique window name here
+    popup_cmd+="select-window -t ${float_session}:${window} \; "
+else
+	number=$(tmux display-message -p '#{session_windows}')
+	if (( $number == 1 )); then
+		popup_cmd+="rename-window ${window}"
+	else
+		popup_cmd+="new-window -n "${window}" -c $(pwd) \; "
+	fi
+fi
+
+# pop up float window
+tmux popup -w 80% -h 80% -E "${popup_cmd}" || true
