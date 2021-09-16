@@ -8,7 +8,13 @@ export SOONG_GEN_COMPDB_DEBUG=1
 # Make soong generate a symlink to the compdb file using an env var
 # export SOONG_LINK_COMPDB_TO=$ANDROID_HOST_OUT
 
+# XDG Base Directory Specification
+# https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
 export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-${HOME}/.config}
+export XDG_DATA_HOME=${XDG_DATA_HOME:-${HOME}/.local/share}
+export XDG_CACHE_HOME=${XDG_CACHE_HOME:-${HOME}/.cache}
+
+# Import customized config
 source ${XDG_CONFIG_HOME}/bash/config
 
 __custom_prompt() {
