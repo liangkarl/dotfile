@@ -1,0 +1,86 @@
+#!/bin/bash
+
+set -eE
+
+usage() {
+	local name=$(basename $0)
+	cat << EOF
+name:
+    ${name} - download specified patches and patch them to target projects.
+
+usage:
+	${name}	[-h]
+
+options:
+	-h: help
+EOF
+}
+
+if [[ "$1" == '-h' ]]; then
+	usage
+	exit 0
+fi
+
+name="build.conf"
+source $name || {
+    pr_err "no available $name"
+    exit 1
+}
+
+# sync code
+# repo init -u ssh://${gerrit}:${port}/mt8173/manifest --config-name --depth=1
+# repo sync -d -c -q --force-sync
+
+idx=0
+tmp="patch.tmp"
+# fetch patches info into individual file
+rm -f patch.*
+while true; do
+    ssh -p ${port} ${user}@${gerrit} \
+        gerrit query --current-patch-set --start $idx limit:1 \
+        ${filter} > ${tmp}
+
+    # The downloaded patches are sorted by uploaded date, so we sort them
+    # based on patch number, which assume the order of applied patches
+    # should be the same as the current patch set number
+    num="$(grep "^  number" ${tmp} | awk '{print $2}')"
+    cp ${tmp} patch.${num}
+
+    idx=$((idx + 1))
+    echo "metadata: patch.${num}"
+
+    grep -q "moreChanges: true" ${tmp} || {
+        echo "no more changes"
+        break
+    }
+done
+rm -f ${tmp}
+
+top="$(pwd)"
+list=($(ls patch.*))
+size=$idx
+# parse each metadata of patches and cherry-pick them
+for patch in ${list[@]}; do
+    url="$(cat $patch | grep "^  url:" | awk '{print $2}')"
+    project="$(cat $patch | grep "^  project:" | awk '{print $2}')"
+    ref="$(cat $patch | grep "^    ref:" | awk '{print $2}')"
+
+    # NOTE:
+    # This resule maybe more than one, so keep '$' at the end to avoid
+    # getting aa/bb/cc when grep aa/bb
+    path=$(repo list | awk -F: '/'${project//'/'/'\/'}'$/{print $1}')
+
+    cd $path
+    git fetch ssh://${user}@${gerrit}:${port}/${project} ${ref} || {
+        echo "cannot download commit from '${url}'"
+        cd $top
+        continue
+    }
+
+    git cherry-pick FETCH_HEAD || {
+        git cherry-pick --abort
+        echo "skip commits from '${url}'"
+    }
+    git log -1 --format=reference
+    cd $top
+done
