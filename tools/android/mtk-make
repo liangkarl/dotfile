@@ -254,9 +254,9 @@ PS3="select an option to create build note: "
 select option in 'add-note' 'skip' 'exit'; do
 	case $option in
 		"add-note") # new build note
-			if [[ -e "$old_note" ]]; then
+			if [[ -e "$note" ]]; then
 				# restore old notes
-				cat $old_note | awk '/^# note$/ {show=1; line=NR}
+				cat $note | awk '/^# note$/ {show=1; line=NR}
 						show == 1 && NR >line {print $0}' >> $tmp_note
 			else
 				# new line for new notes
