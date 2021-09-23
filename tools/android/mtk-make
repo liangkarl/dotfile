@@ -159,7 +159,7 @@ show_info() {
 		else
 			cat $note
 		fi
-		rm -f $note
+		rm -f $tmp_note
 	fi
 }
 
@@ -237,35 +237,48 @@ shopt -s extglob
 # start counter
 interval=$(date +%s)
 
-# write build note
-note="/tmp/buildnote-${RANDOM}.md"
-echo -e "# build-info" > $note
-echo -e "* date time: $(date '+%D - %T')" >> $note
-echo -e "* location: $(pwd)" >> $note
-echo -e "* commad: ${raw_cmd}" >> $note
+old_note=".buildnote.md.old"
+tmp_note="buildnote.tmp"
+note="buildnote.md"
 
-PS3="select an option to create build note > "
-select option in 'new-note' 'restore-note'\
-					'ignore' 'exit'; do
+# write necessary notes
+echo "# build-info" > $tmp_note
+echo "* build start: $(date '+%D - %T')" >> $tmp_note
+echo "* location: $(pwd)" >> $tmp_note
+echo "* commad: ${raw_cmd}" >> $tmp_note
+echo "" >> $tmp_note
+echo "# note" >> $tmp_note
+
+# select write method
+PS3="select an option to create build note: "
+select option in 'add-note' 'skip' 'exit'; do
 	case $option in
-		"new-note") # new build note
-			echo -e "\n# note\n" >> $note
+		"add-note") # new build note
+			if [[ -e "$old_note" ]]; then
+				# restore old notes
+				cat $old_note | awk '/^# note$/ {show=1; line=NR}
+						show == 1 && NR >line {print $0}' >> $tmp_note
+			else
+				# new line for new notes
+				echo "" >> $tmp_note
+			fi
 			# go to end of file
-			vim "+$" $note
-			break
+			vim "+$" $tmp_note
 			;;
-		"restore-note") # restore old note
-			echo "not implement yet"
-			;;
-		"ignore") # no needs for build note
+		"skip") # no needs for build note
 			echo "use default build note"
-			break
 			;;
 		"exit")
 			exit
 			;;
 	esac
+	break
 done
+
+if [[ -e "$note" ]]; then
+	mv $note $old_note
+fi
+mv $tmp_note $note
 
 # execute commands
 enter "${cmd_list[@]}"
