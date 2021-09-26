@@ -44,7 +44,7 @@ bind generic ,1 view-log
 bind generic 2 view-status
 bind generic ,2 view-diff
 bind generic ,3 view-stage
-bind generic ,4 view-paper
+bind generic ,4 view-pager
 bind generic 3 view-refs
 bind generic 4 view-stash
 bind generic 5 view-reflog
@@ -81,8 +81,8 @@ bind refs C none
 bind refs ! none
 bind refs !m<ENTER> @git merge --abort
 bind refs !rb<ENTER> @git rebase --abort
-bind refs !ab<ENTER> @?git tag -d %(tag)
-bind refs !ab<ENTER> @?git branch -D %(ref)
+bind refs !at<ENTER> @?git tag -d %(tag)
+bind refs !ab<ENTER> @?git branch -D %(branch)
 # }
 
 # Main {
@@ -104,7 +104,7 @@ bind main !rb<ENTER> @git rebase --abort
 bind main !cp<ENTER> @git cherry-pick --abort
 bind main !co<ENTER> @?git reset %(commit)
 bind main !at<ENTER> @?git tag -d %(tag)
-bind main !ab<ENTER> @?git branch -D %(ref)
+bind main !ab<ENTER> @?git branch -D %(branch)
 # }
 
 # Reflog {
