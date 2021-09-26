@@ -60,6 +60,12 @@ bind generic pwd<ENTER> +git rev-parse --show-toplevel
 bind generic dc<ENTER> !git diff --check
 # }
 
+# Stage {
+bind stage c<ENTER> !git commit
+bind stage ca<ENTER> @?git commit --amend --no-edit
+bind stage caa<ENTER> ?git commit --amend
+# }
+
 # Status {
 bind status C none
 bind status ! none
