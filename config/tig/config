@@ -27,6 +27,8 @@ set tree-view = line-number:no,interval=5 id:yes,color \
                 file-name
 
 # View operation {
+bind generic f none
+bind generic g none
 bind generic y none
 bind generic r none
 bind generic l none
@@ -38,21 +40,25 @@ bind generic s none
 bind generic S none
 bind generic , none
 bind generic p none
+bind generic q none
 
 bind generic 1 view-main
-bind generic ,1 view-log
-bind generic 2 view-status
-bind generic ,2 view-diff
-bind generic ,3 view-stage
-bind generic ,4 view-pager
-bind generic 3 view-refs
+bind generic ,l view-log
+bind generic 2 view-refs
+bind generic 3 view-status
+bind generic ,d view-diff
+bind generic ,s view-stage
+bind generic ,p view-pager
 bind generic 4 view-stash
 bind generic 5 view-reflog
 bind generic b view-blame
-bind generic g view-grep
+bind generic ,fd view-blob
+bind generic ,rg view-grep
 bind generic h view-help
 bind generic M maximize
-bind generic q view-close-no-quit
+bind generic d view-close-no-quit
+bind generic q<ENTER> view-close
+bind generic qq<ENTER> quit
 # }
 
 # Misc {
@@ -61,16 +67,24 @@ bind generic dc<ENTER> !git diff --check
 # }
 
 # Stage {
+bind stage A stage-update-part
+bind stage a stage-update-line
 bind stage c<ENTER> !git commit
 bind stage ca<ENTER> @?git commit --amend --no-edit
 bind stage caa<ENTER> ?git commit --amend
+# don't bind 'none' since 'none' would override 'view-xxxx'
+bind stage 1 view-main
+bind stage 2 view-refs
 # }
 
 # Status {
 bind status C none
 bind status ! none
+bind status c<ENTER> !git commit
+bind status ca<ENTER> @?git commit --amend --no-edit
+bind status caa<ENTER> ?git commit --amend
 bind status co<ENTER> @?git checkout %(file)
-bind status d<ENTER> +?git clean -f %(file)
+bind status rm<ENTER> +?git clean -f %(file)
 bind status y<ENTER> @?git stash save "%(prompt new stash: )"
 # }
 
@@ -92,11 +106,13 @@ bind refs !ab<ENTER> @?git branch -D %(branch)
 # }
 
 # Main {
+set main-options = -n 20000
+
 bind main c<ENTER> !git commit
 bind main ca<ENTER> @?git commit --amend --no-edit
 bind main caa<ENTER> ?git commit --amend
-bind main ab<ENTER> @git tag "%(prompt new tag: )" %(commit)
-bind main at<ENTER> @git branch "%(prompt new branch: )" %(commit)
+bind main at<ENTER> @git tag "%(prompt new tag: )" %(commit)
+bind main ab<ENTER> @git branch "%(prompt new branch: )" %(commit)
 bind main co<ENTER> ?git checkout %(commit)
 bind main rs<ENTER> @?git reset --hard %(commit)
 bind main rv<ENTER> @git revert --no-edit %(commit)
@@ -107,8 +123,9 @@ bind main fp<ENTER> ?git format-patch -k --binary --histogram -1 -o . %(commit)
 bind main C none
 bind main ! none
 bind main !rb<ENTER> @git rebase --abort
+bind main !rv<ENTER> @git revert --abort
 bind main !cp<ENTER> @git cherry-pick --abort
-bind main !co<ENTER> @?git reset %(commit)
+bind main !c<ENTER> @?git reset %(commit)
 bind main !at<ENTER> @?git tag -d %(tag)
 bind main !ab<ENTER> @?git branch -D %(branch)
 # }
