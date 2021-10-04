@@ -2,8 +2,22 @@
 
 -- Plugin: nvim-tree
 -- https://github.com/kyazdani42/nvim-tree.lua
-vim.g.nvim_tree_auto_open = 1
-vim.g.nvim_tree_auto_close = 1
+require('nvim-tree').setup {
+	auto_close = true,
+	update_to_buf_dir = {
+		enable = true,
+		auto_open = true,
+	},
+	update_cwd = true,
+	auto_close = true,
+}
+vim.g.nvim_tree_special_files = {
+      Makefile = true,
+	  ["Android.mk"] = true,
+	  ["Kconfig"] = true,
+      ["README.md"] = true,
+      ["readme.md"] = true,
+}
 vim.g.nvim_tree_quit_on_open = 1
 vim.g.nvim_tree_hide_dotfiles = 1
 vim.g.nvim_tree_icon_padding = ' '
