@@ -12,6 +12,7 @@ $(basename $0) - a small format tool for text-based files
 
 SYNOPSIS:
 $(basename $0) [-h] [-b] [-u] [-c] [-s] FILE...
+$(basename $0) [-p] PATH-IN-WINDOWS
 
 OPTIONS:
 	-h: help
@@ -19,6 +20,7 @@ OPTIONS:
 	-u: convert windows line break to linuxs
 	-c: trim ANSI color codes
 	-s: trim trailing spaces
+	-p: convert win style path, '\', into posix style, '/'.
 
 USAGE
 }
@@ -36,6 +38,11 @@ trim_ansi_color() {
 # remove trailing space
 trim_space() {
 	sed -i"${bak}" 's/[[:space:]]\+$//g' $1
+}
+
+# convert win path '\' to posix path '/'
+replace_backslash() {
+	printf '%s\n' "$@" | sed 's,\\,\/,g'
 }
 
 # main
@@ -74,6 +81,14 @@ while (( $# != 0 )); do
 		-b)
 			shift
 			cmd+="bak='.$1'"
+			;;
+		-p)
+			if [[ "$section" != "$1" ]]; then
+				cmd+=';'
+			fi
+			shift
+			cmd+="replace_backslash '$@'"
+			break
 			;;
 		-h)
 			usage
