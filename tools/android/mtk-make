@@ -153,9 +153,9 @@ show_info() {
 
 	# show build note
 	if [[ -e "$note" ]]; then
-		if [[ $(type -t mdr) == "file" ]]; then
+		if [[ $(type -t mdv) == "file" ]]; then
 			# with markdown render
-			mdr $note
+			mdv $note
 		else
 			cat $note
 		fi
