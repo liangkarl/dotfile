@@ -62,6 +62,10 @@ bind generic qq<ENTER> quit
 # }
 
 # Misc {
+bind generic G none
+
+bind generic gg move-first-line
+bind generic G move-last-line
 bind generic pwd<ENTER> +git rev-parse --show-toplevel
 bind generic dc<ENTER> !git diff --check
 # }
@@ -120,6 +124,7 @@ bind main rbi<ENTER> ?git rebase -i %(commit)
 bind main cp<ENTER> @git cherry-pick -s %(commit)
 bind main fp<ENTER> ?git format-patch -k --binary --histogram -1 -o . %(commit)
 
+bind main G move-last-line
 bind main C none
 bind main ! none
 bind main !rb<ENTER> @git rebase --abort
