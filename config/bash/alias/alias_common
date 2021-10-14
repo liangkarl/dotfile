@@ -8,3 +8,8 @@ alias tree='tree --dirsfirst -h'
 alias cls='clear'
 alias rsync='rsync -av -h --progress'
 alias less='less -R'
+
+# compression
+alias txz='tar -Jcv'
+alias tgz='tar -zcv'
+alias bz2='tar -jcv'
