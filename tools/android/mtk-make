@@ -61,7 +61,6 @@ enter() {
 
 split_build() {
 	local split_build merged_dir
-	local cmd
 
 	if [[ -z "$kernel_out_dir" ]]; then
 		echo "get out dir of kernel"
@@ -78,19 +77,24 @@ split_build() {
 		lunch $system_lunch
 		system_out_dir=$ANDROID_PRODUCT_OUT
 	fi
+	local cmd_list script_cmd cmd
 
 	merged_dir="$(readlink -f final-images)"
 	split_build=$system_out_dir/images/split_build.py
 
 	rm -rf $merged_dir
-	cmd="python $split_build"
-	cmd+=" --system-dir $system_out_dir/images"
-	cmd+=" --vendor-dir $vendor_out_dir/images"
-	cmd+=" --kernel-dir $kernel_out_dir/images"
-	cmd+=" --output-dir $merged_dir"
-	cmd+=" $1"
+	cmd=$(trap -p ERR | awk -F\' '{print $2}')
+	trap "${cmd}; rm -rf ${merged_dir}" ERR
 
-	enter "$cmd"
+	script_cmd="python $split_build"
+	script_cmd+=" --system-dir $system_out_dir/images"
+	script_cmd+=" --vendor-dir $vendor_out_dir/images"
+	script_cmd+=" --kernel-dir $kernel_out_dir/images"
+	script_cmd+=" --output-dir $merged_dir"
+	script_cmd+=" $1"
+	cmd_list=("$script_cmd")
+
+	enter "${cmd_list[@]}"
 }
 
 build_kernel() {
@@ -226,7 +230,7 @@ done
 
 # set EXIT & ERR trap
 trap 'show_info' EXIT
-trap 'echo "failed at: $cmd" >&2' ERR
+trap "pr_err 'failed at: $cmd'" ERR
 shopt -s extglob
 
 # start counter
