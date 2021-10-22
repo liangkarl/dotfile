@@ -252,28 +252,33 @@ echo "# note" >> $tmp_note
 # select write method
 PS3="select an option to create build note: "
 select option in 'add-note' 'skip' 'exit'; do
-	case $option in
-		"add-note") # new build note
-			if [[ -e "$note" ]]; then
-				# restore old notes
-				cat $note | awk '/^# note$/ {show=1; line=NR}
-						show == 1 && NR >line {print $0}' >> $tmp_note
-			else
-				# new line for new notes
-				echo "" >> $tmp_note
-			fi
-			# go to end of file
-			vim "+$" $tmp_note
-			;;
-		"skip") # no needs for build note
-			echo "use default build note"
-			;;
-		"exit")
-			exit
-			;;
-	esac
 	break
 done
+
+case $option in
+	"add-note") # new build note
+		if [[ -e "$note" ]]; then
+			# restore old notes
+			cat $note | awk '/^# note$/ {show=1; line=NR}
+					show == 1 && NR >line {print $0}' >> $tmp_note
+		else
+			# new line for new notes
+			echo "" >> $tmp_note
+		fi
+		# go to end of file
+		vim "+$" $tmp_note
+		;;
+	"skip") # no needs for build note
+		echo "use default build note"
+		;;
+	"exit")
+		exit
+		;;
+	*)
+		cmd="invalid option: '${REPLY}'"
+		false
+		;;
+esac
 
 if [[ -e "$note" ]]; then
 	mv $note $old_note
