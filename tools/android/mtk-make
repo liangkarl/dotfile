@@ -28,27 +28,22 @@ usage() {
 	local name
 	name="${1:-$(basename $0 2>&-)}"
 
-	cat << USAGE
-NAME:
+	cat<<-USAGE
+	NAME:
+	    $name - a helper script for MTK build system.
 
-	$name - a helper script for MTK build system.
+	SYNOPSIS:
+	    $name [-k|k|kernel] [-v|v|vendor] [-s|s|system]
+	    $name [-m|m|merge] [-mo|mo|merge-ota]
 
-SYNOPSIS:
+	DESCRIPTION:
+	    k, v, s - compile kernel, vendor or system
+	    m, o - generate whole images or otapackage.zip
 
-	$name [-k|k|kernel] [-v|v|vendor] [-s|s|system]
-	$name [-m|m|merge] [-mo|mo|merge-ota]
-
-DESCRIPTION:
-
-	k, v, s - compile kernel, vendor or system
-
-	m, o - generate whole images or otapackage.zip
-
-EXAMPLE:
-
-	$ $name k v s m	# compile kernel, vendor, system and merge images
-
-USAGE
+	EXAMPLE:
+	    # compile kernel, vendor, system and merge images
+	    $ $name k v s m
+	USAGE
 }
 
 enter() {
