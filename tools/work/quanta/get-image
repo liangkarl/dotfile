@@ -18,11 +18,11 @@
 #   )
 
 usage() {
-	cat << USAGE
-Get images from remote server
+	cat <<-USAGE
+	Get images from remote server
 
-Usage:
-$(basename $0) [-s SourceFile] [-d TargetDir]
+	Usage:
+	$(basename $0) [-s SourceFile] [-d TargetDir]
 USAGE
 }
 
