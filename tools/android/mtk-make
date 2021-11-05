@@ -61,23 +61,18 @@ enter() {
 
 split_build() {
 	local split_build merged_dir
-
-	if [[ -z "$kernel_out_dir" ]]; then
-		echo "get out dir of kernel"
-		lunch $kernel_lunch
-		kernel_out_dir=$ANDROID_PRODUCT_OUT
-	fi
-	if [[ -z "$vendor_out_dir" ]]; then
-		echo "get out dir of vendor"
-		lunch $vendor_lunch
-		vendor_out_dir=$ANDROID_PRODUCT_OUT
-	fi
-	if [[ -z "$system_out_dir" ]]; then
-		echo "get out dir of system"
-		lunch $system_lunch
-		system_out_dir=$ANDROID_PRODUCT_OUT
-	fi
 	local cmd_list script_cmd cmd
+	local out config
+
+	for item in 'kernel' 'vendor' 'system'; do
+		out="${item}_out_dir"
+		config="${item}_lunch"
+		if [[ -z "${!out}" ]]; then
+			echo "get product out directory of ${item}"
+			lunch ${!config}
+			eval ${out}=$ANDROID_PRODUCT_OUT
+		fi
+	done
 
 	merged_dir="$(readlink -f final-images)"
 	split_build=$system_out_dir/images/split_build.py
