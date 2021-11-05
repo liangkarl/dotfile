@@ -134,11 +134,6 @@ local_dir="${local_dir:-$default_local_dir}"
 remote_file="${remote_file:-$default_remote_files}"
 cmd="rsync --list-only -u ${remote}:${root}/${out}/${remote_file} ${local_dir}/"
 eval $cmd
-read -p "Are these files correct? (Y/n) " ans
-if [[ "${ans,,}" == 'n' ]]; then
-	echo "stop rsync" >&2
-	exit 255
-fi
 
 # execute command
 cmd="rsync ${argv} ${remote}:${root}/${out}/${remote_file} ${local_dir}/"
