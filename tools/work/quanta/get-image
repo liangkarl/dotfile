@@ -2,7 +2,7 @@
 #
 # Config file sample:
 #   # required
-#   remote='hogwarts'
+#   remote='hogwarts'		# can be 'user@host'
 #   remote_root=(
 #   "path/one"
 #   "path/two"
@@ -21,7 +21,13 @@ usage() {
 	Get images from remote server
 
 	Usage:
-	$(basename $0) [-s SourceFile] [-d TargetDir]
+	$(basename $0) [-s SrcFile] [-d DestDir] [-t]
+
+	Options:
+		-s: copy from remote source file.
+		-d: copy to dest directory. copy to '.' if no config
+		    and variable assigned
+		-t: copy to 'temp/' under current dir
 USAGE
 }
 
@@ -78,8 +84,8 @@ while (( $# != 0 )); do
 			shift
 			remote_file=$1
 			;;
-		-i)
-			local_dir='override-folder'
+		-t)
+			local_dir='temp'
 			;;
 		*)
 			usage
