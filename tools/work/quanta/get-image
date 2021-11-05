@@ -7,7 +7,6 @@
 #   "path/one"
 #   "path/two"
 #   )
-#   remote_out='final-images'
 #
 #   # optional
 #   default_local_dir="images@$(date +%Y%m%d-%H%M%S)"
@@ -128,11 +127,5 @@ argv+=' --inplace'
 			# partial files can keep last download progess before interrupt
 #argv+='S'	# handle sparse files efficiently
 
-# confirm remote file list
-path="${root}/${remote_out}"
-cmd="rsync --list-only -u ${remote}:${path}/${remote_file} ${local_dir}/"
-eval $cmd
-
-# execute command
-cmd="rsync ${argv} ${remote}:${path}/${remote_file} ${local_dir}/"
-eval $cmd
+rsync --list-only -u ${remote}:${root}/${remote_file} ${local_dir}/
+rsync ${argv} ${remote}:${root}/${remote_file} ${local_dir}/
