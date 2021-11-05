@@ -60,12 +60,12 @@ fi
 # no check for required variables, so don't mess them
 
 # check optional variables
-default_local_dir=${default_local_dir:-.}
+local_dir=${default_local_dir:-.}
 if (( ${#default_remote_files[@]} == 0 )); then
-	default_remote_files="*"
+	remote_files="*"
 else
-	default_remote_files="{${default_remote_files[@]}}"
-	default_remote_files="${default_remote_files// /,}"
+	remote_files="{${default_remote_files[@]}}"
+	remote_files="${remote_files// /,}"
 fi
 
 # parse options
@@ -129,12 +129,10 @@ argv+=' --inplace'
 #argv+='S'	# handle sparse files efficiently
 
 # confirm remote file list
-out="$remote_out"
-local_dir="${local_dir:-$default_local_dir}"
-remote_file="${remote_file:-$default_remote_files}"
-cmd="rsync --list-only -u ${remote}:${root}/${out}/${remote_file} ${local_dir}/"
+path="${root}/${remote_out}"
+cmd="rsync --list-only -u ${remote}:${path}/${remote_file} ${local_dir}/"
 eval $cmd
 
 # execute command
-cmd="rsync ${argv} ${remote}:${root}/${out}/${remote_file} ${local_dir}/"
+cmd="rsync ${argv} ${remote}:${path}/${remote_file} ${local_dir}/"
 eval $cmd
