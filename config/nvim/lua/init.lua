@@ -9,6 +9,11 @@ require('nvim-tree').setup {
 		auto_open = true,
 	},
 	update_cwd = true,
+	update_focused_file = {
+		enable      = true,
+		update_cwd  = true,
+		ignore_list = {}
+	},
 	auto_close = true,
 	filters = {
 		dotfiles = true,
