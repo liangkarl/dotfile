@@ -82,7 +82,7 @@ while (( $# != 0 )); do
 			;;
 		-s)
 			shift
-			remote_file=$1
+			remote_files=$1
 			;;
 		-t)
 			local_dir='temp'
@@ -133,5 +133,5 @@ argv+=' --inplace'
 			# partial files can keep last download progess before interrupt
 #argv+='S'	# handle sparse files efficiently
 
-rsync --list-only -u ${remote}:${root}/${remote_file} ${local_dir}/
-rsync ${argv} ${remote}:${root}/${remote_file} ${local_dir}/
+rsync --list-only -u ${remote}:${root}/${remote_files} ${local_dir}/
+rsync ${argv} ${remote}:${root}/${remote_files} ${local_dir}/
