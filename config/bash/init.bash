@@ -57,5 +57,11 @@ __source_configs() {
     done
 }
 
+__source_lib_core() {
+    # import plugin core
+    . ${XDG_CONFIG_HOME}/bash/lib/core
+}
+
 __custom_prompt
 __source_configs
+__source_lib_core
