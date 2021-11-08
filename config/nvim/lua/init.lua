@@ -10,6 +10,10 @@ require('nvim-tree').setup {
 	},
 	update_cwd = true,
 	auto_close = true,
+	filters = {
+		dotfiles = true,
+		custom = {}
+	},
 }
 vim.g.nvim_tree_special_files = {
       Makefile = true,
@@ -19,7 +23,6 @@ vim.g.nvim_tree_special_files = {
       ["readme.md"] = true,
 }
 vim.g.nvim_tree_quit_on_open = 1
-vim.g.nvim_tree_hide_dotfiles = 1
 vim.g.nvim_tree_icon_padding = ' '
 
 -- Plugin: which-key
