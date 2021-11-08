@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Recursive searching file under parent dirs
+# usage:
+#   get_file_from_parents file.name /path/to/dir
+get_file_from_parents() {
+	local dir file
+
+	file="$1"
+	dir="$2"
+	if [[ -z "$file" ]] || [[ -z "$dir" ]]; then
+		return 64
+	fi
+
+	dir="$(readlink -e $dir 2>&-)"
+	if [[ -z "$dir" ]]; then
+		return 128
+	fi
+
+	while [[ "$dir" != '/' ]]; do
+		if [[ -e "${dir}/${file}" ]]; then
+			echo ${dir}/${file}
+			return 0
+		fi
+
+		dir="$(readlink -e ${dir}/.. 2>&-)"
+	done
+
+	return 128
+}
+export -f get_file_from_parents
+
+# usage:
+#   get_file /path/to/file.name => search file.name from assigned cwd
+#	get_file file.name => search file.name from cwd
+get_file() {
+	if [[ -z "$1" ]]; then
+		return 64
+	fi
+
+	get_file_from_parents "$(basename $1)" "$(dirname $1)"
+}
+export -f get_file
