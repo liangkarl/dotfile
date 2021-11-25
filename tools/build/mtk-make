@@ -24,6 +24,9 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
+import-script prints
+import-script files
+
 usage() {
 	local name
 	name="${1:-$(basename $0 2>&-)}"
