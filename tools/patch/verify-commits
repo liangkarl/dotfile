@@ -110,7 +110,7 @@ apply_patch() {
 
 		cd $path
 		git fetch ssh://${user}@${gerrit}:${port}/${project} ${ref} || {
-			echo "cannot download commit from '${url}'"
+			pr_warn "cannot download commit from '${url}'"
 			cd $top
 			continue
 		}
@@ -122,7 +122,8 @@ apply_patch() {
 
 		git cherry-pick FETCH_HEAD || {
 			git cherry-pick --abort
-			echo "skip commits from '${url}'"
+			echo "git revision recovered"
+			pr_warn "skip commits from '${url}'"
 		}
 		git log -1 --format=reference
 		cd $top
