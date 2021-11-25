@@ -21,6 +21,7 @@ if [[ ! -d "$bin_dir" ]]; then
 fi
 echo "-- Link $config_dir to $bin_dir --"
 list="$(find ${config_dir} -type f -exec 'readlink' '-e' '{}' ';')"
+find $bin_dir -xtype l -delete
 for file in ${list[@]}; do
     ln -sf $file $bin_dir
 done
