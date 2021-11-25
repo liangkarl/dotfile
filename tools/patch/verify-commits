@@ -9,78 +9,162 @@ name:
     ${name} - download specified patches and patch them to target projects.
 
 usage:
-	${name}	[-h]
+	only execute one parameter in one time
+	${name}
+	${name}	[-acdhr]
 
 options:
 	-h: help
+	-d: download commits (metadata format)
+	-a: apply downloaded commits
+	-r: reset to last git revision before executing script.
+	-c: clean configs: .commits, patch.*
 EOF
 }
 
-if [[ "$1" == '-h' ]]; then
-	usage
-	exit 0
-fi
+# save_oldest_git_revision ${path}
+save_oldest_git_revision() {
+    # record file should be empty file at first
+	local path ocommit
 
-name="build.conf"
+	path="$1"
+	if [[ -z "$path" ]]; then
+		ocommit="$(git rev-parse HEAD)"
+		path="$(pwd)"
+	else
+		ocommit="$(git -C ${path} rev-parse HEAD)"
+	fi
+
+	# check file exist?
+	## create file if no file existed
+	if [[ ! -e ${rfile} ]]; then
+		printf "%s,%s\n" ${path} ${ocommit} > ${rfile}
+		return 0
+	fi
+
+	# grep path if file existed
+	## record commit if no path existed
+	cat ${rfile} | grep -sn ${path} || {
+		printf "%s,%s\n" ${path} ${ocommit} >> ${rfile}
+	}
+}
+
+# restore_oldest_git_revision ${rfile}
+restore_oldest_git_revision() {
+	local rfile
+
+	rfile="$1"
+	rcontent=($(<${rfile}))
+	i=0
+
+	while (( $i < ${#rcontent[@]} )); do
+		commit=${rcontent[${i}]##*,}
+		path=${rcontent[${i}]%,${commit}}
+		echo "path: ${path}"
+		git -C ${path} reset --hard ${commit}
+		i=$((i+1))
+	done
+}
+
+download_metadata() {
+	idx=0
+	tmp="patch.tmp"
+	# fetch patches info into individual file
+	rm -f patch.*
+	while true; do
+		ssh -p ${port} ${user}@${gerrit} \
+			gerrit query --current-patch-set --start $idx limit:1 \
+			${filter} > ${tmp}
+
+		# The downloaded patches are sorted by uploaded date, so we sort them
+		# based on patch number, which assume the order of applied patches
+		# should be the same as the current patch set number
+		num="$(grep "^  number" ${tmp} | awk '{print $2}')"
+		patch="patch.${num}"
+		cp ${tmp} ${patch}
+
+		idx=$((idx + 1))
+		echo "metadata: ${patch}"
+		cat ${patch} | awk "/^  subject/{print $@}"
+
+		grep -q "moreChanges: true" ${tmp} || {
+			echo "no more changes"
+			break
+		}
+	done
+	rm -f ${tmp}
+}
+
+apply_patch() {
+	top="$(pwd)"
+	list=($(ls patch.*))
+	# parse each metadata of patches and cherry-pick them
+	for patch in ${list[@]}; do
+		url="$(cat $patch | grep "^  url:" | awk '{print $2}')"
+		project="$(cat $patch | grep "^  project:" | awk '{print $2}')"
+		ref="$(cat $patch | grep "^    ref:" | awk '{print $2}')"
+
+		# This resule maybe more than one, so keep '$' at the end to avoid
+		# getting aa/bb/cc when grep aa/bb
+		path=$(repo list | awk -F: '/'${project//'/'/'\/'}'$/{print $1}')
+
+		cd $path
+		git fetch ssh://${user}@${gerrit}:${port}/${project} ${ref} || {
+			echo "cannot download commit from '${url}'"
+			cd $top
+			continue
+		}
+
+		save_oldest_git_revision
+		# check git revision
+		# record commit revision if no record existed
+		# ignore revision if record existed
+
+		git cherry-pick FETCH_HEAD || {
+			git cherry-pick --abort
+			echo "skip commits from '${url}'"
+		}
+		git log -1 --format=reference
+		cd $top
+	done
+}
+
+rfile="$(pwd)/.commits"
+name="$(pwd)/build.conf"
 source $name || {
     pr_err "no available $name"
-    exit 1
 }
 
 # sync code
 # repo init -u ssh://${gerrit}:${port}/mt8173/manifest --config-name --depth=1
 # repo sync -d -c -q --force-sync
 
-idx=0
-tmp="patch.tmp"
-# fetch patches info into individual file
-rm -f patch.*
-while true; do
-    ssh -p ${port} ${user}@${gerrit} \
-        gerrit query --current-patch-set --start $idx limit:1 \
-        ${filter} > ${tmp}
-
-    # The downloaded patches are sorted by uploaded date, so we sort them
-    # based on patch number, which assume the order of applied patches
-    # should be the same as the current patch set number
-    num="$(grep "^  number" ${tmp} | awk '{print $2}')"
-    cp ${tmp} patch.${num}
-
-    idx=$((idx + 1))
-    echo "metadata: patch.${num}"
-
-    grep -q "moreChanges: true" ${tmp} || {
-        echo "no more changes"
-        break
-    }
-done
-rm -f ${tmp}
-
-top="$(pwd)"
-list=($(ls patch.*))
-size=$idx
-# parse each metadata of patches and cherry-pick them
-for patch in ${list[@]}; do
-    url="$(cat $patch | grep "^  url:" | awk '{print $2}')"
-    project="$(cat $patch | grep "^  project:" | awk '{print $2}')"
-    ref="$(cat $patch | grep "^    ref:" | awk '{print $2}')"
-
-    # NOTE:
-    # This resule maybe more than one, so keep '$' at the end to avoid
-    # getting aa/bb/cc when grep aa/bb
-    path=$(repo list | awk -F: '/'${project//'/'/'\/'}'$/{print $1}')
-
-    cd $path
-    git fetch ssh://${user}@${gerrit}:${port}/${project} ${ref} || {
-        echo "cannot download commit from '${url}'"
-        cd $top
-        continue
-    }
-
-    git cherry-pick FETCH_HEAD || {
-        git cherry-pick --abort
-        echo "skip commits from '${url}'"
-    }
-    git log -1 --format=reference
-    cd $top
-done
+case "$1" in
+	"")
+		download_metadata
+		# remove git revision record
+		rm -rf ${rfile}
+		apply_patch
+		pr_good "== back to original git rev by using '$(basename $0) -r' =="
+		;;
+	-h)
+		usage
+		;;
+	-a)
+		apply_patch
+		;;
+	-d)
+		download_metadata
+		;;
+	-c)
+		rm -rf patch.*
+		rm -rf .commits
+		;;
+	-r)
+		restore_oldest_git_revision ${rfile}
+		;;
+	*)
+		usage
+		exit 1
+		;;
+esac
