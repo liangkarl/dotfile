@@ -1,0 +1,54 @@
+#!/bin/bash
+
+help() {
+	local name="$(basename $0)"
+	cat <<-EOF
+	name:
+	    $name - based on repo to speed up syncing codes
+
+	usage:
+	    $name [$name options] [repo options]
+
+	$name options:
+	    * only execute one $name opts in one time
+	    help: help
+	    sync: sync code quickly
+	    reset: checkout projects locally
+	    fetch: fetch projects and don't update working tree
+
+	repo options: please reference commands with 'repo help'
+
+	EOF
+}
+
+fepo_opt="$1"
+shift
+repo_opt="$@"
+
+# TODO: load build.conf
+
+case $fepo_opt in
+	reset)
+		echo "repo sync: detach, local-only, no-repo-verify, job=8"
+		echo "           verbose"
+		repo sync -d -l -v --no-repo-verify -j8 $repo_opt
+		;;
+	sync)
+		echo "repo sync: detach, current, no-repo-verify, retry=3,"
+		echo "           optimized-fetch, no-tags, job=8"
+		repo sync -d -c --no-repo-verify --retry-fetches=3 \
+				--optimized-fetch --no-tags -j8 $repo_opt
+		;;
+	fetch)
+		echo "repo sync: network-only, no-repo-verify, retry=100,"
+		echo "           job=4"
+		repo sync --no-repo-verify -n --retry-fetches=100 -j4 $repo_opt
+		;;
+	help)
+		help
+		;;
+	*)
+		help
+		exit 2
+		;;
+esac
