@@ -7,7 +7,7 @@ shopt -s extglob
 self="$(basename $0)"
 tools_dir="$(dirname $0)"
 config_dir="${XDG_CONFIG_HOME:-${HOME}/.config}/shell"
-black_list="$self|test"
+black_list="$self|test|sample.sh"
 if [[ ! -d "$config_dir" ]]; then
     mkdir $config_dir
 fi
