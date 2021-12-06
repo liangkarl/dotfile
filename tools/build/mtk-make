@@ -271,9 +271,23 @@ case ${option:-1} in
 		fi
 		# go to end of file
 		vim "+$" $tmp_note
+
+		if [[ -e "$note" ]]; then
+			mv $note $old_note
+		fi
+		mv $tmp_note $note
 		;;
 	2|"skip") # no needs for build note
 		echo "use default build note"
+		if [[ -e "$note" ]]; then
+			# restore old notes
+			cat $note | awk '/^# note$/ {show=1; line=NR}
+					show == 1 && NR >line {print $0}' >> $tmp_note
+		fi
+
+		# Don't override old build note
+		# Replace latest note only
+		mv $tmp_note $note
 		;;
 	3|"exit")
 		exit
@@ -283,11 +297,6 @@ case ${option:-1} in
 		false
 		;;
 esac
-
-if [[ -e "$note" ]]; then
-	mv $note $old_note
-fi
-mv $tmp_note $note
 
 # execute commands
 enter "${cmd_list[@]}"
