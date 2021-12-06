@@ -24,8 +24,8 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-import-script prints
-import-script files
+import-script prints 2>&-
+import-script files 2>&-
 
 usage() {
 	local name
