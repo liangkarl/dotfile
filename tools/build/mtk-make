@@ -252,13 +252,15 @@ note="buildnote.md"
 draft_buildnote $tmp_note
 
 # select write method
-PS3="select an option to create build note: "
-select option in 'add-note' 'skip' 'exit'; do
-	break
+num=1
+for item in 'add-note' 'skip' 'exit'; do
+	echo "$((num++))) ${item}"
 done
+msg="select an option to create build note: "
+read -p "$msg" option
 
-case $option in
-	"add-note") # new build note
+case ${option:-1} in
+	1|"add-note") # new build note
 		if [[ -e "$note" ]]; then
 			# restore old notes
 			cat $note | awk '/^# note$/ {show=1; line=NR}
@@ -270,14 +272,14 @@ case $option in
 		# go to end of file
 		vim "+$" $tmp_note
 		;;
-	"skip") # no needs for build note
+	2|"skip") # no needs for build note
 		echo "use default build note"
 		;;
-	"exit")
+	3|"exit")
 		exit
 		;;
 	*)
-		cmd="invalid option: '${REPLY}'"
+		cmd="invalid option: '${option}'"
 		false
 		;;
 esac
