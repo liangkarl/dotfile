@@ -251,6 +251,9 @@ note="buildnote.md"
 # write necessary notes
 draft_buildnote $tmp_note
 
+# preview buildnote
+mdv $note
+
 # select write method
 num=1
 for item in 'add-note' 'skip' 'exit'; do
