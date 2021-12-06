@@ -160,6 +160,16 @@ show_info() {
 	fi
 }
 
+draft_buildnote() {
+	local tmp_note="$1"
+	echo "# build-info" > $tmp_note
+	echo "* build start: $(date '+%D - %T')" >> $tmp_note
+	echo "* location: $(pwd)" >> $tmp_note
+	echo "* commad: ${raw_cmd}" >> $tmp_note
+	echo "" >> $tmp_note
+	echo "# note" >> $tmp_note
+}
+
 # Global variables:
 # kernel_lunch vendor_lunch system_lunch
 # kernel_out_dir vendor_out_dir system_out_dir
@@ -239,12 +249,7 @@ tmp_note="buildnote.tmp"
 note="buildnote.md"
 
 # write necessary notes
-echo "# build-info" > $tmp_note
-echo "* build start: $(date '+%D - %T')" >> $tmp_note
-echo "* location: $(pwd)" >> $tmp_note
-echo "* commad: ${raw_cmd}" >> $tmp_note
-echo "" >> $tmp_note
-echo "# note" >> $tmp_note
+draft_buildnote $tmp_note
 
 # select write method
 PS3="select an option to create build note: "
