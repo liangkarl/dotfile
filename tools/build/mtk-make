@@ -115,45 +115,158 @@ build_vendor() {
 	# cmd_list+=("create_cmd_db vendor")
 }
 
-show_info() {
-	# global var: note, interval
-	interval=$(($(date +%s) - ${interval}))
+add_build_note_header() {
+	echo "# build-info" > $NOTE_HEADER
+	echo "* build start: $(date '+%D - %T')" >> $NOTE_HEADER
+	echo "* location: $(pwd)" >> $NOTE_HEADER
+	echo "* commad: ${EXE_CMD}" >> $NOTE_HEADER
+	echo "" >> $NOTE_HEADER
+	echo "# note" >> $NOTE_HEADER
+}
+
+add_build_note_content_exp() {
+	echo "[//]: # (Add items with Markdown syntax)" > $NOTE_CONTENT
+	echo "[//]: # ( Ordered items => 1., 2. )" >> $NOTE_CONTENT
+	echo "[//]: # ( no ordering items => * )" >> $NOTE_CONTENT
+}
+
+parse_options() {
+	# check input parameters
+	if (( $# == 0 )); then
+		echo "no more actions"
+		exit
+	fi
+
+	while (( $# != 0 )); do
+		case "$1" in
+			m|-m|merge)
+				NEED_MERGE=y
+				;;
+			o|-o|ota)
+				NEED_MERGE=y
+				OTA=y
+				;;
+			k|-k|kernel)
+				MAKE_KERNEL=y
+				;;
+			s|-s|system)
+				MAKE_SYSTEM=y
+				;;
+			v|-v|vendor)
+				MAKE_VENDOR=y
+				;;
+			h|-h|help)
+				usage
+				exit
+				;;
+			*)
+				usage
+				exit 248
+		esac
+		shift
+	done
+}
+
+add_build_note_content() {
+	local i dopt list
+
+	# select write method
+	dopt=2
+	list=('add-note' 'skip' 'exit')
+	echo "Select an option to create build note:"
+	for((i = 0; i < ${#list[@]}; i++)); do
+		echo "$((i + 1))) ${list[$i]}"
+	done
+	read -p "> ($dopt) " option
+
+	case ${option:-$dopt} in
+		1|"add-note")
+			if [[ ! -e $NOTE_CONTENT ]]; then # new note
+				add_build_note_content_exp
+			fi
+			# go to end of file
+			vim "+$" $NOTE_CONTENT
+			;;
+		2|"skip") # no needs for build note
+			;;
+		3|"exit")
+			exit
+			;;
+		*)
+			pr_err "invalid option: '${option}'"
+			exit
+			;;
+	esac
+}
+
+err_act() {
+	# substitute variable
+	eval pr_err "$ERR_MSG"
+	eval $ERR_ACT
+}
+
+exit_act() {
+	# calculate build elapse time
+	BUILD_TIME=$(($(date +%s) - ${BUILD_TIME}))
 
 	# show consumed time
-	echo ""
-	echo "total consumed time: $(date -d@${interval} -u +%H:%M:%S)"
+	echo -e "\ntotal consumed time: $(date -d@${BUILD_TIME} -u +%H:%M:%S)"
 
 	# show build note
-	if [[ -e "$note" ]]; then
-		if [[ $(type -t mdv) == "file" ]]; then
-			# with markdown render
-			mdv $note
+	mdv $NOTE
+	eval $EXIT_ACT
+}
+
+build_code() {
+	# start counter
+	BUILD_TIME=$(date +%s)
+
+	# show required build info automatically
+	trap 'exit_act' EXIT
+	trap 'err_act' ERR
+
+
+	if [[ "${MAKE_KERNEL}" == y ]]; then
+		build_kernel
+	fi
+	if [[ "${MAKE_VENDOR}" == y ]]; then
+		build_vendor
+	fi
+	if [[ "${MAKE_SYSTEM}" == y ]]; then
+		build_system
+	fi
+	if [[ "${NEED_MERGE}" == y ]]; then
+		if [[ "${OTA}" == y ]]; then
+			split_build --otapackage
 		else
-			cat $note
+			split_build
 		fi
-		rm -f $tmp_note
 	fi
 }
 
-draft_buildnote() {
-	local tmp_note="$1"
-	echo "# build-info" > $tmp_note
-	echo "* build start: $(date '+%D - %T')" >> $tmp_note
-	echo "* location: $(pwd)" >> $tmp_note
-	echo "* commad: ${raw_cmd}" >> $tmp_note
-	echo "" >> $tmp_note
-	echo "# note" >> $tmp_note
-}
-
 # Global variables:
+## Program variables
+ENVSETUP='build/envsetup.sh'
+EXE_CMD="$(basename $0) $@"
+ERR_MSG='last command: $BASH_SOURCE:$LINENO $BASH_COMMAND'
+ERR_ACT=''
+BUILD_TIME=''
+EXIT_ACT=''
+NOTE_HEADER='.note.header'
+NOTE_CONTENT='.note.text'
+NOTE="buildnote.md"
+
+## Compiliant flags:
+MAKE_KERNEL=''
+MAKE_VENDOR=''
+MAKE_SYSTEM=''
+NEED_MERGE=''
+OTA=''
+
+## Config variables:
 # kernel_lunch vendor_lunch system_lunch
 # kernel_out_dir vendor_out_dir system_out_dir
 # kernel_dir
-
-declare -r envsetup_sh='build/envsetup.sh'
-declare -i timer
-declare cmd_list argv
-declare raw_cmd
 
 # export all functions
 set -a
@@ -166,130 +279,31 @@ set -E
 # return error, once the first pipline command is failed
 # set -o pipefail
 
-# check input parameters
-if (( $# == 0 )); then
-	echo "no more actions"
-	exit
-fi
-raw_cmd="$(basename $0) $@"
-
 # check basic required command
 if [[ "$(type -t lunch)" != "function" ]] &&
-		! source $envsetup_sh 2>&-; then
+		! source $ENVSETUP 2>&-; then
 	echo "no 'lunch' for execution" >&2
 	exit 249
 fi
 
 # parse options
 # change to flags, instead of command queue, to prevent ordering problems
-while (( $# != 0 )); do
-	argv="$1"
-	case "$argv" in
-		m|-m|merge)
-			need_merge=y
-			;;
-		o|-o|ota)
-			ota=y
-			;;
-		k|-k|kernel)
-			make_kernel=y
-			;;
-		s|-s|system)
-			make_system=y
-			;;
-		v|-v|vendor)
-			make_vendor=y
-			;;
-		h|-h|help)
-			usage
-			exit
-			;;
-		*)
-			usage
-			exit 248
-	esac
-	shift
-done
+# parse_options
+parse_options $@
 
-# show required build info automatically
-trap 'show_info' EXIT
-# show failed command while occurring error
-cmd='$BASH_SOURCE:$LINENO $BASH_COMMAND'
-trap "pr_err 'last cmd: ${cmd}'" ERR
-# start counter
-interval=$(date +%s)
+# preview previous note
+echo "=== last $NOTE preview ==="
+mdv $NOTE
+echo -e "========================\n"
 
-old_note=".buildnote.md.old"
-tmp_note="buildnote.tmp"
-note="buildnote.md"
+# edit build note
+add_build_note_content
 
 # write necessary notes
-draft_buildnote $tmp_note
+add_build_note_header
 
-# preview buildnote
-mdv $note
-
-# select write method
-num=1
-for item in 'add-note' 'skip' 'exit'; do
-	echo "$((num++))) ${item}"
-done
-msg="select an option to create build note: "
-read -p "$msg" option
-
-case ${option:-1} in
-	1|"add-note") # new build note
-		if [[ -e "$note" ]]; then
-			# restore old notes
-			cat $note | awk '/^# note$/ {show=1; line=NR}
-					show == 1 && NR >line {print $0}' >> $tmp_note
-		else
-			# new line for new notes
-			echo "" >> $tmp_note
-		fi
-		# go to end of file
-		vim "+$" $tmp_note
-
-		if [[ -e "$note" ]]; then
-			mv $note $old_note
-		fi
-		mv $tmp_note $note
-		;;
-	2|"skip") # no needs for build note
-		echo "use default build note"
-		if [[ -e "$note" ]]; then
-			# restore old notes
-			cat $note | awk '/^# note$/ {show=1; line=NR}
-					show == 1 && NR >line {print $0}' >> $tmp_note
-		fi
-
-		# Don't override old build note
-		# Replace latest note only
-		mv $tmp_note $note
-		;;
-	3|"exit")
-		exit
-		;;
-	*)
-		cmd="invalid option: '${option}'"
-		false
-		;;
-esac
+# merge header & content
+cat $NOTE_HEADER $NOTE_CONTENT > $NOTE
 
 # start compiling
-if [[ "${make_kernel}" == y ]]; then
-	build_kernel
-fi
-if [[ "${make_vendor}" == y ]]; then
-	build_vendor
-fi
-if [[ "${make_system}" == y ]]; then
-	build_system
-fi
-if [[ "${need_merge}" == y ]]; then
-	if [[ "${ota}" == y ]]; then
-		split_build --otapackage
-	else
-		split_build
-	fi
-fi
+build_code
