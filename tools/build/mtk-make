@@ -27,6 +27,9 @@
 import-script prints 2>&-
 import-script files 2>&-
 
+# don't move to botton since 'extglob' needs to be called at first
+shopt -s extglob
+
 usage() {
 	local name
 	name="${1:-$(basename $0 2>&-)}"
@@ -49,23 +52,9 @@ usage() {
 	USAGE
 }
 
-enter() {
-	local cmd_list
-	local cmd ret i
-
-	cmd_list=("$@")
-	ret=0
-	for ((i = 0; i < ${#cmd_list[@]}; i++)); do
-		cmd=${cmd_list[$i]}
-		echo "$cmd"
-		eval $cmd
-	done
-}
-
 split_build() {
 	local split_build merged_dir
-	local cmd_list script_cmd cmd
-	local out config
+	local cmd out config
 
 	for item in 'kernel' 'vendor' 'system'; do
 		out="${item}_out_dir"
@@ -84,60 +73,46 @@ split_build() {
 	cmd=$(trap -p ERR | awk -F\' '{print $2}')
 	trap "${cmd}; rm -rf ${merged_dir}" ERR
 
-	script_cmd="python $split_build"
-	script_cmd+=" --system-dir $system_out_dir/images"
-	script_cmd+=" --vendor-dir $vendor_out_dir/images"
-	script_cmd+=" --kernel-dir $kernel_out_dir/images"
-	script_cmd+=" --output-dir $merged_dir"
-	script_cmd+=" $1"
-	cmd_list=("$script_cmd")
-
-	enter "${cmd_list[@]}"
+	python $split_build \
+		--system-dir $system_out_dir/images \
+		--vendor-dir $vendor_out_dir/images \
+		--kernel-dir $kernel_out_dir/images \
+		--output-dir $merged_dir $1
 }
 
 build_kernel() {
-	local cmd_list
-
-	cmd_list+=("lunch $kernel_lunch")
-	cmd_list+=('kernel_out_dir=$ANDROID_PRODUCT_OUT')
-	cmd_list+=('rm -rf ${kernel_out_dir}/obj/KERNEL_OBJ')
-	cmd_list+=('rm -rf ${kernel_out_dir}/images/krn*')
-	cmd_list+=("make -j24 krn_images")
+	lunch $kernel_lunch
+	kernel_out_dir=$ANDROID_PRODUCT_OUT
+	rm -rf ${kernel_out_dir}/obj/KERNEL_OBJ
+	rm -rf ${kernel_out_dir}/images/krn*
+	make -j24 krn_images
 	# FIXME: move cmd db feature to somewhere else
 	# if [[ -e "$(readlink -e "$kernel_dir")" ]]; then
 	# 	cmd_list+=("setup_kernel_cmddb $kernel_dir")
 	# fi
-
-	enter "${cmd_list[@]}"
 }
 
 build_system() {
-	local cmd_list
+	lunch $system_lunch
+	system_out_dir=$ANDROID_PRODUCT_OUT
 
-	cmd_list+=("lunch $system_lunch")
-	cmd_list+=('system_out_dir=$ANDROID_PRODUCT_OUT')
-	cmd_list+=('rm -rf ${system_out_dir}/obj')
-	cmd_list+=('rm -rf ${system_out_dir}/images')
-	cmd_list+=("make -j24 sys_images")
+	rm -rf ${system_out_dir}/obj
+	rm -rf ${system_out_dir}/images
+	make -j24 sys_images
 	# FIXME: move cmd db feature to somewhere else
 	# cmd_list+=("create_cmd_db system")
-
-	enter "${cmd_list[@]}"
 }
 
 build_vendor() {
-	local cmd_list
+	lunch $vendor_lunch
+	vendor_out_dir=$ANDROID_PRODUCT_OUT
 
-	cmd_list+=("lunch $vendor_lunch")
-	cmd_list+=('vendor_out_dir=$ANDROID_PRODUCT_OUT')
 	# avoid to remove kernel obj with same config name
-	cmd_list+=('rm -rf ${vendor_out_dir}/obj/!(KERNEL_OBJ)')
-	cmd_list+=('rm -rf ${vendor_out_dir}/images/vnd*')
-	cmd_list+=("make -j24 vnd_images")
+	rm -rf ${vendor_out_dir}/images/vnd*
+	rm -rf ${vendor_out_dir}/obj/!(KERNEL_OBJ)
+	make -j24 vnd_images
 	# FIXME: move cmd db feature to somewhere else
 	# cmd_list+=("create_cmd_db vendor")
-
-	enter "${cmd_list[@]}"
 }
 
 show_info() {
@@ -206,24 +181,24 @@ if [[ "$(type -t lunch)" != "function" ]] &&
 fi
 
 # parse options
-cmd_list=()
+# change to flags, instead of command queue, to prevent ordering problems
 while (( $# != 0 )); do
 	argv="$1"
 	case "$argv" in
 		m|-m|merge)
-			cmd_list+=("split_build")
+			need_merge=y
 			;;
 		o|-o|ota)
-			cmd_list+=("split_build --otapackage")
+			ota=y
 			;;
 		k|-k|kernel)
-			cmd_list+=("build_kernel")
+			make_kernel=y
 			;;
 		s|-s|system)
-			cmd_list+=("build_system")
+			make_system=y
 			;;
 		v|-v|vendor)
-			cmd_list+=("build_vendor")
+			make_vendor=y
 			;;
 		h|-h|help)
 			usage
@@ -236,11 +211,11 @@ while (( $# != 0 )); do
 	shift
 done
 
-# set EXIT & ERR trap
+# show required build info automatically
 trap 'show_info' EXIT
-trap "pr_err 'failed at: $cmd'" ERR
-shopt -s extglob
-
+# show failed command while occurring error
+cmd='$BASH_SOURCE:$LINENO $BASH_COMMAND'
+trap "pr_err 'last cmd: ${cmd}'" ERR
 # start counter
 interval=$(date +%s)
 
@@ -301,5 +276,20 @@ case ${option:-1} in
 		;;
 esac
 
-# execute commands
-enter "${cmd_list[@]}"
+# start compiling
+if [[ "${make_kernel}" == y ]]; then
+	build_kernel
+fi
+if [[ "${make_vendor}" == y ]]; then
+	build_vendor
+fi
+if [[ "${make_system}" == y ]]; then
+	build_system
+fi
+if [[ "${need_merge}" == y ]]; then
+	if [[ "${ota}" == y ]]; then
+		split_build --otapackage
+	else
+		split_build
+	fi
+fi
