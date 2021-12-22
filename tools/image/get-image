@@ -35,31 +35,12 @@ usage() {
 USAGE
 }
 
-# search parent dir for image.conf
-search_config() {
-	local dir conf
-
-	# search image.conf
-	dir=$(pwd)
-	conf='image.conf'
-	while [[ "$dir" != '/' ]]; do
-		if [[ -e "${dir}/${conf}" ]]; then
-			echo ${dir}/${conf}
-			return 0
-		fi
-
-		dir="$(readlink -e ${dir}/.. 2>&-)"
-	done
-
-	echo ""
-	return 128
-}
-
 set -eE
 copy='rsync'
+conf='image.conf'
 
 # read default conf
-conf="$(search_config)"
+conf="$(search_file_upward $conf $(pwd) || true)"
 if [[ -z "$conf" ]]; then
 	echo "failed to find config" >&2
 else
