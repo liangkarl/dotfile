@@ -9,8 +9,8 @@
 #   )
 #
 #   # optional
-#   default_local_dir="images@$(date +%Y%m%d-%H%M%S)"
-#   default_remote_files=(
+#   local_dir="images@$(date +%Y%m%d-%H%M%S)"
+#   remote_files=(
 #   "aaa.img"
 #   "bbb.bin"
 #   "ccc.xz"
@@ -36,7 +36,13 @@ USAGE
 }
 
 set -eE
+
+# set default values
+remote="${USER}@127.0.0.1"
+remote_root=('null')
 copy='rsync'
+local_dir='.'
+remote_files='*'
 conf='image.conf'
 
 # read default conf
@@ -48,14 +54,9 @@ else
 	source $conf
 fi
 
-# no check for required variables, so don't mess them
-
-# check optional variables
-local_dir=${default_local_dir:-.}
-if (( ${#default_remote_files[@]} == 0 )); then
-	remote_files="*"
-else
-	remote_files="{${default_remote_files[@]}}"
+# change to extend glob format
+if [[ ${remote_files} != '*' ]]; then
+	remote_files="{${remote_files[@]}}"
 	remote_files="${remote_files// /,}"
 fi
 
