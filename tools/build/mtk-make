@@ -141,6 +141,7 @@ parse_options() {
 		case "$1" in
 			m|-m|merge)
 				NEED_MERGE=y
+				TARGET_FILES=y
 				;;
 			o|-o|ota)
 				NEED_MERGE=y
@@ -218,6 +219,8 @@ exit_act() {
 }
 
 build_code() {
+	local args=()
+
 	# start counter
 	BUILD_TIME=$(date +%s)
 
@@ -237,10 +240,12 @@ build_code() {
 	fi
 	if [[ "${NEED_MERGE}" == y ]]; then
 		if [[ "${OTA}" == y ]]; then
-			split_build --otapackage
-		else
-			split_build
+			args+=('--otapackage')
 		fi
+		if [[ "${TARGET_FILES}" == y ]]; then
+			args+=('--targetfiles')
+		fi
+		eval split_build ${args[@]}
 	fi
 }
 
