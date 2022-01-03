@@ -297,9 +297,15 @@ fi
 parse_options $@
 
 # preview previous note
-echo "=== last $NOTE preview ==="
-mdv $NOTE
-echo -e "========================\n"
+if [[ -e "${NOTE}" ]]; then
+	cat <<-PREV
+	=== last $NOTE preview ===
+	$(mdv $NOTE)
+	==========================
+	PREV
+else
+	echo "no ${NOTE} for previewing"
+fi
 
 # edit build note
 add_build_note_content
