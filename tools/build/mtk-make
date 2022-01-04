@@ -116,18 +116,27 @@ build_vendor() {
 }
 
 add_build_note_header() {
-	echo "# build-info" > $NOTE_HEADER
-	echo "* build start: $(date '+%D - %T')" >> $NOTE_HEADER
-	echo "* location: $(pwd)" >> $NOTE_HEADER
-	echo "* commad: ${EXE_CMD}" >> $NOTE_HEADER
-	echo "" >> $NOTE_HEADER
-	echo "# note" >> $NOTE_HEADER
+	cat > $NOTE_HEADER <<-EOF
+	# build-info
+	* start: $(date '+%D - %T')
+	* location: $(pwd)
+	* commad: ${EXE_CMD}
+
+	# environment
+	* kernel_lunch=${kernel_lunch}
+	* vendor_lunch=${vendor_lunch}
+	* system_lunch=${system_lunch}
+
+	# note
+	EOF
 }
 
 add_build_note_content_exp() {
-	echo "[//]: # (Add items with Markdown syntax)" > $NOTE_CONTENT
-	echo "[//]: # ( Ordered items => 1., 2. )" >> $NOTE_CONTENT
-	echo "[//]: # ( no ordering items => * )" >> $NOTE_CONTENT
+	cat > $NOTE_CONTENT <<-EOF
+	[//]: # (Add items with Markdown syntax)
+	[//]: # (sorted list: 1., 2.)
+	[//]: # (unsorted list: *)
+	EOF
 }
 
 parse_options() {
