@@ -282,23 +282,20 @@ OTA=''
 # kernel_out_dir vendor_out_dir system_out_dir
 # kernel_dir
 
-# export all functions
-set -a
-# exit on error
-set -e
-# make ERR trap inherit shell function
-set -E
-# return while meet unset variables
-# set -u
-# return error, once the first pipline command is failed
-# set -o pipefail
+# -a: export all functions
+# -e: exit on error
+# -E: make ERR trap inherit shell function
+# -u: return while meet unset variables
+# -o pipefail: return error once failed to execute the first pipline CMD
+set -aeE
 
+# load build script & configs
+[[ -e $ENVSETUP ]] && . $ENVSETUP
 # check basic required command
-if [[ "$(type -t lunch)" != "function" ]] &&
-		! source $ENVSETUP 2>&-; then
+[[ "$(type -t lunch)" != 'function' ]] && {
 	echo "no 'lunch' for execution" >&2
 	exit 249
-fi
+}
 
 # parse options
 # change to flags, instead of command queue, to prevent ordering problems
