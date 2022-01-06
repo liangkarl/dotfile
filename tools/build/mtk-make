@@ -41,14 +41,27 @@ usage() {
 	SYNOPSIS:
 	    $name [-k|k|kernel] [-v|v|vendor] [-s|s|system]
 	    $name [-m|m|merge] [-mo|mo|merge-ota]
+	    $name [-ak|ak|add-kernel config]
+	    $name [-av|av|add-vendor config]
+	    $name [-as|as|add-system config]
+	    $name [-lc|lc|load-config]
+	    $name [-dc|dc|del-config]
+	    $name [-l|l|list]
 
 	DESCRIPTION:
 	    k, v, s - compile kernel, vendor or system
 	    m, o - generate whole images or otapackage.zip
+	    ak, av, as - setup lunch config of kernel, vendor or system
+	    lc - load default build config
+	    dc - del runtime build config
+	    l - list current config and output dir location. Output
+	        dir only appreared after compile source codes.
 
 	EXAMPLE:
 	    # compile kernel, vendor, system and merge images
 	    $ $name k v s m
+	    $ $name ak vnd_qbert-userdebug	 # add kernel config
+	    $ $name l		  # show config and output info
 	USAGE
 }
 
@@ -139,6 +152,29 @@ add_build_note_content_exp() {
 	EOF
 }
 
+preview_buildnote() {
+	if [[ -e "${NOTE}" ]]; then
+		cat <<-PREV
+		=== last $NOTE preview ===
+		$(mdv $NOTE)
+		==========================
+		PREV
+	else
+		echo "no ${NOTE} for previewing"
+	fi
+}
+
+save_rt_build_conf() {
+	cat > $RT_BCONF <<-EOF
+	kernel_lunch='${kernel_lunch}'
+	vendor_lunch='${vendor_lunch}'
+	system_lunch='${system_lunch}'
+	kernel_out_dir='${kernel_out_dir}'
+	vendor_out_dir='${vendor_out_dir}'
+	system_out_dir='${system_out_dir}'
+	EOF
+}
+
 parse_options() {
 	# check input parameters
 	if (( $# == 0 )); then
@@ -146,24 +182,66 @@ parse_options() {
 		exit
 	fi
 
+	# TODO: add cleanup RT_BCONF with 'ps'
 	while (( $# != 0 )); do
 		case "$1" in
 			m|-m|merge)
+				COMPILE=y
 				NEED_MERGE=y
 				TARGET_FILES=y
 				;;
 			o|-o|ota)
+				COMPILE=y
 				NEED_MERGE=y
 				OTA=y
 				;;
 			k|-k|kernel)
+				COMPILE=y
 				MAKE_KERNEL=y
 				;;
 			s|-s|system)
+				COMPILE=y
 				MAKE_SYSTEM=y
 				;;
 			v|-v|vendor)
+				COMPILE=y
 				MAKE_VENDOR=y
+				;;
+			lc|-lc|load-config)
+				CONFIG=y
+				USE_DEF_BCONF=y
+				;;
+			dc|-dc|del-config)
+				# not implement yet
+				CONFIG=y
+				DEL_RT_BCONF=y
+				;;
+			ak|-ak|add-kernel)
+				CONFIG=y
+				shift; kernel_lunch="$1"
+				kernel_out_dir=''
+				echo "kernel lunch: $kernel_lunch"
+				;;
+			av|-av|add-vendor)
+				CONFIG=y
+				shift; vendor_lunch="$1"
+				vendor_out_dir=''
+				echo "vendor lunch: $vendor_lunch"
+				;;
+			as|-as|add-system)
+				CONFIG=y
+				shift; system_lunch="$1"
+				system_out_dir=''
+				echo "system lunch: $system_lunch"
+				;;
+			l|-l|list)
+				cat <<-EOF
+				List lunch config:
+				kernel: $kernel_lunch
+				vendor: $vendor_lunch
+				system: $system_lunch
+				EOF
+				exit 0
 				;;
 			h|-h|help)
 				usage
@@ -177,19 +255,25 @@ parse_options() {
 	done
 }
 
-add_build_note_content() {
-	local i dopt list
+show_menu() {
+	local list i
 
-	# select write method
-	dopt=2
-	list=('add-note' 'skip' 'exit')
+	list=($@)
 	echo "Select an option to create build note:"
 	for((i = 0; i < ${#list[@]}; i++)); do
 		echo "$((i + 1))) ${list[$i]}"
 	done
-	read -p "> ($dopt) " option
+}
 
-	case ${option:-$dopt} in
+add_build_note_content() {
+	local def option list
+
+	list=('add-note' 'skip' 'exit')
+	def=2	# defualt 'skip'
+	show_menu ${list[@]}
+	read -p "> ($def) " option
+
+	case ${option:-$def} in
 		1|"add-note")
 			if [[ ! -e $NOTE_CONTENT ]]; then # new note
 				add_build_note_content_exp
@@ -227,6 +311,16 @@ exit_act() {
 	eval $EXIT_ACT
 }
 
+config_env() {
+	if [[ "${USE_DEF_BCONF}" == y ]]; then
+		if [[ ! -e $DEF_BCONF ]]; then
+			echo "$DEF_BCONF not found"
+			exit 1
+		fi
+		. $DEF_BCONF
+	fi
+}
+
 build_code() {
 	local args=()
 
@@ -236,7 +330,6 @@ build_code() {
 	# show required build info automatically
 	trap 'exit_act' EXIT
 	trap 'err_act' ERR
-
 
 	if [[ "${MAKE_KERNEL}" == y ]]; then
 		build_kernel
@@ -269,6 +362,8 @@ EXIT_ACT=''
 NOTE_HEADER='.note.header'
 NOTE_CONTENT='.note.text'
 NOTE="buildnote.md"
+DEF_BCONF='build.conf'
+RT_BCONF=".${PPID}.build.conf"
 
 ## Compiliant flags:
 MAKE_KERNEL=''
@@ -276,6 +371,8 @@ MAKE_VENDOR=''
 MAKE_SYSTEM=''
 NEED_MERGE=''
 OTA=''
+COMPILE=''
+CONFIG=''
 
 ## Config variables:
 # kernel_lunch vendor_lunch system_lunch
@@ -291,6 +388,9 @@ set -aeE
 
 # load build script & configs
 [[ -e $ENVSETUP ]] && . $ENVSETUP
+[[ -e $DEF_BCONF ]] && . $DEF_BCONF
+[[ -e $RT_BCONF ]] && . $RT_BCONF
+
 # check basic required command
 [[ "$(type -t lunch)" != 'function' ]] && {
 	echo "no 'lunch' for execution" >&2
@@ -302,25 +402,26 @@ set -aeE
 # parse_options
 parse_options $@
 
-# preview previous note
-if [[ -e "${NOTE}" ]]; then
-	cat <<-PREV
-	=== last $NOTE preview ===
-	$(mdv $NOTE)
-	==========================
-	PREV
-else
-	echo "no ${NOTE} for previewing"
+if [[ "$CONFIG" == y ]]; then
+	config_env
 fi
 
-# edit build note
-add_build_note_content
+if [[ "$COMPILE" == y ]]; then
+	# preview previous note
+	preview_buildnote
 
-# write necessary notes
-add_build_note_header
+	# edit build note
+	add_build_note_content
 
-# merge header & content
-cat $NOTE_HEADER $NOTE_CONTENT > $NOTE
+	# write necessary build information
+	add_build_note_header
 
-# start compiling
-build_code
+	# merge header & content
+	cat $NOTE_HEADER $NOTE_CONTENT > $NOTE
+
+	# start compiling
+	build_code
+fi
+
+# save runtime lunch config
+save_rt_build_conf
