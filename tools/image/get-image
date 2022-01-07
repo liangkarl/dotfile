@@ -54,12 +54,6 @@ else
 	source $conf
 fi
 
-# change to extend glob format
-if [[ ${remote_files} != '*' ]]; then
-	remote_files="{${remote_files[@]}}"
-	remote_files="${remote_files// /,}"
-fi
-
 # parse options
 while (( $# != 0 )); do
 	case $1 in
@@ -127,10 +121,10 @@ if [[ $copy == 'rsync' ]]; then
 	# --partial-dir=DIR: partial files can keep last download progess before interrupt
 	argv+=('-a' '-h' '-z' '-v' '-u')
 	argv+=('--progress' '--delete' '--inplace')
-
-	eval rsync --list-only -u ${remote}:${root}/${remote_files} .
 elif [[ $copy == 'scp' ]] || [[ $copy == 'sftp' ]]; then
 	argv+=('-r' '-C')
 fi
 
-eval $copy ${argv[@]} ${remote}:${root}/${remote_files} ${local_dir}/
+for file in ${remote_files[@]}; do
+	($copy ${argv[@]} ${remote}:${root}/${file} ${local_dir}/)
+done
