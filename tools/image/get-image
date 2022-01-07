@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -eE
 #
 # Config file sample:
 #   # required
@@ -15,7 +15,7 @@
 #   "bbb.bin"
 #   "ccc.xz"
 #   )
-#   copy='rsync'
+#   bin='rsync'
 
 usage() {
 	local name="$(basename $0)"
@@ -35,30 +35,127 @@ usage() {
 USAGE
 }
 
-set -eE
+wait_and_join() {
+	local num pnum
+	local pid
+	local sec
+	local skip_sleep
+
+	pnum="$1" # how many process needs to be waited?
+	[[ -z $pnum ]] && return 1
+
+	num=$(wc -l $plist | awk '{print $1}') # total process
+	(( $num == 0 )) && return 0
+
+	[[ $pnum == "all" ]] &&	pnum="$num"
+
+	# keep scanning process list
+	sec=0;
+	while (( pnum != 0 )); do
+		num=$(wc -l $plist | awk '{print $1}')
+		(( $num == 0 )) && return 0
+
+		skip_sleep=n
+		# scan the list from line 1 to $num
+		for i in $(seq -s ' ' 1 $num); do
+			str="$(sed "${i}q;d" $plist)"
+			pid=${str%%,*}
+			name=${str#*,}
+			# echo $str, $pid, $name
+
+			if ! ps -h --pid $pid -o pid &> /dev/null; then
+				# download process has exited
+				echo "download '$name' finished. (${pid})"
+				sed -i -e "${i}d" $plist
+				pnum=$((pnum - 1))
+				skip_sleep=y
+				break
+			fi
+		done
+
+		[[ $skip_sleep == y ]] && continue
+
+		# avoid busy loop
+		sleep 1
+		printf "wait $num downloading job(s) done. ( %d sec(s) )\r" $((sec++))
+	done
+
+	return 0
+}
+
+select_and_show_menu() {
+	# print select menu & get answer
+	local list_len def_sel
+
+	# only one download position
+	list_len=${#remote_root[@]}
+	if (( $list_len == 1 )); then
+		root="${remote_root[0]}"
+		return 0
+	fi
+
+	# set to default option if more than one download position
+	# TODO: should we have a remind here?
+	def_sel=$DEF_DL_IND
+	if [[ ! -z "$def_sel" ]]; then
+		root="${remote_root[${def_sel}]}"
+		return 0
+	fi
+
+	# manual selection
+	PS3="select an option from 1 to ${list_len}: "
+	select item in "${remote_root[@]}"; do
+		root=$item
+		echo "remote dir: $root"
+		return 0
+	done
+}
 
 # set default values
-remote="${USER}@127.0.0.1"
-remote_root=('null')
-copy='rsync'
-local_dir='.'
-remote_files='*'
-conf='image.conf'
+RFILES='*'
+LDIR='.'
+BIN='rsync'
+FCONF='image.conf'
+PASSWD=123
+SSHPASS_EN=y
+MAX_THREADS=4
+
+declare -A CMD_OPTS
+# -a, --archive: archive mode; equals -rlptgoD (no -H,-A,-X)
+#                recurise, link, preserve most file attributes
+# -h, --human-readable: output numbers in a human-readable format
+# -z, --compress: compress file data during the transfer
+# -v, --verbose: increase verbosity
+# -q, --quiet: suppress non-error messages
+# -u, --update: skip files that are newer on the receiver
+# --progress: show progress during transfer
+# --delete: delete extraneous files from dest dirs
+# --inplace: update destination files in-place
+# --stats: give some file-transfer stats
+#
+# incompatible with '--partial-dir' & '-S'
+# -S, --sparse: handle sparse files efficiently
+# --partial-dir=DIR: partial files can keep last download progess before interrupt
+RSYNC_OPTS=('-a' '-h' '-z' '-u' '--delete' '--inplace' '-q' '--stats')
+SFTP_OPTS=('-r' '-C')
+SCP_OPTS=('-r' '-C')
+SSHPASS_OPTS=('-p' "$PASSWD")
+CMD_OPTS=(
+	[rsync]="${RSYNC_OPTS[@]}"
+	[scp]="${SCP_OPTS[@]}"
+	[sftp]="${SFTP_OPTS[@]}"
+	[sshpass]="${SSHPASS_OPTS[@]}"
+)
 
 # read default conf
-conf="$(search_file_upward $conf $(pwd) || true)"
-if [[ -z "$conf" ]]; then
+FCONF="$(search_file_upward $FCONF $(pwd) || true)"
+if [[ -z "$FCONF" ]]; then
 	echo "failed to find config" >&2
-else
-	echo "load: ${conf}"
-	source $conf
+	exit 1
 fi
 
-# change to extend glob format
-if [[ ${remote_files} != '*' ]]; then
-	remote_files="{${remote_files[@]}}"
-	remote_files="${remote_files// /,}"
-fi
+echo "load: ${FCONF}"
+source $FCONF
 
 # parse options
 while (( $# != 0 )); do
@@ -68,18 +165,18 @@ while (( $# != 0 )); do
 			;;
 		-d)
 			shift
-			local_dir=$1
+			local_dir="$1"
 			;;
 		-s)
 			shift
-			remote_files=$1
+			remote_files="$1"
 			;;
 		-t)
 			local_dir='temp'
 			;;
 		-b)
 			shift
-			copy="$1"
+			bin="$1"
 			;;
 		*)
 			usage
@@ -90,47 +187,55 @@ done
 
 [[ "$DEBUG" == y ]] && set -xv
 
+[[ -z "$bin" ]] && bin=$BIN
+[[ -z "$remote_files" ]] && remote_files=$RFILES
+[[ -z "$local_dir" ]] && local_dir=$LDIR
+
 # print select menu & get answer
-root=''
-list_len=${#remote_root[@]}
-if (( $list_len != 1 )); then
-	PS3="Select an option from 1 to ${list_len}: "
-	select item in "${remote_root[@]}"; do
-		# $REPLY is what user entered
-		# $item is limited in list values
-		if [[ -z $item ]]; then
-			echo "exit with '$REPLY'"
-			exit 3
-		fi
-		root=$item
-		echo "remote dir: $root"
-		break
-	done
-else
-	root="${remote_root[0]}"
+select_and_show_menu
+
+# setup_download_args
+cmd=()
+if [[ "$SSHPASS_EN" == y ]]; then
+	cmd+=('sshpass')
+	cmd+=("${CMD_OPTS[sshpass]}")
 fi
+cmd+=("$bin")
+cmd+=("${CMD_OPTS[${bin}]}")
 
-argv=()
-if [[ $copy == 'rsync' ]]; then
-	# -a, --archive: archive mode; equals -rlptgoD (no -H,-A,-X)
-	#                recurise, link, preserve most file attributes
-	# -h, --human-readable: output numbers in a human-readable format
-	# -z, --compress: compress file data during the transfer
-	# -v, --verbose: increase verbosity
-	# -u, --update: skip files that are newer on the receiver
-	# --progress: show progress during transfer
-	# --delete: delete extraneous files from dest dirs
-	# --inplace: update destination files in-place
-	#
-	# incompatible with '--partial-dir' & '-S'
-	# -S, --sparse: handle sparse files efficiently
-	# --partial-dir=DIR: partial files can keep last download progess before interrupt
-	argv+=('-a' '-h' '-z' '-v' '-u')
-	argv+=('--progress' '--delete' '--inplace')
+export plist="$(mktemp)"
+export pidfile="$(mktemp)"
 
-	eval rsync --list-only -u ${remote}:${root}/${remote_files} .
-elif [[ $copy == 'scp' ]] || [[ $copy == 'sftp' ]]; then
-	argv+=('-r' '-C')
-fi
+trap "rm -f $plist $pidfile" 0
 
-eval $copy ${argv[@]} ${remote}:${root}/${remote_files} ${local_dir}/
+[[ ! -d $local_dir ]] && mkdir -p $local_dir
+
+num=0
+for file in ${remote_files[@]}; do
+	# block threads if limit is reached
+	if (( $num >= ${MAX_THREADS} )); then
+		wait_and_join 1
+		num=$((num - 1))
+	fi
+
+	# fork multiple threads to copy files
+	eval "${cmd[@]} ${remote}:${root}/${file} ${local_dir}/ &"
+
+	# FIXME: don't know why we can't assign var via pipeline
+	ps -h --ppid $BASHPID -o pid,cmd > $pidfile
+	pid="$(cat $pidfile | grep $file | awk '{print $1}')"
+	echo "start to download '$file' ($pid)"
+
+	# if thread ended before we record it
+	[[ -z $pid ]] && continue
+
+	echo "$pid,$file" >> $plist
+
+	num=$((num + 1))
+done
+
+# wait download threads join
+wait_and_join all
+
+# join finished
+echo "all download has finished"
