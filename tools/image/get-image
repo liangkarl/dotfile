@@ -44,6 +44,8 @@ copy='rsync'
 local_dir='.'
 remote_files='*'
 conf='image.conf'
+sshpass_en=y
+PASSWD=123
 
 # read default conf
 conf="$(search_file_upward $conf $(pwd) || true)"
@@ -52,12 +54,6 @@ if [[ -z "$conf" ]]; then
 else
 	echo "load: ${conf}"
 	source $conf
-fi
-
-# change to extend glob format
-if [[ ${remote_files} != '*' ]]; then
-	remote_files="{${remote_files[@]}}"
-	remote_files="${remote_files// /,}"
 fi
 
 # parse options
@@ -117,20 +113,31 @@ if [[ $copy == 'rsync' ]]; then
 	# -h, --human-readable: output numbers in a human-readable format
 	# -z, --compress: compress file data during the transfer
 	# -v, --verbose: increase verbosity
+	# -q, --quiet: suppress non-error messages
 	# -u, --update: skip files that are newer on the receiver
 	# --progress: show progress during transfer
 	# --delete: delete extraneous files from dest dirs
 	# --inplace: update destination files in-place
+	# --stats: give some file-transfer stats
 	#
 	# incompatible with '--partial-dir' & '-S'
 	# -S, --sparse: handle sparse files efficiently
 	# --partial-dir=DIR: partial files can keep last download progess before interrupt
-	argv+=('-a' '-h' '-z' '-v' '-u')
-	argv+=('--progress' '--delete' '--inplace')
-
-	eval rsync --list-only -u ${remote}:${root}/${remote_files} .
+	argv+=('-a' '-h' '-z' '-u')
+	argv+=('--delete' '--inplace')
+	argv+=('-q' '--stats')
 elif [[ $copy == 'scp' ]] || [[ $copy == 'sftp' ]]; then
 	argv+=('-r' '-C')
 fi
 
-eval $copy ${argv[@]} ${remote}:${root}/${remote_files} ${local_dir}/
+if [[ "$sshpass_en" == 'y' ]]; then
+	[[ -z "$PASSWD" ]] && {
+		echo "null password for sshpass"
+		exit 2
+	}
+	copy="sshpass -p $PASSWD $copy"
+fi
+
+for file in ${remote_files[@]}; do
+	($copy ${argv[@]} ${remote}:${root}/${file} ${local_dir}/ &)
+done
