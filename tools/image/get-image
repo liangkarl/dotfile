@@ -130,7 +130,7 @@ if [[ $copy == 'rsync' ]]; then
 
 	eval rsync --list-only -u ${remote}:${root}/${remote_files} .
 elif [[ $copy == 'scp' ]] || [[ $copy == 'sftp' ]]; then
-	argv+=('-r')
+	argv+=('-r' '-C')
 fi
 
 eval $copy ${argv[@]} ${remote}:${root}/${remote_files} ${local_dir}/
