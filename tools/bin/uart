@@ -3,12 +3,6 @@
 # This tool based on plink.exe, a CLI version of putty
 #
 
-port="$1"
-pshell="powershell.exe"
-plink="plink.exe"
-putty="putty.exe"
-bin="$plink"
-
 usage() {
 	local name="$(basename $0)"
 
@@ -33,6 +27,12 @@ list_comport() {
 	$pshell -Command "[System.IO.Ports.SerialPort]::getportnames()"
 }
 
+# Required variables
+pshell="powershell.exe"
+plink="plink.exe"
+putty="putty.exe"
+bin="$plink"
+
 # default config:
 # baudrate: 961600
 # flow control: no
@@ -46,7 +46,7 @@ db=8
 sb=1
 config="${br},${db},${pa},${sb},${fc}"
 
-if [[ -z "$port" ]]; then
+if (( $# == 0 )); then
 	usage
 	exit 2
 fi
@@ -54,8 +54,7 @@ fi
 while (( $# != 0 )); do
 	case $1 in
 		-o)
-			shift
-			eval "$1"
+			shift; eval "$1"
 			config="${br},${db},${pa},${sb},${fc}"
 			has_sercfg=''
 			;;
@@ -67,11 +66,11 @@ while (( $# != 0 )); do
 			bin="$putty"
 			;;
 		-s)
+			# not implement
 			has_conf=''
 			;;
 		-[[:digit:]]?)
 			port=${1#-}
-			shift
 			;;
 		*)
 			usage
@@ -81,4 +80,4 @@ while (( $# != 0 )); do
 	shift
 done
 
-eval $bin -v -serial COM${port} -sercfg $config
+exec $bin -v -serial COM${port} -sercfg $config
