@@ -28,6 +28,8 @@ list_comport() {
 	$pshell -Command $ls_cmd
 }
 
+shopt -s extglob
+
 # Required variables
 pshell="powershell.exe"
 plink="plink.exe"
@@ -70,7 +72,7 @@ while (( $# != 0 )); do
 			# not implement
 			has_conf=''
 			;;
-		-[[:digit:]]?)
+		-+([0-9]))
 			port=${1#-}
 			;;
 		*)
