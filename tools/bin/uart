@@ -24,7 +24,8 @@ EOF
 }
 
 list_comport() {
-	$pshell -Command "[System.IO.Ports.SerialPort]::getportnames()"
+	ls_cmd="Get-CimInstance -Class Win32_SerialPort | Select-Object Description, DeviceID"
+	$pshell -Command $ls_cmd
 }
 
 # Required variables
