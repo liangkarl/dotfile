@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -eE
+[[ "${DEBUG}" == y ]] && set -xv
 shopt -s extglob
 
 # copy tool dirs to user config dir
