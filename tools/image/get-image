@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -eE
 #
 # Config file sample:
 #   # required
@@ -35,7 +35,26 @@ usage() {
 USAGE
 }
 
-set -eE
+wait_and_join() {
+	local num
+	num=$(wc -l $plist)
+
+	while true; do
+		# keep scaning process list
+		for i in {1..$num}; do
+			str="$(sed -i -e "${i}q;d" $plist)"
+			pid=${str%%,*}
+			name=${str#*,}
+			echo $str, $pid, $name
+			if ! ps -h --pid $pid -o pid= &> /dev/null; then
+				# download process has exited
+				echo "download '$name' finished"
+				sed -i -e "${i}d" $plist
+				return 0
+			fi
+		done
+	done
+}
 
 # set default values
 remote="${USER}@127.0.0.1"
@@ -138,6 +157,53 @@ if [[ "$sshpass_en" == 'y' ]]; then
 	copy="sshpass -p $PASSWD $copy"
 fi
 
+export plist="$(mktemp)"
+export pidfile="$(mktemp)"
+
+trap "rm -f $plist $pidfile" 0
+
+[[ ! -d $local_dir ]] && mkdir -p $local_dir
+
+max=4
+num=0
 for file in ${remote_files[@]}; do
-	($copy ${argv[@]} ${remote}:${root}/${file} ${local_dir}/ &)
+	# block threads if limit is reached
+	if (( $num >= $max )); then
+		wait_and_join
+		num=$((num - 1))
+	fi
+
+	# fork multiple threads to copy files
+	eval "$copy ${argv[@]} ${remote}:${root}/${file} ${local_dir}/ &"
+	echo "begin to transfer '$file'"
+
+	# FIXME: don't know why we can't assign var via pipeline
+	ps -h --ppid $BASHPID -o pid= > $pidfile
+	pid="$(cat $pidfile | head -1)"
+
+	# if thread ended before we record it
+	[[ -z $pid ]] && continue
+
+	echo "$pid,$file" >> $plist
+
+	num=$((num + 1))
 done
+
+# wait download threads join
+while true; do
+	[[ -z "$(<${plist})" ]] && break
+
+	str="$(head -1 $plist)"
+	pid=${str%%,*}
+	name=${str#*,}
+
+	echo "wait $name finished... (${pid})"
+	wait -n $pid
+
+	# download process has exited
+	sed -i -e '1d' $plist
+	echo "download '$name' finished"
+done
+
+# join finished
+echo "all download has finished"
