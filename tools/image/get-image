@@ -88,7 +88,7 @@ remote="${USER}@127.0.0.1"
 remote_root=('null')
 local_dir='.'
 remote_files='*'
-conf='image.conf'
+FCONF='image.conf'
 PASSWD=123
 SSHPASS_EN=y
 declare -A CMD_OPTS
@@ -119,13 +119,14 @@ CMD_OPTS=(
 )
 
 # read default conf
-conf="$(search_file_upward $conf $(pwd) || true)"
-if [[ -z "$conf" ]]; then
+FCONF="$(search_file_upward $FCONF $(pwd) || true)"
+if [[ -z "$FCONF" ]]; then
 	echo "failed to find config" >&2
-else
-	echo "load: ${conf}"
-	source $conf
+	exit 1
 fi
+
+echo "load: ${FCONF}"
+source $FCONF
 
 # parse options
 while (( $# != 0 )); do
