@@ -84,13 +84,14 @@ wait_and_join() {
 }
 
 # set default values
-remote="${USER}@127.0.0.1"
-remote_root=('null')
-local_dir='.'
-remote_files='*'
+RFILES='*'
+LDIR='.'
+BIN='rsync'
 FCONF='image.conf'
 PASSWD=123
 SSHPASS_EN=y
+MAX_THREADS=4
+
 declare -A CMD_OPTS
 # -a, --archive: archive mode; equals -rlptgoD (no -H,-A,-X)
 #                recurise, link, preserve most file attributes
@@ -136,11 +137,11 @@ while (( $# != 0 )); do
 			;;
 		-d)
 			shift
-			local_dir=$1
+			local_dir="$1"
 			;;
 		-s)
 			shift
-			remote_files=$1
+			remote_files="$1"
 			;;
 		-t)
 			local_dir='temp'
@@ -177,6 +178,9 @@ if (( $list_len != 1 )); then
 else
 	root="${remote_root[0]}"
 fi
+[[ -z "$bin" ]] && bin=$BIN
+[[ -z "$remote_files" ]] && remote_files=$RFILES
+[[ -z "$local_dir" ]] && local_dir=$LDIR
 
 
 # setup_download_args
@@ -195,11 +199,10 @@ trap "rm -f $plist $pidfile" 0
 
 [[ ! -d $local_dir ]] && mkdir -p $local_dir
 
-max=4
 num=0
 for file in ${remote_files[@]}; do
 	# block threads if limit is reached
-	if (( $num >= $max )); then
+	if (( $num >= ${MAX_THREADS} )); then
 		wait_and_join 1
 		num=$((num - 1))
 	fi
