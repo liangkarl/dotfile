@@ -36,24 +36,51 @@ USAGE
 }
 
 wait_and_join() {
-	local num
-	num=$(wc -l $plist)
+	local num pnum
+	local pid
+	local sec
+	local skip_sleep
 
-	while true; do
-		# keep scaning process list
-		for i in {1..$num}; do
-			str="$(sed -i -e "${i}q;d" $plist)"
+	pnum="$1" # how many process needs to be waited?
+	[[ -z $pnum ]] && return 1
+
+	num=$(wc -l $plist | awk '{print $1}') # total process
+	(( $num == 0 )) && return 0
+
+	[[ $pnum == "all" ]] &&	pnum="$num"
+
+	# keep scanning process list
+	sec=0;
+	while (( pnum != 0 )); do
+		num=$(wc -l $plist | awk '{print $1}')
+		(( $num == 0 )) && return 0
+
+		skip_sleep=n
+		# scan the list from line 1 to $num
+		for i in $(seq -s ' ' 1 $num); do
+			str="$(sed "${i}q;d" $plist)"
 			pid=${str%%,*}
 			name=${str#*,}
-			echo $str, $pid, $name
-			if ! ps -h --pid $pid -o pid= &> /dev/null; then
+			# echo $str, $pid, $name
+
+			if ! ps -h --pid $pid -o pid &> /dev/null; then
 				# download process has exited
-				echo "download '$name' finished"
+				echo "download '$name' finished. (${pid})"
 				sed -i -e "${i}d" $plist
-				return 0
+				pnum=$((pnum - 1))
+				skip_sleep=y
+				break
 			fi
 		done
+
+		[[ $skip_sleep == y ]] && continue
+
+		# avoid busy loop
+		sleep 1
+		printf "wait $num downloading job(s) done. ( %d sec(s) )\r" $((sec++))
 	done
+
+	return 0
 }
 
 # set default values
@@ -169,7 +196,7 @@ num=0
 for file in ${remote_files[@]}; do
 	# block threads if limit is reached
 	if (( $num >= $max )); then
-		wait_and_join
+		wait_and_join 1
 		num=$((num - 1))
 	fi
 
@@ -190,20 +217,7 @@ for file in ${remote_files[@]}; do
 done
 
 # wait download threads join
-while true; do
-	[[ -z "$(<${plist})" ]] && break
-
-	str="$(head -1 $plist)"
-	pid=${str%%,*}
-	name=${str#*,}
-
-	echo "wait $name finished... (${pid})"
-	wait -n $pid
-
-	# download process has exited
-	sed -i -e '1d' $plist
-	echo "download '$name' finished"
-done
+wait_and_join all
 
 # join finished
 echo "all download has finished"
