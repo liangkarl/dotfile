@@ -1,21 +1,26 @@
 #!/bin/bash -eE
-#
-# Config file sample:
-#   # required
-#   remote='hogwarts'		# can be 'user@host'
-#   remote_root=(
-#   "path/one"
-#   "path/two"
-#   )
-#
-#   # optional
-#   local_dir="images@$(date +%Y%m%d-%H%M%S)"
-#   remote_files=(
-#   "aaa.img"
-#   "bbb.bin"
-#   "ccc.xz"
-#   )
-#   bin='rsync'
+
+export_conf() {
+	cat > ${1}/${FCONF} <<-EOF
+	# REQUIRED VARS
+	remote=''
+	remote_root=(
+		"first"
+		"second"
+	)
+
+	# OPTIONAL VARS
+	# local_dir="images@$(date +%Y%m%d-%H%M%S)"
+	# remote_files=(
+	#	"aaa.img"
+	#	"bbb.bin"
+	#	"ccc.xz"
+	# )
+	# bin='rsync'
+	# sshpass_pwd=''
+	# def_sel=''
+EOF
+}
 
 usage() {
 	local name="$(basename $0)"
@@ -147,16 +152,6 @@ CMD_OPTS=(
 	[sshpass]="${SSHPASS_OPTS[@]}"
 )
 
-# read default conf
-FCONF="$(search_file_upward $FCONF $(pwd) || true)"
-if [[ -z "$FCONF" ]]; then
-	echo "failed to find config" >&2
-	exit 1
-fi
-
-echo "load: ${FCONF}"
-source $FCONF
-
 # parse options
 while (( $# != 0 )); do
 	case $1 in
@@ -178,6 +173,10 @@ while (( $# != 0 )); do
 			shift
 			bin="$1"
 			;;
+		-o)
+			shift
+			EXPORT_DIR="$1"
+			;;
 		*)
 			usage
 			exit 2
@@ -186,10 +185,30 @@ while (( $# != 0 )); do
 done
 
 [[ "$DEBUG" == y ]] && set -xv
+if [[ ! -z "$EXPORT_DIR" ]]; then
+	if [[ -d "$EXPORT_DIR" ]]; then
+		export_conf "$EXPORT_DIR"
+		exit 0
+	fi
+	echo "invalid directory for exportion"
+	exit 2
+fi
 
 [[ -z "$bin" ]] && bin=$BIN
 [[ -z "$remote_files" ]] && remote_files=$RFILES
 [[ -z "$local_dir" ]] && local_dir=$LDIR
+
+# read default conf
+# FIXME:
+# You need to clarify the difference bewteen conf & runtime vars.
+FCONF="$(search_file_upward $FCONF $(pwd) || true)"
+if [[ -z "$FCONF" ]]; then
+	echo "failed to find config" >&2
+	exit 1
+fi
+
+echo "load: ${FCONF}"
+source $FCONF
 
 # print select menu & get answer
 select_and_show_menu
