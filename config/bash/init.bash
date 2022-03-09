@@ -10,9 +10,12 @@ export SOONG_GEN_COMPDB_DEBUG=1
 
 # XDG Base Directory Specification
 # https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
-export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-${HOME}/.config}
-export XDG_DATA_HOME=${XDG_DATA_HOME:-${HOME}/.local/share}
-export XDG_CACHE_HOME=${XDG_CACHE_HOME:-${HOME}/.cache}
+[[ -z $XDG_CONFIG_HOME ]] && export XDG_CONFIG_HOME=${HOME}/.config
+[[ -z $XDG_DATA_HOME ]] && export XDG_DATA_HOME=${HOME}/.local/share
+[[ -z $XDG_CACHE_HOME ]] && export XDG_CACHE_HOME=${HOME}/.cache
+
+OS="$(uname)"
+[[ "$OS" == Darwin ]] && PATH="${HOME}/bin:${PATH}"
 
 # Import customized config
 source ${XDG_CONFIG_HOME}/bash/config
@@ -28,7 +31,7 @@ __custom_prompt() {
     local reset='\[\033[0m\]'
 
     PS1=${white}'[\t] ' # Current time
-    PS1+='${debian_chroot:+($debian_chroot)}'
+    [[ "$OS" == Linux ]] && PS1+='${debian_chroot:+($debian_chroot)}'
     PS1+=${purple}'$? '
     PS1+=${green}'\u@\h '
     PS1+=${blue}'\w '
@@ -40,19 +43,17 @@ __custom_prompt() {
 }
 
 __source_configs() {
-    local list=()
+    local list
     local dir file path
 
     # add bash related config dir
-    list+=('completion')
-    list+=('alias')
-    list+=('plugin')
+    list=('completion' 'alias' 'plugin')
 
     # source target config files
     path="${XDG_CONFIG_HOME}/bash"
     for dir in ${list[@]}; do
         for file in $(ls ${path}/${dir}); do
-            source ${path}/${dir}/${file}
+            . ${path}/${dir}/${file}
         done
     done
 }
