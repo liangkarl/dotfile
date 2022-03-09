@@ -1,36 +1,52 @@
 
 # Add short commit message above
-# Make the whole string within 72 char as possible as you can
-#    | proj |        short message          |
+# Make the string within 72 char as possible as you can
 # eg, Qbert: Fix compliant error of xxx file
 
 #
-### MUST NEED BELOW INFORMATION ###
+# REQUIRED INFO
 #
+# Description:
+#	Describe why we need this this commit
+#
+# If this change is related to "bug fix" or "optimization",
+# then, answer what happend to original design?
+# /Examples/
+# 1. Current xxx value couldn't meet the spec criteria
+#
+# If this change is related to "porting" or "new features",
+# then, answer why we need to add such changes?
+# /Examples/
+# 1. No support for 2nd source driver of wifi module
+# 2. Add xxx feature due to customer's request
+#
+# If this change is related to "revert",
+# then answer why we need to revert this commit?
 [Description]
-# 1. BugFix, Improvement: What happend to original design?
-#    Eg, Current xxx value couldn't meet the spec criteria
-# 2. Porting, NewFeature: Why we need to add such changes?
-#    Eg, No support for 2nd source driver of wifi module
-#    Eg, Add xxx feature due to customer's request
 
-[Change Description]
-# 1. Describe what you change here
-#    Eg, add xxx files to fix yyy problem
-#    Eg, modify xxx to yyy value.
-# 2. DESCRIPTION IS FOR HUMAN READ !!! NOT CHANGE LIST !!!
-#    "git log --stat" ==> CHANGE LIST
+# Changes:
+#	Describe what you change here
+#
+# /Examples/
+# 1. add xxx files to fix yyy problem
+# 2. modify xxx to yyy value.
+#
+# /NOTE/
+# !!! CHANGES ARE FOR HUMAN READ !!!
+# !!! NOT SOURCE CODE CHANGE LIST !!!
+[Changes]
 
 #
-### ADD BELOW INFORMATION FOR OPTION ###
+# OPTIONAL INFO
 #
-# [Affected Area]
-# 1. By domain: system? kernel? bootloader? build system? ...
-# 2. By function: Wifi? BT? touch panel? ...
-# 3. By HW component: MP-6050? APS-XXXX? TI-XXXX? ...
-# 4. By SW framework: XXX service? XXX driver? XXX package? xxx HAL?
-#    Eg, kernel, g-sensor, MPU-6050, driver&dts
-#    Eg, system, Wifi, BCM4342, hal
+# Keywords:
+#   Add additional keywords for searching
+# 1. which domain? system? kernel? bootloader? build system? ...
+# 2. which function? Wifi? BT? touch panel? ...
+# 3. which HW component? MP-6050? APS-XXXX? TI-XXXX? ...
+# 4. which SW component? XXX service? XXX driver? XXX package? XXX HAL?
+# [Keywords]
 #
-# [Side effect]
-# 1. Describe known side effect here
+# Side Effect:
+#   Describe known side effect here
+# [Side Effect]
