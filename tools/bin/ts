@@ -9,6 +9,16 @@ TARGET_NAME="$1"
 # project='aaa'
 # codebase=('code_0','code_1')
 
+usage() {
+	cat <<-EOF
+	ts -p path
+	ts -a attach/add-session
+	ts -d delete-session
+	ts
+EOF
+}
+
+
 search_config() {
 	local dir conf
 
@@ -55,15 +65,13 @@ parse() {
 		else
 			name="$(basename $TARGET_NAME)"	# Assume name a path of dir
 		fi
+		name=${name//./_}
 
 		# NOTE:
 		# attaching existed session is removed
 		# for now, always create new session
-		index=1
-		while tmux has-session -t $name 2>&-; do
-			name="${name}#${index}"
-			$((index++))
-		done
+		i=1
+		while tmux has-session -t "${name}#$((i++))" 2>&-; do :; done
 
 		cmd='tmux new'
 		argv="-d -s $name -c $path"
