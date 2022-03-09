@@ -10,11 +10,19 @@ failure() {
 }
 trap 'failure ${LINENO} "$BASH_COMMAND"' ERR
 
-# check XDG_CONFIG_HOME dir
-config_dir="${XDG_CONFIG_HOME:-${HOME}/.config}"
-if [[ ! -e "$config_dir" ]]; then
-    mkdir $config_dir
+OS="$(uname)"
+export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-${HOME}/.config}
+export XDG_DATA_HOME=${XDG_DATA_HOME:-${HOME}/.local/share}
+export XDG_CACHE_HOME=${XDG_CACHE_HOME:-${HOME}/.cache}
+if [[ "$OS" == Linux ]]; then
+    bashrc="$HOME/.bashrc"
+elif [[ "$OS" == Darwin ]]; then
+    bashrc="$HOME/.bash_profile"
 fi
+
+# check XDG_CONFIG_HOME dir
+config_dir=${XDG_CONFIG_HOME}
+[[ ! -e "$config_dir" ]] && mkdir $config_dir
 
 # backup old git name & email
 backup_name="$(git config --global user.name 2>&- || true)"
@@ -34,7 +42,6 @@ echo "export SHELL_DIR=$(readlink -e ${self_dir}/..)" |
 
 # import setup in .bashrc
 echo "-- import setup in .bashrc --"
-bashrc=~/.bashrc
 import="source ${config_dir}/bash/init.bash"
 has_init="$(cat ${bashrc} | grep "${import}" || true)"
 if [[ -z "$has_init" ]]; then
