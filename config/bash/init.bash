@@ -10,9 +10,13 @@ export SOONG_GEN_COMPDB_DEBUG=1
 
 # XDG Base Directory Specification
 # https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
+
+OS="$(uname)"
 export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-${HOME}/.config}
 export XDG_DATA_HOME=${XDG_DATA_HOME:-${HOME}/.local/share}
 export XDG_CACHE_HOME=${XDG_CACHE_HOME:-${HOME}/.cache}
+
+[[ "$OS" == Darwin ]] && PATH="${HOME}/bin:${PATH}"
 
 # Import customized config
 source ${XDG_CONFIG_HOME}/bash/config
@@ -28,7 +32,7 @@ __custom_prompt() {
     local reset='\[\033[0m\]'
 
     PS1=${white}'[\t] ' # Current time
-    PS1+='${debian_chroot:+($debian_chroot)}'
+    [[ "$OS" == Linux ]] && PS1+='${debian_chroot:+($debian_chroot)}'
     PS1+=${purple}'$? '
     PS1+=${green}'\u@\h '
     PS1+=${blue}'\w '
