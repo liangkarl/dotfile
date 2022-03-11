@@ -1,3 +1,10 @@
 # Quanta
+
+if [[ ! -z "$WSL_DISTRO_NAME" ]]; then
+	alias adb='adb.exe'
+	alias fastboot='fastboot.exe'
+	alias aapt='aapt.exe'
+fi
+
 alias wadb='adb wait-for-device'
 alias logcat='wadb shell logcat -v color'
