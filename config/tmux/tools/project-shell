@@ -1,0 +1,69 @@
+#!/usr/bin/env bash -e
+
+usage() {
+    local n
+
+    n=$(basename $0)
+    cat <<-EOF
+    $n -n [project] -c [path]
+    $n -C [config]
+EOF
+    exit $1
+}
+
+load_cust_conf() {
+	echo "not implement yet"
+	return 0
+}
+
+(( $# < 2 )) && usage 1
+
+WDIR='.'
+this_dir="$(readlink -e $(dirname $0))"
+
+while (( $# != 0 )); do
+	case $1 in
+		-n) shift
+			PNAME="$1"
+			;;
+		-c) shift
+			[[ ! -d "$1" ]] && exit 3
+			WDIR="$1"
+			;;
+		-C) shift
+			[[ ! -e "$1" ]] && exit 2
+			CONFIG="$1"
+			;;
+		*)
+			usage 2
+			;;
+	esac
+	shift
+done
+
+# in tmux already
+if [[ ! -z "$TMUX" ]]; then
+	unset TMUX
+	in_tmux=y
+fi
+
+# load config
+if [[ ! -z "$CONFIG" ]]; then
+	echo "load config '$CONFIG'"
+	# customized tmux window layout here
+	load_cust_conf
+	exit 0
+fi
+
+# load default project layout
+tmux new -d -c $WDIR -n "images" -s $PNAME \; \
+
+if [[ "$in_tmux" == y ]]; then
+	switch='switchc'
+else
+	switch='attach'
+fi
+
+tmux ${switch} -t $PNAME \; \
+	neww -c $WDIR -n "commands" \; \
+	send-keys "${this_dir}/debug-console" C-m \;
