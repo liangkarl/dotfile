@@ -32,9 +32,12 @@ fi
 
 read -p 'do you want to restore git config (Y/n) ' ans
 if [[ "$ans" != 'n' ]]; then
-    for prop in $(<${GIT_DB}); do
-        git config --global ${prop//=/ }
-    done
+    while read -u 10 prop; do
+        key=${prop%%=*}
+        val=${prop#*=}
+        echo "$key = $val"
+        git config --global $key $val
+    done 10< "$GIT_DB"
 else
     query_saved user.name
     query_saved user.email
