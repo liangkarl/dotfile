@@ -5,92 +5,189 @@
 # TARGET_DIR=$(fasd -d $@)
 TARGET_NAME="$1"
 
+#
+# ts.conf:
+#
+# # pos_x=('name' 'position')
+# pos_1=('j90' '~/path/to/j90/project.conf/location')
+#
+
+#
 # project.conf:
+#
+# # project name
 # project='aaa'
-# codebase=('code_0','code_1')
+#
+# # windows setup:
+# # win_1=('name' 'directory' 'command')
+# win_1=('make' 'code.0' '')
+# win_2=('kernel' 'path/to/kernel' '')
+# win_3=('device' 'path/to/device' '')
+# win_4=('lk' 'path/to/lk' '')
+#
+
+import-script file
 
 usage() {
+	local n
+
+	n=$(basename $0)
 	cat <<-EOF
-	ts -p path
-	ts -a attach/add-session
-	ts -d delete-session
-	ts
+	$n -p project-name
+	$n -d delete-session
+	$n -l
+	$n -e
 EOF
+
+	exit $1
 }
 
+check_session() {
+	local file i
+	local name state pos path
 
-search_config() {
-	local dir conf
+	# import $project
+	. $CONF
 
-	dir="$1"
-	if [[ ! -d "$dir" ]]; then
-		echo ""
-		return 110
-	fi
+	# list session
+	i=1
+	state=none
+	while :; do
+		pos="pos_${i}[@]"
+		pos=("${!pos}")
 
-	conf='project.conf'
-	while [[ "$dir" != '/' ]]; do
-		if [[ -f "${dir}/${conf}" ]]; then
-			echo ${dir}/${conf}
-			return 0
+		name="${pos[0]}"
+		[[ -z $name ]] && break
+
+		path="${pos[1]}"
+
+		if tmux has -t "$name" 2> /dev/null; then
+			state='exist'
 		fi
+		eval "pos_${i}[2]='$state'"
 
-		dir=$(readlink -e ${dir}/.. 2>&-)
+		echo "$i) ${name} ${state} ${path}"
+		((i++))
 	done
-
-	echo ""
-	return 128
 }
 
-parse() {
-	local sess name argv cmd path
-	local conf
+switch_session() {
+	local cmd
 
-	cmd=''
-	argv=''
-	sess=($(tmux ls -F'#S' 2>&-))
-	if (( $# == 0 )); then
-		if (( ${#sess[@]} == 0 )); then
-			name=$(date +%x)
-			cmd='tmux new'
-			argv="-d -s $name -c $HOME"
-		fi
-	else
-		path="$(readlink -e "$1" 2>&-)"
-		conf="$(search_config $path)"
-		if [[ ! -z "$conf" ]]; then
-			# don't mess up project.conf due to no check
-			source $conf
-			name="$project>$(basename $TARGET_NAME)"	# Assume name a path of dir
-		else
-			name="$(basename $TARGET_NAME)"	# Assume name a path of dir
-		fi
-		name=${name//./_}
-
-		# NOTE:
-		# attaching existed session is removed
-		# for now, always create new session
-		i=1
-		while tmux has-session -t "${name}#$((i++))" 2>&-; do :; done
-
-		cmd='tmux new'
-		argv="-d -s $name -c $path"
-	fi
-	$cmd $argv
-
-	# check inside or outside tmux
 	if [[ "$TMUX" == '' ]]; then # outside
 		cmd='tmux attach'
 	else # inside
 		TMUX=''
 		cmd="tmux switch-client"
 	fi
-	if [[ "$name" != '' ]]; then
-		argv="-t $name"
-	fi
-	$cmd $argv
 
-	return $?
+	eval $cmd $@
+	exit 0
 }
 
-parse $@
+enter_session() {
+	local proj
+
+	# select project name
+	read -p "select a project num to open: " proj
+	# eval "proj=('pos_$proj[@]')"
+	proj="pos_$proj[@]"
+	proj=(${!proj})
+	if [[ -z "${proj[0]}" ]]; then
+		echo "invalid number of projects"
+		exit 2
+	fi
+	PROJ_NAME="${proj[0]}"
+	PROJ_PATH="${proj[1]}"
+	PROJ_STATE="${proj[2]}"
+
+	# if project not exist
+	if [[ $PROJ_STATE == 'none' ]]; then
+		# FIXME: these operation should be moved to 'ws'
+		if [[ "$HAS_WS" == y ]]; then
+			ws $PROJ_PATH
+		else
+			# expand bash macros
+			eval tmux new -d -s $PROJ_NAME -c $PROJ_PATH
+		fi
+	fi
+
+	switch_session -t $PROJ_NAME
+}
+
+delete_session() {
+	# select project name
+	read -p "select a project num to remove: " proj
+	proj="pos_$proj[@]"
+	proj=(${!proj})
+	if [[ -z "${proj[0]}" ]]; then
+		echo "invalid number of projects"
+		exit 2
+	fi
+	PROJ_NAME="${proj[0]}"
+	PROJ_PATH="${proj[1]}"
+	PROJ_STATE="${proj[2]}"
+
+	# if project exist
+	if [[ $PROJ_STATE == 'exist' ]]; then
+		# delelte session
+		tmux kill-session -t $PROJ_NAME
+	fi
+}
+
+edit_conf() {
+	local dir confg
+
+	dir=$(dirname $CONF)
+	[[ ! -e $dir ]] && mkdir -p $dir
+
+	if [[ ! -e $CONF ]]; then
+		cat > $CONF <<-EOF
+		# ts.conf:
+		#
+		# # pos_x=('name' 'position')
+		# pos_1=('j90' '~/path/to/j90/project.conf/location')
+EOF
+	fi
+
+	vim $CONF
+}
+
+CONF="$XDG_CONFIG_HOME/tmux/plugin/ts/ts.conf"
+PROJECT_LIST=()
+PROJ_NAME=''
+PROJ_PATH=''
+PROJ_STATE=''
+
+(( $# == 0 )) && usage 1
+
+case $1 in
+	-p)
+		LIST_PROJ=y
+		PROJ=y
+		;;
+	-d)
+		LIST_PROJ=y
+		DEL_PROJ=y
+		;;
+	-l)
+		LIST_PROJ=y
+		;;
+	-e)
+		EDIT_PROJ_CONF=y
+		;;
+	*)
+		usage 2
+		;;
+esac
+
+[[ "$EDIT_PROJ_CONF" == y ]] && edit_conf
+
+# list project name status
+[[ "$LIST_PROJ" == y ]] && check_session
+
+has-cmd && HAS_WS=y
+
+[[ "$PROJ" == y ]] && enter_session
+
+[[ "$DEL_PROJ" == y ]] && delete_session
