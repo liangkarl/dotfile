@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -e
+#!/usr/bin/env bash
 
 # check XDG_CONFIG_HOME dir
 config_dir=${XDG_CONFIG_HOME}
