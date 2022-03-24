@@ -6,3 +6,4 @@ export SHELL_LIB="${XDG_CONFIG_HOME}/bash/lib"
 import-script() {
 	. ${SHELL_LIB}/$1 2>&-
 }
+export -f import-script
