@@ -85,7 +85,7 @@ download_metadata() {
 
 		idx=$((idx + 1))
 		echo "metadata: ${patch}"
-		cat ${patch} | awk "/^  subject/{print $@}"
+		cat ${patch} | awk '/^  subject/'
 
 		grep -q "moreChanges: true" ${tmp} || {
 			echo "no more changes"
