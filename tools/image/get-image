@@ -46,6 +46,7 @@ wait_and_join() {
 	local pid
 	local sec
 	local skip_sleep
+	local run_names
 
 	pnum="$1" # how many process needs to be waited?
 	[[ -z $pnum ]] && return 1
@@ -58,6 +59,7 @@ wait_and_join() {
 	# keep scanning process list
 	sec=0;
 	while (( pnum != 0 )); do
+		run_names=""
 		num=$(wc -l $plist | awk '{print $1}')
 		(( $num == 0 )) && return 0
 
@@ -71,19 +73,21 @@ wait_and_join() {
 
 			if ! ps -h --pid $pid -o pid &> /dev/null; then
 				# download process has exited
-				echo "download '$name' finished. (${pid})"
+				printf "download '%s' finished. (%d)\n" $name, $pid
 				sed -i -e "${i}d" $plist
 				pnum=$((pnum - 1))
 				skip_sleep=y
 				break
 			fi
+
+			run_names+="$name "
 		done
 
 		[[ $skip_sleep == y ]] && continue
 
 		# avoid busy loop
 		sleep 1
-		printf "wait $num downloading job(s) done. ( %d sec(s) )\r" $((sec++))
+		printf "wait [%s] finished. ( %d sec(s) )\r" "${run_names}" $((sec++))
 	done
 
 	return 0
