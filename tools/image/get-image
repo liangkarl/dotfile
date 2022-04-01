@@ -1,5 +1,7 @@
 #!/bin/bash -eE
 
+import-script files
+
 export_conf() {
 	cat > ${1}/${FCONF} <<-EOF
 	# REQUIRED VARS
@@ -186,10 +188,8 @@ fi
 [[ -z "$remote_files" ]] && remote_files=$RFILES
 [[ -z "$local_dir" ]] && local_dir=$LDIR
 
-# read default conf
-# FIXME:
-# You need to clarify the difference bewteen conf & runtime vars.
-FCONF="$(search_file_upward $FCONF $(pwd) || true)"
+# load .conf to override inner variables
+FCONF="$(get_file $(pwd)/$FCONF || true)"
 if [[ -z "$FCONF" ]]; then
 	echo "failed to find config" >&2
 	exit 1
