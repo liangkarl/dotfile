@@ -57,7 +57,7 @@ wait_and_join() {
 	[[ $pnum == "all" ]] &&	pnum="$num"
 
 	# keep scanning process list
-	sec=0;
+	sec=0
 	while (( pnum != 0 )); do
 		run_names=""
 		num=$(wc -l $plist | awk '{print $1}')
@@ -181,7 +181,10 @@ while (( $# != 0 )); do
 	shift
 done
 
+# check -x option
 [[ "$DEBUG" == y ]] && set -xv
+
+# check -o option
 if [[ ! -z "$EXPORT_DIR" ]]; then
 	if [[ -d "$EXPORT_DIR" ]]; then
 		export_conf "$EXPORT_DIR"
@@ -225,6 +228,7 @@ trap "rm -f $plist $pidfile" 0
 [[ ! -d $local_dir ]] && mkdir -p $local_dir
 
 num=0
+echo "start parallel downloading, max thread: $MAX_THREADS"
 for file in ${remote_files[@]}; do
 	# block threads if limit is reached
 	if (( $num >= ${MAX_THREADS} )); then
