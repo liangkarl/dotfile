@@ -12,13 +12,13 @@ export_conf() {
 	)
 
 	# OPTIONAL VARS
-	# local_dir="images@$(date +%Y%m%d-%H%M%S)"
-	# remote_files=(
+	# LDIR="images@$(date +%Y%m%d-%H%M%S)"
+	# RFILES=(
 	#	"aaa.img"
 	#	"bbb.bin"
 	#	"ccc.xz"
 	# )
-	# bin='rsync'
+	# BIN='rsync'
 	# SSHPASS_PWD=''
 EOF
 }
