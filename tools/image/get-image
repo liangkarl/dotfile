@@ -188,10 +188,6 @@ if [[ ! -z "$EXPORT_DIR" ]]; then
 	exit 2
 fi
 
-[[ -z "$bin" ]] && bin=$BIN
-[[ -z "$remote_files" ]] && remote_files=$RFILES
-[[ -z "$local_dir" ]] && local_dir=$LDIR
-
 # load .conf to override inner variables
 FCONF="$(get_file $(pwd)/$FCONF || true)"
 if [[ -z "$FCONF" ]]; then
@@ -201,6 +197,11 @@ fi
 
 echo "load: ${FCONF}"
 source $FCONF
+
+# check runtime variables
+[[ -z "$bin" ]] && bin=$BIN
+[[ -z "$remote_files" ]] && remote_files=("${RFILES[@]}")
+[[ -z "$local_dir" ]] && local_dir=$LDIR
 
 # print select menu & get answer
 select_and_show_menu
