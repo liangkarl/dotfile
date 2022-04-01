@@ -17,7 +17,7 @@ export_conf() {
 	#	"ccc.xz"
 	# )
 	# bin='rsync'
-	# sshpass_pwd=''
+	# SSHPASS_PWD=''
 EOF
 }
 
@@ -112,9 +112,8 @@ RFILES='*'
 LDIR='.'
 BIN='rsync'
 FCONF='image.conf'
-PASSWD=123
-SSHPASS_EN=y
 MAX_THREADS=4
+SSHPASS_PWD=''
 
 declare -A CMD_OPTS
 # -a, --archive: archive mode; equals -rlptgoD (no -H,-A,-X)
@@ -135,12 +134,10 @@ declare -A CMD_OPTS
 RSYNC_OPTS=('-a' '-h' '-z' '-u' '--delete' '--inplace' '-q' '--stats')
 SFTP_OPTS=('-r' '-C')
 SCP_OPTS=('-r' '-C')
-SSHPASS_OPTS=('-p' "$PASSWD")
 CMD_OPTS=(
 	[rsync]="${RSYNC_OPTS[@]}"
 	[scp]="${SCP_OPTS[@]}"
 	[sftp]="${SFTP_OPTS[@]}"
-	[sshpass]="${SSHPASS_OPTS[@]}"
 )
 
 # parse options
@@ -206,9 +203,8 @@ select_and_show_menu
 
 # setup_download_args
 cmd=()
-if [[ "$SSHPASS_EN" == y ]]; then
-	cmd+=('sshpass')
-	cmd+=("${CMD_OPTS[sshpass]}")
+if [[ ! -z "$SSHPASS_PWD" ]]; then
+	cmd+=('sshpass' '-p' "${SSHPASS_PWD}")
 fi
 cmd+=("$bin")
 cmd+=("${CMD_OPTS[${bin}]}")
