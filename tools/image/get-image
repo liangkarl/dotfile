@@ -18,7 +18,6 @@ export_conf() {
 	# )
 	# bin='rsync'
 	# sshpass_pwd=''
-	# def_sel=''
 EOF
 }
 
@@ -90,20 +89,12 @@ wait_and_join() {
 
 select_and_show_menu() {
 	# print select menu & get answer
-	local list_len def_sel
+	local list_len
 
 	# only one download position
 	list_len=${#remote_root[@]}
 	if (( $list_len == 1 )); then
 		root="${remote_root[0]}"
-		return 0
-	fi
-
-	# set to default option if more than one download position
-	# TODO: should we have a remind here?
-	def_sel=$DEF_DL_IND
-	if [[ ! -z "$def_sel" ]]; then
-		root="${remote_root[${def_sel}]}"
 		return 0
 	fi
 
