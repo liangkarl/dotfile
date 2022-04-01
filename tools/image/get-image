@@ -113,6 +113,9 @@ select_and_show_menu() {
 	done
 }
 
+# disable the glob (noglob)
+set -f
+
 # set default values
 RFILES='*'
 LDIR='.'
