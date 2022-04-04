@@ -34,10 +34,10 @@ usage() {
 
 	OPTIONS:
 	    -s: copy from remote source file.
-	    -d: copy to dest directory. copy to '.' if no config
-	        and variable assigned
-	    -t: copy to 'temp/' under current dir
+	    -x: debug
+	    -d: copy the file(s) from/to the directory. (default: .)
 	    -b: change copy tool
+	    -o: export sample config
 USAGE
 }
 
@@ -162,9 +162,6 @@ while (( $# != 0 )); do
 		-s)
 			shift
 			remote_files="$1"
-			;;
-		-t)
-			local_dir='temp'
 			;;
 		-b)
 			shift
