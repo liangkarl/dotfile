@@ -2,27 +2,26 @@
 
 set -eE
 
-# usage
 usage() {
-	cat << \
-USAGE
+	cat <<-EOF
 
-NAME:
-$(basename $0) - a small format tool for text-based files
+	NAME:
+	$(basename $0) - a small format tool for text-based files
 
-SYNOPSIS:
-$(basename $0) [-h] [-b] [-u] [-c] [-s] FILE...
-$(basename $0) [-p] PATH-IN-WINDOWS
+	SYNOPSIS:
+	$(basename $0) [-h] [-b] [-u] [-c] [-s] FILE...
+	$(basename $0) [-p] PATH-IN-WINDOWS
 
-OPTIONS:
-	-h: help
-	-b: assign backup file suffix
-	-u: convert windows line break to linuxs
-	-c: trim ANSI color codes
-	-s: trim trailing spaces
-	-p: convert win style path, '\', into posix style, '/'.
+	OPTIONS:
+	    -h: help
+	    -b: assign backup file suffix
+	    -u: convert windows line break to linuxs
+	    -c: trim ANSI color codes
+	    -s: trim trailing spaces
+	    -p: convert win style path, '\', into posix style, '/'.
+	EOF
 
-USAGE
+	exit $1
 }
 
 # convert LB from windows -> unix
@@ -47,10 +46,7 @@ replace_backslash() {
 
 # main
 ## check options
-if (( $# == 0 )); then
-	usage
-	exit 1
-fi
+(( $# == 0 )) && usage 1
 
 bak=''
 section="$1"
@@ -91,12 +87,10 @@ while (( $# != 0 )); do
 			break
 			;;
 		-h)
-			usage
-			exit 0
+			usage 0
 			;;
 		-*)
-			usage
-			exit 2
+			usage 2
 			;;
 		*)
 			cmd+=" $1"

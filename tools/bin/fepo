@@ -2,6 +2,7 @@
 
 help() {
 	local name="$(basename $0)"
+
 	cat <<-EOF
 	name:
 	    $name - based on repo to speed up syncing codes
@@ -19,6 +20,8 @@ help() {
 	repo options: please reference commands with 'repo help'
 
 	EOF
+
+	exit $1
 }
 
 fepo_opt="$1"
@@ -45,10 +48,9 @@ case $fepo_opt in
 		repo sync --no-repo-verify -n --retry-fetches=100 -j4 $repo_opt
 		;;
 	help)
-		help
+		help 0
 		;;
 	*)
-		help
-		exit 2
+		help 2
 		;;
 esac
