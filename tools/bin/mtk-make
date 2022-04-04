@@ -387,16 +387,14 @@ set -aeE
 [[ -e $DEF_BCONF ]] && . $DEF_BCONF
 [[ -e $RT_BCONF ]] && . $RT_BCONF
 
-# check basic required command
-[[ "$(type -t lunch)" != 'function' ]] && {
-	echo "no 'lunch' for execution" >&2
-	exit 249
-}
-
 # parse options
 # change to flags, instead of command queue, to prevent ordering problems
 # parse_options
 parse_options $@
+
+# check basic required command
+[[ "$(type -t lunch)" != 'function' ]] && \
+		exit_msg 249 "no 'lunch' for execution"
 
 if [[ "$CONFIG" == y ]]; then
 	config_env
