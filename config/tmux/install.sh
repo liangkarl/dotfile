@@ -1,14 +1,22 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 # tmux installer script
+import-script prints
 
 usage() {
-    echo "$(basename $0) [apt | github]"
+    n=$(basename $0)
+    cat <<-EOF
+    $n: select install source manually
+    $n [source]: install with selected source
+    $n -h: help
+EOF
+    exit $1
 }
 
 github_install() {
     # URL: https://github.com/tmux/tmux
     local url='https://github.com/tmux/tmux.git'
-    local pos="/tmp/install/tmux"
+    local pos=$(mktemp)
 
     # NOTE: need packages
     # autoconf, automake, pkconf, libevent-dev
@@ -34,26 +42,27 @@ apt_install() {
     sudo apt install $bin
 }
 
+brew_install() {
+    brew install tmux
+}
+
 trap 'pr_err "operation failed ($?)"' ERR
 set -eE
 
 bin='tmux'
 if [[ ! -z "$(type -p $bin)" ]]; then
-    pr_warn "you have install $bin already"
+    pr_warn "you have installed $bin already"
 fi
 
 if [[ ! -z "$1" ]]; then
-    if [[ -z "$(type ${1}_install)" ]]; then
-        usage
-        exit 2
-    fi
+    [[ -z "$(type ${1}_install)" ]] && usage 2
 
     eval ${1}_install
     exit 0
 fi
 
 PS3='select install source > '
-select src in 'github' 'apt' 'cancel'; do
+select src in 'brew' 'github' 'apt' 'cancel'; do
     case $src in
         cancel)
             exit 0;;
