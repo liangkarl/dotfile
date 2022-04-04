@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # tmux installer script
-import-script prints
+import-script io
 
 usage() {
     n=$(basename $0)

@@ -24,8 +24,8 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-import-script prints 2>&-
-import-script files 2>&-
+import-script io
+import-script file
 
 # don't move to botton since 'extglob' needs to be called at first
 shopt -s extglob
