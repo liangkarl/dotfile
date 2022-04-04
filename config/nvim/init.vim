@@ -1,11 +1,23 @@
+" FIXME:
+" change the path to $XDG_CONFIG_HOME
+
+" import plugin install
 source ~/.config/nvim/include/plug-install.vim
-source ~/.config/nvim/include/plug-config.vim
-source ~/.config/nvim/include/keybind.vim
-source ~/.config/nvim/include/vim-easymotion.vim
-source ~/.config/nvim/include/theme/material.vim
-source ~/.config/nvim/include/theme/gruvbox-material.vim
-source ~/.config/nvim/include/theme/onedark.vim
-source ~/.config/nvim/include/theme/sonokai.vim
+
+" import common setup
+source ~/.config/nvim/include/common.vim
+
+" import plugin config
+for f in split(glob('~/.config/nvim/include/config/*.vim'), '\n')
+    exe 'source' f
+endfor
+
+" import theme setup
+for f in split(glob('~/.config/nvim/include/theme/*.vim'), '\n')
+    exe 'source' f
+endfor
+
+" import lua configs
 luafile ~/.config/nvim/lua/init.lua
 
 set number

@@ -34,6 +34,8 @@ Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary' }
 Plug 'roxma/vim-tmux-clipboard'
 Plug 'neovim/nvim-lspconfig'
 Plug 'kyazdani42/nvim-tree.lua'
+" choose a main fuzzy finder and config keybind later
+let g:fuzzy_finder = 'clap'
 
 " auto completion
 Plug 'hrsh7th/nvim-cmp'
