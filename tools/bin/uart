@@ -19,8 +19,9 @@ usage() {
 	        eg, -o "br=115200;fc=N;db=8;sb=1;pa=n"
 	    -w: open with putty
 	    -n: 'n' is the port number
-
 EOF
+
+	exit $1
 }
 
 list_comport() {
@@ -49,10 +50,7 @@ db=8
 sb=1
 config="${br},${db},${pa},${sb},${fc}"
 
-if (( $# == 0 )); then
-	usage
-	exit 2
-fi
+(( $# == 0 )) && usage 2
 
 while (( $# != 0 )); do
 	case $1 in
@@ -76,8 +74,7 @@ while (( $# != 0 )); do
 			port=${1#-}
 			;;
 		*)
-			usage
-			exit 3
+			usage 2
 			;;
 	esac
 	shift

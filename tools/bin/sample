@@ -80,6 +80,7 @@ usage() {
 			ex: $0 -h
 
 USAGE
+	exit $1
 }
 
 proc_opts() {
@@ -96,8 +97,7 @@ proc_opts() {
 		s)	get_sample ${2:-$OPTARG};;
 		d)	get_diff ${2:-$OPTARG};;
 		h | ?)
-			usage
-			exit 128
+			usage 128
 			;;
 	esac
 }
@@ -105,14 +105,10 @@ proc_opts() {
 optspec=":s:d:-:h"
 proc=0
 
-if [ -z "$1" ]; then
-	usage
-	exit
-fi
+[ -z "$1" ] && usage 0
 
 if getopts $optspec opt; then
 	proc_opts $opt
 else
-	usage
-	exit 128
+	usage 128
 fi

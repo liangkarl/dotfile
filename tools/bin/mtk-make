@@ -34,7 +34,7 @@ usage() {
 	local name
 	name="${1:-$(basename $0 2>&-)}"
 
-	cat<<-USAGE
+	cat<<-EOF
 	NAME:
 	    $name - a helper script for MTK build system.
 
@@ -62,7 +62,9 @@ usage() {
 	    $ $name k v s m
 	    $ $name ak vnd_qbert-userdebug	 # add kernel config
 	    $ $name l		  # show config and output info
-	USAGE
+	EOF
+
+	exit $1
 }
 
 split_build() {
@@ -244,12 +246,10 @@ parse_options() {
 				exit 0
 				;;
 			h|-h|help)
-				usage
-				exit
+				usage 0
 				;;
 			*)
-				usage
-				exit 248
+				usage 248
 		esac
 		shift
 	done

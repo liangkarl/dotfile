@@ -26,7 +26,8 @@ EOF
 
 usage() {
 	local name="$(basename $0)"
-	cat <<-USAGE
+
+	cat <<-EOF
 	NAME:
 	$name - download/upload files from/to remote server
 
@@ -41,7 +42,9 @@ usage() {
 	    -d: copy the file(s) from/to the directory. (default: .)
 	    -b: change copy tool
 	    -o: export sample config
-USAGE
+	EOF
+
+	exit $1
 }
 
 wait_and_join() {
@@ -179,8 +182,7 @@ while (( $# != 0 )); do
 			EXPORT_DIR="$1"
 			;;
 		*)
-			usage
-			exit 2
+			usage 2
 	esac
 	shift
 done
