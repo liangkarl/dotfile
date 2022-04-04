@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+import-script io
+
 set -eE
 
 usage() {
@@ -20,6 +22,7 @@ options:
 	-r: reset to last git revision before executing script.
 	-c: clean configs: .commits, patch.*
 EOF
+	exit $1
 }
 
 # save_oldest_git_revision ${path}
@@ -132,9 +135,7 @@ apply_patch() {
 
 rfile="$(pwd)/.commits"
 name="$(pwd)/build.conf"
-source $name || {
-    pr_err "no available $name"
-}
+source $name || exit_msg 1 "no available $name"
 
 # sync code
 # repo init -u ssh://${gerrit}:${port}/mt8173/manifest --config-name --depth=1
@@ -149,7 +150,7 @@ case "$1" in
 		pr_good "== back to original git rev by using '$(basename $0) -r' =="
 		;;
 	-h)
-		usage
+		usage 0
 		;;
 	-a)
 		apply_patch
@@ -165,7 +166,6 @@ case "$1" in
 		restore_oldest_git_revision ${rfile}
 		;;
 	*)
-		usage
-		exit 1
+		usage 1
 		;;
 esac
