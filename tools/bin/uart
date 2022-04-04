@@ -3,6 +3,8 @@
 # This tool based on plink.exe, a CLI version of putty
 #
 
+import-script io
+
 usage() {
 	local name="$(basename $0)"
 
@@ -51,6 +53,8 @@ sb=1
 config="${br},${db},${pa},${sb},${fc}"
 
 (( $# == 0 )) && usage 2
+
+[[ -z "$WSL_DISTRO_NAME" ]] && exit_msg 3 "only support WSL environment for now."
 
 while (( $# != 0 )); do
 	case $1 in
