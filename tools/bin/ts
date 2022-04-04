@@ -27,6 +27,7 @@ TARGET_NAME="$1"
 #
 
 import-script file
+import-script io
 
 usage() {
 	local n
@@ -93,10 +94,8 @@ enter_session() {
 	# eval "proj=('pos_$proj[@]')"
 	proj="pos_$proj[@]"
 	proj=(${!proj})
-	if [[ -z "${proj[0]}" ]]; then
-		echo "invalid number of projects"
-		exit 2
-	fi
+	[[ -z "${proj[0]}" ]] && exit_msg 2 "invalid number of projects"
+
 	PROJ_NAME="${proj[0]}"
 	PROJ_PATH="${proj[1]}"
 	PROJ_STATE="${proj[2]}"
@@ -120,10 +119,8 @@ delete_session() {
 	read -p "select a project num to remove: " proj
 	proj="pos_$proj[@]"
 	proj=(${!proj})
-	if [[ -z "${proj[0]}" ]]; then
-		echo "invalid number of projects"
-		exit 2
-	fi
+	[[ -z "${proj[0]}" ]] && exit_msg 2 "invalid number of projects"
+
 	PROJ_NAME="${proj[0]}"
 	PROJ_PATH="${proj[1]}"
 	PROJ_STATE="${proj[2]}"
