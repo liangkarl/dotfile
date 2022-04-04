@@ -27,14 +27,16 @@ usage() {
 	local name="$(basename $0)"
 	cat <<-USAGE
 	NAME:
-	$name - Get images from remote server
+	$name - download/upload files from/to remote server
 
 	SYNOPSIS:
-	$name [-s SrcFile] [-d DestDir] [-t] [-b CopyTool]
+	$name [-f UP/DOWN file] [-d UP/DOWN dir]
+	$name [-o ouput-dir] [-b CopyTool]
 
 	OPTIONS:
-	    -s: copy from remote source file.
 	    -x: debug
+	    -u: upload file (default: download)
+	    -f: copy the file from/to the other side.
 	    -d: copy the file(s) from/to the directory. (default: .)
 	    -b: change copy tool
 	    -o: export sample config
@@ -72,8 +74,8 @@ wait_and_join() {
 			# echo $str, $pid, $name
 
 			if ! ps -h --pid $pid -o pid &> /dev/null; then
-				# download process has exited
-				printf "download '%s' finished. (%d)\n" $name, $pid
+				# transmit process has exited
+				printf "transmit '%s' finished. (%d)\n" $name, $pid
 				sed -i -e "${i}d" $plist
 				pnum=$((pnum - 1))
 				skip_sleep=y
@@ -97,7 +99,7 @@ select_and_show_menu() {
 	# print select menu & get answer
 	local list_len
 
-	# only one download position
+	# only one transmit position
 	list_len=${#remote_root[@]}
 	if (( $list_len == 1 )); then
 		root="${remote_root[0]}"
@@ -120,8 +122,9 @@ set -f
 RFILES='*'
 LDIR='.'
 BIN='rsync'
-FCONF='image.conf'
+FCONF='transmit.conf'
 MAX_THREADS=4
+DIRECTION=down
 SSHPASS_PWD=''
 
 declare -A CMD_OPTS
@@ -155,13 +158,16 @@ while (( $# != 0 )); do
 		-x)
 			DEBUG=y
 			;;
+		-u)
+			DIRECTION=up
+			;;
 		-d)
 			shift
 			local_dir="$1"
 			;;
-		-s)
+		-f)
 			shift
-			remote_files="$1"
+			src_files="$1"
 			;;
 		-b)
 			shift
@@ -203,13 +209,13 @@ source $FCONF
 
 # check runtime variables
 [[ -z "$bin" ]] && bin=$BIN
-[[ -z "$remote_files" ]] && remote_files=("${RFILES[@]}")
+[[ -z "$src_files" ]] && src_files=("${RFILES[@]}")
 [[ -z "$local_dir" ]] && local_dir=$LDIR
 
 # print select menu & get answer
 select_and_show_menu
 
-# setup_download_args
+# setup_transmit_args
 cmd=()
 if [[ ! -z "$SSHPASS_PWD" ]]; then
 	cmd+=('sshpass' '-p' "${SSHPASS_PWD}")
@@ -222,11 +228,11 @@ export pidfile="$(mktemp)"
 
 trap "rm -f $plist $pidfile" 0
 
-[[ ! -d $local_dir ]] && mkdir -p $local_dir
+[[ $DIRECTION == down && ! -d $local_dir ]] && mkdir -p $local_dir
 
 num=0
-echo "start parallel downloading, max thread: $MAX_THREADS"
-for file in ${remote_files[@]}; do
+echo "start parallel transmitting, direction: $DIRECTION, max thread: $MAX_THREADS"
+for file in ${src_files[@]}; do
 	# block threads if limit is reached
 	if (( $num >= ${MAX_THREADS} )); then
 		wait_and_join 1
@@ -234,12 +240,16 @@ for file in ${remote_files[@]}; do
 	fi
 
 	# fork multiple threads to copy files
-	eval "${cmd[@]} ${remote}:${root}/${file} ${local_dir}/ &"
+	if [[ $DIRECTION == 'down' ]]; then
+		eval "${cmd[@]} ${remote}:${root}/${file} ${local_dir}/ &"
+	else
+		eval "${cmd[@]} ${local_dir}/${file} ${remote}:${root}/ &"
+	fi
 
 	# FIXME: don't know why we can't assign var via pipeline
 	ps -h --ppid $BASHPID -o pid,cmd > $pidfile
 	pid="$(cat $pidfile | grep $file | awk '{print $1}')"
-	echo "start to download '$file' ($pid)"
+	echo "start to transmit '$file' ($pid)"
 
 	# if thread ended before we record it
 	[[ -z $pid ]] && continue
@@ -249,8 +259,8 @@ for file in ${remote_files[@]}; do
 	num=$((num + 1))
 done
 
-# wait download threads join
+# wait transmit threads join
 wait_and_join all
 
 # join finished
-echo "all download has finished"
+echo "all transmition has finished"
