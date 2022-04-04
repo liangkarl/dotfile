@@ -1,6 +1,7 @@
-#!/bin/bash -eE
+#!/usr/bin/env bash
 
 import-script file
+set -eE
 
 export_conf() {
 	cat > ${1}/${FCONF} <<-EOF

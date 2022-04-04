@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 . $SHELL_CORE_DIR/core.sh
 

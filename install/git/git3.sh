@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # git installer script
 
 usage() {

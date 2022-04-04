@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if (( $(tput colors) == 256 )); then
 	__ansi_pr() {
