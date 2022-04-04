@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # This tool based on plink.exe, a CLI version of putty
 #

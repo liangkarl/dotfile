@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Assume user has source envsetup.sh already
 # $0 KERNEL_DIR KERNEL_OBJ_DIR

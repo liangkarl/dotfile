@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source $SHELL_CORE_DIR/core.sh
 source $SHELL_CORE_DIR/installer.sh

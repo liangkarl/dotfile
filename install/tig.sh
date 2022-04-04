@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # tig installer script
 
 usage() {
