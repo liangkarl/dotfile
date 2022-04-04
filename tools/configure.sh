@@ -21,9 +21,10 @@ cp -r $tools_dir/!(${black_list}) $config_dir
 echo "-- Link $config_dir to $bin_dir --"
 [[ ! -d "$bin_dir" ]] && mkdir $bin_dir
 
-# clean invailid links
 list="$(find ${config_dir} -type f -exec 'readlink' '-e' '{}' ';')"
-find $bin_dir -xtype l -delete
+
+# clean invailid links
+find $bin_dir -type l ! -exec test -e {} \; -delete
 
 for file in ${list[@]}; do
     link_pname=${bin_dir}/$(basename $file)
