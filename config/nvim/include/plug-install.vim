@@ -64,6 +64,7 @@ Plug 'navarasu/onedark.nvim'
 " | vim-table-mode        | Draw text-styled table easily                       |
 " | alter...-toggler      | switch boolean value, true <-> false                |
 " | open-browser          | Open URL from vim                                   |
+" | vim-easymotion        | move cursor posistion like vimium                   |
 " |-----------------------+-----------------------------------------------------|
 " NOTE:
 " vim_current_word is hard to setup blacklist and highlight style
@@ -85,6 +86,7 @@ Plug 'Krasjet/auto.pairs'
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'rmagatti/alternate-toggler'
 Plug 'tyru/open-browser.vim'
+Plug 'easymotion/vim-easymotion'
 
 """ 4. Language Support (LSP) """
 " |------------------+------------------------------|

@@ -1,6 +1,7 @@
 source ~/.config/nvim/include/plug-install.vim
 source ~/.config/nvim/include/plug-config.vim
 source ~/.config/nvim/include/keybind.vim
+source ~/.config/nvim/include/vim-easymotion.vim
 source ~/.config/nvim/include/theme/material.vim
 source ~/.config/nvim/include/theme/gruvbox-material.vim
 source ~/.config/nvim/include/theme/onedark.vim
