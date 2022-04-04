@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+# $0 config-name-with-abs-path
+# This tool would create new windows in current tmux session
+
+import-script files
+
+# set -xv
+usage() {
+	n="$(basename $0)"
+	cat <<-EOF
+	$n -h: print help
+	$n [config]: create new windows in tmux following the config
+EOF
+	exit $1
+}
+
+# $0 title path cmd
+new_win() {
+	local cmd
+
+	cmd="new-window -n $1"
+
+	if [[ ! -z "$2" ]]; then
+		cmd+=" -c $2"
+	fi
+	cmd+="\\; "
+
+	if [[ ! -z "$3" ]]; then
+		cmd+="send-keys '$3' C-m \\;"
+	fi
+
+	eval tmux $cmd
+}
+
+[[ "$1" == '-h' ]] && usage 0
+
+CONF="$(get_file $1)"
+[[ -z "$CONF" ]] && exit 1
+
+. $CONF
+
+i=1
+while :; do
+	win="win_$i[@]"
+	win=("${!win}")
+
+	name="${win[0]}"
+	[[ -z "$name" ]] && break
+
+	path="${win[1]}"
+	cmd="${win[2]}"
+
+	new_win $name $path $cmd
+	(( i++ ))
+done
