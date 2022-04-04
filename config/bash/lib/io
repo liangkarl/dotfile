@@ -1,0 +1,54 @@
+#!/bin/bash
+
+if (( $(tput colors) == 256 )); then
+	__ansi_pr() {
+		local green='\033[1;32m'
+		local white='\033[1;37m'
+		local yellow='\033[1;33m'
+		local red='\033[1;31m'
+		local nc='\033[0m' # No Color
+		local c="$1"
+
+		shift
+		echo -e "${!c}$@${nc}"
+	}
+
+	pr_good() { __ansi_pr green $@; }
+	pr_hint() {	__ansi_pr white $@; }
+	pr_warn() { __ansi_pr yellow $@; }
+	pr_err() { __ansi_pr red $@; }
+else
+	pr_good() { echo -e $@; }
+	pr_hint() { echo -e $@; }
+	pr_warn() { echo -e $@; }
+	pr_err() { echo -e $@; }
+fi
+
+pr_bad() { pr_err $@; }
+pr_info() { echo -e $@; }
+
+# !0: error out
+# 0: normal out
+# $0 code "string"
+exit_msg() {
+	local r
+
+	r=$1
+	shift
+
+	if (( $r != 0 )); then
+		pr_err $@
+	else
+		pr_info $@
+	fi
+
+	exit $r
+}
+
+export -f pr_good
+export -f pr_hint
+export -f pr_warn
+export -f pr_err
+export -f pr_info
+export -f pr_bad
+export -f exit_msg

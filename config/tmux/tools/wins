@@ -3,7 +3,7 @@
 # $0 config-name-with-abs-path
 # This tool would create new windows in current tmux session
 
-import-script files
+import-script file
 
 # set -xv
 usage() {

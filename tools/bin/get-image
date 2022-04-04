@@ -1,6 +1,6 @@
 #!/bin/bash -eE
 
-import-script files
+import-script file
 
 export_conf() {
 	cat > ${1}/${FCONF} <<-EOF
