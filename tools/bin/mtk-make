@@ -179,10 +179,8 @@ save_rt_build_conf() {
 
 parse_options() {
 	# check input parameters
-	if (( $# == 0 )); then
-		echo "no more actions"
-		exit
-	fi
+	(( $# == 0 )) && \
+		exit_msg 0 "no more actions"
 
 	# TODO: add cleanup RT_BCONF with 'ps'
 	while (( $# != 0 )); do
@@ -287,8 +285,7 @@ add_build_note_content() {
 			exit
 			;;
 		*)
-			pr_err "invalid option: '${option}'"
-			exit
+			exit_msg 2 "invalid option: '${option}'"
 			;;
 	esac
 }
@@ -314,8 +311,7 @@ exit_act() {
 config_env() {
 	if [[ "${USE_DEF_BCONF}" == y ]]; then
 		if [[ ! -e $DEF_BCONF ]]; then
-			echo "$DEF_BCONF not found"
-			exit 1
+			exit_msg 1 "$DEF_BCONF not found"
 		fi
 		. $DEF_BCONF
 	fi

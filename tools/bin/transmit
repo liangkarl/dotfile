@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 import-script file
+import-script io
+
 set -eE
 
 export_conf() {
@@ -196,16 +198,12 @@ if [[ ! -z "$EXPORT_DIR" ]]; then
 		export_conf "$EXPORT_DIR"
 		exit 0
 	fi
-	echo "invalid directory for exportion"
-	exit 2
+	exit_msg 2 "invalid directory for exportion"
 fi
 
 # load .conf to override inner variables
 FCONF="$(get_file $(pwd)/$FCONF || true)"
-if [[ -z "$FCONF" ]]; then
-	echo "failed to find config" >&2
-	exit 1
-fi
+[[ -z "$FCONF" ]] && exit_msg 1 "failed to find config"
 
 echo "load: ${FCONF}"
 source $FCONF
