@@ -71,3 +71,9 @@ colorscheme material
 hi cursorline cterm=underline ctermbg=NONE
 hi cursorline gui=underline guibg=NONE guifg=BURLYWOOD
 set cursorline
+
+" default folding all functions
+" za: toggle folding
+" zR: open all folding
+set foldmethod=expr
+set foldexpr=nvim_treesitter#foldexpr()
