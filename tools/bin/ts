@@ -52,8 +52,8 @@ check_session() {
 
 	# list session
 	i=1
-	state=none
 	while :; do
+		state=none
 		pos="pos_${i}[@]"
 		pos=("${!pos}")
 
