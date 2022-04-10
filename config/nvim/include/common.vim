@@ -88,6 +88,7 @@ nnoremap <Leader>j <C-w>j
 nnoremap <Leader>k <C-w>k
 nnoremap <Leader>l <C-w>l
 
+" FIXME: change to assigned windows without hardcode configs
 noremap <space>1 1<C-w>w
 noremap <space>2 2<C-w>w
 noremap <space>3 3<C-w>w
@@ -98,3 +99,40 @@ noremap <space>5 5<C-w>w
 command! -nargs=0 C :close
 nnoremap <Leader>c :C<CR>
 
+" Opens an edit command with the path of the currently edited file filled in
+" Normal mode: <Leader>e
+noremap <Leader>e :e <C-R>=expand("%:p:h") . "/" <CR>
+
+" no one is really happy until you have this shortcuts
+cab W! w!
+cab Q! q!
+cab Wq wq
+cab Wa wa
+cab wQ wq
+cab WQ wq
+cab W w
+cab Q q
+
+" allow plugins by file type
+filetype plugin indent on
+
+syntax on
+
+" Some minor or more generic autocmd rules
+" The PC is fast enough, do syntax highlight syncing from start
+autocmd BufEnter * :syntax sync fromstart
+" Remember cursor position
+autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+" less comprez
+autocmd BufNewFile,BufRead *.less set filetype=less
+
+" txt
+au BufRead,BufNewFile *.txt call s:setupWrapping()
+" make use real tabs
+au FileType make set noexpandtab
+
+" Remember last location in file
+if has("autocmd")
+    autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
+        \| exe "normal g'\"" | endif
+endif
