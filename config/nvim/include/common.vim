@@ -22,10 +22,6 @@ vnoremap < <gv
 " map Leader
 let mapleader = ' '
 
-" FIXME: workaround for invisible cursor
-" nnoremap <silent> <Leader>cu :set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
-nnoremap <silent> <Leader>cu :set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20<CR>
-
 " Reload vim config
 nnoremap <Leader>so :so $MYVIMRC<CR>:echo "Reload nvim config"<CR>
 nnoremap <Leader>cwf :echo expand('%:p')<CR>
