@@ -43,16 +43,15 @@ set showtabline=2
 set guifont=SauceCodePro\ Nerd\ Font\ Mono
 
 set diffopt+=algorithm:histogram
-" backup/swap/undo files
-" set directory=~/.config/nvim/swap//,.,~/tmp,/var/tmp,/tmp
-set noswapfile
-" Coc.nvim may get error if backup enabled
-" set backupdir=~/.config/nvim/backup//,.,~/tmp,~/
+
+"Directories for swp files
 set nobackup
-set undodir=~/.config/nvim/undo//,.
+set nowritebackup
+set noswapfile
 
 set termencoding=utf-8
 set encoding=utf-8
+set fileencodings=utf-8
 set fileencoding=utf-8
 
 set colorcolumn=80
