@@ -20,6 +20,41 @@ endfor
 " import lua configs
 luafile ~/.config/nvim/lua/init.lua
 
+" no vi-compatible
+set nocompatible
+
+" Fix backspace indent
+set backspace=indent,eol,start
+
+" Better modes.  Remeber where we are, support yankring
+set viminfo=!,'100,\"100,:20,<50,s10,h,n~/.viminfo
+
+" Set the title text in the window
+set title
+set titleold="Terminal"
+set titlestring=%F
+
+" Tab completion in command bar
+set wildmode=full
+set wildignore+=*.o,*.obj,.git,*.rbc,.pyc,__pycache__
+
+" Disable the blinking cursor.
+set gcr=a:blinkon0
+" preserve how many lines before reaching screen top/botton
+set scrolloff=3
+
+" Use modeline overrides
+set modeline
+set modelines=10
+
+" Searching
+set hlsearch
+set incsearch
+
+set bomb
+set ttyfast
+set binary
+
 set number
 " show the cursor position all the time
 set ruler
