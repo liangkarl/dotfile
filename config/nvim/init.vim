@@ -38,10 +38,10 @@ set titlestring=%F
 set wildmode=full
 set wildignore+=*.o,*.obj,.git,*.rbc,.pyc,__pycache__
 
-" Disable the blinking cursor.
-set gcr=a:blinkon0
-" preserve how many lines before reaching screen top/botton
-set scrolloff=3
+" Set cursor pattern (no blink)
+set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
+" Preserve how many lines before reaching top/botton of screen
+set scrolloff=5
 
 " Use modeline overrides
 set modeline
