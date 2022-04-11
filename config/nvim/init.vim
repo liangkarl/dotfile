@@ -111,3 +111,6 @@ set cursorline
 " zR: open all folding
 set foldmethod=expr
 set foldexpr=nvim_treesitter#foldexpr()
+set foldlevel=1
+set foldclose=all
+highlight Folded guifg=white " change font color for folded sections
