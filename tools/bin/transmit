@@ -55,6 +55,7 @@ wait_and_join() {
 	local sec
 	local skip_sleep
 	local run_names
+	local cbol
 
 	pnum="$1" # how many process needs to be waited?
 	[[ -z $pnum ]] && return 1
@@ -63,6 +64,9 @@ wait_and_join() {
 	(( $num == 0 )) && return 0
 
 	[[ $pnum == "all" ]] &&	pnum="$num"
+
+	# Clear to beginning of line
+	cbol="$(tput el1)"
 
 	# keep scanning process list
 	sec=0
@@ -81,7 +85,8 @@ wait_and_join() {
 
 			if ! ps -h --pid $pid -o pid &> /dev/null; then
 				# transmit process has exited
-				printf "transmit '%s' finished. (%d)\n" $name, $pid
+				printf '%s\rtransmit '%s' finished. (%d)\n' \
+						"$cbol" $name, $pid
 				sed -i -e "${i}d" $plist
 				pnum=$((pnum - 1))
 				skip_sleep=y
@@ -95,7 +100,8 @@ wait_and_join() {
 
 		# avoid busy loop
 		sleep 1
-		printf "wait [%s] finished. ( %d sec(s) )\r" "${run_names}" $((sec++))
+		printf '%s\rwait [%s] finished. ( %d sec(s) )' \
+				"$cbol" "${run_names}" $((sec++))
 	done
 
 	return 0
