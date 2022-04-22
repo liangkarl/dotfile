@@ -88,8 +88,11 @@ wait_and_join() {
 				printf '%s\rtransmit '%s' finished. (%d)\n' \
 						"$cbol" $name, $pid
 				sed -i -e "${i}d" $plist
+
 				pnum=$((pnum - 1))
+				sec=0
 				skip_sleep=y
+
 				break
 			fi
 
