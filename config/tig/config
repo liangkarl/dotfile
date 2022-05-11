@@ -73,8 +73,8 @@ bind generic dc<ENTER> !git diff --check
 bind stage A stage-update-part
 bind stage a stage-update-line
 bind stage c<ENTER> !git commit
-bind stage ca<ENTER> +?git commit --amend --no-edit
-bind stage caa<ENTER> ?git commit --amend
+bind stage caa<ENTER> +?git commit --amend --no-edit
+bind stage ca<ENTER> ?git commit --amend
 # don't bind 'none' since 'none' would override 'view-xxxx'
 bind stage 1 view-main
 bind stage 2 view-refs
@@ -93,8 +93,8 @@ bind status y<ENTER> +?git stash save "%(prompt new stash: )"
 
 # Reference {
 bind refs fa<ENTER> +git fetch --all
-bind refs m<ENTER> ?git merge %(ref)
-bind refs rb<ENTER> ?git rebase %(ref)
+bind refs m<ENTER> +?sh -c 'git merge %(ref) || { git merge --abort; echo \'fail to merge; try it manually.\'; }'
+bind refs rb<ENTER> +?sh -c 'git rebase %(ref) || { git rebase --abort; echo \'fail to rebase; try it manually.\'; }'
 bind refs co<ENTER> +git checkout %(ref)
 bind refs cd<ENTER> +git checkout -d %(ref)
 # only available in FF
@@ -102,8 +102,6 @@ bind refs ps<ENTER> +?git fetch . HEAD:%(ref)
 
 bind refs C none
 bind refs ! none
-bind refs !m<ENTER> +git merge --abort
-bind refs !rb<ENTER> +git rebase --abort
 bind refs !at<ENTER> +?git tag -d %(tag)
 bind refs !ab<ENTER> +?git branch -D %(branch)
 # }
@@ -112,23 +110,20 @@ bind refs !ab<ENTER> +?git branch -D %(branch)
 set main-options = -n 20000
 
 bind main c<ENTER> !git commit
-bind main caa<ENTER> +?sh -c 'git commit --amend --no-edit &> /dev/null && echo \'success\''
+bind main caa<ENTER> +?git commit --amend --no-edit
 bind main ca<ENTER> ?git commit --amend
 bind main at<ENTER> +git tag "%(prompt new tag: )" %(commit)
 bind main ab<ENTER> +git branch "%(prompt new branch: )" %(commit)
 bind main co<ENTER> ?git checkout %(commit)
 bind main rs<ENTER> +?git reset --hard %(commit)
-bind main rv<ENTER> +git revert --no-edit %(commit)
+bind main rv<ENTER> +?sh -c 'git revert --no-edit %(commit) || { git revert --abort; echo \'fail to revert; try it manually.\'; }'
 bind main rbi<ENTER> ?git rebase -i %(commit)
-bind main cp<ENTER> +git cherry-pick -s %(commit)
+bind main cp<ENTER> +?sh -c 'git cherry-pick -s %(commit) || { git cherry-pick --abort; echo \'fail to cherry-pick; try it manually.\'; }'
 bind main fp<ENTER> ?git format-patch -k --binary --histogram -1 -o . %(commit)
 
 bind main G move-last-line
 bind main C none
 bind main ! none
-bind main !rb<ENTER> +git rebase --abort
-bind main !rv<ENTER> +git revert --abort
-bind main !cp<ENTER> +git cherry-pick --abort
 bind main !c<ENTER> +?git reset %(commit)
 bind main !at<ENTER> +?git tag -d %(tag)
 bind main !ab<ENTER> +?git branch -D %(branch)
@@ -137,8 +132,7 @@ bind main !ab<ENTER> +?git branch -D %(branch)
 # Reflog {
 bind reflog C none
 bind reflog ! none
-bind reflog !cp<ENTER> +git cherry-pick --abort
 bind reflog rs<ENTER> +?git reset --hard %(commit)
-bind reflog cp<ENTER> +?git cherry-pick -s %(commit)
+bind reflog cp<ENTER> +?sh -c 'git cherry-pick -s %(commit) || { git cherry-pick --abort; echo \'fail to cherry-pick; try it manually.\'; }'
 bind reflog co<ENTER> ?git checkout %(commit)
 # }
