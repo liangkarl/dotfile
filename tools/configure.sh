@@ -6,11 +6,6 @@ shopt -s extglob
 
 # copy tool dirs to user config dir
 
-self="$(basename $0)"
-tools_dir="$(dirname $0)"
-config_dir="${XDG_CONFIG_HOME:-${HOME}/.config}/shell"
-black_list="$self|test|sample.sh"
-bin_dir="${HOME}/bin"
 me="$(basename $0)"
 mydir="$(dirname $0)"
 home_bin="${HOME}/bin"
@@ -18,22 +13,25 @@ toolkit="${XDG_CONFIG_HOME:-${HOME}/.config}/toolkit"
 toolkit_bin="$toolkit/bin"
 toolkit_script="$toolkit/script"
 
-echo "-- Copy tools to $config_dir --"
-[[ ! -d "$config_dir" ]] && mkdir $config_dir
-cp -r $tools_dir/!(${black_list}) $config_dir
+echo "-- Copy tools to $toolkit --"
+[[ ! -d "$toolkit" ]] && mkdir $toolkit
 
-# link executable files to $HOME/bin
+# create links between $HOME/bin and $toolkit
+echo "-- Link $toolkit to $home_bin --"
 
-echo "-- Link $config_dir to $bin_dir --"
-[[ ! -d "$bin_dir" ]] && mkdir $bin_dir
+# copy bin/ script/ to toolkit
+[[ ! -d "$home_bin" ]] && mkdir $home_bin
+cp -r $mydir/bin $toolkit_bin
+cp -r $mydir/script $toolkit_script
 
-list="$(find ${config_dir} -type f -exec 'readlink' '-e' '{}' ';')"
+# get the full file path of the files in toolkit
+list="$(find ${toolkit_bin} -type f -exec 'readlink' '-e' '{}' ';')"
 
-# clean invailid links
-find $bin_dir -type l ! -exec test -e {} \; -delete
+# clean invailid links in home_bin
+find $home_bin -type l ! -exec test -e {} \; -delete
 
 for file in ${list[@]}; do
-    link_pname=${bin_dir}/$(basename $file)
+    link_pname=${home_bin}/$(basename $file)
 
     # clean non-link or invalid link
     if [[ ! -h ${link_pname} ]]; then
@@ -44,7 +42,7 @@ for file in ${list[@]}; do
         rm -f ${link_pname}
     fi
 
-    ln -sf $file $bin_dir
+    ln -sf $file $home_bin
 done
 
 # create special files in $HOME/bin
