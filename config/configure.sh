@@ -28,7 +28,11 @@ if [[ ! -e ${mydir}/config.list ]]; then
     echo "cannot find dir list"
     exit 2
 fi
-source ${mydir}/config.list
+
+list=()
+while IFS= read -r line; do
+    list+=("$line")
+done < ${mydir}/config.list
 
 if [[ ! -e "$conf_home" ]]; then
     echo "create new config dir: $conf_home"
