@@ -1,9 +1,0 @@
-list=(
-    'bash'
-    'fasd'
-    'git'
-    'nvim'
-    'procps'
-    'tig'
-    'tmux'
-)
