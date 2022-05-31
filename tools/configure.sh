@@ -11,6 +11,12 @@ tools_dir="$(dirname $0)"
 config_dir="${XDG_CONFIG_HOME:-${HOME}/.config}/shell"
 black_list="$self|test|sample.sh"
 bin_dir="${HOME}/bin"
+me="$(basename $0)"
+mydir="$(dirname $0)"
+home_bin="${HOME}/bin"
+toolkit="${XDG_CONFIG_HOME:-${HOME}/.config}/toolkit"
+toolkit_bin="$toolkit/bin"
+toolkit_script="$toolkit/script"
 
 echo "-- Copy tools to $config_dir --"
 [[ ! -d "$config_dir" ]] && mkdir $config_dir
@@ -40,3 +46,11 @@ for file in ${list[@]}; do
 
     ln -sf $file $bin_dir
 done
+
+# create special files in $HOME/bin
+fake="$(readlink -e ${toolkit_script}/fake)"
+while IFS= read -r file
+do
+    # don't force override as this is a 'fake' file
+    ln -s $fake $home_bin/$(basename $file) || true
+done < $mydir/fake.list
