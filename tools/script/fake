@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+name=$(basename $0)
+bin_dir="$HOME/bin"
+
+cat << EOF
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+If you want to use '$name', please try below steps after remove this file,
+located at '$(readlink -e $0)'.
+1. link a valid $name to $bin_dir
+2. copy the valid executable file $name to $bin_dir
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+EOF
