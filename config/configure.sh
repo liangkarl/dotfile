@@ -16,32 +16,32 @@ export XDG_CACHE_HOME=${XDG_CACHE_HOME:-${HOME}/.cache}
 export OS="$(uname)"
 export GIT_DB="$(mktemp)"
 
-git config --global --list > $GIT_DB
+mydir="$(dirname $0)"
+conf_home=${XDG_CONFIG_HOME}
 
-this_dir="$(dirname $0)"
+echo "-- backup git config (global config) --"
+git config --global --list > $GIT_DB
 
 echo "-- trigger all config scripts --"
 
-if [[ ! -e ${this_dir}/config.txt ]]; then
+if [[ ! -e ${mydir}/config.list ]]; then
     echo "cannot find dir list"
     exit 2
 fi
-source ${this_dir}/config.txt
+source ${mydir}/config.list
 
-# check XDG_CONFIG_HOME dir
-config_dir=${XDG_CONFIG_HOME}
-if [[ ! -e "$config_dir" ]]; then
-    echo "create new config dir: $config_dir"
-    mkdir $config_dir
+if [[ ! -e "$conf_home" ]]; then
+    echo "create new config dir: $conf_home"
+    mkdir $conf_home
 else
-    echo "'$config_dir' existed"
+    echo "'$conf_home' existed"
     PS3="select an option for th next action. "
     select option in 'remove' 'overwrite' 'cancel'; do
         case $option in
             remove)
                 # FIXME: don't remove whole dir
-                for sdir in ${list[@]}; do
-                    rm -rf $config_dir/$sdir
+                for dir in ${list[@]}; do
+                    rm -rf $conf_home/$dir
                 done
                 ;;
             overwrite)
@@ -55,12 +55,12 @@ else
 fi
 
 # copy & config files
-for sdir in ${list[@]}; do
-    echo "-- copy config to $config_dir/$sdir --"
-    cp -rvf ${this_dir}/$sdir $config_dir/
+for dir in ${list[@]}; do
+    echo "-- copy config to $conf_home/$dir --"
+    cp -rvf ${mydir}/$dir $conf_home/
 
-    [[ -e $config_dir/$sdir/configure.sh ]] &&
-        eval $config_dir/$sdir/configure.sh
+    [[ -e $conf_home/$dir/configure.sh ]] &&
+        eval $conf_home/$dir/configure.sh
 done
 
 exit 0
