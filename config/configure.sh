@@ -39,7 +39,7 @@ if [[ ! -e "$conf_home" ]]; then
     mkdir $conf_home
 else
     echo "'$conf_home' existed"
-    PS3="select an option for th next action. "
+    PS3="select an option for the next action. "
     select option in 'remove' 'overwrite' 'cancel'; do
         case $option in
             remove)
