@@ -11,5 +11,8 @@ config/nvim/init.min.vim
 config/nvim/site/
 config/nvim/shada/
 
+# For local NB
+transmit.conf
+
 *.log
 .netrwhist
