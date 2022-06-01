@@ -88,6 +88,7 @@ bind status ca >?git commit --amend
 bind status cn @?git commit --amend --no-edit
 bind status co @?git checkout %(file)
 bind status df @?git clean -f %(file)
+bind status da @?git clean -fd
 bind status ay @git stash save "%(prompt new stash: )"
 # }
 
@@ -118,7 +119,8 @@ bind main ab @git branch "%(prompt new branch: )" %(commit)
 bind main co @git checkout %(commit)
 bind main rh @?git reset --hard %(commit)
 bind main rv @sh -c 'git revert --no-edit %(commit) || git revert --abort'
-bind main rbi >?git rebase -i %(commit)
+bind main rb >?git rebase -i %(commit)
+bind main ra >?git rebase --abort
 bind main cp @sh -c 'git cherry-pick -s %(commit) || git cherry-pick --abort'
 bind main fp ?+git format-patch -k --binary --histogram -1 -o . %(commit)
 
@@ -128,6 +130,7 @@ bind main ! none
 bind main rs @?git reset %(commit)
 bind main dt @?git tag -d %(tag)
 bind main db @?git branch -D %(branch)
+bind main da @?git clean -fd
 # }
 
 # Reflog {
