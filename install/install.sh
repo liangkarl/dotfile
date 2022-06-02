@@ -1,58 +1,116 @@
 #!/usr/bin/env bash
 
-__help__() {
-    cat <<\
-RAW
-$(basename $0) [-h]
--h: print help
-RAW
+usage() {
+    local name
+    name=$(basename $0)
+
+    cat <<-EOF
+	$name [-h] [-al] [PACKAGE NAME...]
+	-a: install all
+	-l: install packages with menu selection
+	-h: print help
+	EOF
+
+    return $1
 }
 
-__prepare__() {
-    local SHELL_DIR
-    SHELL_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+install_all() {
+    local i name packages
 
-    source $SHELL_DIR/core/base.sh
-    init_env $SHELL_DIR
-    source $SHELL_DIR/core/installer.sh
-}
+    # for test
+    # search and source below dirs
+    # read all packages from $LOCATION
+    # LOCATION=([name]="path/to/script")
 
-install_full_list() {
-    local INS_LIST FAILED
+    # get index from $LOCATION
+    packages=''
 
-    INS_LIST=('pack-repos' 'tool-kit' 'bash' 'git' 'tmux' 'nvim')
-    for NAME in ${INS_LIST[@]}; do
-        echo "======================"
-        echo "Install: $NAME"
-        echo "======================"
-        worker n $NAME i c
+    i=0
+    while [[ -n "${packages[$i]}" ]]; do
+        name=${packages[$i]}
+        install "$name" || {
+            echo "install failed. ($?)"
+            exit 4
+        }
+        ((i++))
     done
 
-    if [ -z $FAILED ]; then
-        show_good "install all packages"
-    else
-        show_hint "$(info_install_failed $FAILED)"
-    fi
-    return ${#FAILED}
+    echo "install all done."
 }
 
-__main__() {
-    while :; do
-        case $1 in
-            -h)
-                __help__
-                exit $GOOD
-                ;;
-            -?* | ?*) # invaild string
-                __help__
-                exit $BAD
-                ;;
-            *)  # no var
-                install_full_list
-                exit $GOOD
-        esac
-    done
+install_list() {
+    # search and source below dirs
+    # read all packages from $PACKAGES
+
+    # detect screen height
+
+    # show menu
+    ## show 'next' if the items are more than the height value
+
+    # select options
+
+    echo "select done."
 }
 
-__prepare__
-__main__ "$@"
+install() {
+    local file name
+    name="$1"
+    file=${LOCATION[$name]}
+
+    [[ -e "$file" ]] && return 10
+
+    cat <<-EOF
+	================================
+	install '$name'
+	script '$file'
+	================================
+	EOF
+
+    eval $file || return 20
+
+    return 0
+}
+
+(( $# == 0 )) && usage 0
+
+input=()
+
+while (( $# > 0 )); do
+    case $1 in
+        -l | --list)
+            install_list
+
+            # clean vars
+            input=()
+            break
+            ;;
+        -a | --all)
+            install_all
+
+            # clean vars
+            input=()
+            exit 0
+            ;;
+        -h | --help)
+            usage 0
+            ;;
+        -?* | --?*) # invaild string
+            usage 2
+            ;;
+        *)  # no var
+            input+=("$1")
+    esac
+    shift
+done
+
+# search and source below dirs
+# read all packages from $PACKAGES
+
+i=0
+while [[ -n "${input[$i]}" ]]; do
+    install ${input[i]} || {
+        echo "install failed. ($?)"
+        exit 3
+    }
+    ((i++))
+done
