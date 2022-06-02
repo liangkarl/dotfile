@@ -12,42 +12,44 @@ full_path() {
 export -f full_path
 
 # usage:
-#   get_file_from_parents file.name /path/to/dir
-get_file_from_parents() {
+#   $0 file.name /path/to/dir
+find_path() {
 	local dir file
 
 	file="$1"
-	dir="$2"
-	if [[ -z "$file" ]] || [[ -z "$dir" ]]; then
-		return 64
-	fi
+	[[ -z "$file" ]] && return 1
 
-	dir="$(readlink -e $dir 2>&-)"
-	if [[ -z "$dir" ]]; then
-		return 128
-	fi
+	dir="$(full_path $2)"
+	[[ -z "$dir" ]] && return 2
 
 	while [[ "$dir" != '/' ]]; do
-		if [[ -e "${dir}/${file}" ]]; then
+		[[ -e "${dir}/${file}" ]] && {
 			echo ${dir}/${file}
 			return 0
-		fi
-
-		dir="$(readlink -e ${dir}/.. 2>&-)"
+		}
+		dir="$(dirname $dir)"
 	done
 
-	return 128
+	[[ -e ${dir}/${file} ]] && {
+		echo ${dir}/${file}
+		return 0
+	}
+
+	return 3
 }
-export -f get_file_from_parents
+export -f find_path
 
 # usage:
-#   get_file /path/to/file.name => search file.name from assigned cwd
-#	get_file file.name => search file.name from cwd
-get_file() {
-	if [[ -z "$1" ]]; then
-		return 64
-	fi
-
-	get_file_from_parents "$(basename $1)" "$(dirname $1)"
+#   $0 /path/to/file.name => search file.name from assigned wd
+#	$0 file.name => search file.name from cwd
+find_file_path() {
+	find_path "$(basename $1)" "$(dirname $1)"
+	return $?
 }
-export -f get_file
+export -f find_file_path
+
+# call the func to get the file path inside the sourced script
+source_file_path() {
+	echo "$(readlink -e "$(dirname ${BASH_SOURCE[0]})")"
+}
+export -f source_file_path
