@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
 
-# Recursive searching file under parent dirs
+slash_end() {
+    [[ "$@" == */ ]]
+    return $?
+}
+export -f slash_end
+
+full_path() {
+    echo $(readlink -e "$@")
+}
+export -f full_path
+
 # usage:
 #   get_file_from_parents file.name /path/to/dir
 get_file_from_parents() {

@@ -1,0 +1,15 @@
+has_cmd() {
+    command -v "$1"
+    return $?
+} &> /dev/null
+
+has_cmds() {
+    local cmd num
+
+    num=0
+    for cmd in $@; do
+        has_cmd $cmd || (( num++ ))
+    done
+
+    return $num
+} &> /dev/null
