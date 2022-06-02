@@ -5,6 +5,8 @@
 
 import-script io
 
+shopt -s extglob
+
 usage() {
 	local name="$(basename $0)"
 
@@ -27,34 +29,75 @@ EOF
 }
 
 list_comport() {
-	ls_cmd="Get-CimInstance -Class Win32_SerialPort | Select-Object Description, DeviceID"
-	$pshell -Command $ls_cmd
+	local ls
+	if [[ "$bin" == 'ss.exe' ]]; then
+		eval $bin -list
+	else
+		ls="Get-CimInstance -Class Win32_SerialPort | Select-Object Description, DeviceID"
+		powershell.exe -Command $ls
+	fi
 }
 
-shopt -s extglob
+ss_conf() {
+	local pa
+	declare -A pa_map
 
-# Required variables
-pshell="powershell.exe"
+	pa_map=(
+		[odd]="ODD"
+		[even]="EVEN"
+		[none]="NONE"
+		[mark]='MARK'
+		[space]='SPACE'
+	)
+	eval pa=${pa_map[$parity]}
+
+	echo "-baud:${baudrate} -parity:${pa} -databits:${data_bits} -stopbits:${stop_bits}"
+}
+
+plink_conf() {
+	local pa fc
+	declare -A pa_map fc_map
+
+	pa_map=(
+		[none]='n'
+		[odd]='o'
+		[even]='e'
+		[mark]='m'
+		[space]='s'
+	)
+	fc_map=(
+		[none]='N'
+		[XON_OFF]='X'
+		[RST_CTS]='R'
+		[DSR_STR]='D'
+	)
+	pa=${pa_map[$parity]}
+	fc=${fc_map[$flow_control]}
+
+	echo "${baudrate},${data_bits},${pa},${stop_bits},${fc}"
+}
+
+# download from https://www.putty.org/
 plink="plink.exe"
 putty="putty.exe"
+
+# download from https://github.com/fasteddy516/SimplySerial
+ss="ss.exe"
+
 bin="$plink"
 
 # default config:
-# baudrate: 961600
-# flow control: no
-# parity: no
-# data bits: 8
-# stop bits: 1
-br=921600
-fc=N
-pa=n
-db=8
-sb=1
-config="${br},${db},${pa},${sb},${fc}"
+baudrate=921600
+flow_control=none
+parity=none
+data_bits=8
+stop_bits=1
 
 (( $# == 0 )) && usage 2
 
 [[ -z "$WSL_DISTRO_NAME" ]] && exit_msg 3 "only support WSL environment for now."
+
+[[ -e ~/.uart.conf ]] && source ~/.uart.conf
 
 while (( $# != 0 )); do
 	case $1 in
@@ -84,4 +127,17 @@ while (( $# != 0 )); do
 	shift
 done
 
-exec $bin -v -serial COM${port} -sercfg $config
+case $bin in
+	ss.exe)
+		opts="-com:${port} $(ss_conf)"
+		;;
+	plink.exe | putty.exe)
+		opts="-v -serial COM${port} -sercfg $(plink_conf)"
+		;;
+	*)
+		echo "not supported '$bin'"
+		usage 4
+		;;
+esac
+
+eval $bin $opts
