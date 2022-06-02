@@ -84,7 +84,7 @@ putty="putty.exe"
 # download from https://github.com/fasteddy516/SimplySerial
 ss="ss.exe"
 
-bin="$plink"
+bin="$ss"
 
 # default config:
 baudrate=921600
