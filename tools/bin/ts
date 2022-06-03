@@ -8,8 +8,8 @@ TARGET_NAME="$1"
 #
 # ts.conf:
 #
-# # pos_x=('name' 'position')
-# pos_1=('j90' '~/path/to/j90/project.conf/location')
+# # space+=([name]='position')
+# space+=([j90]='~/path/to/j90/project.conf/location')
 #
 
 #
@@ -28,6 +28,7 @@ TARGET_NAME="$1"
 
 import-script file
 import-script io
+import-script sys
 
 usage() {
 	local n
@@ -44,31 +45,26 @@ EOF
 }
 
 check_session() {
-	local file i
+	local i num
 	local name state pos path
 
 	# import $project
 	. $CONF
 
 	# list session
-	i=1
-	while :; do
-		state=none
-		pos="pos_${i}[@]"
-		pos=("${!pos}")
-
-		name="${pos[0]}"
-		[[ -z $name ]] && break
-
-		path="${pos[1]}"
+	num=1
+	OPTS=()
+	for i in "${!space[@]}"; do
+		name=$i
+		pos="${space[$i]}"
+		state='none'
 
 		if tmux has -t "$name" 2> /dev/null; then
 			state='exist'
 		fi
-		eval "pos_${i}[2]='$state'"
-
-		echo "$i) ${name} ${state} ${path}"
-		((i++))
+		echo "$num) ${name} ${state} ${path}"
+		OPTS+=("$name,$state")
+		((num++))
 	done
 }
 
@@ -87,48 +83,49 @@ switch_session() {
 }
 
 enter_session() {
-	local proj
+	local pname ppath pstate
+	local num
 
-	# select project name
-	read -p "select a project num to open: " proj
-	# eval "proj=('pos_$proj[@]')"
-	proj="pos_$proj[@]"
-	proj=(${!proj})
-	[[ -z "${proj[0]}" ]] && exit_msg 2 "invalid number of projects"
+	# select project number
+	read -p "select a project num to open: " num
 
-	PROJ_NAME="${proj[0]}"
-	PROJ_PATH="${proj[1]}"
-	PROJ_STATE="${proj[2]}"
+	pname=${OPTS[$((--num))]%,*}
+	[[ -z "${pname}" ]] && exit_msg 2 "invalid number of projects"
+
+	ppath="${space[$pname]}"
+	pstate="${OPTS[$num]##*,}"
 
 	# if project not exist
-	if [[ $PROJ_STATE == 'none' ]]; then
+	if [[ $pstate == 'none' ]]; then
 		# FIXME: these operation should be moved to 'ws'
 		if [[ "$HAS_WS" == y ]]; then
-			ws $PROJ_PATH
+			ws $ppath
 		else
 			# expand bash macros
-			eval tmux new -d -s $PROJ_NAME -c $PROJ_PATH
+			eval tmux new -d -s $pname -c $ppath
 		fi
 	fi
 
-	switch_session -t $PROJ_NAME
+	switch_session -t $pname
 }
 
 delete_session() {
-	# select project name
-	read -p "select a project num to remove: " proj
-	proj="pos_$proj[@]"
-	proj=(${!proj})
-	[[ -z "${proj[0]}" ]] && exit_msg 2 "invalid number of projects"
+	local pname ppath pstate
+	local num
 
-	PROJ_NAME="${proj[0]}"
-	PROJ_PATH="${proj[1]}"
-	PROJ_STATE="${proj[2]}"
+	# select project number
+	read -p "select a project num to remove: " num
+
+	pname=${OPTS[$((--num))]%,*}
+	[[ -z "${pname}" ]] && exit_msg 2 "invalid number of projects"
+
+	ppath="${space[$pname]}"
+	pstate="${OPTS[$num]##*,}"
 
 	# if project exist
-	if [[ $PROJ_STATE == 'exist' ]]; then
+	if [[ $pstate == 'exist' ]]; then
 		# delelte session
-		tmux kill-session -t $PROJ_NAME
+		tmux kill-session -t $pname
 	fi
 }
 
@@ -140,21 +137,18 @@ edit_conf() {
 
 	if [[ ! -e $CONF ]]; then
 		cat > $CONF <<-EOF
-		# ts.conf:
+		# ts.conf example:
 		#
-		# # pos_x=('name' 'position')
-		# pos_1=('j90' '~/path/to/j90/project.conf/location')
-EOF
+		# space+=([j90]='~/path/to/j90/project.conf/place')
+		EOF
 	fi
 
 	vim $CONF
 }
 
+declare -A space
 CONF="$XDG_CONFIG_HOME/tmux/plugin/ts/ts.conf"
 PROJECT_LIST=()
-PROJ_NAME=''
-PROJ_PATH=''
-PROJ_STATE=''
 
 (( $# == 0 )) && usage 1
 
@@ -183,7 +177,7 @@ esac
 # list project name status
 [[ "$LIST_PROJ" == y ]] && check_session
 
-has-cmd && HAS_WS=y
+has_cmd ws && HAS_WS=y
 
 [[ "$PROJ" == y ]] && enter_session
 
