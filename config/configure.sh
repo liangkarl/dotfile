@@ -37,34 +37,44 @@ done < ${mydir}/config.list
 if [[ ! -e "$conf_home" ]]; then
     echo "create new config dir: $conf_home"
     mkdir $conf_home
-else
-    echo "'$conf_home' existed"
-    PS3="select an option for the next action. "
-    select option in 'remove' 'overwrite' 'cancel'; do
+fi
+
+# copy & config files
+options=("remove" "overwrite" "skip" "cancel")
+
+for dir in ${list[@]}; do
+    target="$conf_home/$dir"
+
+    echo "-- copy config to $target --"
+
+    [[ ! -e $target ]] && {
+        cp -rvf $mydir/$dir $conf_home
+        continue
+    }
+
+    PS3="Found an old config. Select the next action: "
+    select option in ${options[@]}; do
         case $option in
             remove)
-                # FIXME: don't remove whole dir
-                for dir in ${list[@]}; do
-                    rm -rf $conf_home/$dir
-                done
+                rm -rf $target
                 ;;
             overwrite)
                 break
+                ;;
+            skip)
+                continue 2
                 ;;
             cancel)
                 exit 0
                 ;;
         esac
+        break
     done
-fi
 
-# copy & config files
-for dir in ${list[@]}; do
-    echo "-- copy config to $conf_home/$dir --"
     cp -rvf ${mydir}/$dir $conf_home/
 
-    [[ -e $conf_home/$dir/configure.sh ]] &&
-        eval $conf_home/$dir/configure.sh
+    [[ -e $target/configure.sh ]] &&
+        eval $target/configure.sh
 done
 
 exit 0
