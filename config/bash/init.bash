@@ -47,7 +47,7 @@ __source_configs() {
     local dir file path
 
     # add bash related config dir
-    list=('completion' 'alias' 'plugin')
+    list=('completion' 'alias')
 
     # source target config files
     path="${XDG_CONFIG_HOME}/bash"
@@ -59,7 +59,6 @@ __source_configs() {
 }
 
 __source_lib_core() {
-    # import plugin core
     . ${XDG_CONFIG_HOME}/bash/lib/core
 }
 
