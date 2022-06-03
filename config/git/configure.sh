@@ -26,14 +26,15 @@ trap "rm -rf ${GIT_DB}" 0
 echo "-- setup git config --"
 
 read -p 'do you want to restore git config (Y/n) ' ans
-if [[ "$ans" != 'n' ]]; then
+if [[ "${ans,,}" != 'n' ]]; then
     while read -u 10 prop; do
         key=${prop%%=*}
         val=${prop#*=}
         echo "$key = $val"
-        git config --global $key $val
+        git config --global $key "$val"
     done 10< "$GIT_DB"
-else
-    query_saved user.name
-    query_saved user.email
 fi
+
+echo "-- config name & email --"
+query_saved user.name "$(git config --global user.name)"
+query_saved user.email "$(git config --global user.email)"
