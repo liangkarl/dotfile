@@ -7,17 +7,17 @@ query_saved() {
     config="$1"
     backup="$2"
 
-    if [[ -n "$backup" ]] &&
-            read -p "keep old git user name: '${backup_name}'? [Y/n] " ans &&
-            [[ "${ans,,}" == 'n' ]]; then
-        value=$backup
-    else
-        read -p 'save new git '$config': [empty to skip] ' value
-    fi
-
     [[ -z "$config" ]] && exit 2
 
-    git config $config "$value"
+    if [[ -n "$backup" ]] &&
+            read -p "keep old '${config}': '${backup}'? [Y/n] " ans &&
+            [[ "${ans,,}" != 'n' ]]; then
+        value="$backup"
+    else
+        read -p 'save new '$config': [empty to skip] ' value
+    fi
+
+    git config --global $config "$value"
 }
 
 trap "rm -rf ${GIT_DB}" 0
