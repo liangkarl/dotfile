@@ -25,11 +25,6 @@ trap "rm -rf ${GIT_DB}" 0
 # add username & email to git config
 echo "-- setup git config --"
 
-if [[ -z "$(which git)" ]]; then
-    echo "please install git to config username & email."
-    exit 1
-fi
-
 read -p 'do you want to restore git config (Y/n) ' ans
 if [[ "$ans" != 'n' ]]; then
     while read -u 10 prop; do
