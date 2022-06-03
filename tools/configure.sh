@@ -21,8 +21,8 @@ echo "-- Link $toolkit to $home_bin --"
 
 # copy bin/ script/ to toolkit
 [[ ! -d "$home_bin" ]] && mkdir $home_bin
-cp -r $mydir/bin $toolkit_bin
-cp -r $mydir/script $toolkit_script
+cp -rf $mydir/bin $toolkit
+cp -rf $mydir/script $toolkit
 
 # get the full file path of the files in toolkit
 list="$(find ${toolkit_bin} -type f -exec 'readlink' '-e' '{}' ';')"
