@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+#
+# Create an float terminal window in tmux
+#
+# NOTE: This script should be used in tmux keybind
+#
+
+# detect current session & window name
+session="$(tmux display-message -p '#S')"
+window="$(tmux display-message -p '#W')"
+
+# 1. create new window for debug console
+tmux new-window -n 'debug'\; \
+  select-pane -T 'logcat'\; \
+  send-keys 'logcat' C-m \; \
+  split-window -v \; \
+  select-pane -T 'adb shell'\; \
+  send-keys 'adb devices -l' C-m \; \
+  split-window -h \; \
+  select-pane -T 'uart'\; \
+  send-keys 'uart -l' C-m \; \
+  set pane-border-format "#{pane_index} #{pane_title}" \; \
+  set pane-border-status top \;
