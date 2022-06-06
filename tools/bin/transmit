@@ -211,7 +211,7 @@ if [[ ! -z "$EXPORT_DIR" ]]; then
 fi
 
 # load .conf to override inner variables
-FCONF="$(get_file $(pwd)/$FCONF || true)"
+FCONF="$(find_file_path $(pwd)/$FCONF || true)"
 [[ -z "$FCONF" ]] && exit_msg 1 "failed to find config"
 
 echo "load: ${FCONF}"

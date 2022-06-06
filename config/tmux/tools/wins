@@ -35,7 +35,7 @@ new_win() {
 
 [[ "$1" == '-h' ]] && usage 0
 
-CONF="$(get_file $1)"
+CONF="$(find_file_path $1)"
 [[ -z "$CONF" ]] && exit 1
 
 . $CONF
