@@ -35,11 +35,18 @@ usage() {
 
 	n=$(basename $0)
 	cat <<-EOF
-	$n -p project-name
-	$n -d delete-session
-	$n -l
-	$n -e
-EOF
+	DESCRIPTION:
+	$n is used for attaching specific tmux session, configed by ts.conf
+
+	SYNOPSIS:
+	$n [OPTIONS]
+
+	OPTIONS:
+	  '': enter session
+	  -d: delete sessions
+	  -l: list session names
+	  -e: edit session configuration
+	EOF
 
 	exit $1
 }
@@ -150,10 +157,8 @@ declare -A space
 CONF="$XDG_CONFIG_HOME/tmux/plugin/ts/ts.conf"
 PROJECT_LIST=()
 
-(( $# == 0 )) && usage 1
-
 case $1 in
-	-p)
+	'')
 		LIST_PROJ=y
 		PROJ=y
 		;;
@@ -166,6 +171,9 @@ case $1 in
 		;;
 	-e)
 		EDIT_PROJ_CONF=y
+		;;
+	-h)
+		usage 0
 		;;
 	*)
 		usage 2
