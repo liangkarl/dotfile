@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
 # check XDG_CONFIG_HOME dir
-config_dir=${XDG_CONFIG_HOME}
+config_dir=${XDG_CONFIG_HOME}/bash
 
 echo "-- setup bash config --"
 
 # add customized variable
 echo "-- add path of shell dir --"
 echo "export SHELL_DIR=$(dirname $0)" |
-        tee ${config_dir}/bash/config
+        tee ${config_dir}/config
 
 # check bash config
 case "$OS" in
@@ -27,15 +27,17 @@ esac
 
 # import setup in .bashrc
 echo "-- import setup in '$bashrc' --"
-ibash="$XDG_CONFIG_HOME/bash/init.bash"
+ibash="$config_dir/init.bash"
 if [[ ! -e "$ibash" ]]; then
     echo "'$ibash' isn't existed"
     exit 1
 fi
 
-import="source ${config_dir}/bash/init.bash"
+import="source ${ibash}"
 if ! grep -q "$import" ${bashrc}; then
-    echo "" >> $bashrc
-    echo "# load dotfile bash config" >> $bashrc
-    echo "$import" >> $bashrc
+    echo "source customized bash config in ${bashrc}"
+	cat >> $bashrc <<-EOF
+	# load dotfile bash config
+	$import
+	EOF
 fi
