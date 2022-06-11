@@ -1,9 +1,8 @@
-export SHELL_LIB="${XDG_CONFIG_HOME}/bash/lib"
-
-# import header script of bash to support some feature
+# import bash script to support some features
 # usage:
 #   import-script aaa
 import-script() {
-	. ${SHELL_LIB}/$1 2>&-
-}
+	source ${SHELL_DIR}/lib/$1
+} 2>&-
+
 export -f import-script
