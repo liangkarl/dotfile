@@ -13,3 +13,11 @@ has_cmds() {
 
     return $num
 } &> /dev/null
+
+in_wsl() {
+	if [[ -z "$WSL_DISTRO" ]]; then
+		return 1
+	else
+		return 0
+	fi
+}
