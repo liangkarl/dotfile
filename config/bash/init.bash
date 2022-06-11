@@ -1,16 +1,9 @@
-# XDG Base Directory Specification
-# https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
-[[ -z $XDG_CONFIG_HOME ]] && export XDG_CONFIG_HOME=${HOME}/.config
-[[ -z $XDG_DATA_HOME ]] && export XDG_DATA_HOME=${HOME}/.local/share
-[[ -z $XDG_CACHE_HOME ]] && export XDG_CACHE_HOME=${HOME}/.cache
+#
+# NOTE:
+# This script should be sourced at the tail of .bashrc or .bash_profile
+#
 
-OS="$(uname)"
-[[ "$OS" == Darwin ]] && PATH="${HOME}/bin:${PATH}"
-
-# Import customized config
-source ${XDG_CONFIG_HOME}/bash/config
-
-__custom_prompt() {
+prompt() {
     local white='\[\033[01;38m\]'
     local blue='\[\033[01;34m\]'
     local yellow='\[\033[38;5;11m\]'
@@ -28,8 +21,6 @@ __custom_prompt() {
     PS1+='$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/'${sed_purple}'-> '${sed_orange}'\1/")'
     PS1+='\n'${reset}'└─ '
     PS1+=${yellow}'\$'${reset}' '
-
-    export PS1
 }
 
 source_dirs() {
@@ -44,10 +35,27 @@ source_dirs() {
     done
 }
 
-__source_lib_core() {
+init() {
+    # Import customized config
+    # export SHELL_DIR
+    source ${XDG_CONFIG_HOME}/bash/config
+
     source ${SHELL_DIR}/lib/core
+
+    [[ "$OS" == Darwin ]] && PATH="${HOME}/bin:${PATH}"
 }
 
-__custom_prompt
-__source_lib_core
+# XDG Base Directory Specification
+# https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
+[[ -z $XDG_CONFIG_HOME ]] && export XDG_CONFIG_HOME=${HOME}/.config
+[[ -z $XDG_DATA_HOME ]] && export XDG_DATA_HOME=${HOME}/.local/share
+[[ -z $XDG_CACHE_HOME ]] && export XDG_CACHE_HOME=${HOME}/.cache
+
+OS="$(uname)"
+
+init
 source_dirs 'completion' 'alias' 'init'
+prompt
+
+unset -f prompt source_dirs init
+unset OS
