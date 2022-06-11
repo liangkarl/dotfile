@@ -1,13 +1,3 @@
-export FZF_DEFAULT_COMMAND='fd --type f'
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-
-# Used for Android
-## Generate compile_commands.json
-export SOONG_GEN_COMPDB=1
-export SOONG_GEN_COMPDB_DEBUG=1
-# Make soong generate a symlink to the compdb file using an env var
-# export SOONG_LINK_COMPDB_TO=$ANDROID_HOST_OUT
-
 # XDG Base Directory Specification
 # https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
 [[ -z $XDG_CONFIG_HOME ]] && export XDG_CONFIG_HOME=${HOME}/.config
@@ -42,16 +32,12 @@ __custom_prompt() {
     export PS1
 }
 
-__source_configs() {
-    local list
+source_dirs() {
     local dir file path
-
-    # add bash related config dir
-    list=('completion' 'alias')
 
     # source target config files
     path="${XDG_CONFIG_HOME}/bash"
-    for dir in ${list[@]}; do
+    for dir in $@; do
         for file in $(ls ${path}/${dir}); do
             . ${path}/${dir}/${file}
         done
@@ -63,5 +49,5 @@ __source_lib_core() {
 }
 
 __custom_prompt
-__source_configs
 __source_lib_core
+source_dirs 'completion' 'alias' 'init'
