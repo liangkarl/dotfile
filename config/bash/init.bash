@@ -36,16 +36,16 @@ source_dirs() {
     local dir file path
 
     # source target config files
-    path="${XDG_CONFIG_HOME}/bash"
+    path="${SHELL_DIR}"
     for dir in $@; do
         for file in $(ls ${path}/${dir}); do
-            . ${path}/${dir}/${file}
+            source ${path}/${dir}/${file}
         done
     done
 }
 
 __source_lib_core() {
-    . ${XDG_CONFIG_HOME}/bash/lib/core
+    source ${SHELL_DIR}/lib/core
 }
 
 __custom_prompt
