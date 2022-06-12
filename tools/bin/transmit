@@ -2,6 +2,7 @@
 
 import-script file
 import-script io
+import-script menu
 
 set -eE
 
@@ -122,12 +123,13 @@ select_and_show_menu() {
 	fi
 
 	# manual selection
-	PS3="select an option from 1 to ${list_len}: "
-	select item in "${remote_root[@]}"; do
-		root=$item
-		echo "remote dir: $root"
-		return 0
-	done
+	menu_title 'more than one site as below:'
+	menu_prompt 'select one to continue'
+	menu_default 1
+	menu ${remote_root[@]}
+	root=$(menu_final)
+
+	echo "remote dir: $root"
 }
 
 # disable the glob (noglob)
