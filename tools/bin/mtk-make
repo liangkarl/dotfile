@@ -26,6 +26,7 @@
 
 import-script io
 import-script file
+import-script menu
 
 # don't move to botton since 'extglob' needs to be called at first
 shopt -s extglob
@@ -253,35 +254,26 @@ parse_options() {
 	done
 }
 
-show_menu() {
-	local list i
-
-	list=($@)
-	echo "Select an option to create build note:"
-	for((i = 0; i < ${#list[@]}; i++)); do
-		echo "$((i + 1))) ${list[$i]}"
-	done
-}
-
 add_build_note_content() {
-	local def option list
+	local option
 
-	list=('add-note' 'skip' 'exit')
-	def=2	# defualt 'skip'
-	show_menu ${list[@]}
-	read -p "> ($def) " option
+	menu_title "action list:"
+	menu_prompt "select an option to buildnote: "
+	menu_default 2
+	menu 'add-note' 'skip' 'exit'
+	option=$(menu_final)
 
-	case ${option:-$def} in
-		1|"add-note")
-			if [[ ! -e $NOTE_CONTENT ]]; then # new note
-				add_build_note_content_exp
-			fi
+	case ${option} in
+		add-note)
+			# create new note if no file existed
+			[[ ! -e $NOTE_CONTENT ]] && add_build_note_content_exp
+
 			# go to end of file
 			vim "+$" $NOTE_CONTENT
 			;;
-		2|"skip") # no needs for build note
+		skip) # no needs for build note
 			;;
-		3|"exit")
+		exit)
 			exit
 			;;
 		*)
