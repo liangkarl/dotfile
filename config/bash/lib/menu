@@ -2,6 +2,7 @@ __menu_title=
 __menu_prompt=
 __menu_final=
 __menu_default=
+__menu_no_prompt=n
 
 menu_final() {
 	echo $__menu_final
@@ -19,6 +20,10 @@ menu_prompt() {
 	__menu_prompt="$@"
 }
 
+menu_no_prompt() {
+	__menu_no_prompt=y
+}
+
 menu() {
 	local item opts i ans
 
@@ -33,6 +38,8 @@ menu() {
 			echo "$i) $item"
 			((i++))
 		done
+
+		[[ "$__menu_no_prompt" == y ]] && return
 
 		read -p "$__menu_prompt " ans
 
@@ -52,6 +59,7 @@ menu() {
 			continue
 		fi
 
+		# check the input is available
 		if (( ans <= 0 || ans >= i )); then
 			echo "an illegal value"
 			continue
