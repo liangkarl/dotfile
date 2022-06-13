@@ -4,6 +4,7 @@
 #
 
 import-script io
+import-script menu
 
 shopt -s extglob
 
@@ -15,13 +16,13 @@ usage() {
 	    $name - A simple CLI serial console based on plink/putty
 
 	usage:
-	    $name [-low] [-n]
+	    $name [-lob] [-n]
 
 	options:
 	    -l: list available COM port
 	    -o: setup serial config
 	        eg, -o "br=115200;fc=N;db=8;sb=1;pa=n"
-	    -w: open with putty
+	    -b: select supported serial console .exe
 	    -n: 'n' is the port number
 EOF
 
@@ -97,6 +98,7 @@ stop_bits=1
 
 [[ -z "$WSL_DISTRO_NAME" ]] && exit_msg 3 "only support WSL environment for now."
 
+# TODO: source project.conf to get project specific setup
 [[ -e ~/.uart.conf ]] && source ~/.uart.conf
 
 while (( $# != 0 )); do
@@ -110,8 +112,8 @@ while (( $# != 0 )); do
 			list_comport
 			exit
 			;;
-		-w)
-			bin="$putty"
+		-b)
+			select_exe=y
 			;;
 		-s)
 			# not implement
@@ -127,16 +129,20 @@ while (( $# != 0 )); do
 	shift
 done
 
+if [[ "$select_exe" == y ]]; then
+	menu_title "list supported .exe files"
+	menu_prompt "select one to execute"
+	menu_default 1
+	menu $ss $plink $putty
+	bin=$(menu_final)
+fi
+
 case $bin in
 	ss.exe)
 		opts="-com:${port} $(ss_conf)"
 		;;
 	plink.exe | putty.exe)
 		opts="-v -serial COM${port} -sercfg $(plink_conf)"
-		;;
-	*)
-		echo "not supported '$bin'"
-		usage 4
 		;;
 esac
 
