@@ -104,9 +104,7 @@ stop_bits=1
 while (( $# != 0 )); do
 	case $1 in
 		-o)
-			shift; eval "$1"
-			config="${br},${db},${pa},${sb},${fc}"
-			has_sercfg=''
+			config_uart=y
 			;;
 		-l)
 			list_comport
@@ -134,6 +132,13 @@ if [[ "$select_exe" == y ]]; then
 	menu_prompt "select one to execute"
 	menu_default 1
 	menu $ss $plink $putty
+	bin=$(menu_final)
+fi
+
+if [[ "$config_uart" ==y ]]; then
+	menu_title 'list available config options'
+	menu_prompt 'config what?'
+	menu 'n/a'
 	bin=$(menu_final)
 fi
 
