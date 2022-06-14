@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 __menu_title=
 __menu_prompt=
 __menu_final=

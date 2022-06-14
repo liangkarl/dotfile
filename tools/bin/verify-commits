@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-import-script io
+source $(mylib io)
 
 set -eE
 

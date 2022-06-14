@@ -4,12 +4,10 @@ slash_end() {
     [[ "$@" == */ ]]
     return $?
 }
-export -f slash_end
 
 full_path() {
     echo $(readlink -e "$@")
 }
-export -f full_path
 
 # usage:
 #   $0 file.name /path/to/dir
@@ -37,7 +35,6 @@ find_path() {
 
 	return 3
 }
-export -f find_path
 
 # usage:
 #   $0 /path/to/file.name => search file.name from assigned wd
@@ -46,10 +43,8 @@ find_file_path() {
 	find_path "$(basename $1)" "$(dirname $1)"
 	return $?
 }
-export -f find_file_path
 
 # call the func to get the file path inside the sourced script
 source_file_path() {
 	echo "$(readlink -e "$(dirname ${BASH_SOURCE[0]})")"
 }
-export -f source_file_path

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-import-script file
-import-script io
-import-script menu
+source $(mylib file)
+source $(mylib io)
+source $(mylib menu)
 
 set -eE
 
