@@ -26,9 +26,9 @@ TARGET_NAME="$1"
 # win_4=('lk' 'path/to/lk' '')
 #
 
-import-script file
-import-script io
-import-script sys
+source $(mylib file)
+source $(mylib io)
+source $(mylib sys)
 
 usage() {
 	local n

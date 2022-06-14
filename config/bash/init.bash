@@ -40,8 +40,6 @@ init() {
     # export SHELL_DIR
     source ${XDG_CONFIG_HOME}/bash/config
 
-    source ${SHELL_DIR}/lib/core
-
     [[ "$OS" == Darwin ]] && PATH="${HOME}/bin:${PATH}"
 }
 

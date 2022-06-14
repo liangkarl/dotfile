@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 has_cmd() {
     command -v "$1"
     return $?

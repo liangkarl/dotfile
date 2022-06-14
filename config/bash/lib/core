@@ -1,8 +1,0 @@
-# import bash script to support some features
-# usage:
-#   import-script aaa
-import-script() {
-	source ${SHELL_DIR}/lib/$1
-} 2>&-
-
-export -f import-script

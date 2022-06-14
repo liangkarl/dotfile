@@ -3,8 +3,8 @@
 # This tool based on plink.exe, a CLI version of putty
 #
 
-import-script io
-import-script menu
+source $(mylib io)
+source $(mylib menu)
 
 shopt -s extglob
 
