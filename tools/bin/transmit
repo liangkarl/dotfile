@@ -16,7 +16,7 @@ export_conf() {
 	)
 
 	# OPTIONAL VARS
-	# LDIR="images@$(date +%Y%m%d-%H%M%S)"
+	# LDIR="images@\$(date +%Y%m%d-%H%M%S)"
 	# RFILES=(
 	#	"aaa.img"
 	#	"bbb.bin"
