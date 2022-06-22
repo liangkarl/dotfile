@@ -17,7 +17,7 @@ has_cmds() {
 } &> /dev/null
 
 in_wsl() {
-	if [[ -z "$WSL_DISTRO" ]]; then
+	if [[ -z "$WSL_DISTRO_NAME" ]]; then
 		return 1
 	else
 		return 0
