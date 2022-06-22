@@ -135,7 +135,7 @@ if [[ "$select_exe" == y ]]; then
 	bin=$(menu_final)
 fi
 
-if [[ "$config_uart" ==y ]]; then
+if [[ "$config_uart" == y ]]; then
 	menu_title 'list available config options'
 	menu_prompt 'config what?'
 	menu 'n/a'
