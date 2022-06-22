@@ -56,7 +56,7 @@ menu() {
 		fi
 
 		# check the input is digit
-		if (( ans == 0 )) && [[ $ans != 0 ]]; then
+		if [[ ! $ans =~ ^[0-9]+$ ]]; then
 			echo "not a number"
 			continue
 		fi
