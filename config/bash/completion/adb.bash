@@ -82,7 +82,7 @@ _adb() {
     fi
 
     OPTIONS="-d -e -s -p"
-    COMMAND="devices connect disconnect push pull sync shell emu logcat lolcat forward jdwp install uninstall bugreport help version start-server kill-server get-state get-serialno status-window remount reboot reboot-bootloader root usb tcpip disable-verity"
+    COMMAND="wait-for-device devices connect disconnect push pull sync shell emu logcat lolcat forward jdwp install uninstall bugreport help version start-server kill-server get-state get-serialno status-window remount reboot reboot-bootloader root usb tcpip disable-verity"
 
     case $where in
         OPTIONS|OPT_SERIAL|OPT_PATH)
@@ -121,6 +121,12 @@ _adb() {
                         ;;
                     uninstall)
                         _adb_cmd_uninstall "$serial" $i
+                        ;;
+                    wait-for-device)
+                        args=${COMMAND#wait-for-device}
+                        if [[ $COMP_CWORD == $i ]]; then
+                            COMPREPLY=( $(compgen -W "${args}" -- "${COMP_WORDS[i]}") )
+                        fi
                         ;;
                 esac
             fi
