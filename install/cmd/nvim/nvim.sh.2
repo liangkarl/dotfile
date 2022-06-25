@@ -58,9 +58,19 @@ github_install() {
     local pos="$(mktemp -d)"
     local branch
 
-    # add prerequisites modules
-    sudo apt install ninja-build gettext libtool libtool-bin autoconf \
-                    automake cmake g++ pkg-config unzip curl
+	# install required packages for github compilation
+	case $(os_ver) in
+		$OS_UBUNTU)
+			sudo apt install ninja-build gettext libtool libtool-bin autoconf \
+			               automake cmake g++ pkg-config unzip curl
+			;;
+		$OS_MAC)
+			brew install ninja libtool automake cmake pkg-config gettext curl
+			;;
+		*)
+			;;
+	esac
+	exit
 
     # build nvim
     ## choose version
