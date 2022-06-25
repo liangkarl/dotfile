@@ -23,3 +23,24 @@ in_wsl() {
 		return 0
 	fi
 }
+
+os_ver() {
+	local os
+
+	# 'macOS'
+	if has_cmd sw_vers; then
+		os="$(sw_vers -productName)"
+
+	# 'Ubuntu'
+	elif has_cmd lsb_release; then
+		os="$(lsb_release -i)"
+		os="${code##*: }"
+	fi
+
+	# unsupported os
+	# return a null string and error code
+	echo $os
+} 2> /dev/null
+
+OS_MACOS='macOS'
+OS_UBUNTU='Ubuntu'
