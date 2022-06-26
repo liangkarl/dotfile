@@ -1,0 +1,11 @@
+# https://mesonbuild.com/Getting-meson.html#installing-meson-with-pip
+sudo pip3 install meson
+
+# Markdown CLI viewer
+# https://github.com/charmbracelet/glow
+brew install glow
+
+# Convert the doc format
+# https://pandoc.org/installing.html
+brew install pandoc
+sudo apt install pandoc
