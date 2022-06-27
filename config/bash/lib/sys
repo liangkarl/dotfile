@@ -42,8 +42,7 @@ os_ver() {
 
 	# 'Ubuntu'
 	elif has_cmd lsb_release; then
-		os="$(lsb_release -i)"
-		os="${code##*: }"
+		os="$(lsb_release -i -s)"
 	fi
 
 	# unsupported os
