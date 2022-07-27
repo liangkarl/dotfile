@@ -155,15 +155,16 @@ add_build_note_content_exp() {
 	EOF
 }
 
-preview_buildnote() {
+show_buildnote() {
+	local title
+
+	title="$1"
 	if [[ -e "${NOTE}" ]]; then
-		cat <<-PREV
-		=== last $NOTE preview ===
-		$(mdv $NOTE)
-		==========================
-		PREV
+		echo "=== ${title} ==="
+		glow $NOTE
+		echo "=========================="
 	else
-		echo "no ${NOTE} for previewing"
+		echo "no ${NOTE} for showing"
 	fi
 }
 
@@ -296,7 +297,7 @@ exit_act() {
 	echo -e "\ntotal consumed time: $(date -d@${BUILD_TIME} -u +%H:%M:%S)"
 
 	# show build note
-	mdv $NOTE
+	show_buildnote "buildnote for this build"
 	eval $EXIT_ACT
 }
 
@@ -394,7 +395,7 @@ fi
 
 if [[ "$COMPILE" == y ]]; then
 	# preview previous note
-	preview_buildnote
+	show_buildnote "preview last $NOTE"
 
 	# edit build note
 	add_build_note_content
