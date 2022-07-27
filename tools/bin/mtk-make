@@ -283,22 +283,17 @@ add_build_note_content() {
 	esac
 }
 
-err_act() {
-	# substitute variable
-	eval pr_err "$ERR_MSG"
-	eval $ERR_ACT
-}
-
-exit_act() {
+exit_cmd() {
 	# calculate build elapse time
 	BUILD_TIME=$(($(date +%s) - ${BUILD_TIME}))
 
 	# show consumed time
-	echo -e "\ntotal consumed time: $(date -d@${BUILD_TIME} -u +%H:%M:%S)"
+	pr_info "total consumed time: $(date -d@${BUILD_TIME} -u +%H:%M:%S)"
+
+	[[ ! -z "$ERR_OUT" ]] && eval pr_err "$ERR_MSG"
 
 	# show build note
 	show_buildnote "buildnote for this build"
-	eval $EXIT_ACT
 }
 
 config_env() {
@@ -317,8 +312,8 @@ build_code() {
 	BUILD_TIME=$(date +%s)
 
 	# show required build info automatically
-	trap 'exit_act' EXIT
-	trap 'err_act' ERR
+	trap "exit_cmd" EXIT
+	trap 'ERR_OUT="$BASH_COMMAND"' ERR
 
 	if [[ "${MAKE_KERNEL}" == y ]]; then
 		build_kernel
@@ -344,10 +339,8 @@ build_code() {
 ## Program variables
 ENVSETUP='build/envsetup.sh'
 EXE_CMD="$(basename $0) $@"
-ERR_MSG='last command: $BASH_SOURCE:$LINENO $BASH_COMMAND'
-ERR_ACT=''
+ERR_MSG='last command: $BASH_SOURCE:$LINENO $ERR_OUT'
 BUILD_TIME=''
-EXIT_ACT=''
 NOTE_HEADER='.note.header'
 NOTE_CONTENT='.note.text'
 NOTE="buildnote.md"
