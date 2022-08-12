@@ -2,10 +2,13 @@
 vim.o.completeopt = 'menuone,noselect'
 
 -- nvim-cmp setup
-local cmp = require 'cmp'
+local cmp = require('cmp')
 
 -- luasnip setup
-local luasnip = require 'luasnip'
+local luasnip = require('luasnip')
+
+-- lspconfig setup
+local lspconfig = require('lspconfig')
 
 -- The nvim-cmp almost supports LSP's capabilities so You should
 -- advertise it to LSP servers..
@@ -15,7 +18,7 @@ capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 cmp.setup {
   snippet = {
     expand = function(args)
-      require('luasnip').lsp_expand(args.body)
+      luasnip.lsp_expand(args.body)
     end,
   },
   mapping = {
@@ -60,9 +63,19 @@ cmp.setup {
     { name = 'nvim_lua' },
     { name = 'buffer' },
   },
-
-  -- Setup lspconfig.
-  require('lspconfig')['ccls'].setup {
-    capabilities = capabilities
-  }
 }
+
+-- Enable some language servers with the additional completion capabilities
+-- offered by nvim-cmp
+-- LSP list:
+--   ccls -> c/c++
+--   rust_analyzer -> rust
+--   pyright -> python
+--   tsserver -> typescript
+local servers = { 'ccls', 'rust_analyzer', 'pyright', 'tsserver' }
+for _, lsp in ipairs(servers) do
+  lspconfig[lsp].setup {
+    -- on_attach = my_custom_on_attach,
+    capabilities = capabilities,
+  }
+end
