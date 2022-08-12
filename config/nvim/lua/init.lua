@@ -121,12 +121,15 @@ vim.g.symbols_outline = {
 }
 
 -- Plugin: treesitter
-local treesitter = require'nvim-treesitter.configs'
+local treesitter = require('nvim-treesitter.configs')
 treesitter.setup {
   -- one of "all", "maintained" (parsers with maintainers), or a list of languages
-  ensure_installed = {"bash", "c", "cpp", "go", "html", "java", "javascript",
-                      "json", "kotlin", "latex", "lua", "ocaml", "python",
-                      "r", "rst", "rust", "toml", "typescript", "vim", "yaml"},
+  ensure_installed = {"bash", "perl", "python", "lua", "vim", "r",
+                      "c", "cpp", "c_sharp", "rust", "go", "java", "kotlin",
+                      "html", "css", "typescript", "javascript",
+                      "json", "markdown", "yaml", "toml",
+                      "make", "cmake", "ninja",
+                      "comment", "rst"},
   ignore_install = { "javascript" }, -- List of parsers to ignore installing
   highlight = {
     enable = true,              -- false will disable the whole extension
