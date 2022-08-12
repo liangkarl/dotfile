@@ -22,17 +22,21 @@ conf_home=${XDG_CONFIG_HOME}
 echo "-- backup git config (global config) --"
 git config --global --list > $GIT_DB
 
-echo "-- trigger all config scripts --"
-
-if [[ ! -e ${mydir}/config.list ]]; then
-    echo "cannot find dir list"
-    exit 2
-fi
-
 list=()
-while IFS= read -r line; do
-    list+=("$line")
-done < ${mydir}/config.list
+if (( $# == 0 )); then
+    echo "-- invoke all config scripts --"
+    if [[ ! -e ${mydir}/config.list ]]; then
+        echo "cannot find dir list"
+        exit 2
+    fi
+
+    while IFS= read -r line; do
+        list+=("$line")
+    done < ${mydir}/config.list
+else
+    echo "-- invoke config scripts manually --"
+    list=("$@")
+fi
 
 if [[ ! -e "$conf_home" ]]; then
     echo "create new config dir: $conf_home"
@@ -43,6 +47,11 @@ fi
 options=("remove" "overwrite" "skip" "cancel")
 
 for dir in ${list[@]}; do
+    [[ ! -e "$dir" ]] && {
+        echo "directory not existed: $dir"
+        continue
+    }
+
     target="$conf_home/$dir"
 
     echo "-- copy config to $target --"
