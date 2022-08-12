@@ -30,13 +30,6 @@ vim.g.nvim_tree_special_files = {
 vim.g.nvim_tree_quit_on_open = 1
 vim.g.nvim_tree_icon_padding = ' '
 
--- Plugin: which-key
--- https://github.com/folke/which-key.nvim
--- Run ':checkhealth which_key' to see if there's any conflicting
--- keymaps that will prevent triggering WhichKey
-require("which-key").setup {}
-
--- Plugin: nvim-tree.lua
 -- default will show icon by default if no icon is provided
 -- default shows no icon by default
 vim.g.nvim_tree_icons = {
@@ -162,6 +155,11 @@ lspconfig.ccls.setup {
     };
   }
 }
+-- Plugin: which-key
+-- https://github.com/folke/which-key.nvim
+-- Run ':checkhealth which_key' to see if there's any conflicting
+-- keymaps that will prevent triggering WhichKey
+require("which-key").setup {}
 
 -- Plugin: nvim-cmp
 -- https://github.com/hrsh7th/nvim-cmp/
