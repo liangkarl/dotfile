@@ -141,26 +141,6 @@ treesitter.setup {
   },
 }
 
--- Plugin: lspconfig
-local lspconfig = require'lspconfig'
-lspconfig.ccls.setup {
-  init_options = {
-    compilationDatabaseDirectory = "build";
-    cache = {
-      directory = ".ccls-cache";
-    };
-    client = {
-      snippetSupport = true;
-    };
-    index = {
-      threads = 0;
-      onChange = true;
-    };
-    clang = {
-      excludeArgs = { "-frounding-math"} ;
-    };
-  }
-}
 -- Plugin: which-key
 -- https://github.com/folke/which-key.nvim
 -- Run ':checkhealth which_key' to see if there's any conflicting
@@ -170,3 +150,7 @@ require("which-key").setup {}
 -- Plugin: nvim-cmp
 -- https://github.com/hrsh7th/nvim-cmp/
 require('nvim-cmp')
+
+-- Plugin: nvim-lspconfig
+-- https://github.com/neovim/nvim-lspconfig
+require('nvim-lspconfig')
