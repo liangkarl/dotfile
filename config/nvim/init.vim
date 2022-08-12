@@ -19,6 +19,7 @@ endfor
 
 " import lua configs
 luafile ~/.config/nvim/lua/init.lua
+" TODO: import each lua plugin config instead of init.lua
 
 " no vi-compatible
 set nocompatible

@@ -112,10 +112,21 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 """ Deprecated """
 " https://github.com/stevearc/aerial.nvim
 Plug 'simrat39/symbols-outline.nvim'
-Plug 'itchyny/lightline.vim'
-Plug 'mengelbrecht/lightline-bufferline'
+" Plug 'itchyny/lightline.vim'
+" Plug 'mengelbrecht/lightline-bufferline'
 Plug 'rbgrouleff/bclose.vim'
 Plug 'rhysd/vim-clang-format'
 Plug 'm-pilia/vim-ccls'
+
+""" Test """
+"   vim-startuptime is a Vim plugin for viewing vim and nvim startup
+" event timing information. The data is automatically obtained by
+" launching (n)vim with the --startuptime argument. See
+" :help startuptime-configuration for details on customization
+" options.
+" https://github.com/dstein64/vim-startuptime
+Plug 'dstein64/vim-startuptime'
+Plug 'nvim-lua/lsp-status.nvim'
+Plug 'nvim-lualine/lualine.nvim'
 
 call plug#end()
