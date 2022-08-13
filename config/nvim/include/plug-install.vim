@@ -109,11 +109,13 @@ Plug 'easymotion/vim-easymotion'
 " We recommend updating the parsers on update
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
-""" Deprecated """
+" symbols-outline is available only when LSP server installed
 " https://github.com/stevearc/aerial.nvim
-Plug 'simrat39/symbols-outline.nvim'
 " Plug 'itchyny/lightline.vim'
 " Plug 'mengelbrecht/lightline-bufferline'
+Plug 'stevearc/aerial.nvim'
+
+""" Deprecated """
 Plug 'rbgrouleff/bclose.vim'
 Plug 'rhysd/vim-clang-format'
 Plug 'm-pilia/vim-ccls'
