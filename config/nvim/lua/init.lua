@@ -104,6 +104,14 @@ require('nvim-cmp')
 -- https://github.com/neovim/nvim-lspconfig
 require('nvim-lspconfig')
 
+-- Plugin: lualine
+-- https://github.com/nvim-lualine/lualine.nvim
+require('nvim-lualine')
+
+-- Plugin: bufferline
+-- https://github.com/akinsho/bufferline.nvim
+require('nvim-bufferline')
+
 -- Plugin: aerial
 -- https://github.com/stevearc/aerial.nvim
 require('nvim-aerial')
