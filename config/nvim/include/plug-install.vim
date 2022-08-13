@@ -111,10 +111,11 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 " symbols-outline is available only when LSP server installed
 " https://github.com/stevearc/aerial.nvim
-" Plug 'itchyny/lightline.vim'
-" Plug 'mengelbrecht/lightline-bufferline'
 Plug 'stevearc/aerial.nvim'
 Plug 'nvim-lua/lsp-status.nvim'
+
+Plug 'nvim-lualine/lualine.nvim'
+Plug 'akinsho/bufferline.nvim'
 
 """ Deprecated """
 Plug 'rbgrouleff/bclose.vim'
@@ -129,7 +130,5 @@ Plug 'm-pilia/vim-ccls'
 " options.
 " https://github.com/dstein64/vim-startuptime
 Plug 'dstein64/vim-startuptime'
-Plug 'nvim-lua/lsp-status.nvim'
-Plug 'nvim-lualine/lualine.nvim'
 
 call plug#end()
