@@ -1,67 +1,5 @@
 -- init.lua
 
--- Plugin: nvim-tree
--- https://github.com/kyazdani42/nvim-tree.lua
-require('nvim-tree').setup {
-	auto_close = true,
-	update_to_buf_dir = {
-		enable = true,
-		auto_open = true,
-	},
-	update_cwd = true,
-	update_focused_file = {
-		enable      = true,
-		update_cwd  = true,
-		ignore_list = {}
-	},
-	auto_close = true,
-	filters = {
-		dotfiles = true,
-		custom = {}
-	},
-}
-vim.g.nvim_tree_special_files = {
-      Makefile = true,
-	  ["Android.mk"] = true,
-	  ["Kconfig"] = true,
-      ["README.md"] = true,
-      ["readme.md"] = true,
-}
-vim.g.nvim_tree_quit_on_open = 1
-vim.g.nvim_tree_icon_padding = ' '
-
--- default will show icon by default if no icon is provided
--- default shows no icon by default
-vim.g.nvim_tree_icons = {
-	default = "",
-	symlink = "",
-	git = {
-		unstaged = "✗",
-		staged = "✓",
-		unmerged = "",
-		renamed = "➜",
-		untracked = "★",
-		deleted = "",
-		ignored = "◌"
-	},
-	folder = {
-		arrow_open = "",
-		arrow_closed = "",
-		default = "",
-		open = "",
-		empty = "",
-		empty_open = "",
-		symlink = "",
-		symlink_open = "",
-	},
-	lsp = {
-		hint = "",
-		info = "",
-		warning = "",
-		error = "",
-	}
- }
-
 -- Plugin: treesitter
 local treesitter = require('nvim-treesitter.configs')
 treesitter.setup {
@@ -113,3 +51,7 @@ require('nvim-bufferline')
 -- Plugin: aerial
 -- https://github.com/stevearc/aerial.nvim
 require('nvim-aerial')
+
+-- Plugin: nvim-tree
+-- https://github.com/kyazdani42/nvim-tree.lua
+require('nvim_tree')
