@@ -39,6 +39,7 @@ let g:fuzzy_finder = 'clap'
 
 " auto completion
 Plug 'hrsh7th/nvim-cmp'
+Plug 'onsails/lspkind.nvim'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'saadparwaiz1/cmp_luasnip' ""-- Snippets source for nvim-cmp
