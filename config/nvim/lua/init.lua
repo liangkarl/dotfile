@@ -94,6 +94,10 @@ require("which-key").setup {}
 -- https://github.com/hrsh7th/nvim-cmp/
 require('nvim-cmp')
 
+-- Plugin: lspkind
+-- https://github.com/onsails/lspkind.nvim
+require('nvim-lspkind')
+
 -- Plugin: nvim-lspconfig
 -- https://github.com/neovim/nvim-lspconfig
 require('nvim-lspconfig')
