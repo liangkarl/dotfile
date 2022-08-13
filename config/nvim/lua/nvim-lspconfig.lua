@@ -26,6 +26,11 @@
 --
 local lsp = require('lspconfig')
 
+-- required by aerial.nvim to support LSP function
+lsp.vimls.setup {
+  on_attach = require("aerial").on_attach,
+}
+
 -- For bash LSP (bash-language-server)
 -- https://github.com/bash-lsp/bash-language-server
 lsp.bashls.setup = {}
