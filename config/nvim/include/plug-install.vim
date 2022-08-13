@@ -114,6 +114,7 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 " Plug 'itchyny/lightline.vim'
 " Plug 'mengelbrecht/lightline-bufferline'
 Plug 'stevearc/aerial.nvim'
+Plug 'nvim-lua/lsp-status.nvim'
 
 """ Deprecated """
 Plug 'rbgrouleff/bclose.vim'
