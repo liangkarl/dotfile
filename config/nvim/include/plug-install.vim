@@ -1,131 +1,101 @@
 call plug#begin('~/.config/nvim/plugged')
 
-""" 1. NeoVim Environment Setup """
-" |-------------------+------------------------------------|
-" | Plug              | Desc                               |
-" |-------------------+------------------------------------|
-" | which-key         | Display key-binding menu           |
-" | vim-startify      | Show start screen                  |
-" | lightline, ...    | Show status line                   |
-" | vim-signify       | Show git diff by side              |
-" | tig-explorer      | Show tig inside vim                |
-" | bclose.vim        | Used for tig-explorer.vim          |
-" | vim-del...buffers | Delete hidden buffers              |
-" | fzf, fzf.vim      | Fuzzy searching and other features |
-" | vim-tmux-clip...  | Share clipboard between tmux, vim  |
-" | symbols-outline   | Function manager, like tagbar      |
-" | nvim-lspconfig    | LSP config for nvim                |
-" | mason             | simplify the install of LSP        |
-" | nvim-tree         | File explorer                      |
-" |-------------------+------------------------------------|
-" NOTE:
-" vim-airline has poor performance
-" vim-gitgutter has poor performance
-" Neomake is a plugin for Vim/Neovim to asynchronously run programs.
-" Plug 'neomake/neomake'
-Plug 'folke/which-key.nvim'
+""
+"  Primary Editor Function
+""
+" Start Screen:
+" - nvim-dashboard: bad screen layout with lots of unused functions.
 Plug 'mhinz/vim-startify'
-Plug 'mhinz/vim-signify'
-Plug 'liangkarl/tig-explorer.vim'
-Plug 'arithran/vim-delete-hidden-buffers'
+
+" Statusline/ Bufferline:
+" vim-airline: poor performance
+" lightline: much better than vim-airline, but use VimL
+Plug 'nvim-lualine/lualine.nvim'
+Plug 'akinsho/bufferline.nvim'
+
+" File Explorer:
+" NerdTree: good, but use VimL
+Plug 'kyazdani42/nvim-tree.lua'
+
+" Operation Hint
+" vim-which-key: old version with much complicated setup
+Plug 'folke/which-key.nvim'     " display shortcut-mapping functions
+
+" Autocompletion (without LSP source)
+" coc: easy and powerful, but much complicated to customization
+Plug 'hrsh7th/nvim-cmp'         " primary autocomplete function
+Plug 'onsails/lspkind.nvim'     " adjust scroll menu width
+Plug 'hrsh7th/cmp-buffer'       " snippet engine of buffer words
+
+" Terminal
+" vim-floaterm: fashion, but too complicated
+
+" Fuzzy Search
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-" Build the extra binary if cargo exists on your system.
 Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary' }
-Plug 'roxma/vim-tmux-clipboard'
-Plug 'neovim/nvim-lspconfig'
-Plug 'williamboman/mason.nvim'
-Plug 'kyazdani42/nvim-tree.lua'
-" choose a main fuzzy finder and config keybind later
 let g:fuzzy_finder = 'clap'
 
-" auto completion
-Plug 'hrsh7th/nvim-cmp'
-Plug 'onsails/lspkind.nvim'
-Plug 'hrsh7th/cmp-buffer'
-Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'saadparwaiz1/cmp_luasnip' ""-- Snippets source for nvim-cmp
-Plug 'L3MON4D3/LuaSnip' ""-- Snippets plugin
+""
+"  Programming Function
+""
+" Language Support
+Plug 'neovim/nvim-lspconfig'    " LSP configuration
+Plug 'williamboman/mason.nvim'  " simplify the install of LSP
+Plug 'm-pilia/vim-ccls'     " provide unique ccls function
 
-""" 2. Themes """
+" Source Code Format
+Plug 'rhysd/vim-clang-format'   " format source code by clang-format
+Plug 'editorconfig/editorconfig-vim'    " coding style file
+
+" Syntax Highlight
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
+" Lint
+" ALE: slow performance
+
+" Symbol Manager
+" symbols-outline: only support LSP
+" Vista: LSP function is problematic need Ctags support
+Plug 'stevearc/aerial.nvim'
+Plug 'nvim-lua/lsp-status.nvim'
+
+" Autocompletion Comparision (LSP source)
+Plug 'hrsh7th/cmp-nvim-lsp'     " snippet engine of LSP client
+Plug 'saadparwaiz1/cmp_luasnip' " interface between nvim-cmp and LuaSnip
+Plug 'L3MON4D3/LuaSnip'         " snippet engine for neovim written in Lua
+
+""
+"  Themes
+""
 Plug 'sainnhe/sonokai'
 Plug 'marko-cerovac/material.nvim'
 Plug 'sainnhe/gruvbox-material'
 Plug 'navarasu/onedark.nvim'
 
-""" 3. General Editor Tools """
-" |-----------------------+-----------------------------------------------------|
-" | Plug                  | Desc                                                |
-" |-----------------------+-----------------------------------------------------|
-" | editorconfig-vim      | Open specific lang file with their own coding style |
-" | vim-better-whitespace | Show trailing space                                 |
-" | vim-matchup           | Enhance '%' matchup, like if-endif, etc             |
-" | quick-scope           | To improve 'move' efficiency by highlight char      |
-" | traces.vim            | Preview replace/pattern/range result                |
-" | is.vim, vim-anzu      | Improve display effect of searching text            |
-" | vim-exp...region      | Expand or reduce visual block region                |
-" | vim-commentary        | Comment codes easily                                |
-" | auto.pairs            | Auto-balance pairs                                  |
-" | vim-table-mode        | Draw text-styled table easily                       |
-" | alter...-toggler      | switch boolean value, true <-> false                |
-" | open-browser          | Open URL from vim                                   |
-" | vim-easymotion        | move cursor posistion like vimium                   |
-" |-----------------------+-----------------------------------------------------|
-" NOTE:
-" vim_current_word is hard to setup blacklist and highlight style
-" 1. Multiple cursor editing is fasion, but not sure of the benifits
-" Plug 'terryma/vim-multiple-cursors'
-" 2. alternate-toggler is for nvim 0.5.0 or newer version
-" Though floaterm is fashion, it's too complicated for me
-" Plug 'voldikss/vim-floaterm'
-Plug 'editorconfig/editorconfig-vim'
-Plug 'ntpeters/vim-better-whitespace'
-Plug 'andymass/vim-matchup'
-Plug 'unblevable/quick-scope'
-Plug 'markonm/traces.vim'
-Plug 'haya14busa/is.vim'
-Plug 'osyo-manga/vim-anzu'
-Plug 'terryma/vim-expand-region'
-Plug 'tpope/vim-commentary'
-Plug 'Krasjet/auto.pairs'
-Plug 'dhruvasagar/vim-table-mode'
-Plug 'rmagatti/alternate-toggler'
-Plug 'tyru/open-browser.vim'
-Plug 'easymotion/vim-easymotion'
+""
+"  Enhancements
+""
+Plug 'roxma/vim-tmux-clipboard' " share clipboard between tmux and vim
+Plug 'andymass/vim-matchup'     " enhance '%' function, like if-endif
+Plug 'markonm/traces.vim'       " enhance replace/search result,
+                                "  previewing the last result.
+Plug 'haya14busa/is.vim'        " make string search more convenient.
+Plug 'osyo-manga/vim-anzu'      " show matched string number and total
+Plug 'Krasjet/auto.pairs'       " enhance [/{/'..., auto balance pairs
+Plug 'terryma/vim-expand-region'    " enhance visual mode, +/- to increase
+                                    " or decrease selected visual range
 
-""" 4. Language Support (LSP) """
-" |------------------+------------------------------|
-" | Plug             | Desc                         |
-" |------------------+------------------------------|
-" | vim-clang-format | format codes by clang-format |
-" | nvim-treesitter  | syntex highlight tools       |
-" | vim-ccls         | Provide uniq 'ccls' features |
-" |------------------+------------------------------|
-" TODO:
-" autocompletion seems better in clangd, instead of ccls
-" Try to switch multi LSP in config
-" coc-clangd
-" xavierd/clang_complete
-" NOTE:
-" Though dense-analysis/ale is really slow, it's an important plugin
-" dense-analysis/ale
-" We recommend updating the parsers on update
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+" Cursor Movement
+" vim_current_word: hard to setup blacklist and highlight style
+Plug 'easymotion/vim-easymotion'    " move cursor location like vimium
+Plug 'unblevable/quick-scope'   " enhance f & F functions, rendering
+                                "  colors to index moving posisition in
+                                "  a line
 
-" symbols-outline is available only when LSP server installed
-" https://github.com/stevearc/aerial.nvim
-Plug 'stevearc/aerial.nvim'
-Plug 'nvim-lua/lsp-status.nvim'
-
-Plug 'nvim-lualine/lualine.nvim'
-Plug 'akinsho/bufferline.nvim'
-
-""" Deprecated """
-Plug 'rbgrouleff/bclose.vim'
-Plug 'rhysd/vim-clang-format'
-Plug 'm-pilia/vim-ccls'
-
-""" Test """
+""
+"  Debug Tools
+""
 "   vim-startuptime is a Vim plugin for viewing vim and nvim startup
 " event timing information. The data is automatically obtained by
 " launching (n)vim with the --startuptime argument. See
@@ -133,5 +103,40 @@ Plug 'm-pilia/vim-ccls'
 " options.
 " https://github.com/dstein64/vim-startuptime
 Plug 'dstein64/vim-startuptime'
+
+""
+"  Git
+""
+" vim-gitgutter: poor performance in large project
+Plug 'mhinz/vim-signify'        " show diff symbols aside via git diff
+Plug 'liangkarl/tig-explorer.vim'   " use tig inside vim
+Plug 'rbgrouleff/bclose.vim'    " needed by tig-explorer in Nvim config
+
+""
+"  Miscellaneous
+""
+Plug 'tpope/vim-commentary'     " comment codes easily
+Plug 'tyru/open-browser.vim'    " open url from vim
+Plug 'rmagatti/alternate-toggler'   " switch boolean value easily,
+                                    "  true <-> false
+Plug 'dhruvasagar/vim-table-mode'   " edit Markdown table easily
+Plug 'arithran/vim-delete-hidden-buffers'   " delete hidden buffers
+Plug 'ntpeters/vim-better-whitespace'       " show/remove trailing space
+
+" NOTE:
+" 1. Multiple cursor editing is fasion, but not sure of the benifits
+" Plug 'terryma/vim-multiple-cursors'
+
+" TODO:
+" 1. improve tig-explorer.vim
+"
+" deprecated:
+"
+" Neomake is a plugin for Vim/Neovim to asynchronously run programs.
+" Plug 'neomake/neomake'
+"
+" autocompletion seems better in clangd, instead of ccls
+" Try to switch multi LSP in config
+" xavierd/clang_complete
 
 call plug#end()
