@@ -15,6 +15,7 @@ call plug#begin('~/.config/nvim/plugged')
 " | vim-tmux-clip...  | Share clipboard between tmux, vim  |
 " | symbols-outline   | Function manager, like tagbar      |
 " | nvim-lspconfig    | LSP config for nvim                |
+" | mason             | simplify the install of LSP        |
 " | nvim-tree         | File explorer                      |
 " |-------------------+------------------------------------|
 " NOTE:
@@ -33,6 +34,7 @@ Plug 'junegunn/fzf.vim'
 Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary' }
 Plug 'roxma/vim-tmux-clipboard'
 Plug 'neovim/nvim-lspconfig'
+Plug 'williamboman/mason.nvim'
 Plug 'kyazdani42/nvim-tree.lua'
 " choose a main fuzzy finder and config keybind later
 let g:fuzzy_finder = 'clap'
