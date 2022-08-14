@@ -126,6 +126,13 @@ autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "norm
 " less comprez
 autocmd BufNewFile,BufRead *.less set filetype=less
 
+if !exists('*s:setupWrapping')
+  function s:setupWrapping()
+    set wrap
+    set wm=2
+    set textwidth=79
+  endfunction
+endif
 " txt
 au BufRead,BufNewFile *.txt call s:setupWrapping()
 " make use real tabs
