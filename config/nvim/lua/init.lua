@@ -55,3 +55,7 @@ require('nvim-aerial')
 -- Plugin: nvim-tree
 -- https://github.com/kyazdani42/nvim-tree.lua
 require('nvim_tree')
+
+-- Plugin: mason
+-- https://github.com/williamboman/mason.nvim
+require('nvim-mason')
