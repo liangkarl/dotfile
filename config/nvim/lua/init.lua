@@ -30,36 +30,36 @@ require("which-key").setup {}
 
 -- Plugin: nvim-cmp
 -- https://github.com/hrsh7th/nvim-cmp/
-require('nvim-cmp')
+require('config.nvim-cmp')
 
 -- Plugin: lspkind
 -- https://github.com/onsails/lspkind.nvim
-require('nvim-lspkind')
+require('config.lspkind')
 
 -- Plugin: nvim-lspconfig
 -- https://github.com/neovim/nvim-lspconfig
-require('nvim-lspconfig')
+require('config.nvim-lspconfig')
 
 -- Plugin: lualine
 -- https://github.com/nvim-lualine/lualine.nvim
-require('nvim-lualine')
+require('config.lualine')
 
 -- Plugin: bufferline
 -- https://github.com/akinsho/bufferline.nvim
-require('nvim-bufferline')
+require('config.bufferline')
 
 -- Plugin: aerial
 -- https://github.com/stevearc/aerial.nvim
-require('nvim-aerial')
+require('config.aerial')
 
 -- Plugin: nvim-tree
 -- https://github.com/kyazdani42/nvim-tree.lua
-require('nvim_tree')
+require('config.nvim-tree')
 
 -- Plugin: nvim-dap
 -- https://github.com/mfussenegger/nvim-dap
-require('nvim_dap')
+require('config.nvim-dap')
 
 -- Plugin: mason
 -- https://github.com/williamboman/mason.nvim
-require('nvim-mason')
+require('config.mason')
