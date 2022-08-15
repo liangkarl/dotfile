@@ -103,6 +103,7 @@ Plug 'unblevable/quick-scope'   " enhance f & F functions, rendering
 " options.
 " https://github.com/dstein64/vim-startuptime
 Plug 'dstein64/vim-startuptime'
+Plug 'mfussenegger/nvim-dap'
 
 ""
 "  Git
