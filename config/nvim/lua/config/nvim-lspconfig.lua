@@ -34,6 +34,10 @@ lsp.vimls.setup {
 -- https://github.com/bash-lsp/bash-language-server
 lsp.bashls.setup = {}
 
+-- Java (jdtls)
+-- https://github.com/eclipse/eclipse.jdt.ls
+lsp.jdtls.setup = {}
+
 -- C/C++/Obj-C (ccls)
 -- https://github.com/MaskRay/ccls
 lsp.ccls.setup {
