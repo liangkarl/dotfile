@@ -88,3 +88,7 @@ require('bufferline').setup {
   }
 }
 
+vim.keymap.set('n', '<Leader>n', ':BufferLineCycleNext<CR>')
+vim.keymap.set('n', '<Leader>p', ':BufferLineCyclePrev<CR>')
+vim.keymap.set('n', '<Leader>bj', ':BufferLinePick<CR>')
+vim.keymap.set('n', '<Leader>bc', ':BufferLinePickClose<CR>')

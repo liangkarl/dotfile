@@ -1,16 +1,10 @@
 -- Plugin: lsp-config
 -- TODO:
 -- 1. debug LSP
--- 2. Use tab for trigger completion with characters ahead and navigate.
--- 3. navigate, like up and down, pull-down menu
---   * Use <cr> to confirm completion
 -- 4. Use K to show documentation in preview window.
 -- 5. Symbol renaming.
 -- 6. Formatting selected code.
 -- 7. Apply AutoFix to problem on the current line.
-
--- 8. Remap <C-f> and <C-b> for scroll float windows/popups.
--- Note coc#float#scroll works on neovim >= 0.4.0 or vim >= 8.2.0750
 
 -- 9. NeoVim-only mapping for visual mode scroll
 -- Useful on signatureHelp after jump placeholder of snippet expansion
@@ -24,6 +18,10 @@
 -- go to impl
 -- go to reference
 --
+
+-- Configure LSP server
+-- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
+
 local lsp = require('lspconfig')
 
 -- required by aerial.nvim to support LSP function
@@ -31,11 +29,11 @@ lsp.vimls.setup {
   on_attach = require("aerial").on_attach,
 }
 
--- For bash LSP (bash-language-server)
+-- Bash (bash-language-server)
 -- https://github.com/bash-lsp/bash-language-server
 lsp.bashls.setup = {}
 
--- For C/C++/Obj-C LSP (ccls)
+-- C/C++/Obj-C (ccls)
 -- https://github.com/MaskRay/ccls
 lsp.ccls.setup {
   init_options = {
@@ -55,3 +53,5 @@ lsp.ccls.setup {
     };
   }
 }
+
+vim.keymap.set('n', '<Leader>li', ':LspInfo<CR>')

@@ -1,5 +1,3 @@
--- FIXME: keybind here
-
 -- Call the setup function to change the default behavior
 require("aerial").setup({
   -- Priority list of preferred backends for aerial.
@@ -229,3 +227,6 @@ require("aerial").setup({
     update_delay = 300,
   },
 })
+
+vim.keymap.set('n', '<Leader>at', ':AerialToggle<CR>')
+vim.keymap.set('n', '<Leader>ai', ':AerialInfo<CR>')
