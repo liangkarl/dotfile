@@ -68,8 +68,6 @@ noremap <Leader><Space>v "+p
 " Tab motion (tab: a collection of windows, like workspace)
 "
 " buffer motion (buffer: define as file content itself)
-nnoremap <silent><Leader>n :bn<CR>
-nnoremap <silent><Leader>p :bp<CR>
 nnoremap <silent><Leader>bb :b#<CR>
 nnoremap <silent><Leader>w :w<CR>
 " Save buffer content if modifiable is 'on'
@@ -87,13 +85,6 @@ nnoremap <Leader>h <C-w>h
 nnoremap <Leader>j <C-w>j
 nnoremap <Leader>k <C-w>k
 nnoremap <Leader>l <C-w>l
-
-" FIXME: change to assigned windows without hardcode configs
-noremap <space>1 1<C-w>w
-noremap <space>2 2<C-w>w
-noremap <space>3 3<C-w>w
-noremap <space>4 4<C-w>w
-noremap <space>5 5<C-w>w
 
 " quick command :C, only closing the current window, rather than quits.
 command! -nargs=0 C :close
