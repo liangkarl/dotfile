@@ -23,10 +23,11 @@
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
 
 local lsp = require('lspconfig')
+local aerial = require('aerial')
 
 -- required by aerial.nvim to support LSP function
 lsp.vimls.setup {
-  on_attach = require("aerial").on_attach,
+  on_attach = aerial.on_attach,
 }
 
 -- Bash (bash-language-server)
@@ -51,7 +52,9 @@ lsp.ccls.setup {
     clang = {
       excludeArgs = { "-frounding-math"} ;
     };
-  }
+  },
+
+  on_attach = aerial.on_attach,
 }
 
 -- Lua (sumneko_lua)
@@ -77,6 +80,8 @@ lsp.sumneko_lua.setup {
       },
     },
   },
+
+  on_attach = aerial.on_attach,
 }
 
 vim.keymap.set('n', '<Leader>li', ':LspInfo<CR>')
