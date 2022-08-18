@@ -101,7 +101,10 @@ if (has("termguicolors"))
   set termguicolors
 endif
 
-au Colorscheme * :hi CursorLine cterm=underline ctermbg=none gui=none guibg=#1c1c1c
 colorscheme material
+
+" for material only
+hi CursorLine cterm=underline ctermbg=none gui=none guifg=BURLYWOOD guibg=#1c1c1c
+hi Cursor guifg=none guibg=#7a4d4d
 
 set cursorline
