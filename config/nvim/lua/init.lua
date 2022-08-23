@@ -13,13 +13,7 @@ treesitter.setup {
   ignore_install = { "javascript" }, -- List of parsers to ignore installing
   highlight = {
     enable = true,              -- false will disable the whole extension
-
-    -- Disable tree-sitter while open large file as it's would slow
-    -- https://www.reddit.com/r/neovim/comments/s9kdsm/disable_treesitter_for_files_larger_than_x_lines/
-    disable = function(lang, bufnr)
-      return vim.api.nvim_buf_line_count(bufnr) > 50000
-    end,
-
+    disable = {},  -- list of language that will be disabled
     -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
     -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
     -- Using this option may slow down your editor, and you may see some duplicate highlights.
