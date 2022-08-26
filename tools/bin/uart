@@ -135,11 +135,22 @@ if [[ "$select_exe" == y ]]; then
 	bin=$(menu_final)
 fi
 
+# TODO: these config should be collected into a external config file
 if [[ "$config_uart" == y ]]; then
-	menu_title 'list available config options'
-	menu_prompt 'config what?'
-	menu 'n/a'
-	bin=$(menu_final)
+	menu_title 'list available config shortcuts'
+	menu_prompt 'select quick config:'
+	menu_default 1
+	menu 'b921600' 'b115200'
+	opt=$(menu_final)
+
+	case "$opt" in
+		b921600)
+			baudrate=921600
+			;;
+		b115200)
+			baudrate=115200
+			;;
+	esac
 fi
 
 case $bin in
