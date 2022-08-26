@@ -4,7 +4,7 @@ require('bufferline').setup {
   options = {
     mode = "buffers", -- set to "tabs" to only show tabpages instead
     -- numbers = "none" | "ordinal" | "buffer_id" | "both" | function({ ordinal, id, lower, raise }): string,
-	numbers = "both",
+    numbers = "both",
     close_command = "bdelete! %d",       -- can be a string | function, see "Mouse actions"
     right_mouse_command = "bdelete! %d", -- can be a string | function, see "Mouse actions"
     left_mouse_command = "buffer %d",    -- can be a string | function, see "Mouse actions"
@@ -12,7 +12,11 @@ require('bufferline').setup {
     -- NOTE: this plugin is designed with this icon in mind,
     -- and so changing this is NOT recommended, this is intended
     -- as an escape hatch for people who cannot bear it for whatever reason
-    indicator_icon = '▎',
+    indicator = {
+      icon = '▎', -- this should be omitted if indicator style is not 'icon'
+      -- style = 'icon' | 'underline' | 'none',
+      style = 'icon',
+    },
     buffer_close_icon = '',
     modified_icon = '●',
     close_icon = '',
