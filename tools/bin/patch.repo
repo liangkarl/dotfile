@@ -1,64 +1,110 @@
 #!/usr/bin/env bash
 
+source $(mylib io)
+
+# set -xv
+set -eE
+
 usage() {
     local n
 
     n=$(basename $0)
     cat <<-EOF
-    $n -s start
-    $n -e end
-    $n -a patch.zip
-EOF
+	NAME:
+	$n [-s start] [-e end] [-a tarball]
+
+	OPTIONS:
+	-s: start point of commit (generate patches)
+	-e: end point of commit (generate patches)
+	-a: apply patch from tarball
+	EOF
 
     exit $1
 }
 
 apply() {
-    local tmp_cmd sha_list
-
-    tmp_cmd=$(mktemp)
+    local sha_list
+	local p ans rev
     sha_list=$(mktemp)
 
-    cat > $tmp_cmd <<-EOF
-    rev="$(git rev-parse HEAD)"
-    echo "${rev},$(pwd)" >> $sha_list
-    git am -sk --ignore-whitespace '${PATCH_OUT}'/*
-    if (( $? != 0 )); then
-        echo "recover working tree due to 'am' error. ($?)"
-        git am --abort
-        git reset --hard $rev
-    fi
-    EOF
     tar -xvf $1
-    repo forall -pvc "bash $tmp_cmd"
+	for p in $(repo list -p); do
+		rev="$(git rev-parse HEAD)"
+
+		cd $p
+		[[ ! -e ${pout} ]] && continue
+
+		echo "${rev},${p}" >> $sha_list
+		git am -sk --ignore-whitespace ${pout}/* || {
+			pr_err "recover working tree due to 'am' error. ($?)"
+			git am --abort
+			git reset --hard $rev
+		}
+		cd $OLDPWD
+	done
 
     read -p "reset/clean to original HEAD? [Y/n] " ans
     [[ "${ans,,}" == n ]] && exit
 
-    cat > $tmp_cmd <<-EOF
-    rev="$(cat $sha_list | awk -F, '/'$(pwd)'/{print $1}')"
-    echo "$(pwd),${rev}" >> $sha_list
-    git reset --hard $rev
-    rm -rf $PATCH_OUT
-    EOF
-    repo forall -pvc "bash $tmp_cmd"
+	for p in $(repo list -p); do
+		rev="$(cat $sha_list | awk -F, '/'${p}'/{print $1}')"
 
-    exit
+		cd $p
+		[[ ! -e ${pout} ]] && continue
+		[[ "$(git rev-parse HEAD)" == "$rev" ]] && continue
+
+		git reset --hard $rev
+		rm -rf $pout
+		cd $OLDPWD
+	done
 }
 
-PATCH_OUT='.patch'
+# assume cwd is at the top directory of repo
+generate() {
+	local tmplist name
+	local begin end
+	local p
+
+	begin="$1"
+	end="$2"
+	name=${end}_patchset.txz
+	tmplist="$(mktemp)"
+	trap "rm $tmplist" EXIT
+
+	for p in $(repo list -p); do
+		# if git sha is not available
+		git rev-parse -q --verify ${begin} > /dev/null || {
+			pr_err "skip '$p' for there is no '${begin}' in repository"
+			continue
+		}
+
+		git -C ./$p format-patch --binary -k -o $pout ${begin}..${end}
+
+		# remove empty directory
+		rmdir ${p}/$pout || echo ${p}/$pout >> $tmplist
+	done 2> /dev/null
+
+	echo "compress patches into $name ..."
+	tar -Jcvf $name $(<$tmplist)
+
+	repo manifest -r -o "${begin,,}.xml"
+}
+
+pout='.patch'
 
 (( $# == 0 )) && usage 1
 
 while (( $# != 0 )); do
-    case $1 in
+    case "$1" in
         -s) shift
-            from="$1"
+            begin="$1"
             ;;
         -e) shift
-            target="$1"
+            end="$1"
             ;;
         -a) shift
+			[[ -e "$1" ]] || usage 3
+
             afile="$1"
             ;;
         *)
@@ -68,26 +114,16 @@ while (( $# != 0 )); do
     shift
 done
 
-# exit script if verify enabled
-[[ ! -z "$afile" ]] && apply $afile
+# apply patches generated for repo projects
+[[ ! -z "$afile" ]] && {
+	apply $afile
+	exit 0
+}
 
-[[ -z "$from" ]] && usage 3
-[[ -z "$target" ]] && target='HEAD'
+# generate patches
+[[ -z "$begin" ]] && usage 4
+[[ -z "$end" ]] && end='HEAD'
 
-# TODO: check ${from} is available for this git or not
-tmp_cmd=$(mktemp)
-cat > $tmp_cmd <<-EOF
-git format-patch --binary -k -o $PATCH_OUT ${from}..${target}
-[[ -z "$(ls -A $PATCH_OUT)" ]] && rm -rf $PATCH_OUT
-EOF
+generate $begin $end
 
-echo "generate patch from $from to $target ..."
-repo forall -pvc "bash $tmp_cmd"
-
-name=${target}_patchset.bz2
-echo "compress patch files, $name ..."
-repo list | awk '{print $1"/'$PATCH_OUT'"}'| xargs tar -cjf $name 2>&-
-repo manifest -r -o "${from,,}.xml"
-
-rm -rf $tmp_cmd
-echo "complete"
+pr_good "complete"
