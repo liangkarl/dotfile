@@ -28,27 +28,22 @@ EOF
 # save_oldest_git_revision ${path}
 save_oldest_git_revision() {
     # record file should be empty file at first
-	local path ocommit
+	local path oldc
 
 	path="$1"
-	if [[ -z "$path" ]]; then
-		ocommit="$(git rev-parse HEAD)"
-		path="$(pwd)"
-	else
-		ocommit="$(git -C ${path} rev-parse HEAD)"
-	fi
+
+	[[ -z "$path" ]] && path="$(pwd)"
+
+	oldc="$(git -C ${path} rev-parse HEAD)"
 
 	# check file exist?
 	## create file if no file existed
-	if [[ ! -e ${rfile} ]]; then
-		printf "%s,%s\n" ${path} ${ocommit} > ${rfile}
-		return 0
-	fi
+	[[ ! -e ${rfile} ]] && touch ${rfile}
 
 	# grep path if file existed
 	## record commit if no path existed
 	cat ${rfile} | grep -sn ${path} || {
-		printf "%s,%s\n" ${path} ${ocommit} >> ${rfile}
+		printf "%s,%s\n" ${path} ${oldc} >> ${rfile}
 	}
 }
 

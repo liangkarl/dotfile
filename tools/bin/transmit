@@ -24,7 +24,7 @@ export_conf() {
 	# )
 	# BIN='rsync'
 	# SSHPASS_PWD=''
-EOF
+	EOF
 }
 
 usage() {
