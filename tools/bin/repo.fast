@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+source $(mylib sys)
+source $(mylib io)
+
 help() {
 	local name="$(basename $0)"
 
@@ -10,7 +13,7 @@ help() {
 	usage:
 	    $name [$name options] [repo options]
 
-	$name options:
+	options:
 	    * only execute one $name opts in one time
 	    help: help
 	    sync: sync code quickly
@@ -29,6 +32,8 @@ shift
 repo_opt="$@"
 
 # TODO: load build.conf
+
+has_cmd repo || exit_msg 2 "no 'repo' installed"
 
 case $fepo_opt in
 	reset)

@@ -65,21 +65,18 @@ get_diff() {
 }
 
 usage() {
-	cat << USAGE
+	local n
 
-	$0 OPTIONS
+	n=$(basename $0)
+	cat <<-EOF
+	SYNOPSIS:
+	$n [-s diff|show] [-d folder] [-h]
 
 	OPTIONS:
-		[-s | --sample] [diff|show]: create sample/
-			ex: $0 -s show
-
-		[-d | --diff] folder: generate .diff from sample files
-			ex: $0 -d ~/aaa/
-
-		[-h | --help]: help
-			ex: $0 -h
-
-USAGE
+		-s diff|show: create sample/
+		-d folder: generate .diff from sample files
+		-h: help
+	EOF
 	exit $1
 }
 
