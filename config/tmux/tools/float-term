@@ -7,37 +7,46 @@
 #
 
 # detect current session & window name
-session="$(tmux display-message -p '#S')"
-window="$(tmux display-message -p '#W')"
+src_term="$(tmux display-message -p '#S')"
+src_wid="tty$(tmux display-message -p '#{window_id}')"
 
 # default session name
-float_session="__float__"
-float_conf="${XDG_CONFIG_HOME}/tmux/float-window.conf"
+ft_term="[FloatTerm]"
+ft_conf="${XDG_CONFIG_HOME}/tmux/float-term.conf"
 
-if [[ "${session}" == "${float_session}" ]]; then
+# toggle float terminal here
+if [[ "${src_term}" == "${ft_term}" ]]; then
 	tmux detach-client
 	exit
 fi
 
 # create session with assigned .conf
-if ! tmux has-session -t ${float_session}; then
-	tmux new-session -f ${float_conf} -d -c $(pwd) -s ${float_session}
+if ! tmux has-session -t ${ft_term}; then
+	tmux new-session -f ${ft_conf} -d -c $PWD -s ${ft_term}
+	new_term=y
 fi
 
 # attach session
-popup_cmd=("tmux attach-session -t ${float_session} \;")
+# '\;' is special use case for eval
+pop_cmd=("tmux attach-session -t ${ft_term} '\;'")
 
-list=($(tmux lsw -F '#W.#{window_index}' -t ${float_session} | grep ${window}))
-if (( ${#list[@]} >= 1 )); then
-	popup_cmd+=("select-window -t ${list[0]##*.} \;")
+if [[ "$new_term" == y ]]; then
+	# new session would have a new window
+	pop_cmd+=("rename-window ${src_wid} '\;'")
 else
-	number=$(tmux display-message -p '#{session_windows}')
-	if (( $number == 1 )); then
-		popup_cmd+=("rename-window ${window} \;")
+	ft_win="$(tmux lsw -F '#{window_name}' -t ${ft_term} | grep -w ${src_wid})"
+	if [[ -z "$ft_win" ]]; then
+		pop_cmd+=("new-window -n ${src_wid} -c $PWD '\;'")
 	else
-		popup_cmd+=("new-window -n "${window}" -c $(pwd) \;")
+		pop_cmd+=("select-window -t ${ft_win} '\;'")
 	fi
 fi
 
+# \"cd $PWD\" is special use case for eval
+pop_cmd+=("send-keys \"cd $PWD\" C-m '\;'")
+# cd_cmd="send-keys cd $PWD C-m \;"
+
 # pop up float window
-tmux popup -w 80% -h 80% -E ${popup_cmd[@]} || true
+eval tmux popup -w 80% -h 80% -E ${pop_cmd[*]} || true
+# tmux popup -w 80% -h 80% -E ${pop_cmd[*]} send-keys "cd $PWD" C-m ';' || true
+# tmux popup -w 80% -h 80% -E ${pop_cmd[*]} $cd_cmd || true
