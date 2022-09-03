@@ -33,7 +33,7 @@ shopt -s extglob
 
 usage() {
 	local name
-	name="${1:-$(basename $0 2>&-)}"
+	name="$(basename $0)"
 
 	cat<<-EOF
 	NAME:
