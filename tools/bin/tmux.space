@@ -29,6 +29,7 @@ TARGET_NAME="$1"
 source $(mylib file)
 source $(mylib io)
 source $(mylib sys)
+source $(mylib menu)
 
 usage() {
 	local n
@@ -44,35 +45,11 @@ usage() {
 	OPTIONS:
 	  '': enter session
 	  -d: delete sessions
-	  -l: list session names
 	  -e: edit session configuration
+	  -h: help
 	EOF
 
 	exit $1
-}
-
-check_session() {
-	local i num
-	local name state pos path
-
-	# import $project
-	. $CONF
-
-	# list session
-	num=1
-	OPTS=()
-	for i in "${!space[@]}"; do
-		name=$i
-		pos="${space[$i]}"
-		state='none'
-
-		if tmux has -t="$name" 2> /dev/null; then
-			state='exist'
-		fi
-		echo "$num) ${name} ${state} ${path}"
-		OPTS+=("$name,$state")
-		((num++))
-	done
 }
 
 switch_session() {
@@ -89,88 +66,118 @@ switch_session() {
 	exit 0
 }
 
-enter_session() {
-	local pname ppath pstate
-	local num
-
-	# select project number
-	read -p "select a project num to open: " num
-
-	pname=${OPTS[$((--num))]%,*}
-	[[ -z "${pname}" ]] && exit_msg 2 "invalid number of projects"
-
-	ppath="${space[$pname]}"
-	pstate="${OPTS[$num]##*,}"
-
-	# if project not exist
-	if [[ $pstate == 'none' ]]; then
-		# FIXME: these operation should be moved to 'ws'
-		if [[ "$HAS_WS" == y ]]; then
-			ws $ppath
-		else
-			# expand bash macros
-			eval tmux new -d -s $pname -c $ppath
-		fi
-	fi
-
-	switch_session -t $pname
-}
-
-delete_session() {
-	local pname ppath pstate
-	local num
-
-	# select project number
-	read -p "select a project num to remove: " num
-
-	pname=${OPTS[$((--num))]%,*}
-	[[ -z "${pname}" ]] && exit_msg 2 "invalid number of projects"
-
-	ppath="${space[$pname]}"
-	pstate="${OPTS[$num]##*,}"
-
-	# if project exist
-	if [[ $pstate == 'exist' ]]; then
-		# delelte session
-		tmux kill-session -t $pname
-	fi
-}
-
 edit_conf() {
 	local dir confg
 
-	dir=$(dirname $CONF)
-	[[ ! -e $dir ]] && mkdir -p $dir
-
 	if [[ ! -e $CONF ]]; then
-		cat > $CONF <<-EOF
-		# ts.conf example:
-		#
-		# space+=([j90]='~/path/to/j90/project.conf/place')
-		EOF
-	fi
+		dir=$(dirname $CONF)
+		[[ ! -e $dir ]] && mkdir -p $dir
 
-	vim $CONF
+		cat > $CONF <<-EOF
+		# $(basename $CONF) example:
+		#
+		# space=([name]='j90' [cwd]='~/path/to/j90/project.conf/place')
+		# space=([name]='ui7' [cwd]='~/path/to/j90/project.conf/place')
+		EOF
+	else
+		vim $CONF
+	fi
 }
 
-declare -A space
+parse_conf() {
+	local line name path
+
+	[[ ! -e "$CONF" ]] && edit_conf
+
+	# read config
+	# while parse line
+	while IFS= read -r line; do
+		eval $line
+
+		name="${space[name]}"
+		[[ -z "${name}" ]] && continue
+
+		path="${space[cwd]}"
+		[[ ! -d "${path}" ]] && path="$HOME"
+
+		stat[$name]='off'
+		tmux has -t="${name}" && stat[$name]='on'
+
+		cwd[$name]="$path"
+
+	done < "$CONF" 2>/dev/null
+}
+
+enter() {
+	local ans name path
+
+	# show menu ${!list[@]}
+	menu_title "available project names:"
+	menu_prompt "select one to start:"
+	menu ${!stat[@]} "cancel"
+	name=$(menu_final)
+	path="${cwd[$name]}"
+
+	[[ "$name" == "cancel" ]] && exit
+
+	# if project not exist
+	if [[ "${stat[$name]}" == 'off' ]]; then
+		# new a detached session
+		eval tmux new -d -s $name -n "[$name]" -c $path
+
+		# if wins is available
+		if [[ -e "$wins" ]]; then
+			# add wins following by wins.conf
+			eval $wins -c $path/wins.conf -t $name -p $path
+
+			# FIXME: failed to remove [$name] window here
+			tmux kill-window -t "[$name]" \; \
+				move-window -r \;
+		fi
+	fi
+
+	switch_session -t $name
+}
+
+# delete session
+remove() {
+	local n name
+	# while session not exit
+	for n in ${!stat[@]}; do
+		# unset it
+		[[ "${stat[$n]}" == off ]] && unset stat[$n]
+	done
+
+	(( ${#stat[@]} == 0 )) && exit_msg 0 "no session available"
+
+	# show menu
+	menu_title "available session names:"
+	menu_prompt "select one to remove:"
+	menu ${!stat[@]} "cancel"
+	name=$(menu_final)
+
+	[[ "$name" == "cancel" ]] && exit
+
+	tmux kill-session -t $name
+}
+
+# set -xv
+set -eE
+
+declare -A stat cwd space
 CONF="$XDG_CONFIG_HOME/tmux/space.conf"
-PROJECT_LIST=()
+wins="$XDG_CONFIG_HOME/tmux/tools/wins"
+# CONF="$PWD/space.conf"
 
 case $1 in
 	'')
-		LIST_PROJ=y
-		PROJ=y
+		ENTER=y
 		;;
 	-d)
-		LIST_PROJ=y
-		DEL_PROJ=y
-		;;
-	-l)
-		LIST_PROJ=y
+		REMOVE=y
 		;;
 	-e)
-		EDIT_PROJ_CONF=y
+		EDIT_CONF=y
 		;;
 	-h)
 		usage 0
@@ -180,13 +187,9 @@ case $1 in
 		;;
 esac
 
-[[ "$EDIT_PROJ_CONF" == y ]] && edit_conf
+[[ "$EDIT_CONF" == y ]] && edit_conf
 
-# list project name status
-[[ "$LIST_PROJ" == y ]] && check_session
+parse_conf
 
-has_cmd ws && HAS_WS=y
-
-[[ "$PROJ" == y ]] && enter_session
-
-[[ "$DEL_PROJ" == y ]] && delete_session
+[[ "$ENTER" == y ]] && enter
+[[ "$REMOVE" == y ]] && remove
