@@ -154,7 +154,7 @@ edit_conf() {
 }
 
 declare -A space
-CONF="$XDG_CONFIG_HOME/tmux/plugin/ts/ts.conf"
+CONF="$XDG_CONFIG_HOME/tmux/space.conf"
 PROJECT_LIST=()
 
 case $1 in
