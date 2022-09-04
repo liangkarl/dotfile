@@ -5,7 +5,6 @@
 
 source $(mylib file)
 
-# set -x
 set -eE
 
 usage() {
@@ -18,7 +17,6 @@ usage() {
 	-h: print help
 	-c/-C: create new windows in tmux following the config
 	-t: assign win name
-	-p: assign path
 	EOF
 	exit $1
 }
@@ -27,7 +25,7 @@ usage() {
 new_win() {
 	local cmd
 
-	cmd="new-window -d -n $1"
+	cmd="new-window -n $1"
 	[[ ! -z "$name" ]] && cmd+=" -t $name"
 
 	if [[ ! -z "$2" ]]; then
@@ -62,22 +60,13 @@ while (( $# > 0 )); do
 			shift
 			name="$1"
 			;;
-		-p)
-			shift
-			path="$1"
-			;;
 		*)
 			usage 2
 	esac
 	shift
 done
 
-[[ -z "$CONF" ]] && usage 1
-
-if [[ ! -e "$CONF" ]]; then
-	new_win "$name" "$path" "# no $CONF found"
-	exit
-fi
+[[ -z "$CONF" || ! -e "$CONF" ]] && usage 1
 
 declare -A win
 while IFS= read -r line; do
@@ -85,5 +74,5 @@ while IFS= read -r line; do
 	[[ -z "${win[name]}" ]] && break
 	[[ ! -d "${win[cwd]}" ]] && win[cwd]="$HOME"
 
-	new_win "${win[name]}" "${win[path]}" "${win[cmd]}"
+	new_win "${win[name]}" "${win[cwd]}" "${win[cmd]}"
 done < "$CONF" 2> /dev/null
