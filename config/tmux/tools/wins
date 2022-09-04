@@ -5,13 +5,21 @@
 
 source $(mylib file)
 
-# set -xv
+# set -x
+set -eE
+
 usage() {
 	n="$(basename $0)"
 	cat <<-EOF
-	$n -h: print help
-	$n [config]: create new windows in tmux following the config
-EOF
+	NAME:
+	$n - create window tabs according to wins.conf
+
+	OPTIONS:
+	-h: print help
+	-c/-C: create new windows in tmux following the config
+	-t: assign win name
+	-p: assign path
+	EOF
 	exit $1
 }
 
@@ -19,38 +27,63 @@ EOF
 new_win() {
 	local cmd
 
-	cmd="new-window -n $1"
+	cmd="new-window -d -n $1"
+	[[ ! -z "$name" ]] && cmd+=" -t $name"
 
 	if [[ ! -z "$2" ]]; then
 		cmd+=" -c $2"
 	fi
-	cmd+="\\; "
+	cmd+="\; "
 
-	if [[ ! -z "$3" ]]; then
-		cmd+="send-keys '$3' C-m \\;"
+	if (( $# > 2 )); then
+		shift 2
+		eval tmux $cmd send-keys "'$@'" C-m \;
+	else
+		eval tmux $cmd
 	fi
-
-	eval tmux $cmd
 }
 
-[[ "$1" == '-h' ]] && usage 0
+(( $# == 0 )) && usage 3
 
-CONF="$(find_file_path $1)"
-[[ -z "$CONF" ]] && exit 1
-
-. $CONF
-
-i=1
-while :; do
-	win="win_$i[@]"
-	win=("${!win}")
-
-	name="${win[0]}"
-	[[ -z "$name" ]] && break
-
-	path="${win[1]}"
-	cmd="${win[2]}"
-
-	new_win $name $path $cmd
-	(( i++ ))
+while (( $# > 0 )); do
+	case "$1" in
+		-h)
+			usage 0
+			;;
+		-C)
+			shift
+			CONF="$(find_file_path $1)"
+			;;
+		-c)
+			shift
+			CONF="$1"
+			;;
+		-t)
+			shift
+			name="$1"
+			;;
+		-p)
+			shift
+			path="$1"
+			;;
+		*)
+			usage 2
+	esac
+	shift
 done
+
+[[ -z "$CONF" ]] && usage 1
+
+if [[ ! -e "$CONF" ]]; then
+	new_win "$name" "$path" "# no $CONF found"
+	exit
+fi
+
+declare -A win
+while IFS= read -r line; do
+	eval $line
+	[[ -z "${win[name]}" ]] && break
+	[[ ! -d "${win[cwd]}" ]] && win[cwd]="$HOME"
+
+	new_win "${win[name]}" "${win[path]}" "${win[cmd]}"
+done < "$CONF" 2> /dev/null
