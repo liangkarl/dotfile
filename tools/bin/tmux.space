@@ -109,7 +109,7 @@ parse_conf() {
 }
 
 enter() {
-	local ans name path
+	local name path
 
 	# show menu ${!list[@]}
 	menu_title "available project names:"
@@ -126,13 +126,15 @@ enter() {
 		eval tmux new -d -s $name -n "[$name]" -c $path
 
 		# if wins is available
-		if [[ -e "$wins" ]]; then
+		if [[ -e "$wins" && -f $path/wins.conf ]]; then
 			# add wins following by wins.conf
-			eval $wins -c $path/wins.conf -t $name -p $path
+			eval $wins -c $path/wins.conf -t $name
 
-			# FIXME: failed to remove [$name] window here
-			tmux kill-window -t "[$name]" \; \
-				move-window -r \;
+			# FIXME:
+			# failed to remove [$name] window when the current console
+			# is in tmux already
+			tmux kill-window -t [$name] \; \
+				move-window -r \; || true
 		fi
 	fi
 
