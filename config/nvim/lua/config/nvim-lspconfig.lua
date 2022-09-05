@@ -57,11 +57,15 @@ lsp.vimls.setup {
 
 -- Bash (bash-language-server)
 -- https://github.com/bash-lsp/bash-language-server
-lsp.bashls.setup = {}
+lsp.bashls.setup = {
+  on_attach = cust_attach,
+}
 
 -- Java (jdtls)
 -- https://github.com/eclipse/eclipse.jdt.ls
-lsp.jdtls.setup = {}
+lsp.jdtls.setup = {
+  on_attach = cust_attach,
+}
 
 -- C/C++/Obj-C (ccls)
 -- https://github.com/MaskRay/ccls
