@@ -97,7 +97,9 @@ parse_conf() {
 		name="${space[name]}"
 		[[ -z "${name}" ]] && continue
 
-		path="${space[cwd]}"
+		# WARN:
+		# '~' expansion would not occurred in '[[]]'.
+		path="${space[cwd]/\~/$HOME}"
 		[[ ! -d "${path}" ]] && path="$HOME"
 
 		stat[$name]='off'
