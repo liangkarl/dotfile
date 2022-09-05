@@ -68,11 +68,15 @@ done
 
 [[ -z "$CONF" || ! -e "$CONF" ]] && usage 1
 
+wd="$(readlink -e $(dirname $CONF))"
+
 declare -A win
 while IFS= read -r line; do
 	eval $line
 	[[ -z "${win[name]}" ]] && break
-	[[ ! -d "${win[cwd]}" ]] && win[cwd]="$HOME"
+
+	[[ "${win[cwd]}" == ~/* ]] && win[cwd]=${win[cwd]/\~/$HOME}
+	[[ "${win[cwd]}" != /* ]] && win[cwd]=$wd/${win[cwd]}
 
 	new_win "${win[name]}" "${win[cwd]}" "${win[cmd]}"
 done < "$CONF" 2> /dev/null
