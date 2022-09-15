@@ -128,7 +128,7 @@ enter() {
 		eval tmux new -d -s $name -n "[$name]" -c $path
 
 		# if wins is available
-		if [[ -e "$wins" && -f $path/wins.conf ]]; then
+		if has_cmd $wins && [[ -f $path/wins.conf ]]; then
 			# add wins following by wins.conf
 			eval $wins -c $path/wins.conf -t $name
 
@@ -170,8 +170,8 @@ set -eE
 
 declare -A stat cwd space
 CONF="$XDG_CONFIG_HOME/tmux/space.conf"
-wins="$XDG_CONFIG_HOME/tmux/tools/wins"
 # CONF="$PWD/space.conf"
+wins="tmux.wm"
 
 case $1 in
 	'')
