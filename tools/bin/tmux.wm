@@ -26,7 +26,9 @@ new_win() {
 	local cmd
 
 	cmd="new-window -n $1"
-	[[ ! -z "$name" ]] && cmd+=" -t $name"
+	# Assume $name is the first window name of $name session
+	# create new window next to $name window, (+)
+	[[ ! -z "$name" ]] && cmd+=" -t $name:+"
 
 	if [[ ! -z "$2" ]]; then
 		cmd+=" -c $2"
