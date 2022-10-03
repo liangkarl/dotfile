@@ -125,17 +125,18 @@ enter() {
 	# if project not exist
 	if [[ "${stat[$name]}" == 'off' ]]; then
 		# new a detached session
-		eval tmux new -d -s $name -n "[$name]" -c $path
+		eval tmux new -d -s $name -n "$name" -c $path
 
 		# if wins is available
 		if has_cmd $wins && [[ -f $path/wins.conf ]]; then
 			# add wins following by wins.conf
 			eval $wins -c $path/wins.conf -t $name
 
-			# FIXME:
-			# failed to remove [$name] window when the current console
-			# is in tmux already
-			tmux kill-window -t [$name] \; \
+			# kill #1 window in $name session
+			# select lowest-number window
+			# resort window
+			tmux kill-window -t $name:1 \; \
+				select-window -t $name:^ \; \
 				move-window -r \; || true
 		fi
 	fi
