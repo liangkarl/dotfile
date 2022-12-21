@@ -17,6 +17,7 @@ usage:
 
 options:
 	-h: help
+	-v: download and verify commits
 	-d: download commits (metadata format)
 	-a: apply downloaded commits
 	-r: reset to last git revision before executing script.
@@ -68,7 +69,7 @@ download_metadata() {
 	idx=0
 	tmp="patch.tmp"
 	# fetch patches info into individual file
-	rm -f patch.*
+	cd $tmpd
 	while true; do
 		ssh -p ${port} ${user}@${gerrit} \
 			gerrit query --current-patch-set --start $idx limit:1 \
@@ -79,14 +80,15 @@ download_metadata() {
 		# should be the same as the current patch set number
 		num="$(grep "^  number" ${tmp} | awk '{print $2}')"
 		patch="patch.${num}"
-		cp ${tmp} ${patch}
+		mv ${tmp} ${patch}
 
 		idx=$((idx + 1))
 		echo "metadata: ${patch}"
 		cat ${patch} | awk '/^  subject/'
 
-		grep -q "moreChanges: true" ${tmp} || {
+		grep -q "moreChanges: true" $patch || {
 			echo "no more changes"
+			cd $OLDPWD
 			break
 		}
 
@@ -94,12 +96,10 @@ download_metadata() {
 		# due to frequenct query.
 		sleep 1
 	done
-	rm -f ${tmp}
 }
 
 apply_patch() {
-	top="$(pwd)"
-	list=($(ls patch.*))
+	list=($(ls ${tmpd}/patch.*))
 	# parse each metadata of patches and cherry-pick them
 	for patch in ${list[@]}; do
 		url="$(cat $patch | grep "^  url:" | awk '{print $2}')"
@@ -113,7 +113,7 @@ apply_patch() {
 		cd $path
 		git fetch ssh://${user}@${gerrit}:${port}/${project} ${ref} || {
 			pr_warn "cannot download commit from '${url}'"
-			cd $top
+			cd $OLDPWD
 			continue
 		}
 
@@ -128,10 +128,11 @@ apply_patch() {
 			pr_warn "skip commits from '${url}'"
 		}
 		git log -1 --format=reference
-		cd $top
+		cd $OLDPWD
 	done
 }
 
+tmpd=".patch.tmp"
 rfile="$(pwd)/.commits"
 name="$(pwd)/build.conf"
 source $name || exit_msg 1 "no available $name"
@@ -141,30 +142,44 @@ source $name || exit_msg 1 "no available $name"
 # repo sync -d -c -q --force-sync
 
 case "$1" in
-	"")
-		download_metadata
-		# remove git revision record
-		rm -rf ${rfile}
-		apply_patch
-		pr_good "== back to original git rev by using '$(basename $0) -r' =="
+	-v)
+		CLEAN_TMPD=y
+		DOWNLOAD_METADATA=y
+		CLEAN_RESET_LIST=y
+		APPLY_PATCH=y
 		;;
 	-h)
 		usage 0
 		;;
 	-a)
-		apply_patch
+		CLEAN_RESET_LIST=y
+		APPLY_PATCH=y
 		;;
 	-d)
-		download_metadata
+		CLEAN_TMPD=y
+		DOWNLOAD_METADATA=y
 		;;
 	-c)
-		rm -rf patch.*
-		rm -rf .commits
+		CLEAN_TMPD=y
+		CLEAN_RESET_LIST=y
 		;;
 	-r)
-		restore_oldest_git_revision ${rfile}
+		RESTORE_REV=y
 		;;
 	*)
 		usage 1
 		;;
 esac
+
+if [[ "$CLEAN_TMPD" == y ]]; then
+	rm -rf $tmpd
+	mkdir $tmpd
+fi
+
+[[ "$DOWNLOAD_METADATA" == y ]] && download_metadata
+
+[[ "$CLEAN_RESET_LIST" == y ]] && rm -rf $rfile
+
+[[ "$APPLY_PATCH" == y ]] && apply_patch
+
+[[ "$RESTORE_REV" == y ]] && restore_oldest_git_revision "$rfile"
