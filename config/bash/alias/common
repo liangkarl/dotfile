@@ -10,9 +10,9 @@ alias rsync='rsync -av -h --progress'
 alias less='less -R'
 
 # compression
-alias txz='tar -Jcv'
-alias tgz='tar -zcv'
-alias bz2='tar -jcv'
+alias txz='tar -I pxz -v'
+alias tgz='tar -I pigz -v'
+alias bz2='tar -I pbzip2 -v'
 
 # coloring manual
 # (don't append space in the end of 'man')
