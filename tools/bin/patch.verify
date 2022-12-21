@@ -89,6 +89,10 @@ download_metadata() {
 			echo "no more changes"
 			break
 		}
+
+		# Prevent that the remote server blocked the request
+		# due to frequenct query.
+		sleep 1
 	done
 	rm -f ${tmp}
 }
