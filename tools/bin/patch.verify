@@ -22,6 +22,7 @@ options:
 	-a: apply downloaded commits
 	-r: reset to last git revision before executing script.
 	-c: clean configs: .commits, patch.*
+	-t TAG-NAME: add tag when apply patches
 EOF
 	exit $1
 }
@@ -61,6 +62,25 @@ restore_oldest_git_revision() {
 		path=${rcontent[${i}]%,${commit}}
 		echo "path: ${path}"
 		git -C ${path} reset --hard ${commit}
+		i=$((i+1))
+	done
+}
+
+add_patch_tag() {
+	local rfile
+
+	rfile="$1"
+	rcontent=($(<${rfile}))
+	i=0
+
+	if [[ -z "$PATCH_TAG" ]]; then
+		PATCH_TAG="patch.$(date +%y%m%d-%H%M)"
+	fi
+
+	while (( $i < ${#rcontent[@]} )); do
+		path=${rcontent[${i}]%,${commit}}
+		echo "path: ${path}"
+		git -C ${path} tag $PATCH_TAG
 		i=$((i+1))
 	done
 }
@@ -166,6 +186,10 @@ case "$1" in
 	-r)
 		RESTORE_REV=y
 		;;
+	-t)
+		shift
+		PATCH_TAG="$1"
+		;;
 	*)
 		usage 1
 		;;
@@ -180,6 +204,10 @@ fi
 
 [[ "$CLEAN_RESET_LIST" == y ]] && rm -rf $rfile
 
-[[ "$APPLY_PATCH" == y ]] && apply_patch
+if [[ "$APPLY_PATCH" == y ]]; then
+	apply_patch
+	add_patch_tag
+	echo "add '$PATCH_TAG' for convenience"
+fi
 
 [[ "$RESTORE_REV" == y ]] && restore_oldest_git_revision "$rfile"
