@@ -14,6 +14,7 @@ usage() {
 	$n [-s start] [-e end] [-a tarball]
 
 	OPTIONS:
+	-t KEYWORD: start from the first commit including the 'KEYWORD'
 	-s: start point of commit (generate patches)
 	-e: end point of commit (generate patches)
 	-a: apply patch from tarball
@@ -78,26 +79,60 @@ generate() {
 			continue
 		}
 
-		git -C ./$p format-patch --binary -k -o $pout ${begin}..${end}
+		git -C $p format-patch --binary -k -o $pout ${begin}..${end}
 
 		# remove empty directory
 		rmdir ${p}/$pout || echo ${p}/$pout >> $tmplist
 	done 2> /dev/null
 
 	echo "compress patches into $name ..."
-	tar -Jcvf $name $(<$tmplist)
+	cp $tmplist patch.list
+	tar -Jcvf $name patch.list $(<$tmplist)
 
 	repo manifest -r -o "${begin,,}.xml"
 }
 
-pout='.patch'
+partial_generate() {
+	tmp="$(mktemp)"
+	keyword="$1"
+	end="$2"
+	name=${end}_patchset.txz
+
+	trap "rm -f $tmp" EXIT
+
+	# grep string and select the oldest one
+	repo forall -pc "git log --oneline | grep \"$keyword\" | tail -n 1" > $tmp
+	echo "find below commits:"
+	cat $tmp
+
+	echo "generate the patches"
+	cat $tmp | awk '/^project/{print $2}' > ${tmp}.project
+	while IFS= read -r line; do
+		cd $line
+		beg="$(git log --oneline | grep "$keyword" | awk '{print $1}' | tail -n 1)"
+		git format-patch --binary -k -o $pout ${beg}^..$end
+		cd $OLDPWD
+	done < ${tmp}.project
+
+	pr_hint "compress patches into $name"
+	cp ${tmp}.project patch.list
+
+	# use $0'$pout' since the end of the path would append a slash
+	tar -Jcvf $name patch.list $(awk '{print $0"'$pout'"}' ${tmp}.project)
+}
+
+pout='patch.set'
 
 (( $# == 0 )) && usage 1
 
 while (( $# != 0 )); do
     case "$1" in
+        -t) shift
+            keyword="$1"
+            ;;
         -s) shift
             begin="$1"
+            SEARCH_ALL=y
             ;;
         -e) shift
             end="$1"
@@ -117,13 +152,18 @@ done
 # apply patches generated for repo projects
 [[ ! -z "$afile" ]] && {
 	apply $afile
-	exit 0
+	exit
 }
 
 # generate patches
-[[ -z "$begin" ]] && usage 4
 [[ -z "$end" ]] && end='HEAD'
 
-generate $begin $end
+if [[ "$SEARCH_ALL" == y ]]; then
+	[[ -z "$begin" ]] && usage 4
+	generate $begin $end
+else
+	[[ -z "$keyword" ]] && usage 4
+	partial_generate "$keyword" $end
+fi
 
 pr_good "complete"
