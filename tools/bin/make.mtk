@@ -136,6 +136,7 @@ add_build_note_header() {
 	# build-info
 	* start: $(date '+%D - %T')
 	* location: $(pwd)
+	* runtime conf: $RT_BCONF
 	* commad: ${EXE_CMD}
 
 	# environment
@@ -150,8 +151,6 @@ add_build_note_header() {
 add_build_note_content_exp() {
 	cat > $NOTE_CONTENT <<-EOF
 	[//]: # (Add items with Markdown syntax)
-	[//]: # (sorted list: 1., 2.)
-	[//]: # (unsorted list: *)
 	EOF
 }
 
