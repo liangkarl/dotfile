@@ -149,7 +149,7 @@ add_build_note_header() {
 }
 
 add_build_note_content_exp() {
-	cat > $NOTE_CONTENT <<-EOF
+	cat > $NOTE_BODY <<-EOF
 	[//]: # (Add items with Markdown syntax)
 	EOF
 }
@@ -264,12 +264,12 @@ add_build_note_content() {
 	option=$(menu_final)
 
 	# create new note if no file existed
-	[[ -e $NOTE_CONTENT ]] || add_build_note_content_exp
+	[[ -e $NOTE_BODY ]] || add_build_note_content_exp
 
 	case ${option} in
 		add-note)
 			# go to the end of file
-			vim "+$" $NOTE_CONTENT
+			vim "+$" $NOTE_BODY
 			;;
 		skip) # skip editing build note
 			;;
@@ -336,15 +336,16 @@ build_code() {
 
 # Global variables:
 ## Program variables
+CACHE='.build'
 ENVSETUP='build/envsetup.sh'
 EXE_CMD="$(basename $0) $@"
 ERR_MSG='last command: $BASH_SOURCE:$LINENO $ERR_OUT'
 BUILD_TIME=''
-NOTE_HEADER='.note.header'
-NOTE_CONTENT='.note.text'
-NOTE="buildnote.md"
 DEF_BCONF='build.conf'
-RT_BCONF=".${PPID}.build.conf"
+RT_BCONF="${CACHE}/${PPID}.build.conf"
+NOTE="buildnote.md"
+NOTE_HEADER="${CACHE}/note.header.md"
+NOTE_BODY="${CACHE}/note.body.md"
 
 ## Compiliant flags:
 MAKE_KERNEL=''
@@ -366,6 +367,8 @@ CONFIG=''
 # -u: return while meet unset variables
 # -o pipefail: return error once failed to execute the first pipline CMD
 set -aeE
+
+[[ ! -d $CACHE ]] && mkdir $CACHE
 
 # load build script & configs
 [[ -e $ENVSETUP ]] && . $ENVSETUP
@@ -396,7 +399,7 @@ if [[ "$COMPILE" == y ]]; then
 	add_build_note_header
 
 	# merge header & content
-	cat $NOTE_HEADER $NOTE_CONTENT > $NOTE
+	cat $NOTE_HEADER $NOTE_BODY > $NOTE
 
 	# start compiling
 	build_code
