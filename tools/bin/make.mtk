@@ -263,15 +263,15 @@ add_build_note_content() {
 	menu 'add-note' 'skip' 'exit'
 	option=$(menu_final)
 
+	# create new note if no file existed
+	[[ -e $NOTE_CONTENT ]] || add_build_note_content_exp
+
 	case ${option} in
 		add-note)
-			# create new note if no file existed
-			[[ ! -e $NOTE_CONTENT ]] && add_build_note_content_exp
-
-			# go to end of file
+			# go to the end of file
 			vim "+$" $NOTE_CONTENT
 			;;
-		skip) # no needs for build note
+		skip) # skip editing build note
 			;;
 		exit)
 			exit
