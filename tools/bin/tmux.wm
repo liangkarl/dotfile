@@ -12,13 +12,13 @@ usage() {
 	cat <<-EOF
 	NAME:
 	$n - create window tabs according to wins.conf
+	$n [OPTIONS] DIR - start $n under assigned DIR
 
 	OPTIONS:
 	-h: print help
-	-t: assign win name
+	-t: assign target session
 	-o: output sample $WIN_CONF
-	-c: load $WIN_CONF in current folder
-	-C: load $WIN_CONF not only in current folder but also in parent folders
+	-p: load $WIN_CONF not only in current folder but also in parent folders
 	EOF
 	exit $1
 }
@@ -54,13 +54,8 @@ while (( $# > 0 )); do
 		-h)
 			usage 0
 			;;
-		-C)
-			shift
-			CONF="$(find_file_path $1)"
-			;;
-		-c)
-			shift
-			CONF="$1"
+		-p)
+			SEARCH_PARENT_DIR=y
 			;;
 		-t)
 			shift
@@ -74,15 +69,23 @@ while (( $# > 0 )); do
 			EOF
 			;;
 		*)
-			usage 2
+			if [[ -e "$1" ]]; then
+				SDIR="$(readlink -e $1)"
+			else
+				exit 2
+			fi
 			;;
 	esac
 	shift
 done
 
-[[ -z "$CONF" || ! -e "$CONF" ]] && usage 1
+if [[ "$SEARCH_PARENT_DIR" == y ]]; then
+	CONF="$(find_file_path $SDIR/$WIN_CONF)"
+else
+	CONF=$SDIR/$WIN_CONF
+fi
 
-wd="$(readlink -e $(dirname $CONF))"
+[[ -z "$CONF" || ! -e "$CONF" ]] && usage 1
 
 declare -A win
 while IFS= read -r line; do

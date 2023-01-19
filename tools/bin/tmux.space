@@ -128,9 +128,9 @@ enter() {
 		eval tmux new -d -s $name -n "$name" -c $path
 
 		# if wins is available
-		if has_cmd $wins && [[ -f $path/wins.conf ]]; then
+		if has_cmd $wins; then
 			# add wins following by wins.conf
-			eval $wins -c $path/wins.conf -t $name
+			eval $wins -t $name $path || true
 
 			# kill #1 window in $name session
 			# select lowest-number window
@@ -171,7 +171,6 @@ set -eE
 
 declare -A stat cwd space
 CONF="$XDG_CONFIG_HOME/tmux/space.conf"
-# CONF="$PWD/space.conf"
 wins="tmux.wm"
 
 case $1 in
