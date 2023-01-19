@@ -46,9 +46,6 @@ local cust_attach = function (client, bufnr)
   vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
   vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
   vim.keymap.set('n', '<space>lf', vim.lsp.buf.formatting, bufopts)
-
-  -- required by aerial.nvim to support LSP function
-  aerial.on_attach(client, bufnr)
 end
 
 lsp.vimls.setup {
