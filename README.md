@@ -1,26 +1,27 @@
 # Introduction
-This is a light weight dotfile configuration for my shell environment.
-For there are many fancy shell extensions I have used on the
-internet, some of them are too slow to develop in a large project
-or required many resources to do their jobs. So here I'd like to keep
-this configuration fast, useful, and easy to use.
+A light weight dotfile for Shell environment.
 
-# Goals
-* Integrated Shell environment.
-* Easy to mantain installed scripts
+Although there are many fancy shell extensions on the internet,
+not all of them are suitable for large project due to performance
+issue.
 
-# Include
-* tmux (with tpm)
-* git / tig
+I'd like to keep the environment more simple, easy and efficient,
+so I would try to get rid of complicated extensions.
+
+## Integration
+### Primary
+* tmux
+* git/ tig
 * bash
-* nvim (with coc)
+* nvim
+
+### Misc
 * gcc
 * python
 * ccls
 * clang / llvm
 * fasd
-* some small tools (still increase)
+* ...
 
-# Requirement
-* `bash` ver. more than 4.x 
-* Mac/ Linux system
+### Requirements
+* `bash` >= 4.x
