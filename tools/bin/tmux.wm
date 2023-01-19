@@ -15,8 +15,10 @@ usage() {
 
 	OPTIONS:
 	-h: print help
-	-c/-C: create new windows in tmux following the config
 	-t: assign win name
+	-o: output sample $WIN_CONF
+	-c: load $WIN_CONF in current folder
+	-C: load $WIN_CONF not only in current folder but also in parent folders
 	EOF
 	exit $1
 }
@@ -43,6 +45,8 @@ new_win() {
 	fi
 }
 
+WIN_CONF='win.conf'
+
 (( $# == 0 )) && usage 3
 
 while (( $# > 0 )); do
@@ -62,8 +66,16 @@ while (( $# > 0 )); do
 			shift
 			name="$1"
 			;;
+		-o)
+			shift
+			cat > $WIN_CONF <<-EOF
+			# Format like this:
+			# win=([name]='WIN NAME' [cwd]='WORKING DIR PATH' [cmd]='INIT CMD')
+			EOF
+			;;
 		*)
 			usage 2
+			;;
 	esac
 	shift
 done
