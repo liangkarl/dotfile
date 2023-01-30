@@ -93,7 +93,7 @@ while IFS= read -r line; do
 	[[ -z "${win[name]}" ]] && break
 
 	[[ "${win[cwd]}" == ~/* ]] && win[cwd]=${win[cwd]/\~/$HOME}
-	[[ "${win[cwd]}" != /* ]] && win[cwd]=$wd/${win[cwd]}
+	[[ "${win[cwd]}" != /* ]] && win[cwd]=$SDIR/${win[cwd]}
 
 	new_win "${win[name]}" "${win[cwd]}" "${win[cmd]}"
 done < "$CONF" 2> /dev/null
