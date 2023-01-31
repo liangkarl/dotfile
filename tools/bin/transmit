@@ -23,7 +23,6 @@ export_conf() {
 	#	"ccc.xz"
 	# )
 	# BIN='rsync'
-	# SSHPASS_PWD=''
 	EOF
 }
 
@@ -142,7 +141,6 @@ BIN='rsync'
 FCONF='transmit.conf'
 MAX_THREADS=4
 DIRECTION=down
-SSHPASS_PWD=''
 
 declare -A CMD_OPTS
 # -a, --archive: archive mode; equals -rlptgoD (no -H,-A,-X)
@@ -229,9 +227,6 @@ select_and_show_menu
 
 # setup_transmit_args
 cmd=()
-if [[ ! -z "$SSHPASS_PWD" ]]; then
-	cmd+=('sshpass' '-p' "${SSHPASS_PWD}")
-fi
 cmd+=("$bin")
 cmd+=("${CMD_OPTS[${bin}]}")
 
