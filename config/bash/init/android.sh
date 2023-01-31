@@ -15,5 +15,6 @@ LS_COLORS="*.patch=01;90:*.diff=01;90:$LS_COLORS"
 # config: json, xml
 LS_COLORS="*.json=00;35:*.xml=00;35:$LS_COLORS"
 
-# For Ubuntu 18.04, prevent compliant error from flex
-export LC_ALL=C
+# Prevent compilation error of flex in Ubuntu 18.04
+# Fix showing '_' symbols with extension fonts in tmux
+export LC_ALL=C.UTF-8
