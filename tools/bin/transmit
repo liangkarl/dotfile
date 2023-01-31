@@ -38,7 +38,6 @@ usage() {
 	$name [-o ouput-dir] [-b CopyTool]
 
 	OPTIONS:
-	    -x: debug
 	    -u: upload file (default: download)
 	    -f: copy the file from/to the other side.
 	    -d: copy the file(s) from/to the directory. (default: .)
@@ -170,9 +169,6 @@ CMD_OPTS=(
 # parse options
 while (( $# != 0 )); do
 	case $1 in
-		-x)
-			DEBUG=y
-			;;
 		-u)
 			DIRECTION=up
 			;;
@@ -197,9 +193,6 @@ while (( $# != 0 )); do
 	esac
 	shift
 done
-
-# check -x option
-[[ "$DEBUG" == y ]] && set -xv
 
 # check -o option
 if [[ ! -z "$EXPORT_DIR" ]]; then
