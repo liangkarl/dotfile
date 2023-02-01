@@ -48,65 +48,32 @@ usage() {
 	exit $1
 }
 
-wait_and_join() {
-	local num pnum
-	local pid
-	local sec
-	local skip_sleep
-	local run_names
-	local cbol
+# subtask "filename" command
+subtask() {
+	file="$1"
+	shift
+	cmd="$@"
+	echo "$BASHPID: $file" >> $plist
+	eval $cmd || true
+	while ! sed -i "/$BASHPID/d" $plist; do
+		sleep 1
+	done
+	echo "$BASHPID: transmit '$file' complete"
+}
 
-	pnum="$1" # how many process needs to be waited?
-	[[ -z $pnum ]] && return 1
+scan_list() {
+	local thd timer
 
-	num=$(wc -l $plist | awk '{print $1}') # total process
-	(( $num == 0 )) && return 0
-
-	[[ $pnum == "all" ]] &&	pnum="$num"
-
-	# Clear to beginning of line
-	cbol="$(tput el1)"
+	thd=${1:-0}
+	timer=0
 
 	# keep scanning process list
-	sec=0
-	while (( pnum != 0 )); do
-		run_names=""
-		num=$(wc -l $plist | awk '{print $1}')
-		(( $num == 0 )) && return 0
-
-		skip_sleep=n
-		# scan the list from line 1 to $num
-		for i in $(seq -s ' ' 1 $num); do
-			str="$(sed "${i}q;d" $plist)"
-			pid=${str%%,*}
-			name=${str#*,}
-			# echo $str, $pid, $name
-
-			if ! ps -h --pid $pid -o pid &> /dev/null; then
-				# transmit process has exited
-				printf '%s\rtransmit '%s' finished. (%d)\n' \
-						"$cbol" $name, $pid
-				sed -i -e "${i}d" $plist
-
-				pnum=$((pnum - 1))
-				sec=0
-				skip_sleep=y
-
-				break
-			fi
-
-			run_names+="$name "
-		done
-
-		[[ $skip_sleep == y ]] && continue
-
-		# avoid busy loop
+	while (( $(wc -l < $plist) > $thd )); do
+		# TODO: show download status here
+		echo -e -n "\rwait subtask finished. ($((timer++)))"
 		sleep 1
-		printf '%s\rwait [%s] finished. ( %d sec(s) )' \
-				"$cbol" "${run_names}" $((sec++))
 	done
-
-	return 0
+	echo ""
 }
 
 select_and_show_menu() {
@@ -138,7 +105,7 @@ RFILES='*'
 LDIR='.'
 BIN='rsync'
 FCONF='transmit.conf'
-MAX_THREADS=4
+THREAD_LIMIT=4
 DIRECTION=down
 
 declare -A CMD_OPTS
@@ -224,43 +191,34 @@ cmd+=("$bin")
 cmd+=("${CMD_OPTS[${bin}]}")
 
 export plist="$(mktemp)"
-export pidfile="$(mktemp)"
 
-trap "rm -f $plist $pidfile" 0
+trap "rm -f $plist" 0
 
 [[ $DIRECTION == down && ! -d $local_dir ]] && mkdir -p $local_dir
 
-num=0
-echo "start parallel transmitting, direction: $DIRECTION, max thread: $MAX_THREADS"
+echo "start parallel transmitting, direction: $DIRECTION, max thread: $THREAD_LIMIT"
 for file in ${src_files[@]}; do
 	# block threads if limit is reached
-	if (( $num >= ${MAX_THREADS} )); then
-		wait_and_join 1
-		num=$((num - 1))
-	fi
+	scan_list $THREAD_LIMIT
 
 	# fork multiple threads to copy files
 	if [[ $DIRECTION == 'down' ]]; then
-		eval "${cmd[@]} ${remote}:${root}/${file} ${local_dir}/ &"
+		echo "download: $file"
+		subtask "$file" \
+				"${cmd[@]} ${remote}:${root}/${file} ${local_dir}/" &
 	else
-		eval "${cmd[@]} ${local_dir}/${file} ${remote}:${root}/ &"
+		echo "upload: $file"
+		subtask "$file" \
+				"${cmd[@]} ${local_dir}/${file} ${remote}:${root}/" &
 	fi
 
-	# FIXME: don't know why we can't assign var via pipeline
-	ps -h --ppid $BASHPID -o pid,cmd > $pidfile
-	pid="$(cat $pidfile | grep $file | awk '{print $1}')"
-	echo "start to transmit '$file' ($pid)"
-
-	# if thread ended before we record it
-	[[ -z $pid ]] && continue
-
-	echo "$pid,$file" >> $plist
-
-	num=$((num + 1))
 done
 
-# wait transmit threads join
-wait_and_join all
+# print all download thread(s)
+scan_list
+
+# ensure all child process has ended
+wait
 
 # join finished
 echo "all transmition has finished"
