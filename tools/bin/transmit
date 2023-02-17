@@ -205,11 +205,11 @@ for file in ${src_files[@]}; do
 	if [[ $DIRECTION == 'down' ]]; then
 		echo "download: $file"
 		subtask "$file" \
-				"${cmd[@]} ${remote}:${root}/${file} ${local_dir}/" &
+				"${cmd[@]} ${remote}:${root}/${file} ${local_dir}/${file}" &
 	else
 		echo "upload: $file"
 		subtask "$file" \
-				"${cmd[@]} ${local_dir}/${file} ${remote}:${root}/" &
+				"${cmd[@]} ${local_dir}/${file} ${remote}:${root}/${file}" &
 	fi
 
 done
