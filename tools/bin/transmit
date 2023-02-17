@@ -54,7 +54,7 @@ subtask() {
 	shift
 	cmd="$@"
 	echo "$BASHPID: $file" >> $plist
-	eval $cmd
+	eval $cmd || true
 	while ! sed -i "/$BASHPID/d" $plist; do
 		sleep 1
 	done
