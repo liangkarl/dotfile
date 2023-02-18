@@ -50,9 +50,10 @@ ss_conf() {
 		[mark]='MARK'
 		[space]='SPACE'
 	)
-	eval pa=${pa_map[$parity]}
+	pa=${pa_map[$parity]}
 
-	echo "-baud:${baudrate} -parity:${pa} -databits:${data_bits} -stopbits:${stop_bits}"
+	echo -n "-com:${port} -baud:${baudrate} -parity:${pa} "
+	echo -n "-databits:${data_bits} -stopbits:${stop_bits}"
 }
 
 plink_conf() {
@@ -75,7 +76,8 @@ plink_conf() {
 	pa=${pa_map[$parity]}
 	fc=${fc_map[$flow_control]}
 
-	echo "${baudrate},${data_bits},${pa},${stop_bits},${fc}"
+	echo -n "-v -serial COM${port} "
+	echo -n "-sercfg ${baudrate},${data_bits},${pa},${stop_bits},${fc}"
 }
 
 # download from https://www.putty.org/
@@ -142,24 +144,7 @@ if [[ "$config_uart" == y ]]; then
 	menu_default 1
 	menu 'b921600' 'b115200'
 	opt=$(menu_final)
-
-	case "$opt" in
-		b921600)
-			baudrate=921600
-			;;
-		b115200)
-			baudrate=115200
-			;;
-	esac
+	baudrate=${opt#b}
 fi
 
-case $bin in
-	ss.exe)
-		opts="-com:${port} $(ss_conf)"
-		;;
-	plink.exe | putty.exe)
-		opts="-v -serial COM${port} -sercfg $(plink_conf)"
-		;;
-esac
-
-eval $bin $opts
+eval $bin $(${bin%%.exe}_conf)
