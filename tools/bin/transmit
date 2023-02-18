@@ -53,9 +53,17 @@ subtask() {
 	file="$1"
 	shift
 	cmd="$@"
+
 	echo "$BASHPID: $file" >> $plist
-	eval $cmd || true
+	if ! eval $cmd; then
+		sed -i "/$BASHPID/d" $plist
+		return
+	fi
+
 	while ! sed -i "/$BASHPID/d" $plist; do
+		# prevent SIGINT
+		[[ -e $plist ]] || return
+
 		sleep 1
 	done
 	echo "$BASHPID: transmit '$file' complete"
