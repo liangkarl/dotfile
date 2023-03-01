@@ -161,6 +161,7 @@ while (( $# != 0 )); do
 		-o)
 			shift
 			EXPORT_DIR="$1"
+			[[ ! -d "$EXPORT_DIR" ]] && exit_msg 2 "invalid export directory"
 			;;
 		*)
 			usage 2
@@ -170,11 +171,8 @@ done
 
 # check -o option
 if [[ ! -z "$EXPORT_DIR" ]]; then
-	if [[ -d "$EXPORT_DIR" ]]; then
-		export_conf "$EXPORT_DIR"
-		exit 0
-	fi
-	exit_msg 2 "invalid directory for exportion"
+	export_conf "$EXPORT_DIR"
+	exit 0
 fi
 
 # load .conf to override inner variables
