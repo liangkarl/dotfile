@@ -85,7 +85,10 @@ else
 	CONF=$SDIR/$WIN_CONF
 fi
 
-[[ -z "$CONF" || ! -e "$CONF" ]] && usage 1
+if [[ -z "$CONF" || ! -e "$CONF" ]]; then
+	new_win "$name" "$(pwd)"
+	exit
+fi 2> /dev/null
 
 declare -A win
 while IFS= read -r line; do
