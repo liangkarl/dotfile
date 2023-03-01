@@ -66,7 +66,7 @@ subtask() {
 
 		sleep 1
 	done
-	echo "$BASHPID: transmit '$file' complete"
+	echo -e "\r$BASHPID: transmit '$file' complete"
 }
 
 scan_list() {
@@ -81,7 +81,6 @@ scan_list() {
 		echo -e -n "\rwait subtask finished. ($((timer++)))"
 		sleep 1
 	done
-	echo ""
 }
 
 select_and_show_menu() {
