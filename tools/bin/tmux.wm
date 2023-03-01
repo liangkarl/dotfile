@@ -27,22 +27,26 @@ usage() {
 new_win() {
 	local cmd
 
-	cmd="new-window -n $1"
+	cmd="new-window"
+
 	# Assume $name is the first window name of $name session
 	# create new window next to $name window, (+)
 	[[ ! -z "$name" ]] && cmd+=" -t $name:+"
 
-	if [[ ! -z "$2" ]]; then
-		cmd+=" -c $2"
-	fi
-	cmd+="\; "
+	# first window name
+	[[ ! -z "$1" ]] && cmd+=" -n $1"
 
-	if (( $# > 2 )); then
-		shift 2
-		eval tmux $cmd send-keys "'$@'" C-m \;
-	else
-		eval tmux $cmd
-	fi
+	# set current patch
+	[[ ! -z "$2" ]] && cmd+=" -c $2"
+
+	# $@ would be '' if $# < 2
+	shift 2
+	cmd+=" \;"
+
+	# add initial commands
+	[[ ! -z "$@" ]] && cmd+=" send-keys '$@' C-m \;"
+
+	eval tmux $cmd
 }
 
 WIN_CONF='win.conf'
