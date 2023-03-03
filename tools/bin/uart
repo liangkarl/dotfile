@@ -143,14 +143,54 @@ if [[ "$select_exe" == y ]]; then
 	bin=$(menu_final)
 fi
 
-# TODO: these config should be collected into a external config file
 if [[ "$config_uart" == y ]]; then
-	menu_title 'list available config shortcuts'
-	menu_prompt 'select quick config:'
-	menu_default 1
-	menu 'b921600' 'b115200'
+	# baudrate
+	menu_title 'baudrate setup'
+	menu_prompt 'select:'
+	menu_default 3
+	menu 'b9600' 'b921600' 'b115200'
 	opt=$(menu_final)
 	baudrate=${opt#b}
+
+	# flow control
+	menu_title 'flow control setup'
+	menu_prompt 'select:'
+	menu_default 1
+	menu 'none' 'XON_OFF' 'RST_CTS' 'DSR_STR'
+	opt=$(menu_final)
+	flow_control=${opt}
+
+	# parity
+	menu_title 'parity setup'
+	menu_prompt 'select:'
+	menu_default 1
+	menu 'none' 'odd' 'even' 'mark' 'space'
+	opt=$(menu_final)
+	parity=${opt}
+
+	# data bit
+	menu_title 'data bit setup'
+	menu_prompt 'select:'
+	menu_default 4
+	menu '5' '6' '7' '8' '9'
+	opt=$(menu_final)
+	data_bits=${opt}
+
+	# stop bit
+	menu_title 'stop bit setup'
+	menu_prompt 'select:'
+	menu_default 1
+	menu '1' '1.5' '2'
+	opt=$(menu_final)
+	stop_bits=${opt}
+
+	cat > $conf <<-EOF
+	baudrate=b${baudrate}
+	flow_control=$flow_control
+	parity=$parity
+	data_bits=$data_bits
+	stop_bits=$stop_bits
+	EOF
 fi
 
 # There must be an existed log file for ss.exe
