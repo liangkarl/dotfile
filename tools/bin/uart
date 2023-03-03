@@ -24,7 +24,7 @@ usage() {
 	        eg, -o "br=115200;fc=N;db=8;sb=1;pa=n"
 	    -b: select supported serial console .exe
 	    -n: 'n' is the port number
-EOF
+	EOF
 
 	exit $1
 }
@@ -97,13 +97,14 @@ parity=none
 data_bits=8
 stop_bits=1
 log=uart.$PPID.log
+conf=~/.uart.conf
 
 (( $# == 0 )) && usage 2
 
 [[ -z "$WSL_DISTRO_NAME" ]] && exit_msg 3 "only support WSL environment for now."
 
 # TODO: source project.conf to get project specific setup
-[[ -e ~/.uart.conf ]] && source ~/.uart.conf
+[[ -e $conf ]] && source $conf
 
 while (( $# != 0 )); do
 	case $1 in
@@ -116,10 +117,6 @@ while (( $# != 0 )); do
 			;;
 		-b)
 			select_exe=y
-			;;
-		-s)
-			# not implement
-			has_conf=''
 			;;
 		-+([0-9]))
 			port=${1#-}
