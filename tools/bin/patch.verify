@@ -88,8 +88,11 @@ add_patch_tag() {
 download_metadata() {
 	idx=0
 	tmp="patch.tmp"
-	# fetch patches info into individual file
+
+	mkdir $tmpd
 	cd $tmpd
+
+	# fetch patches info into individual file
 	while true; do
 		ssh -p ${port} ${user}@${gerrit} \
 			gerrit query --current-patch-set --start $idx limit:1 \
@@ -191,10 +194,7 @@ case "$1" in
 		;;
 esac
 
-if [[ "$CLEAN_TMPD" == y ]]; then
-	rm -rf $tmpd
-	mkdir $tmpd
-fi
+[[ "$CLEAN_TMPD" == y ]] && rm -rf $tmpd
 
 [[ "$DOWNLOAD_METADATA" == y ]] && download_metadata
 
