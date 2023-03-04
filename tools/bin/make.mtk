@@ -260,7 +260,7 @@ add_build_note_content() {
 	menu_title "action list:"
 	menu_prompt "select an option to buildnote: "
 	menu_default 2
-	menu 'add-note' 'skip' 'exit'
+	menu_select 'add-note' 'skip' 'exit'
 	option=$(menu_choice)
 
 	# create new note if no file existed

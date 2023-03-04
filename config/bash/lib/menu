@@ -33,10 +33,9 @@ menu_show() {
 	done
 }
 
-menu() {
+menu_select() {
 	local item opts i ans
 
-	opts=("$@")
 	menu_show $@
 
 	while :; do
@@ -54,5 +53,6 @@ menu() {
 		fi
 	done
 
+	opts=("$@")
 	__menu_choice="${opts[$((ans-1))]}"
 }

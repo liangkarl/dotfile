@@ -139,7 +139,7 @@ if [[ "$select_exe" == y ]]; then
 	menu_title "list supported .exe files"
 	menu_prompt "select one to execute"
 	menu_default 1
-	menu $ss $plink $putty
+	menu_select $ss $plink $putty
 	bin=$(menu_choice)
 fi
 
@@ -148,7 +148,7 @@ if [[ "$config_uart" == y ]]; then
 	menu_title 'baudrate setup'
 	menu_prompt 'select:'
 	menu_default 3
-	menu 'b9600' 'b921600' 'b115200'
+	menu_select 'b9600' 'b921600' 'b115200'
 	opt=$(menu_choice)
 	baudrate=${opt#b}
 
@@ -156,7 +156,7 @@ if [[ "$config_uart" == y ]]; then
 	menu_title 'flow control setup'
 	menu_prompt 'select:'
 	menu_default 1
-	menu 'none' 'XON_OFF' 'RST_CTS' 'DSR_STR'
+	menu_select 'none' 'XON_OFF' 'RST_CTS' 'DSR_STR'
 	opt=$(menu_choice)
 	flow_control=${opt}
 
@@ -164,7 +164,7 @@ if [[ "$config_uart" == y ]]; then
 	menu_title 'parity setup'
 	menu_prompt 'select:'
 	menu_default 1
-	menu 'none' 'odd' 'even' 'mark' 'space'
+	menu_select 'none' 'odd' 'even' 'mark' 'space'
 	opt=$(menu_choice)
 	parity=${opt}
 
@@ -172,7 +172,7 @@ if [[ "$config_uart" == y ]]; then
 	menu_title 'data bit setup'
 	menu_prompt 'select:'
 	menu_default 4
-	menu '5' '6' '7' '8' '9'
+	menu_select '5' '6' '7' '8' '9'
 	opt=$(menu_choice)
 	data_bits=${opt}
 
@@ -180,7 +180,7 @@ if [[ "$config_uart" == y ]]; then
 	menu_title 'stop bit setup'
 	menu_prompt 'select:'
 	menu_default 1
-	menu '1' '1.5' '2'
+	menu_select '1' '1.5' '2'
 	opt=$(menu_choice)
 	stop_bits=${opt}
 

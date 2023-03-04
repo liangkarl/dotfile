@@ -116,7 +116,7 @@ enter() {
 	# show menu ${!list[@]}
 	menu_title "available project names:"
 	menu_prompt "select one to start:"
-	menu ${!stat[@]} "cancel"
+	menu_select ${!stat[@]} "cancel"
 	name=$(menu_choice)
 	path="${cwd[$name]}"
 
@@ -158,7 +158,7 @@ remove() {
 	# show menu
 	menu_title "available session names:"
 	menu_prompt "select one to remove:"
-	menu ${!stat[@]} "cancel"
+	menu_select ${!stat[@]} "cancel"
 	name=$(menu_choice)
 
 	[[ "$name" == "cancel" ]] && exit

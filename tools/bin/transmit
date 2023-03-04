@@ -98,7 +98,7 @@ select_and_show_menu() {
 	menu_title 'more than one site as below:'
 	menu_prompt 'select one to continue'
 	menu_default 1
-	menu ${remote_root[@]}
+	menu_select ${remote_root[@]}
 	root=$(menu_choice)
 
 	echo "remote dir: $root"
