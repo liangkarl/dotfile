@@ -29,28 +29,23 @@ help() {
 
 fepo_opt="$1"
 shift
-repo_opt="$@"
+ext_opt="$@"
+job=${job:-8}
 
 # TODO: load build.conf
 
 has_cmd repo || exit_msg 2 "no 'repo' installed"
 
+opt=('--no-repo-verify' "-j$job")
 case $fepo_opt in
 	reset)
-		echo "repo sync: detach, local-only, no-repo-verify, job=8"
-		echo "           verbose"
-		repo sync -d -l -v --no-repo-verify -j8 $repo_opt
+		opt+=('-d' '-l' '-v')
 		;;
 	sync)
-		echo "repo sync: detach, current, no-repo-verify, retry=3,"
-		echo "           optimized-fetch, no-tags, job=8"
-		repo sync -d -c --no-repo-verify --retry-fetches=3 \
-				--optimized-fetch --no-tags -j8 $repo_opt
+		opt+=('-d' '-c' '--retry-fetches=3' '--optimized-fetch' '--no-tags')
 		;;
 	fetch)
-		echo "repo sync: network-only, no-repo-verify, retry=100,"
-		echo "           job=4"
-		repo sync --no-repo-verify -n --retry-fetches=100 -j4 $repo_opt
+		opt+=('-n' '--retry-fetches=100')
 		;;
 	help)
 		help 0
@@ -59,3 +54,8 @@ case $fepo_opt in
 		help 2
 		;;
 esac
+
+echo "builtin: ${opt[@]}"
+echo "external: $ext_opt"
+
+repo sync ${opt[@]} $ext_opt
