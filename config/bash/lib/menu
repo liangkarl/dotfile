@@ -5,7 +5,6 @@ __menu_prompt=
 __menu_choice=
 __menu_default=
 __menu_default_text=
-__menu_no_prompt=n
 
 menu_choice() {
 	echo $__menu_choice
@@ -24,15 +23,13 @@ menu_prompt() {
 	__menu_prompt="$@"
 }
 
-menu_no_prompt() {
-	__menu_no_prompt=y
-}
-
-_show_menu() {
+menu_show() {
 	local i item
-	i=1
+
+	[[ -n "$__menu_title" ]] && echo "$__menu_title"
+
 	for item in $@; do
-		echo "$((i++))) $item"
+		echo "$((++i))) $item"
 	done
 }
 
@@ -40,11 +37,7 @@ menu() {
 	local item opts i ans
 
 	opts=("$@")
-
-	[[ -n "$__menu_title" ]] && echo "$__menu_title"
-	_show_menu $@
-
-	[[ "$__menu_no_prompt" == y ]] && return
+	menu_show $@
 
 	while :; do
 		read -p "$__menu_prompt $__menu_default_text" ans
