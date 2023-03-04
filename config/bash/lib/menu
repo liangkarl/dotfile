@@ -2,13 +2,13 @@
 
 __menu_title=
 __menu_prompt=
-__menu_final=
+__menu_choice=
 __menu_default=
 __menu_default_text=
 __menu_no_prompt=n
 
-menu_final() {
-	echo $__menu_final
+menu_choice() {
+	echo $__menu_choice
 }
 
 menu_default() {
@@ -61,5 +61,5 @@ menu() {
 		fi
 	done
 
-	__menu_final="${opts[$((ans-1))]}"
+	__menu_choice="${opts[$((ans-1))]}"
 }
