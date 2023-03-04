@@ -4,6 +4,7 @@ __menu_title=
 __menu_prompt=
 __menu_final=
 __menu_default=
+__menu_default_text=
 __menu_no_prompt=n
 
 menu_final() {
@@ -12,6 +13,7 @@ menu_final() {
 
 menu_default() {
 	__menu_default="$1"
+	__menu_default_text="($__menu_default)"
 }
 
 menu_title() {
@@ -31,8 +33,6 @@ menu() {
 
 	[[ -n "$__menu_title" ]] && echo "$__menu_title"
 
-	[[ -n "$__menu_default" ]] && __menu_prompt+=" (default: $__menu_default)"
-
 	opts=("$@")
 	while :; do
 		i=1
@@ -43,16 +43,15 @@ menu() {
 
 		[[ "$__menu_no_prompt" == y ]] && return
 
-		read -p "$__menu_prompt " ans
+		read -p "$__menu_prompt $__menu_default_text " ans
 
 		if [[ -z "$ans" ]]; then
 			if [[ -z "$__menu_default" ]]; then
 				echo "empty input"
 				continue
-			else
-				ans="$__menu_default"
-				break
 			fi
+
+			ans="$__menu_default"
 		fi
 
 		# check the input is digit
