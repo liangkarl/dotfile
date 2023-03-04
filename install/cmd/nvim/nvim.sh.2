@@ -78,7 +78,7 @@ github_install() {
 	menu_prompt "select one to continue:"
 	menu_default 1
 	menu 'stable' 'nightly'
-	branch=$(menu_final)
+	branch=$(menu_choice)
 
     # remove install dir
     trap "rm -rf $pos" ERR EXIT
@@ -100,7 +100,7 @@ apt_install() {
 	menu_prompt "select one to continue:"
 	menu_default 1
 	menu 'stable' 'unstable' 'no-changed'
-	ver=$(menu_final)
+	ver=$(menu_choice)
     # choose version and add related ppa key
 	case $ver in
 		stable | unstable)
@@ -139,7 +139,7 @@ menu_title "install sources:"
 menu_prompt "select one to continue:"
 menu_default 4
 menu 'github' 'apt' 'skip' 'cancel'
-src=$(menu_final)
+src=$(menu_choice)
 echo $src
 
 case $src in

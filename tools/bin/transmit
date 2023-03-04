@@ -99,7 +99,7 @@ select_and_show_menu() {
 	menu_prompt 'select one to continue'
 	menu_default 1
 	menu ${remote_root[@]}
-	root=$(menu_final)
+	root=$(menu_choice)
 
 	echo "remote dir: $root"
 }
