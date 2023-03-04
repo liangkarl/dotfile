@@ -21,6 +21,5 @@ if g:fuzzy_finder == 'fzf'
   nnoremap <Leader>fc :FzfCommands<CR>
   nnoremap <Leader>f? :FzfMaps<CR>
   nnoremap <Leader>fm :FzfMarks<CR>
+  nnoremap <Leader>fi :FzfFiletypes<CR>
 endif
-
-
