@@ -157,10 +157,6 @@ rfile="$(pwd)/.commits"
 name="$(pwd)/build.conf"
 source $name || exit_msg 1 "no available $name"
 
-# sync code
-# repo init -u ssh://${gerrit}:${port}/mt8173/manifest --config-name --depth=1
-# repo sync -d -c -q --force-sync
-
 case "$1" in
 	-v)
 		CLEAN_TMPD=y
