@@ -1,37 +1,18 @@
 #!/usr/bin/env bash
 
-has_cmd() {
-	local type
-
-	type="$(type -t "$1")"
-
-	# not a command
-	[[ -z "$type" ]] && return 1
-
-	# a shell keyword
-	[[ "$type" == keyword ]] && return 2
-
-	return 0
-} &> /dev/null
+has_cmd() { type -t "$1" &> /dev/null || return $?; }
 
 has_cmds() {
     local cmd num
 
-    num=0
     for cmd in $@; do
-        has_cmd $cmd || (( num++ ))
+        has_cmd $cmd || ((num++))
     done
 
     return $num
 } &> /dev/null
 
-in_wsl() {
-	if [[ -z "$WSL_DISTRO_NAME" ]]; then
-		return 1
-	else
-		return 0
-	fi
-}
+in_wsl() { [[ -z "$WSL_DISTRO_NAME" ]] || return $?; }
 
 os_ver() {
 	local os
