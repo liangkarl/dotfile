@@ -5,9 +5,9 @@ slash_end() {
     return $?
 }
 
-full_path() {
-    echo $(readlink -e "$@")
-}
+# FIXME: In Mac, there is no '-m' and '-s' in readlink
+abs_path() { echo $(readlink -m -s "$@"); }
+
 
 # usage:
 #   $0 file.name /path/to/dir
@@ -17,7 +17,7 @@ find_path() {
 	file="$1"
 	[[ -z "$file" ]] && return 1
 
-	dir="$(full_path $2)"
+	dir="$(abs_path $2)"
 	[[ -z "$dir" ]] && return 2
 
 	while [[ "$dir" != '/' ]]; do
