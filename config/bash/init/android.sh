@@ -1,3 +1,5 @@
+source $(mylib sys)
+
 # Generate compile_commands.json
 export SOONG_GEN_COMPDB=1
 export SOONG_GEN_COMPDB_DEBUG=1
@@ -17,4 +19,8 @@ LS_COLORS="*.json=00;35:*.xml=00;35:$LS_COLORS"
 
 # Prevent compilation error of flex in Ubuntu 18.04
 # Fix showing '_' symbols with extension fonts in tmux
-export LC_ALL=C.UTF-8
+if [[ "$(os_ver)" == $OS_MACOS ]]; then
+    export LANG=C LC_CTYPE=UTF-8
+else
+    export LC_ALL=C.UTF-8
+fi
