@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-slash_end() {
-    [[ "$@" == */ ]]
-    return $?
-}
+trim_slash_end() { echo ${@%/}; }
 
 # FIXME: In Mac, there is no '-m' and '-s' in readlink
 abs_path() { echo $(readlink -m -s "$@"); }
