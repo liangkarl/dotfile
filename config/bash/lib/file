@@ -22,18 +22,16 @@ find_path() {
 	dir="$(abs_path $2)"
 	[[ -z "$dir" ]] && return 2
 
-	while [[ "$dir" != '/' ]]; do
-		[[ -e "${dir}/${file}" ]] && {
+	while true; do
+		if [[ -e ${dir}/${file} ]]; then
 			echo ${dir}/${file}
 			return 0
-		}
+		fi
+
+		[[ "$dir" == / ]] && break
+
 		dir="$(dirname $dir)"
 	done
-
-	[[ -e ${dir}/${file} ]] && {
-		echo ${dir}/${file}
-		return 0
-	}
 
 	return 3
 }
