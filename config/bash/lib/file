@@ -2,9 +2,14 @@
 
 trim_slash_end() { echo ${@%/}; }
 
+trim_slash() { echo "$@" | tr -s /; }
+
+trim_path() { trim_slash_end "$(trim_slash "$@")"; }
+
 # FIXME: In Mac, there is no '-m' and '-s' in readlink
 abs_path() { echo $(readlink -m -s "$@"); }
 
+rel_path() { echo $(realpath -m --relative-to=$(pwd) "$@"); }
 
 # usage:
 #   $0 file.name /path/to/dir
