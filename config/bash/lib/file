@@ -39,12 +39,7 @@ find_path() {
 # usage:
 #   $0 /path/to/file.name => search file.name from assigned wd
 #	$0 file.name => search file.name from cwd
-find_file_path() {
-	find_path "$(basename $1)" "$(dirname $1)"
-	return $?
-}
+find_file_path() { find_path "$(basename $1)" "$(dirname $1)"; }
 
 # call the func to get the file path inside the sourced script
-source_file_path() {
-	echo "$(readlink -e "$(dirname ${BASH_SOURCE[0]})")"
-}
+source_file_path() { echo "$(readlink -e "$(dirname ${BASH_SOURCE[0]})")"; }
