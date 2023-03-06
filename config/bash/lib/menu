@@ -34,7 +34,7 @@ menu_show() {
 }
 
 menu_select() {
-	local item opts i ans
+	local item opts ans
 
 	menu_show $@
 
@@ -46,7 +46,7 @@ menu_select() {
 			echo "empty input"
 		elif [[ ! $ans =~ ^[0-9]+$ ]]; then
 			echo "not a number. ($ans)"
-		elif (( ans <= 0 || ans >= i )); then
+		elif (( ans <= 0 || ans > $# )); then
 			echo "an illegal value. ($ans)"
 		else
 			break
