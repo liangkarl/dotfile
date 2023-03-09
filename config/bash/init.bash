@@ -3,16 +3,18 @@
 # This script should be sourced at the tail of .bashrc or .bash_profile
 #
 
-prompt() {
-    # NOTE:
-    # In ANSI code, for example, '\e[0m' was used for reseting
-    # '\e' means 'escape string'.
-    # '[0' is 'function parameters'.
-    # 'm' is 'function name'
-    #
-    # '\[' and '\]' is the exception rule only for PS1 to add a escape section
-    # if there is no esecape section, PS1 would become buggy
-    #
+#
+# In ANSI code, for example, '\e[0m' was used for reseting
+# '\e' means 'escape string'.
+# '[0' is 'function parameters'.
+# 'm' is 'function name'
+#
+# WARN:
+# '\[' and '\]' is the exception rule only for PS1 to add a ANSI section
+# if there is no esecape section, PS1 would become buggy
+#
+
+__ps1_long_form() {
     local white='\[\e[01;38m\]'
     local blue='\[\e[01;34m\]'
     local yellow='\[\e[38;5;11m\]'
@@ -22,15 +24,55 @@ prompt() {
     local sed_purple='\\\[\\\e[38;5;63m\\\]'
     local sed_orange='\\\[\\\e[38;5;202m\\\]'
     local reset='\[\e[0m\]'
+    local var
 
-    PS1=${white}'[\t] ' # Current time
-    [[ "$OS" == Linux ]] && PS1+='${debian_chroot:+($debian_chroot)}'
-    PS1+=${purple}'$? '
-    PS1+=${green}'\u@\h '
-    PS1+=${blue}'\w '
-    PS1+='$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/'${sed_purple}'-> '${sed_orange}'\1/")'
-    PS1+='\n'${reset}'└─ '
-    PS1+=${yellow}'\$'${reset}' '
+    var=${white}'[\t] ' # Current time
+    var+=${purple}'$? '
+    var+=${green}'\u@\h '
+    var+=${blue}'\w '
+    [[ "$OS" == Linux ]] && var+='${debian_chroot:+($debian_chroot)}'
+    var+='$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/'${sed_purple}'-> '${sed_orange}'\1/") '
+    var+=${reset}'\n└─ '
+    var+=${yellow}'\$'${reset}' '
+
+    echo "$var"
+}
+
+__ps1_short_form() {
+    local white='\[\e[01;38m\]'
+    local blue='\[\e[01;34m\]'
+    local yellow='\[\e[38;5;11m\]'
+    local green='\[\e[01;32m\]'
+    local purple='\[\e[38;5;63m\]'
+    local orange='\[\e[38;5;202m\]'
+    local sed_purple='\\\[\\\e[38;5;63m\\\]'
+    local sed_orange='\\\[\\\e[38;5;202m\\\]'
+    local reset='\[\e[0m\]'
+    local var
+
+    var+=${purple}'$? '
+    var+=${green}'\u@\h '
+    var+=${blue}'\W '
+    [[ "$OS" == Linux ]] && var+='${debian_chroot:+($debian_chroot)} '
+    var+='$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/'${sed_purple}'-> '${sed_orange}'\1/") '
+    var+=${yellow}'\$'${reset}' '
+
+    echo "$var"
+}
+
+__ps1_switch_form() {
+    if (( __ps1_form == 0 )); then
+        PS1="$(__ps1_long_form)"
+    else
+        PS1="$(__ps1_short_form)"
+    fi
+
+    __ps1_form=$((__ps1_form ^ 0x1))
+}
+
+prompt() {
+    __ps1_form=0
+    __ps1_switch_form
 }
 
 source_dirs() {
