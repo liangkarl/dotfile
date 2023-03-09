@@ -4,14 +4,24 @@
 #
 
 prompt() {
-    local white='\[\033[01;38m\]'
-    local blue='\[\033[01;34m\]'
-    local yellow='\[\033[38;5;11m\]'
-    local green='\[\033[01;32m\]'
-    local purple='\[\033[38;5;63m\]'
-    local sed_purple='\\\[\\\033[38;5;63m\\\]'
-    local sed_orange='\\\[\\\033[38;5;202m\\\]'
-    local reset='\[\033[0m\]'
+    # NOTE:
+    # In ANSI code, for example, '\e[0m' was used for reseting
+    # '\e' means 'escape string'.
+    # '[0' is 'function parameters'.
+    # 'm' is 'function name'
+    #
+    # '\[' and '\]' is the exception rule only for PS1 to add a escape section
+    # if there is no esecape section, PS1 would become buggy
+    #
+    local white='\[\e[01;38m\]'
+    local blue='\[\e[01;34m\]'
+    local yellow='\[\e[38;5;11m\]'
+    local green='\[\e[01;32m\]'
+    local purple='\[\e[38;5;63m\]'
+    local orange='\[\e[38;5;202m\]'
+    local sed_purple='\\\[\\\e[38;5;63m\\\]'
+    local sed_orange='\\\[\\\e[38;5;202m\\\]'
+    local reset='\[\e[0m\]'
 
     PS1=${white}'[\t] ' # Current time
     [[ "$OS" == Linux ]] && PS1+='${debian_chroot:+($debian_chroot)}'
