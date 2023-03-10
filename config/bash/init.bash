@@ -92,7 +92,7 @@ init() {
     # export SHELL_DIR
     source ${XDG_CONFIG_HOME}/bash/config
 
-    [[ "$OS" == Darwin ]] && PATH="${HOME}/bin:${PATH}"
+    echo "$PATH" | grep -q -w "${HOME}/bin" || PATH="${HOME}/bin:${PATH}"
 }
 
 # XDG Base Directory Specification
