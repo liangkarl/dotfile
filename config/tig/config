@@ -152,6 +152,7 @@ bind reflog cp @sh -c 'git cherry-pick -s %(commit) || git cherry-pick --abort'
 
 ## Format patch
 bind main fp ?+git format-patch -k --binary --histogram -1 -o . %(commit)
+bind main fP ?+git format-patch -k --binary --histogram -o patchset %(commit)^
 bind diff fp ?+git format-patch -k --binary --histogram -1 -o . %(commit)
 bind blame fp ?+git format-patch -k --binary --histogram -1 -o . %(commit)
 bind reflog fp ?+git format-patch -k --binary --histogram -1 -o . %(commit)
