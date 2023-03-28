@@ -63,7 +63,6 @@ switch_session() {
 	fi
 
 	eval $cmd $@
-	exit 0
 }
 
 edit_conf() {
@@ -195,5 +194,11 @@ esac
 
 parse_conf
 
-[[ "$ENTER" == y ]] && enter
+if [[ "$ENTER" == y ]]; then
+	# show menu again if have just exited previous session.
+	while :; do
+		enter
+	done
+fi
+
 [[ "$REMOVE" == y ]] && remove
