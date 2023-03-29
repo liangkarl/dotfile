@@ -24,13 +24,14 @@ __ps1_long_form() {
     local sed_purple='\\\[\\\e[38;5;63m\\\]'
     local sed_orange='\\\[\\\e[38;5;202m\\\]'
     local reset='\[\e[0m\]'
+    local kernel=$(uname -s)
     local var
 
     var=${white}'[\t] ' # Current time
     var+=${purple}'$? '
     var+=${green}'\u@\h '
     var+=${blue}'\w '
-    [[ "$OS" == Linux ]] && var+='${debian_chroot:+($debian_chroot)}'
+    [[ "$kernel" == Linux ]] && var+='${debian_chroot:+($debian_chroot)}'
     var+='$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/'${sed_purple}'-> '${sed_orange}'\1/") '
     var+=${reset}'\n└─ '
     var+=${yellow}'\$'${reset}' '
@@ -48,12 +49,13 @@ __ps1_short_form() {
     local sed_purple='\\\[\\\e[38;5;63m\\\]'
     local sed_orange='\\\[\\\e[38;5;202m\\\]'
     local reset='\[\e[0m\]'
+    local kernel=$(uname -s)
     local var
 
     var+=${purple}'$? '
     var+=${green}'\u@\h '
     var+=${blue}'\W '
-    [[ "$OS" == Linux ]] && var+='${debian_chroot:+($debian_chroot)} '
+    [[ "$kernel" == Linux ]] && var+='${debian_chroot:+($debian_chroot)} '
     var+='$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/'${sed_purple}'-> '${sed_orange}'\1/") '
     var+=${yellow}'\$'${reset}' '
 
@@ -70,29 +72,9 @@ __ps1_switch_form() {
     __ps1_form=$((__ps1_form ^ 0x1))
 }
 
-prompt() {
+__ps1_prompt() {
     __ps1_form=0
     __ps1_switch_form
-}
-
-source_dirs() {
-    local dir file path
-
-    # source target config files
-    path="${SHELL_DIR}"
-    for dir in $@; do
-        for file in $(ls ${path}/${dir}); do
-            source ${path}/${dir}/${file}
-        done
-    done
-}
-
-init() {
-    # Import customized config
-    # export SHELL_DIR
-    source ${XDG_CONFIG_HOME}/bash/config
-
-    echo "$PATH" | grep -q -w "${HOME}/bin" || PATH="${HOME}/bin:${PATH}"
 }
 
 # XDG Base Directory Specification
@@ -101,11 +83,13 @@ init() {
 [[ -z $XDG_DATA_HOME ]] && export XDG_DATA_HOME=${HOME}/.local/share
 [[ -z $XDG_CACHE_HOME ]] && export XDG_CACHE_HOME=${HOME}/.cache
 
-OS="$(uname)"
+# Import customized config
+# export SHELL_DIR
+source ${XDG_CONFIG_HOME}/bash/config
+echo "$PATH" | grep -q -w "${HOME}/bin" || PATH="${HOME}/bin:${PATH}"
 
-init
-source_dirs 'completion' 'alias' 'init'
-prompt
+eval source $(find ${SHELL_DIR}/{completion,alias,init} -type f \
+        | xargs \
+        | sed 's/ /; source /g')
 
-unset -f prompt source_dirs init
-unset OS
+__ps1_prompt
