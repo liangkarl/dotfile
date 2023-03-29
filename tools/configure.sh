@@ -8,6 +8,8 @@ shopt -s extglob
 
 me="$(basename $0)"
 mydir="$(dirname $0)"
+pfx="$(uname -s)-$(uname -m)"
+
 home_bin="${HOME}/bin"
 toolkit="${XDG_CONFIG_HOME:-${HOME}/.config}/toolkit"
 toolkit_bin="$toolkit/bin"
@@ -21,6 +23,10 @@ echo "-- Copy tools to $toolkit --"
 
 mkdir $toolkit
 cp -rf $mydir/{bin,script} $toolkit
+
+for file in $(ls $mydir/prebuild); do
+    cp -f $mydir/prebuild/$file/$file-${pfx,,} $toolkit_bin/$file
+done
 
 # create links between $HOME/bin and $toolkit
 echo "-- Link $toolkit to $home_bin --"
