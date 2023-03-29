@@ -13,16 +13,20 @@ toolkit="${XDG_CONFIG_HOME:-${HOME}/.config}/toolkit"
 toolkit_bin="$toolkit/bin"
 toolkit_script="$toolkit/script"
 
+echo "-- Clean $toolkit --"
+
+rm -rf $toolkit
+
 echo "-- Copy tools to $toolkit --"
-[[ ! -d "$toolkit" ]] && mkdir $toolkit
+
+mkdir $toolkit
+cp -rf $mydir/{bin,script} $toolkit
 
 # create links between $HOME/bin and $toolkit
 echo "-- Link $toolkit to $home_bin --"
 
 # copy bin/ script/ to toolkit
 [[ ! -d "$home_bin" ]] && mkdir $home_bin
-cp -rf $mydir/bin $toolkit
-cp -rf $mydir/script $toolkit
 
 # get the full file path of the files in toolkit
 list="$(find ${toolkit_bin} -type f -exec 'readlink' '-e' '{}' ';')"
