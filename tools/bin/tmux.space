@@ -52,6 +52,8 @@ usage() {
 	exit $1
 }
 
+load_conf() { jp -u -f $CONF "$@"; }
+
 switch_session() {
 	local cmd
 
@@ -72,41 +74,32 @@ edit_conf() {
 		dir=$(dirname $CONF)
 		[[ ! -e $dir ]] && mkdir -p $dir
 
-		cat > $CONF <<-EOF
-		# $(basename $CONF) example:
-		#
-		# space=([name]='j90' [cwd]='~/path/to/j90/project.conf/place')
-		# space=([name]='ui7' [cwd]='~/path/to/j90/project.conf/place')
-		EOF
-	else
-		vim $CONF
+		jo -p num=2 \
+			list=$(jo -a \
+				"$(jo name='one' dir=/a/b/c)" \
+				"$(jo name='two' dir=/c/b/a)" \
+			) > $CONF
 	fi
+
+	vim $CONF
 }
 
 parse_conf() {
-	local line name path
+	local name path i
 
-	[[ ! -e "$CONF" ]] && edit_conf
+	i=0
+	while :; do
+		name="$(load_conf list[$i].name)"
+		[[ "$name" == null ]] && break
 
-	# read config
-	# while parse line
-	while IFS= read -r line; do
-		eval $line
+		path="$(load_conf list[$i].dir)"
+		dir[$name]="$path"
 
-		name="${space[name]}"
-		[[ -z "${name}" ]] && continue
+		stat[$name]='on'
+		tmux has -t "${name}" || stat[$name]='off'
 
-		# WARN:
-		# '~' expansion would not occurred in '[[]]'.
-		path="${space[cwd]/\~/$HOME}"
-		[[ ! -d "${path}" ]] && path="$HOME"
-
-		stat[$name]='off'
-		tmux has -t="${name}" && stat[$name]='on'
-
-		cwd[$name]="$path"
-
-	done < "$CONF" 2>/dev/null
+		((i++))
+	done 2> /dev/null
 }
 
 enter() {
@@ -117,7 +110,7 @@ enter() {
 	menu_prompt "select one to start:"
 	menu_select ${!stat[@]} "cancel"
 	name=$(menu_choice)
-	path="${cwd[$name]}"
+	path="${dir[$name]}"
 
 	[[ "$name" == "cancel" ]] && exit
 
@@ -149,7 +142,7 @@ remove() {
 	# while session not exit
 	for n in ${!stat[@]}; do
 		# unset it
-		[[ "${stat[$n]}" == off ]] && unset stat[$n]
+		[[ "${stat[$n]}" == 'off' ]] && unset stat[$n]
 	done
 
 	(( ${#stat[@]} == 0 )) && exit_msg 0 "no session available"
@@ -168,8 +161,8 @@ remove() {
 # set -xv
 set -eE
 
-declare -A stat cwd space
-CONF="$XDG_CONFIG_HOME/tmux/space.conf"
+declare -A stat dir space
+CONF="$XDG_CONFIG_HOME/tmux/space.json"
 wins="tmux.wm"
 
 case $1 in
@@ -192,13 +185,19 @@ esac
 
 [[ "$EDIT_CONF" == y ]] && edit_conf
 
-parse_conf
+parse_conf || echo "there is something wrong with '$CONF'"
 
 if [[ "$ENTER" == y ]]; then
 	# show menu again if have just exited previous session.
 	while :; do
 		enter
 	done
+	exit
 fi
 
-[[ "$REMOVE" == y ]] && remove
+if [[ "$REMOVE" == y ]]; then
+	while :; do
+		remove
+	done
+	exit
+fi
