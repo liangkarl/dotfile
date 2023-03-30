@@ -185,7 +185,7 @@ if [[ "$config_uart" == y ]]; then
 	stop_bits=${opt}
 
 	cat > $conf <<-EOF
-	baudrate=b${baudrate}
+	baudrate=${baudrate}
 	flow_control=$flow_control
 	parity=$parity
 	data_bits=$data_bits
