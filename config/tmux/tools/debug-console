@@ -12,13 +12,13 @@ window="$(tmux display-message -p '#W')"
 
 # 1. create new window for debug console
 tmux new-window -n 'debug'\; \
-  select-pane -T 'logcat'\; \
   send-keys 'logcat' C-m \; \
-  split-window -v \; \
-  select-pane -T 'adb shell'\; \
-  send-keys 'adb devices -l' C-m \; \
+  select-pane -T 'logcat'\; \
   split-window -h \; \
-  select-pane -T 'uart'\; \
+  select-pane -T 'console'\; \
+  split-window -h \; \
   send-keys 'uart -l' C-m \; \
+  select-pane -T 'UART' \; \
   set pane-border-format "#{pane_index} #{pane_title}" \; \
-  set pane-border-status top \;
+  set pane-border-status top \; \
+  select-layout even-vertical \;
