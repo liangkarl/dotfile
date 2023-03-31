@@ -86,7 +86,7 @@ __ps1_prompt() {
 # Import customized config
 # export SHELL_DIR
 source ${XDG_CONFIG_HOME}/bash/config
-echo "$PATH" | grep -q -w "${HOME}/bin" || PATH="${HOME}/bin:${PATH}"
+grep -q -w "${HOME}/bin" <<< "$PATH" || PATH="${HOME}/bin:${PATH}"
 
 eval source $(find ${SHELL_DIR}/{completion,alias,init} -type f \
         | xargs \
