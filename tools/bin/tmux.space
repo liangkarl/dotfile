@@ -54,6 +54,8 @@ usage() {
 
 load_conf() { jp -u -f $CONF "$@"; }
 
+sort_str() { printf '%s\n' "$@" | sort | xargs; }
+
 switch_session() {
 	local cmd
 
@@ -108,7 +110,7 @@ enter() {
 	# show menu ${!list[@]}
 	menu_title "available project names:"
 	menu_prompt "select one to start:"
-	menu_select ${!stat[@]} "cancel"
+	menu_select $(sort_str ${!stat[@]}) "cancel"
 	name=$(menu_choice)
 	path="${dir[$name]}"
 
@@ -150,7 +152,7 @@ remove() {
 	# show menu
 	menu_title "available session names:"
 	menu_prompt "select one to remove:"
-	menu_select ${!stat[@]} "cancel"
+	menu_select $(sort_str ${!stat[@]}) "cancel"
 	name=$(menu_choice)
 
 	[[ "$name" == "cancel" ]] && exit
