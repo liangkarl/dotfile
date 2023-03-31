@@ -25,28 +25,28 @@ usage() {
 
 # $0 title path cmd
 new_win() {
-	local cmd
+	local -a cmd
 
-	cmd="new-window"
+	cmd=(new-window)
 
 	# Assume $name is the first window name of $name session
 	# create new window next to $name window, (+)
-	[[ ! -z "$name" ]] && cmd+=" -t $name:+"
+	[[ ! -z "$name" ]] && cmd+=("-t $name:+")
 
 	# first window name
-	[[ ! -z "$1" ]] && cmd+=" -n $1"
+	[[ ! -z "$1" ]] && cmd+=("-n $1")
 
 	# set current patch
-	[[ ! -z "$2" ]] && cmd+=" -c $2"
+	[[ ! -z "$2" ]] && cmd+=("-c $2")
 
 	# $@ would be '' if $# < 2
 	shift 2
-	cmd+=" \;"
+	cmd+=("\;")
 
 	# add initial commands
-	[[ ! -z "$@" ]] && cmd+=" send-keys '$@' C-m \;"
+	[[ ! -z "$@" ]] && cmd+=("send-keys '$@' C-m \;")
 
-	eval tmux $cmd
+	eval tmux ${cmd[@]}
 }
 
 WIN_CONF='win.conf'
@@ -73,11 +73,9 @@ while (( $# > 0 )); do
 			EOF
 			;;
 		*)
-			if [[ -e "$1" ]]; then
-				SDIR="$(readlink -e $1)"
-			else
-				exit 2
-			fi
+			[[ -e "$1" ]] || exit 2
+
+			SDIR="$(realpath -m -s $1)"
 			;;
 	esac
 	shift
