@@ -5,27 +5,6 @@
 # TARGET_DIR=$(fasd -d $@)
 TARGET_NAME="$1"
 
-#
-# ts.conf:
-#
-# # space+=([name]='position')
-# space+=([j90]='~/path/to/j90/project.conf/location')
-#
-
-#
-# project.conf:
-#
-# # project name
-# project='aaa'
-#
-# # windows setup:
-# # win_1=('name' 'directory' 'command')
-# win_1=('make' 'code.0' '')
-# win_2=('kernel' 'path/to/kernel' '')
-# win_3=('device' 'path/to/device' '')
-# win_4=('lk' 'path/to/lk' '')
-#
-
 source $(mylib file)
 source $(mylib io)
 source $(mylib sys)
