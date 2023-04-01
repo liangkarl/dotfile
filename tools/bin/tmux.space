@@ -136,6 +136,10 @@ enter() {
 	fi
 
 	switch_session -t $name
+
+	# It's asynchronous condition that user would attach or switch
+	# to other session, but the original session would keep going
+	# down here.
 }
 
 # delete session
@@ -190,10 +194,7 @@ esac
 parse_conf || echo "there is something wrong with '$CONF'"
 
 if [[ "$ENTER" == y ]]; then
-	# show menu again if have just exited previous session.
-	while :; do
-		enter
-	done
+	enter
 	exit
 fi
 
