@@ -10,6 +10,8 @@ abs_path() { echo $(realpath -m -s "$@"); }
 
 rel_path() { echo $(realpath -m -s --relative-to=$(pwd) "$@"); }
 
+is_rel_path() { [[ "$@" =~ ^([^/~]|$) ]] || return 1; }
+
 # usage:
 #   $0 file.name /path/to/dir
 find_path() {
