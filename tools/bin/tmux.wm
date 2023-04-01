@@ -107,7 +107,7 @@ while (( $# > 0 )); do
 		*)
 			[[ -e "$1" ]] || exit 2
 
-			SDIR="$(realpath -m -s $1)"
+			SDIR="$(abs_path $1)"
 			;;
 	esac
 	shift
