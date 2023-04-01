@@ -17,11 +17,13 @@ usage() {
 	OPTIONS:
 	-h: print help
 	-t: assign target session
-	-o: output sample $WIN_CONF
-	-p: load $WIN_CONF not only in current folder but also in parent folders
+	-e: edit the config file, $CONF
+	-p: load $CONF not only in current folder but also in parent folders
 	EOF
 	exit $1
 }
+
+load_conf() { jp -u -f $CONF "$@"; }
 
 # $0 title path cmd
 new_win() {
@@ -49,7 +51,41 @@ new_win() {
 	eval tmux ${cmd[@]}
 }
 
-WIN_CONF='win.conf'
+edit_conf() {
+	if [[ ! -e $CONF ]]; then
+		jo -p list=$(jo -a \
+			"$(jo name='title' \
+			dir="~" \
+			cmd='whoami')" \
+			"$(jo name='title2' \
+			dir="." \
+			cmd='')" \
+		) > $CONF
+	fi
+
+	vim $CONF
+}
+
+new_win_with_conf() {
+	local win path cmd i
+
+	i=0
+	while true; do
+		win="$(load_conf list[$i].name)"
+		[[ "$win" == null ]] && break
+
+		path="$(load_conf list[$i].dir)"
+		# make relative path based on space path
+		is_rel_path "$path" && path=$(abs_path "$SDIR/$path")
+
+		cmd="$(load_conf list[$i].cmd)"
+		[[ "$cmd" == null ]] && cmd=''
+
+		new_win "$win" "$path" "$cmd"
+
+		((++i))
+	done
+}
 
 (( $# == 0 )) && usage 3
 
@@ -59,18 +95,14 @@ while (( $# > 0 )); do
 			usage 0
 			;;
 		-p)
-			SEARCH_PARENT_DIR=y
+			GET_OUTER_CONF=y
 			;;
 		-t)
 			shift
 			name="$1"
 			;;
-		-o)
-			shift
-			cat > $WIN_CONF <<-EOF
-			# Format like this:
-			# win=([name]='WIN NAME' [cwd]='WORKING DIR PATH' [cmd]='INIT CMD')
-			EOF
+		-e)
+			EDIT_CONF=y
 			;;
 		*)
 			[[ -e "$1" ]] || exit 2
@@ -81,24 +113,17 @@ while (( $# > 0 )); do
 	shift
 done
 
-if [[ "$SEARCH_PARENT_DIR" == y ]]; then
-	CONF="$(find_file_path $SDIR/$WIN_CONF)"
-else
-	CONF=$SDIR/$WIN_CONF
+CONF=${SDIR:-.}/win.json
+if [[ "$GET_OUTER_CONF" == y ]]; then
+	CONF="$(find_file_path $CONF)"
 fi
 
-if [[ -z "$CONF" || ! -e "$CONF" ]]; then
+if [[ $EDIT_CONF == y ]]; then
+	edit_conf
+fi
+
+if [[ -e "$CONF" ]]; then
+	new_win_with_conf
+else
 	new_win "$name" "$(pwd)"
-	exit
-fi 2> /dev/null
-
-declare -A win
-while IFS= read -r line; do
-	eval $line
-	[[ -z "${win[name]}" ]] && break
-
-	[[ "${win[cwd]}" == ~/* ]] && win[cwd]=${win[cwd]/\~/$HOME}
-	[[ "${win[cwd]}" != /* ]] && win[cwd]=$SDIR/${win[cwd]}
-
-	new_win "${win[name]}" "${win[cwd]}" "${win[cmd]}"
-done < "$CONF" 2> /dev/null
+fi
