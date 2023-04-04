@@ -45,16 +45,16 @@ usage() {
 	    $name [-ak|ak|add-kernel config]
 	    $name [-av|av|add-vendor config]
 	    $name [-as|as|add-system config]
-	    $name [-lc|lc|load-config]
-	    $name [-dc|dc|del-config]
+	    $name [-ld|ld|load-default]
+	    $name [-ud|ud|update-default]
 	    $name [-l|l|list]
 
 	DESCRIPTION:
 	    k, v, s - compile kernel, vendor or system
 	    m, o - generate whole images or otapackage.zip
 	    ak, av, as - setup lunch config of kernel, vendor or system
-	    lc - load default build config
-	    dc - del runtime build config
+	    ld - load default build config
+	    ud - update default build config
 	    l - list current config and output dir location. Output
 	        dir only appreared after compile source codes.
 
@@ -71,16 +71,6 @@ usage() {
 split_build() {
 	local split_build merged_dir
 	local cmd out config
-
-	for item in 'kernel' 'vendor' 'system'; do
-		out="${item}_out_dir"
-		config="${item}_lunch"
-		if [[ -z "${!out}" ]]; then
-			echo "get product out directory of ${item}"
-			lunch ${!config}
-			eval ${out}=$ANDROID_PRODUCT_OUT
-		fi
-	done
 
 	merged_dir="$(readlink -f final-images)"
 	split_build=$system_out_dir/images/split_build.py
@@ -167,17 +157,6 @@ show_buildnote() {
 	fi
 }
 
-save_rt_build_conf() {
-	cat > $RT_BCONF <<-EOF
-	kernel_lunch='${kernel_lunch}'
-	vendor_lunch='${vendor_lunch}'
-	system_lunch='${system_lunch}'
-	kernel_out_dir='${kernel_out_dir}'
-	vendor_out_dir='${vendor_out_dir}'
-	system_out_dir='${system_out_dir}'
-	EOF
-}
-
 parse_options() {
 	# check input parameters
 	(( $# == 0 )) && \
@@ -208,41 +187,23 @@ parse_options() {
 				COMPILE=y
 				MAKE_VENDOR=y
 				;;
-			lc|-lc|load-config)
-				CONFIG=y
-				USE_DEF_BCONF=y
+			ld|-ld|load-default)
+				LOAD_DEFAULT=y
 				;;
-			dc|-dc|del-config)
-				# not implement yet
-				CONFIG=y
-				DEL_RT_BCONF=y
+			ud|-ud|update-default)
+				UPDATE_DEFAULT=y
 				;;
 			ak|-ak|add-kernel)
-				CONFIG=y
 				shift; kernel_lunch="$1"
-				kernel_out_dir=''
-				echo "kernel lunch: $kernel_lunch"
 				;;
 			av|-av|add-vendor)
-				CONFIG=y
 				shift; vendor_lunch="$1"
-				vendor_out_dir=''
-				echo "vendor lunch: $vendor_lunch"
 				;;
 			as|-as|add-system)
-				CONFIG=y
 				shift; system_lunch="$1"
-				system_out_dir=''
-				echo "system lunch: $system_lunch"
 				;;
 			l|-l|list)
-				cat <<-EOF
-				List lunch config:
-				kernel: $kernel_lunch
-				vendor: $vendor_lunch
-				system: $system_lunch
-				EOF
-				exit 0
+				LIST_CONFIG=y
 				;;
 			h|-h|help)
 				usage 0
@@ -295,15 +256,6 @@ exit_cmd() {
 	show_buildnote "buildnote for this build"
 }
 
-config_env() {
-	if [[ "${USE_DEF_BCONF}" == y ]]; then
-		if [[ ! -e $DEF_BCONF ]]; then
-			exit_msg 1 "$DEF_BCONF not found"
-		fi
-		. $DEF_BCONF
-	fi
-}
-
 build_code() {
 	local args=()
 
@@ -341,8 +293,7 @@ ENVSETUP='build/envsetup.sh'
 EXE_CMD="$(basename $0) $@"
 ERR_MSG='last command: $BASH_SOURCE:$LINENO $ERR_OUT'
 BUILD_TIME=''
-DEF_BCONF='build.conf'
-RT_BCONF="${CACHE}/${PPID}.build.conf"
+BUILD_JSON='build.json'
 NOTE="buildnote.md"
 NOTE_HEADER="${CACHE}/note.header.md"
 NOTE_BODY="${CACHE}/note.body.md"
@@ -356,10 +307,58 @@ OTA=''
 COMPILE=''
 CONFIG=''
 
-## Config variables:
-# kernel_lunch vendor_lunch system_lunch
-# kernel_out_dir vendor_out_dir system_out_dir
-# kernel_dir
+save_conf() { jj -p -i $BUILD_JSON -o $BUILD_JSON -v "$2" "$1"; }
+
+load_conf() { jj -i $BUILD_JSON "$1"; }
+
+pid="runtime.pid$PPID"
+load_build_json() {
+	[[ ! -e $BUILD_JSON ]] && return 1
+
+	if [[ -z "$(load_conf $pid)" || "${LOAD_DEFAULT}" == y ]]; then
+		[[ -z "$kernel_lunch" ]] && kernel_lunch="$(load_conf lunch.kernel)"
+		[[ -z "$vendor_lunch" ]] && vendor_lunch="$(load_conf lunch.vendor)"
+		[[ -z "$system_lunch" ]] && system_lunch="$(load_conf lunch.system)"
+	else
+		pr_info "load runtime config: $pid"
+		[[ -z "$kernel_lunch" ]] && kernel_lunch="$(load_conf $pid.lunch.kernel)"
+		[[ -z "$vendor_lunch" ]] && vendor_lunch="$(load_conf $pid.lunch.vendor)"
+		[[ -z "$system_lunch" ]] && system_lunch="$(load_conf $pid.lunch.system)"
+		kernel_out_dir="$(load_conf $pid.out.kernel)"
+		vendor_out_dir="$(load_conf $pid.out.vendor)"
+		system_out_dir="$(load_conf $pid.out.system)"
+	fi
+
+	if [[ "$LIST_CONFIG" == y ]]; then
+		cat <<-EOF
+		Current lunch config:
+		kernel: $kernel_lunch
+		vendor: $vendor_lunch
+		system: $system_lunch
+
+		Output directory:
+		kernel: $kernel_out_dir
+		vendor: $vendor_out_dir
+		system: $system_out_dir
+		EOF
+	fi
+}
+
+save_rt_build_json() {
+	save_conf ${pid}.lunch.kernel ${kernel_lunch}
+	save_conf ${pid}.lunch.vendor ${vendor_lunch}
+	save_conf ${pid}.lunch.system ${system_lunch}
+	save_conf ${pid}.out.kernel ${kernel_out_dir}
+	save_conf ${pid}.out.vendor ${vendor_out_dir}
+	save_conf ${pid}.out.system ${system_out_dir}
+	save_conf ${pid}.update "$(date -R)"
+
+	if [[ "$UPDATE_DEFAULT" == y ]]; then
+		save_conf lunch.kernel ${kernel_lunch}
+		save_conf lunch.vendor ${vendor_lunch}
+		save_conf lunch.system ${system_lunch}
+	fi
+}
 
 # -a: export all functions
 # -e: exit on error
@@ -368,24 +367,13 @@ CONFIG=''
 # -o pipefail: return error once failed to execute the first pipline CMD
 set -aeE
 
-[[ ! -d $CACHE ]] && mkdir $CACHE
-
-# load build script & configs
-[[ -e $ENVSETUP ]] && . $ENVSETUP
-[[ -e $DEF_BCONF ]] && . $DEF_BCONF
-[[ -e $RT_BCONF ]] && . $RT_BCONF
-
-# parse options
-# change to flags, instead of command queue, to prevent ordering problems
-# parse_options
 parse_options $@
 
-# check basic required command
-[[ "$(type -t lunch)" != 'function' ]] && \
-		exit_msg 249 "no 'lunch' for execution"
+[[ ! -d $CACHE ]] && mkdir $CACHE
 
-if [[ "$CONFIG" == y ]]; then
-	config_env
+if ! load_build_json; then
+	pr_err "$BUILD_JSON does not exist."
+	exit 1
 fi
 
 if [[ "$COMPILE" == y ]]; then
@@ -401,9 +389,12 @@ if [[ "$COMPILE" == y ]]; then
 	# merge header & content
 	cat $NOTE_HEADER $NOTE_BODY > $NOTE
 
+	# load build script & configs
+	[[ -e $ENVSETUP ]] && . $ENVSETUP
+
 	# start compiling
 	build_code
 fi
 
 # save runtime lunch config
-save_rt_build_conf
+save_rt_build_json
