@@ -27,6 +27,7 @@
 source $(mylib io)
 source $(mylib file)
 source $(mylib menu)
+source $(myscript helper.aosp)
 
 # don't move to botton since 'extglob' needs to be called at first
 shopt -s extglob
@@ -89,13 +90,12 @@ split_build() {
 build_kernel() {
 	lunch $kernel_lunch
 	kernel_out_dir=$ANDROID_PRODUCT_OUT
+
 	rm -rf ${kernel_out_dir}/obj/KERNEL_OBJ
 	rm -rf ${kernel_out_dir}/images/krn*
 	make -j24 krn_images
-	# FIXME: move cmd db feature to somewhere else
-	# if [[ -e "$(readlink -e "$kernel_dir")" ]]; then
-	# 	cmd_list+=("setup_kernel_cmddb $kernel_dir")
-	# fi
+
+	gen_aosp_kernel_cmddb $kernel_dir $kernel_out_dir
 }
 
 build_system() {
@@ -105,8 +105,8 @@ build_system() {
 	rm -rf ${system_out_dir}/obj
 	rm -rf ${system_out_dir}/images
 	make -j24 sys_images
-	# FIXME: move cmd db feature to somewhere else
-	# cmd_list+=("create_cmd_db system")
+
+	create_and_link_cmddb system
 }
 
 build_vendor() {
@@ -117,8 +117,8 @@ build_vendor() {
 	rm -rf ${vendor_out_dir}/images/vnd*
 	rm -rf ${vendor_out_dir}/obj/!(KERNEL_OBJ)
 	make -j24 vnd_images
-	# FIXME: move cmd db feature to somewhere else
-	# cmd_list+=("create_cmd_db vendor")
+
+	create_and_link_cmddb vendor
 }
 
 add_build_note_header() {
