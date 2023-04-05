@@ -1,129 +1,63 @@
 #!/usr/bin/env bash
 
-# $0 KERNEL_DIR KERNEL_OBJ_DIR
-setup_aosp_kernel_cmddb() {
-    local -r build_conf='build.conf'
+source $(mylib file)
+__build_json='build.json'
+__gen_cmddb="$(myscript gen_compile_commands.py)"
+__command_db='compile_commands.json'
+
+# $0 [kernel_dir]
+gen_kernel_cmddb() {
+    echo "generate compile commands db..."
+    eval $__gen_cmddb -d "$1"
+}
+
+# $0 [kernel_dir] [kernel_obj_dir]
+gen_aosp_kernel_cmddb() {
     local kernel_dir kernel_obj_dir
-    local android_dir
-    local gen_db_py compile_db
 
-    compile_db=compile_commands.json
-
-    # load $kernel_dir
-    [[ -e "$build_conf" ]] && source $build_conf
-
-    kernel_dir=${kernel_dir:-$(readlink -e "$1")}
-    if [[ -z "$kernel_dir" ]]; then
-        echo "invalid kernel dir path: $kernel_dir"
-        return 128
-    fi
-
-    if [[ -z "$ANDROID_PRODUCT_OUT" ]]; then
-        . build/envsetup.sh || {
-            echo "no \$ANDROID_PRODUCT_OUT."
-            echo "failed to lunch config."
-            return 2
-        }
-        lunch
-    fi
-    kernel_obj_dir=${ANDROID_PRODUCT_OUT}/obj/KERNEL_OBJ
+    kernel_dir="$(abs_path "$1")"
+    kernel_obj_dir="$(abs_path "$2")"
 
     setup_kernel_cmddb $kernel_obj_dir
 
     echo "Link build dir."
     ln -svf $kernel_obj_dir ${kernel_dir}/build
 
-    echo "copy commands db to $kernel_dir/$compile_db"
-    cp -f ${kernel_obj_dir}/${compile_db} $kernel_dir
-}
-
-setup_kernel_cmddb() {
-    local -r build_conf='build.conf'
-    local kernel_dir
-    local android_dir
-    local gen_db_py compile_db
-
-    compile_db=compile_commands.json
-    gen_db_py=gen_compile_commands.py
-
-    kernel_dir=$(readlink -e "$1")
-    if [[ -z "$kernel_dir" ]]; then
-        echo "invalid kernel dir path: $kernel_dir"
-        return 128
-    fi
-
-    echo "linux kernel dir: $kernel_dir"
-    echo "-------------------------------------------------------------------"
-
-    for dir in "$(pwd)" "$kernel_dir/scripts" "$XDG_CONFIG_HOME/toolkit/script"; do
-        echo "search $dir/$gen_db_py..."
-        [ -e $dir/$gen_db_py ] && {
-            gen_db_py=$dir/$gen_db_py
-            break
-        }
-    done
-
-    [ ! -e $gen_db_py ] && {
-        echo "no $gen_db_py to continue"
-        return 128
-    }
-
-    echo "generate compile commands db..."
-
-    eval $gen_db_py -d $kernel_dir
+    echo "copy commands db to $kernel_dir/${__command_db}"
+    cp -f ${kernel_obj_dir}/${__command_db} $kernel_dir
 }
 
 # create a cmd_db here
 # link_cmdb PLACE PROJECT_LIST
-create_cmd_db() {
-    local -r cmd_db='compile_commands.json'
-
-    if [[ -z "$1" ]]; then
-        return 128
-    fi
-
-    local cmd_db_loc rel_cmd_db
-    local rel_cmd_db rel_copy_cmd_db
+create_and_link_cmddb() {
+    local cmddb_dir cmddb_json base_cmddb
     local wanted_place
     local dir
 
-    rel_copy_cmd_db='cmd-db'
-    cmd_db_loc=()
-    cmd_db_loc+=("out/soong/development/ide/compdb")
-    cmd_db_loc+=("out/development/ide/compdb")
+    cmddb_dir=("out/soong/development/ide/compdb"
+            "out/development/ide/compdb")
 
-    for dir in ${cmd_db_loc[@]}; do
-        if [[ -e $dir/$cmd_db ]]; then
-            rel_cmd_db="$dir/$cmd_db"
+    for dir in ${cmddb_dir[@]}; do
+        if [[ -e $dir/$__command_db ]]; then
+            cmddb_json="$dir/$__command_db"
         fi
     done
 
-    if [[ -z $rel_cmd_db ]]; then
-        echo "no available $cmd_db"
+    if [[ -z $cmddb_json ]]; then
+        echo "no available $__command_db"
         return 0
     fi
 
-
     # 1st stage
     # copy command DB
-    if [[ ! -e $rel_copy_cmd_db ]]; then
-        mkdir $rel_copy_cmd_db
-    fi
-
-    wanted_place="$(readlink -f "$rel_copy_cmd_db/$1")"
-    rel_copy_cmd_db="$wanted_place/$cmd_db"
-
+    base_cmddb='cmd-db'
+    wanted_place="$(abs_path "$base_cmddb/$1")"
     if [[ ! -e $wanted_place ]]; then
         mkdir -p $wanted_place
-    elif [[ -e "$rel_copy_cmd_db" ]]; then
-        if cmp $rel_copy_cmd_db $rel_cmd_db >&-; then
-            echo "command database: $rel_copy_cmd_db"
-            return 0
-        fi
     fi
 
-    cp $rel_cmd_db $wanted_place
-    echo "command database: $rel_copy_cmd_db"
+    cp $cmddb_json $wanted_place
+    echo "command database: $(ls $wanted_place)"
 
     # 2nd stage
     # create .ccls for projects
@@ -132,21 +66,12 @@ create_cmd_db() {
         return 0
     fi
 
-    local projects size
-    local dot_ccls ccls_config
-    local i
-
-    dot_ccls='.ccls'
-    ccls_config="{\"compilationDatabaseDirectory\": \"$rel_copy_cmd_db\"}"
-
-    projects=("$@")
-    size=${#projects[@]}
-    echo "create $dot_ccls for $size project(s)"
-    for ((i = 0; i < size; i++)); do
-        if [[ -e ${projects[$i]} ]]; then
-            echo $ccls_config > ${projects[$i]}/$dot_ccls
+    echo "create .ccls for $# project(s)"
+    for dir in "$@"; do
+        if [[ -e $dir ]]; then
+            jo -p compilationDatabaseDirectory="$base_cmddb" > $dir/.ccls
         else
-            echo "no found: ${projects[$i]}"
+            echo "not found: $dir"
         fi
     done
     echo "done"
