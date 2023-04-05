@@ -16,7 +16,7 @@ ft_conf="${XDG_CONFIG_HOME}/tmux/float-term.conf"
 
 # toggle float terminal here
 if [[ "${src_term}" == "${ft_term}" ]]; then
-	tmux detach-client
+	tmux kill-session
 	exit
 fi
 
@@ -27,7 +27,7 @@ if ! tmux has-session -t ${ft_term}; then
 fi
 
 # attach session
-# '\;' is special use case for eval
+# '\;' is used for separating internal tmux command
 pop_cmd=("tmux attach-session -t ${ft_term} '\;'")
 
 if [[ "$new_term" == y ]]; then
@@ -42,11 +42,5 @@ else
 	fi
 fi
 
-# \"cd $PWD\" is special use case for eval
-pop_cmd+=("send-keys \"cd $PWD\" C-m '\;'")
-# cd_cmd="send-keys cd $PWD C-m \;"
-
 # pop up float window
 eval tmux popup -w 80% -h 80% -E ${pop_cmd[*]} || true
-# tmux popup -w 80% -h 80% -E ${pop_cmd[*]} send-keys "cd $PWD" C-m ';' || true
-# tmux popup -w 80% -h 80% -E ${pop_cmd[*]} $cd_cmd || true
