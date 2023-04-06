@@ -10,7 +10,7 @@
     - tmux.space
 - win.json
     - tmux.wm
-- transmitt.conf
+- transmit.conf
     - transmit
 - uart.conf
     - uart
@@ -66,4 +66,21 @@ list:
         name: ...
         dir: ...
         cmd: ...
+```
+
+### transmit.json
+```json
+remote:
+    host: ...
+    dir:
+        [0]: /a/b/c
+        [1]: c/b/a
+local:
+    dir: 'images@$(date +%Y%m%d-%H%M%S)'
+    file:
+        [0]: 'a/'
+        [1]: 'b.img'
+        [2]: 'c.bin'
+setup:
+    bin: 'rsync'
 ```
