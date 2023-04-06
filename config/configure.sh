@@ -47,7 +47,7 @@ fi
 options=("remove" "overwrite" "skip" "cancel")
 
 for dir in ${list[@]}; do
-    [[ ! -e "$dir" ]] && {
+    [[ ! -e "$mydir/$dir" ]] && {
         echo "directory not existed: $dir"
         continue
     }
