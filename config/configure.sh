@@ -56,29 +56,26 @@ for dir in ${list[@]}; do
 
     echo "-- copy config to $target --"
 
-    [[ ! -e $target ]] && {
-        cp -rvf $mydir/$dir $conf_home
-        continue
+    [[ -e $target ]] && {
+        PS3="Found an old config. Select the next action: "
+        select option in ${options[@]}; do
+            case $option in
+                remove)
+                    rm -rf $target
+                    ;;
+                overwrite)
+                    break
+                    ;;
+                skip)
+                    continue 2
+                    ;;
+                cancel)
+                    exit 0
+                    ;;
+            esac
+            break
+        done
     }
-
-    PS3="Found an old config. Select the next action: "
-    select option in ${options[@]}; do
-        case $option in
-            remove)
-                rm -rf $target
-                ;;
-            overwrite)
-                break
-                ;;
-            skip)
-                continue 2
-                ;;
-            cancel)
-                exit 0
-                ;;
-        esac
-        break
-    done
 
     cp -rvf ${mydir}/$dir $conf_home/
 
