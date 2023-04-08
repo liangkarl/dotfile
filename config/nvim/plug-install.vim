@@ -21,10 +21,19 @@ Plug 'hrsh7th/cmp-buffer'       " snippet engine of buffer words
 " Terminal
 
 " Fuzzy Search
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
-Plug 'liuchengxu/vim-clap', { 'do': ':Clap install-binary' }
-let g:fuzzy_finder = 'clap'
+let fuzzy_finder = 'fzf'
+if fuzzy_finder == 'fzf'
+    Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+    Plug 'junegunn/fzf.vim'
+elseif fuzzy_finder == 'skim'
+    " a backup solution when fzf was failed to work
+    Plug 'lotabout/skim', { 'dir': '~/.skim', 'do': './install' }
+    Plug 'lotabout/skim.vim'
+else
+    " when fzf and skim are not usable
+    Plug 'nvim-lua/plenary.nvim'
+    Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
+endif
 
 " Language Support
 Plug 'neovim/nvim-lspconfig'    " LSP configuration
