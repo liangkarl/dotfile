@@ -89,7 +89,7 @@ lsp.ccls.setup {
 
 -- Lua (sumneko_lua)
 -- https://github.com/sumneko/lua-language-server
-lsp.sumneko_lua.setup {
+lsp.lua_ls.setup {
   settings = {
     Lua = {
       runtime = {
