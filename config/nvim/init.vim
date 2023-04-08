@@ -2,18 +2,18 @@
 " change the path to $XDG_CONFIG_HOME
 
 " import plugin install
-source ~/.config/nvim/include/plug-install.vim
+source ~/.config/nvim/plug-install.vim
 
 " import common setup
-source ~/.config/nvim/include/common.vim
+source ~/.config/nvim/common.vim
 
 " import plugin config
-for f in split(glob('~/.config/nvim/include/config/*.vim'), '\n')
+for f in split(glob('~/.config/nvim/config/*.vim'), '\n')
     exe 'source' f
 endfor
 
 " import theme setup
-for f in split(glob('~/.config/nvim/include/theme/*.vim'), '\n')
+for f in split(glob('~/.config/nvim/theme/*.vim'), '\n')
     exe 'source' f
 endfor
 
