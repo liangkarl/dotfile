@@ -6,3 +6,4 @@ echo "-- setup nvim config --"
 
 # link user-level config of EditorConfig
 ln -sf ${config_dir}/nvim/editorconfig ~/.editorconfig
+ln -sf ${config_dir}/nvim/clang-format ~/.clang-format
