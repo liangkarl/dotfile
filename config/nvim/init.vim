@@ -4,16 +4,16 @@
 let g:editor_theme = 'material'
 let g:fuzzy_finder = 'fzf'
 let g:nvim_dir = $XDG_CONFIG_HOME . '/nvim'
+let g:lua_dir = g:nvim_dir . '/lua'
 let g:config_dir = g:nvim_dir . '/config'
 let g:theme_dir = g:config_dir . '/theme'
 let g:finder_dir = g:config_dir . '/finder'
-let g:lua_dir = g:nvim_dir . '/lua'
 
 " map leader
 let mapleader = ' '
 
 " import plugin install
-call plug#begin('~/.config/nvim/plugged')
+call plug#begin(g:nvim_dir . '/plugged')
 
 " Start Screen:
 Plug 'mhinz/vim-startify'
@@ -147,7 +147,7 @@ for f in split(glob(g:config_dir . '/*.vim'), '\n')
 endfor
 
 " import lua configs
-luafile ~/.config/nvim/lua/init.lua
+exe 'luafile' . g:lua_dir . '/init.lua'
 
 " import common setup
 
@@ -174,11 +174,11 @@ vnoremap < <gv
 
 
 " Reload vim config
-nnoremap <leader>so :so $MYVIMRC<cr>:echo "Reload nvim config"<cr>
-nnoremap <leader>cwf :echo expand('%:p')<cr>
-nnoremap <leader>cwd :pwd<cr>
+nnoremap <silent><leader>so :so $MYVIMRC<cr>:echo "Reload nvim config"<cr>
+nnoremap <silent><leader>cwf :echo 'File Path: ' . expand('%:p')<cr>
+nnoremap <silent><leader>cwd :echo 'CWD: ' . getcwd()<cr>
 " Change the directory only for the current window
-nnoremap <leader>cd :lcd %:p:h<cr>
+nnoremap <silent><leader>cd :lcd %:p:h<cr>:echo 'change CWD: ' . %:p:h<cr>
 
 " CTRL-C: Quit insert mode, go back to Normal mode. Do not check for
 " abbreviations. Does not trigger the InsertLeave autocommand event.
@@ -194,13 +194,13 @@ inoremap <A-l> <Right>
 inoremap <A-b> <C-Left>
 inoremap <A-w> <C-Right>
 
-function! ToggleQuickFix()
-    if empty(filter(getwininfo(), 'v:val.quickfix'))
-        copen
-    else
-        cclose
-    endif
-endfunction
+fun! ToggleQuickFix()
+  if empty(filter(getwininfo(), 'v:val.quickfix'))
+    copen
+  else
+    cclose
+  endif
+endfun
 nnoremap <silent><leader>qt :call ToggleQuickFix()<cr>
 
 " Add keybind for system clipboard.
@@ -221,15 +221,16 @@ noremap <leader><space>v "+p
 " buffer motion (buffer: define as file content itself)
 nnoremap <silent><leader>bb :b#<cr>
 nnoremap <silent><leader>w :w<cr>
+
 " Save buffer content if modifiable is 'on'
-fun CloseBuf()
+fun! CloseBuf()
   if !&modifiable
     bdelete!
   else
     bdelete
   endif
 endfun
-nnoremap <leader>d :call CloseBuf()<cr>
+nnoremap <silent><leader>d :call CloseBuf()<cr>
 
 " Window motion (window: view point of a buffer)
 nnoremap <leader>h <C-w>h
@@ -243,13 +244,14 @@ nnoremap <leader>c :C<cr>
 
 " Opens an edit command with the path of the currently edited file filled in
 " Normal mode: <leader>e
-noremap <leader>e :e <C-R>=expand("%:p:h") . "/" <cr>
+noremap <leader>e :e <C-R>=expand("%:p:h") . "/"<cr>
+noremap <leader>ec :e <C-R>=getcwd() . "/"<cr>
 
 " no one is really happy until you have this shortcuts
 cab W! w!
 cab Q! q!
-cab Wq wq
 cab Wa wa
+cab Wq wq
 cab wQ wq
 cab WQ wq
 cab W w
@@ -259,36 +261,6 @@ cab Q q
 filetype plugin indent on
 
 syntax on
-
-" Some minor or more generic autocmd rules
-" The PC is fast enough, do syntax highlight syncing from start
-autocmd BufEnter * :syntax sync fromstart
-" Remember cursor position
-autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
-" less comprez
-autocmd BufNewFile,BufRead *.less set filetype=less
-
-if !exists('*s:setupWrapping')
-  function s:setupWrapping()
-    set wrap
-    set wm=2
-    set textwidth=79
-  endfunction
-endif
-" txt
-au BufRead,BufNewFile *.txt call s:setupWrapping()
-" make use real tabs
-au FileType make set noexpandtab
-
-" Remember last location in file
-if has("autocmd")
-    autocmd BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$")
-        \| exe "normal g'\"" | endif
-endif
-" import plugin config
-for f in split(glob('~/.config/nvim/config/*.vim'), '\n')
-    exe 'source' f
-endfor
 
 " no vi-compatible
 set nocompatible
@@ -321,8 +293,11 @@ set modelines=10
 set hlsearch
 set incsearch
 
+" Set Byte Order Mask(BOM) dealing with UTF8 in window
 set bomb
+" shorten the response time in tty
 set ttyfast
+" treat all files as binary to prevent from unexpected changes
 set binary
 
 set number
@@ -332,9 +307,6 @@ set ruler
 set showcmd
 " Close a split window in Vim without resizing other windows
 set noequalalways
-
-" set no line number in terminal buffer
-autocmd TermOpen * setlocal nonumber norelativenumber
 
 " opening a new file when the current buffer has unsaved changes
 " causes files to be hidden instead of closed
@@ -372,8 +344,26 @@ endif
 
 exe 'colorscheme' g:editor_theme
 
+set cursorline
+
 " for material only
 hi CursorLine cterm=underline ctermbg=none gui=none guifg=BURLYWOOD guibg=#1c1c1c
 hi Cursor guifg=none guibg=#7a4d4d
 
-set cursorline
+" Some minor or more generic autocmd rules
+
+" The PC is fast enough, do syntax highlight syncing from start
+autocmd BufEnter * :syntax sync fromstart
+
+" Remember cursor position
+fun! s:RestoreCursorPosition()
+  " if last visited position is available
+  if line("'\"") > 1 && line("'\"") <= line("$")
+    " jump to the last position
+    exe "normal! g'\""
+  endif
+endfun
+autocmd BufReadPost * call s:RestoreCursorPosition()
+
+" set no line number in terminal buffer
+autocmd TermOpen * setlocal nonumber norelativenumber
