@@ -14,6 +14,12 @@ nnoremap <leader>fC :FzfCommits<cr>
 nnoremap <leader>fs :FzfGFiles?<cr>
 nnoremap <leader>fg :exe 'FzfRg' expand('<cword>>')<cr>
 
+" disable case insensitive
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always -- '.shellescape(<q-args>), 1,
+  \   fzf#vim#with_preview(), <bang>0)
+
 " | Command                | List                                                                                  |
 " | ---                    | ---                                                                                   |
 " | `:Files [PATH]`        | Files (runs `$FZF_DEFAULT_COMMAND` if defined)                                        |
