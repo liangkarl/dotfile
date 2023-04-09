@@ -5,6 +5,9 @@ require('nvim-tree').setup {
     enable = true,
     auto_open = true,
   },
+  view = {
+	width = 40,
+  },
   renderer = {
     icons = {
       show = {
