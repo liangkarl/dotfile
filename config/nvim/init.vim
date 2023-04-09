@@ -30,6 +30,7 @@ Plug 'folke/which-key.nvim'     " display shortcut-mapping functions
 
 " Autocompletion (without LSP source)
 Plug 'hrsh7th/nvim-cmp'         " primary autocomplete function
+Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }    " AI assist for completion
 Plug 'onsails/lspkind.nvim'     " adjust scroll menu width
 Plug 'hrsh7th/cmp-buffer'       " snippet engine of buffer words
 
