@@ -1,7 +1,7 @@
 " Plugin: tig-explorer
 " open tig with current file
-nnoremap <Leader>tf :TigOpenCurrentFile<CR>
+nnoremap <leader>tf :TigOpenCurrentFile<cr>
 " open tig with Project root path
-nnoremap <Leader>td :TigOpenProjectRootDir<CR>
+nnoremap <leader>td :TigOpenProjectRootDir<cr>
 " open tig blame with current file
-nnoremap <Leader>tb :TigBlame<CR>
+nnoremap <leader>tb :TigBlame<cr>

@@ -1,3 +1,3 @@
 require("mason").setup()
 
-vim.keymap.set('n', '<Leader>ms', ':Mason<CR>')
+vim.keymap.set('n', '<leader>ms', ':Mason<cr>')

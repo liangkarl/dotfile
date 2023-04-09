@@ -65,4 +65,4 @@ vim.api.nvim_create_autocmd("BufEnter", {
   end
 })
 
-vim.keymap.set('n', '<Leader>ft', ':NvimTreeToggle<CR>')
+vim.keymap.set('n', '<leader>ft', ':NvimTreeToggle<cr>')

@@ -15,6 +15,6 @@ let g:at_custom_alternates = {
 \}
 
 " Toggle boolean
-nnoremap <silent> <leader>vv :ToggleAlternate<CR>
+nnoremap <silent> <leader>vv :ToggleAlternate<cr>
 
 
