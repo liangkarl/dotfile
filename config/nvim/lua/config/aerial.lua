@@ -2,16 +2,16 @@
 require("aerial").setup({
   -- Priority list of preferred backends for aerial.
   -- This can be a filetype map (see :help aerial-filetype-map)
-  backends = { "lsp", "treesitter", "markdown" },
+  backends = { "lsp", "treesitter" },
 
   layout = {
     -- These control the width of the aerial window.
     -- They can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
     -- min_width and max_width can be a list of mixed types.
     -- max_width = {40, 0.2} means "the lesser of 40 columns or 20% of total"
-    max_width = { 40, 0.2 },
-    width = nil,
-    min_width = 10,
+    max_width = { 70, 0.4 },
+    width = 40,
+    min_width = { 30, 0.2 },
 
     -- Enum: prefer_right, prefer_left, right, left, float
     -- Determines the default direction to open the aerial window. The 'prefer'
@@ -218,11 +218,6 @@ require("aerial").setup({
   },
 
   treesitter = {
-    -- How long to wait (in ms) after a buffer change before updating
-    update_delay = 300,
-  },
-
-  markdown = {
     -- How long to wait (in ms) after a buffer change before updating
     update_delay = 300,
   },
