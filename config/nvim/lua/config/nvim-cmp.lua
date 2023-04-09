@@ -44,7 +44,7 @@ cmp.setup {
       end
     end, { "i", "s" }),
 
-    ['<Space>'] = cmp.mapping(function(fallback)
+    ['<space>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
 	    cmp.close()
 	  else
@@ -52,7 +52,7 @@ cmp.setup {
 	  end
     end, { "i", "s" }),
 
-    ['<CR>'] = cmp.mapping.confirm {
+    ['<cr>'] = cmp.mapping.confirm {
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
     },

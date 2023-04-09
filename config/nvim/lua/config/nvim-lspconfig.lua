@@ -114,7 +114,7 @@ lsp.lua_ls.setup {
   on_attach = cust_attach,
 }
 
-vim.keymap.set('n', '<Leader>li', ':LspInfo<CR>')
+vim.keymap.set('n', '<leader>li', ':LspInfo<cr>')
 
 local opts = { noremap=true, silent=true }
 vim.keymap.set('n', '<space>ge', vim.diagnostic.open_float, opts)

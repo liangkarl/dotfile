@@ -8,10 +8,10 @@
 " | r    | rename file/dir              |
 " | H    | Toggle hidden                |
 " | o    | toggle expand/collapse       |
-" | <CR> | enter cursored folder        |
+" | <cr> | enter cursored folder        |
 " | R    | refresh tree list            |
 " | q    | quit explore                 |
 " |------+------------------------------|
-nmap <silent> <Leader>m1 :NvimTreeToggle<CR>
+nmap <silent> <leader>m1 :NvimTreeToggle<cr>
 
 

@@ -2,13 +2,13 @@
 " |----------+----------------|
 " | ORIG CMD |     explain    |
 " |----------+:--------------:|
-" | del col  |   <Leader>tdc  |
-" | ins col  |   <Leader>tic  |
+" | del col  |   <leader>tdc  |
+" | ins col  |   <leader>tic  |
 " | tableize | Tableize/[sep] |
 " |----------+----------------|
-nnoremap <silent><Leader>tg :TableModeToggle<CR>
+nnoremap <silent><leader>tg :TableModeToggle<cr>
 " Realigned text-table
-nnoremap <silent><Leader>tr :TableModeRealign<CR>
+nnoremap <silent><leader>tr :TableModeRealign<cr>
 " Tableize
-noremap <Leader>tz :Tableize/,
+noremap <leader>tz :Tableize/,
 

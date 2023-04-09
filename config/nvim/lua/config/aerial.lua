@@ -228,5 +228,5 @@ require("aerial").setup({
   },
 })
 
-vim.keymap.set('n', '<Leader>at', ':AerialToggle<CR>')
-vim.keymap.set('n', '<Leader>ai', ':AerialInfo<CR>')
+vim.keymap.set('n', '<leader>at', ':AerialToggle<cr>')
+vim.keymap.set('n', '<leader>ai', ':AerialInfo<cr>')

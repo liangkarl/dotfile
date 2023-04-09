@@ -6,4 +6,4 @@ let g:strip_whitelines_at_eof=1
 " let g:show_spaces_that_precede_tabs=1
 
 " Remove trailing whitespace
-nnoremap <silent><Leader>ss :StripWhitespace<CR>
+nnoremap <silent><leader>ss :StripWhitespace<cr>
