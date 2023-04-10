@@ -27,7 +27,7 @@ grep -q "SCRIPT_DIR" $SHELL_DIR/config \
         || echo "export SCRIPT_DIR=${toolkit_script}" >> $SHELL_DIR/config
 
 for file in $(ls $mydir/prebuild); do
-    cp -f $mydir/prebuild/$file/$file-${pfx,,} $toolkit_bin/$file
+    cp -f $mydir/prebuild/$file/$file-${pfx,,} $toolkit_bin/$file || true
 done
 
 # create links between $HOME/bin and $toolkit
