@@ -18,7 +18,7 @@ gen_aosp_kernel_cmddb() {
     kernel_dir="$(abs_path "$1")"
     kernel_obj_dir="$(abs_path "$2")"
 
-    setup_kernel_cmddb $kernel_obj_dir
+    gen_kernel_cmddb $kernel_obj_dir
 
     echo "Link build dir."
     ln -svf $kernel_obj_dir ${kernel_dir}/build
