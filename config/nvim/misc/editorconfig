@@ -14,10 +14,10 @@ indent_size = 4
 indent_style = tab
 charset = utf-8
 
-[*.{js,json}]
+[*.{js,lua,vim}]
 indent_size = 2
 
-[*.{vim,yml,xml,html,htm,md,py,bash,sh,json}]
+[*.{vim,yml,xml,html,htm,py,bash,sh,json,lua}]
 indent_style = space
 
 [*.{c,cpp,h}]
