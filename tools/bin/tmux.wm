@@ -125,5 +125,5 @@ fi
 if [[ -e "$CONF" ]]; then
 	new_win_with_conf
 else
-	new_win "$name" "$(pwd)"
+	new_win "$name" "$SDIR"
 fi
