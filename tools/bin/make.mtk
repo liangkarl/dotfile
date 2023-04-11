@@ -73,6 +73,12 @@ split_build() {
 	local split_build merged_dir
 	local cmd out config
 
+	if [[ -z "$kernel_out_dir" \
+			  || -z "$vendor_out_dir" \
+			  || -z "$system_out_dir" ]]; then
+		exit_msg 3 "please run all compilation commands in the first run"
+	fi
+
 	merged_dir="$(readlink -f final-images)"
 	split_build=$system_out_dir/images/split_build.py
 
