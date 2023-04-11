@@ -316,17 +316,19 @@ load_build_json() {
 	[[ ! -e $BUILD_JSON ]] && return 1
 
 	if [[ -z "$(load_conf $pid)" || "${LOAD_DEFAULT}" == y ]]; then
-		[[ -z "$kernel_lunch" ]] && kernel_lunch="$(load_conf lunch.kernel)"
-		[[ -z "$vendor_lunch" ]] && vendor_lunch="$(load_conf lunch.vendor)"
-		[[ -z "$system_lunch" ]] && system_lunch="$(load_conf lunch.system)"
+		[[ -z "$kernel_lunch" ]] && kernel_lunch="$(load_conf default.kernel.lunch)"
+		[[ -z "$kernel_dir" ]] && kernel_dir="$(load_conf default.kernel.dir)"
+		[[ -z "$vendor_lunch" ]] && vendor_lunch="$(load_conf default.vendor.lunch)"
+		[[ -z "$system_lunch" ]] && system_lunch="$(load_conf default.system.lunch)"
 	else
 		pr_info "load runtime config: $pid"
-		[[ -z "$kernel_lunch" ]] && kernel_lunch="$(load_conf $pid.lunch.kernel)"
-		[[ -z "$vendor_lunch" ]] && vendor_lunch="$(load_conf $pid.lunch.vendor)"
-		[[ -z "$system_lunch" ]] && system_lunch="$(load_conf $pid.lunch.system)"
-		kernel_out_dir="$(load_conf $pid.out.kernel)"
-		vendor_out_dir="$(load_conf $pid.out.vendor)"
-		system_out_dir="$(load_conf $pid.out.system)"
+		[[ -z "$kernel_lunch" ]] && kernel_lunch="$(load_conf $pid.kernel.lunch)"
+		[[ -z "$kernel_dir" ]] && kernel_lunch="$(load_conf $pid.kernel.dir)"
+		[[ -z "$vendor_lunch" ]] && vendor_lunch="$(load_conf $pid.vendor.lunch)"
+		[[ -z "$system_lunch" ]] && system_lunch="$(load_conf $pid.system.lunch)"
+		kernel_out_dir="$(load_conf $pid.kernel.out)"
+		vendor_out_dir="$(load_conf $pid.vendor.out)"
+		system_out_dir="$(load_conf $pid.system.out)"
 	fi
 
 	if [[ "$LIST_CONFIG" == y ]]; then
@@ -345,18 +347,19 @@ load_build_json() {
 }
 
 save_rt_build_json() {
-	save_conf ${pid}.lunch.kernel ${kernel_lunch}
-	save_conf ${pid}.lunch.vendor ${vendor_lunch}
-	save_conf ${pid}.lunch.system ${system_lunch}
-	save_conf ${pid}.out.kernel ${kernel_out_dir}
-	save_conf ${pid}.out.vendor ${vendor_out_dir}
-	save_conf ${pid}.out.system ${system_out_dir}
+	save_conf ${pid}.kernel.lunch ${kernel_lunch}
+	save_conf ${pid}.vendor.lunch ${vendor_lunch}
+	save_conf ${pid}.system.lunch ${system_lunch}
+	save_conf ${pid}.kernel.out ${kernel_out_dir}
+	save_conf ${pid}.vendor.out ${vendor_out_dir}
+	save_conf ${pid}.system.out ${system_out_dir}
+	save_conf ${pid}.kernel.dir ${kernel_dir}
 	save_conf ${pid}.update "$(date -R)"
 
 	if [[ "$UPDATE_DEFAULT" == y ]]; then
-		save_conf lunch.kernel ${kernel_lunch}
-		save_conf lunch.vendor ${vendor_lunch}
-		save_conf lunch.system ${system_lunch}
+		save_conf default.kernel.lunch ${kernel_lunch}
+		save_conf default.vendor.lunch ${vendor_lunch}
+		save_conf default.system.lunch ${system_lunch}
 	fi
 }
 
