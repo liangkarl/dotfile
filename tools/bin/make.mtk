@@ -329,7 +329,7 @@ load_build_json() {
 	else
 		pr_info "load runtime config: $pid"
 		[[ -z "$kernel_lunch" ]] && kernel_lunch="$(load_conf $pid.kernel.lunch)"
-		[[ -z "$kernel_dir" ]] && kernel_lunch="$(load_conf $pid.kernel.dir)"
+		[[ -z "$kernel_dir" ]] && kernel_dir="$(load_conf $pid.kernel.dir)"
 		[[ -z "$vendor_lunch" ]] && vendor_lunch="$(load_conf $pid.vendor.lunch)"
 		[[ -z "$system_lunch" ]] && system_lunch="$(load_conf $pid.system.lunch)"
 		kernel_out_dir="$(load_conf $pid.kernel.out)"
