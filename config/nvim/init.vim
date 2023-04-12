@@ -130,6 +130,7 @@ Plug 'rmagatti/alternate-toggler'   " switch boolean value easily,
 Plug 'dhruvasagar/vim-table-mode'   " edit Markdown table easily
 Plug 'arithran/vim-delete-hidden-buffers'   " delete hidden buffers
 Plug 'ntpeters/vim-better-whitespace'       " show/remove trailing space
+Plug 'ahmedkhalf/project.nvim'  " provides superior project management
 
 " NOTE:
 " autocompletion seems better in clangd, instead of ccls
