@@ -1,6 +1,17 @@
 " Plugin: telescope
 
-" not try yet
+" Find files using Telescope command-line sugar.
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fr <cmd>Telescope oldfiles<cr>
+nnoremap <leader>f? <cmd>Telescope keymaps<cr>
+nnoremap <leader>fe <cmd>Telescope filetypes<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+
+nnoremap <leader>fc <cmd>Telescope git_bcommits<cr>
+nnoremap <leader>fC <cmd>Telescope git_commits<cr>
+nnoremap <leader>fs <cmd>Telescope git_status<cr>
+nnoremap <leader>fg <cmd>Telescope grep_string<cr>
 
 " ### File Pickers
 
