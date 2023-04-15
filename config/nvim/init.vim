@@ -169,17 +169,36 @@ exe 'luafile' . g:lua_dir . '/init.lua'
 vnoremap > >gv
 vnoremap < <gv
 
+fun! ShowFileInfo()
+  echo 'File Path:'
+  echo expand('%:p')
+  echo 'Current Working Directory:'
+  echo getcwd()
+endfun
+
+fun! ChangeCWD()
+  echo 'Change CWD:'
+  lcd %:p:h
+  echo getcwd()
+endfun
+
+fun! ReloadConfig()
+  so $MYVIMRC
+  echo 'Reload nvim config:'
+  echo $MYVIMRC
+endfun
 
 " Reload vim config
-nnoremap <silent><leader>so :so $MYVIMRC<cr>:echo "Reload nvim config"<cr>
-nnoremap <silent><leader>cwf :echo 'File Path: ' . expand('%:p')<cr>
-nnoremap <silent><leader>cwd :echo 'CWD: ' . getcwd()<cr>
+nnoremap <silent><leader>so :call ReloadConfig()<cr>
+nnoremap <silent><leader>cf :call ShowFileInfo()<cr>
 " Change the directory only for the current window
-nnoremap <silent><leader>cd :lcd %:p:h<cr>:echo 'change CWD: ' . %:p:h<cr>
+nnoremap <silent><leader>cd :call ChangeCWD()<cr>
 
-" CTRL-C: Quit insert mode, go back to Normal mode. Do not check for
-" abbreviations. Does not trigger the InsertLeave autocommand event.
-" Swap ESC & C-c
+" <C-c>: leave Insert Mode and return to Normal Mode.
+"   The difference between <C-c> and <Esc> is as below:
+"   1. Would not check abbreviations
+"   2. Would not trigger `InsertLeave` event of autocommand.
+" Swap ESC and <C-c>
 noremap! <C-[> <C-c>
 noremap! <C-c> <ESC>
 
