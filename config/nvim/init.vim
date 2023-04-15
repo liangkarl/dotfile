@@ -230,14 +230,8 @@ endfun
 nnoremap <silent><leader>d :call CloseBuf()<cr>
 
 " Window motion (window: view point of a buffer)
-nnoremap <leader>h <C-w>h
-nnoremap <leader>j <C-w>j
-nnoremap <leader>k <C-w>k
-nnoremap <leader>l <C-w>l
-
-" quick command :C, only closing the current window, rather than quits.
-command! -nargs=0 C :close
-nnoremap <leader>c :C<cr>
+nnoremap <leader>pp <C-w>W
+nnoremap <leader>nn <C-w>w
 
 " Opens an edit command with the path of the currently edited file filled in
 " Normal mode: <leader>e
@@ -261,6 +255,9 @@ syntax on
 
 " no vi-compatible
 set nocompatible
+
+" set wait time for combined keys
+set timeoutlen=300
 
 " Fix backspace indent
 set backspace=indent,eol,start
