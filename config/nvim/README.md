@@ -9,6 +9,36 @@ were with complicated configuration that drive me crazy.
 In my perspective, even their ideas were really good for me, I have
 no choice but to remove them.
 
+Besides, I don't think using all-in-`lua` is a good idea since the
+performance didn't increase too much if you just setup some environment
+variables, but there are many script syntax written in `viml` that would
+be more readable and much shorter. I prefer to configure the plugins
+in `lua` and setup keybinds and options for vim in `viml`.
+
+## Config
+```
+- nvim
+	- misc/
+	- lua/
+		- config/
+			- fzf.lua
+			- ...
+		- theme/
+	- finder/
+		- fzf.vim
+		- ...
+	- init.vim
+	- keybind.vim
+```
+
+## TODO
+
+1. Porting more `.vim` config to `.lua`
+	- config/..
+	- theme/..
+2. Update `fzf.vim` to `lua-fzf`
+3. Switch between `editorconfig` and `vim-clang-format` automatically
+4. Survey `ccls` and `clangd`
 
 ### Fuzzy Finder
 
