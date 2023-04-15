@@ -122,7 +122,6 @@ Plug 'rbgrouleff/bclose.vim'    " needed by tig-explorer in Nvim config
 Plug 'tpope/vim-commentary'     " comment codes easily
 Plug 'tyru/open-browser.vim'    " open url from vim
 Plug 'rmagatti/alternate-toggler'   " switch boolean value easily,
-                                    "  true <-> false
 Plug 'dhruvasagar/vim-table-mode'   " edit Markdown table easily
 Plug 'arithran/vim-delete-hidden-buffers'   " delete hidden buffers
 Plug 'ntpeters/vim-better-whitespace'       " show/remove trailing space
@@ -266,6 +265,11 @@ cab wQ wq
 cab WQ wq
 cab W w
 cab Q q
+
+" string manipulation
+" +1/-1 to the number
+nnoremap <silent><leader>+ <C-a>
+nnoremap <silent><leader>- <C-x>
 
 " allow plugins by file type
 filetype plugin indent on

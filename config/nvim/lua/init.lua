@@ -1,5 +1,9 @@
 -- init.lua
 
+-- Plugin: alternate-toggler
+-- https://github.com/rmagatti/alternate-toggler
+require('config.alternate-toggler')
+
 -- Plugin: treesitter
 local treesitter = require('nvim-treesitter.configs')
 treesitter.setup {
