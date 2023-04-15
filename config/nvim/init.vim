@@ -73,17 +73,17 @@ Plug 'L3MON4D3/LuaSnip'         " snippet engine for neovim written in Lua
 
 "  Themes
 if !empty(g:editor_theme)
-    if g:editor_theme == 'sonokai'
-        Plug 'sainnhe/sonokai'
-    elseif g:editor_theme == 'material'
-        Plug 'marko-cerovac/material.nvim'
-    elseif g:editor_theme == 'gruvbox-material'
-        Plug 'sainnhe/gruvbox-material'
-    elseif g:editor_theme == 'onedark'
-        Plug 'navarasu/onedark.nvim'
-    endif
+  if g:editor_theme == 'sonokai'
+    Plug 'sainnhe/sonokai'
+  elseif g:editor_theme == 'material'
+    Plug 'marko-cerovac/material.nvim'
+  elseif g:editor_theme == 'gruvbox-material'
+    Plug 'sainnhe/gruvbox-material'
+  elseif g:editor_theme == 'onedark'
+    Plug 'navarasu/onedark.nvim'
+  endif
 
-    exe 'source' g:theme_dir . '/' . g:editor_theme . '.vim'
+  exe 'source' g:theme_dir . '/' . g:editor_theme . '.vim'
 endif
 
 "  Enhancements
@@ -140,7 +140,7 @@ call plug#end()
 " non-existed variables or functions.
 " import plugin config
 for f in split(glob(g:config_dir . '/*.vim'), '\n')
-    exe 'source' f
+  exe 'source' f
 endfor
 
 " import lua configs
