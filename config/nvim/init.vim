@@ -9,9 +9,6 @@ let g:config_dir = g:nvim_dir . '/config'
 let g:theme_dir = g:config_dir . '/theme'
 let g:finder_dir = g:config_dir . '/finder'
 
-" map leader
-let mapleader = ' '
-
 " import plugin install
 call plug#begin(g:nvim_dir . '/plugged')
 
@@ -146,107 +143,7 @@ endfor
 exe 'luafile' . g:lua_dir . '/init.lua'
 
 " import common setup
-
-" Overview of which map command works in which mode.  More details below.
-" |:-------------------------:+:----------------------------------------:|
-" | CMD                       | MODES~                                   |
-" |---------------------------+------------------------------------------|
-" | :map, :noremap, :unmap    | Normal, Visual, Select, Operator-pending |
-" | :nmap, :nnoremap, :nunmap | Normal                                   |
-" | :vmap, :vnoremap, :vunmap | Visual and  Select                       |
-" | :smap, :snoremap, :sunmap | Select                                   |
-" | :xmap, :xnoremap, :xunmap | Visual                                   |
-" | :omap, :onoremap, :ounmap | Operator-pending                         |
-" | :map!, :noremap!, :unmap! | Insert and Command-line                  |
-" | :imap, :inoremap, :iunmap | Insert                                   |
-" | :lmap, :lnoremap, :lunmap | Insert, Command-line,  Lang-Arg          |
-" | :cmap, :cnoremap, :cunmap | Command-line                             |
-" | :tmap, :tnoremap, :tunmap | Terminal                                 |
-" |---------------------------+------------------------------------------|
-
-" Retain the visual selection after indent lines
-vnoremap > >gv
-vnoremap < <gv
-
-fun! ShowFileInfo()
-  echo 'File Path:'
-  echo expand('%:p')
-  echo 'Current Working Directory:'
-  echo getcwd()
-endfun
-
-fun! ChangeCWD()
-  echo 'Change CWD:'
-  lcd %:p:h
-  echo getcwd()
-endfun
-
-fun! ReloadConfig()
-  so $MYVIMRC
-  echo 'Reload nvim config:'
-  echo $MYVIMRC
-endfun
-
-" Reload vim config
-nnoremap <silent><leader>so :call ReloadConfig()<cr>
-nnoremap <silent><leader>cf :call ShowFileInfo()<cr>
-" Change the directory only for the current window
-nnoremap <silent><leader>cd :call ChangeCWD()<cr>
-
-" <C-c>: leave Insert Mode and return to Normal Mode.
-"   The difference between <C-c> and <Esc> is as below:
-"   1. Would not check abbreviations
-"   2. Would not trigger `InsertLeave` event of autocommand.
-" Swap ESC and <C-c>
-noremap! <C-[> <C-c>
-noremap! <C-c> <ESC>
-
-fun! ToggleQuickFix()
-  if empty(filter(getwininfo(), 'v:val.quickfix'))
-    copen
-  else
-    cclose
-  endif
-endfun
-nnoremap <silent><leader>qt :call ToggleQuickFix()<cr>
-
-" Add keybind for system clipboard.
-" There are two different clipboards for Linux and only one for Win
-" |--------+--------------------------------------------------|
-" | SYMBOL | Explain                                          |
-" |:------:+--------------------------------------------------|
-" |    *   | Use PRIMARY; Star is Select (for copy-on-select) |
-" |    +   | Use CLIPBOARD; <C-c> (for the common keybind)    |
-" |--------+--------------------------------------------------|
-noremap <leader><space>y "*y
-noremap <leader><space>p "*p
-noremap <leader><space>c "+y
-noremap <leader><space>v "+p
-
-" Tab motion (tab: a collection of windows, like workspace)
-"
-" buffer motion (buffer: define as file content itself)
-nnoremap <silent><leader>bb :b#<cr>
-nnoremap <silent><leader>w :w<cr>
-
-" Save buffer content if modifiable is 'on'
-fun! CloseBuf()
-  if !&modifiable
-    bdelete!
-  else
-    bdelete
-  endif
-endfun
-nnoremap <silent><leader>d :call CloseBuf()<cr>
-
-" Window motion (window: view point of a buffer)
-nnoremap <leader>pp <C-w>W
-nnoremap <leader>nn <C-w>w
-
-" Opens an edit command with the path of the currently edited file filled in
-" Normal mode: <leader>e
-noremap <leader>e :e <C-R>=expand("%:p:h") . "/"<cr>
-noremap <leader>ec :e <C-R>=getcwd() . "/"<cr>
+exe 'source' g:nvim_dir . '/keybind.vim'
 
 " no one is really happy until you have this shortcuts
 cab W! w!
@@ -257,11 +154,6 @@ cab wQ wq
 cab WQ wq
 cab W w
 cab Q q
-
-" string manipulation
-" +1/-1 to the number
-nnoremap <silent><leader>+ <C-a>
-nnoremap <silent><leader>- <C-x>
 
 " allow plugins by file type
 filetype plugin indent on
