@@ -201,14 +201,6 @@ nnoremap <silent><leader>cd :call ChangeCWD()<cr>
 noremap! <C-[> <C-c>
 noremap! <C-c> <ESC>
 
-" Insert mode motion
-inoremap <A-h> <Left>
-inoremap <A-j> <Down>
-inoremap <A-k> <Up>
-inoremap <A-l> <Right>
-inoremap <A-b> <C-Left>
-inoremap <A-w> <C-Right>
-
 fun! ToggleQuickFix()
   if empty(filter(getwininfo(), 'v:val.quickfix'))
     copen
