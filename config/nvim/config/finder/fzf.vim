@@ -4,10 +4,12 @@
 " e.g. let g:fzf_command_prefix = 'Fzf' and you have FzfFiles, etc.
 let g:fzf_command_prefix = 'Fzf'
 
+nnoremap <leader>ff :FzfFiles<cr>
 nnoremap <leader>fb :FzfBuffers<cr>
 nnoremap <leader>fr :FzfHistory<cr>
 nnoremap <leader>f? :FzfMaps<cr>
 nnoremap <leader>fe :FzfFiletypes<cr>
+nnoremap <leader>fh :FzfHelptags<cr>
 
 nnoremap <leader>fc :FzfBCommits<cr>
 nnoremap <leader>fC :FzfCommits<cr>
