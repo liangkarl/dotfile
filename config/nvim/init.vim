@@ -139,11 +139,13 @@ for f in split(glob(g:config_dir . '/*.vim'), '\n')
   exe 'source' f
 endfor
 
-" import lua configs
-exe 'luafile' . g:lua_dir . '/init.lua'
-
 " import common setup
 exe 'source' g:nvim_dir . '/keybind.vim'
+
+" import lua configs
+for f in split(glob(g:lua_dir . '/config/*.lua'), '\n')
+  exe 'luafile' f
+endfor
 
 " no one is really happy until you have this shortcuts
 cab W! w!
