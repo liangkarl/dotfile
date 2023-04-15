@@ -9,30 +9,19 @@ were with complicated configuration that drive me crazy.
 In my perspective, even their ideas were really good for me, I have
 no choice but to remove them.
 
+
 ### Fuzzy Finder
 
-I list three fuzzy finders, `fzf`, `skim` and `telescope`.
-
-In terms of overall features and performance, `fzf` is the strongest of
-the three. However, I have encountered issues when running `fzf` on Linux
-kernel 4.x, which is why I need to identify other fuzzy finders as backup
-solutions.
-
-`skim` is a `rust`-based version of `fzf`. While it has replicated most
-of `fzf`'s features and arguments, it takes longer to search than `fzf`
-does. That said, some users have reported that the difference is only
-noticeable in extreme cases, such as when dealing with a huge number of
-files. Additionally, `skim` can work with `enhancd`, a small CLI tool that
-enhances the `cd` command, which is included in this dotfile. Overall,
-`skim` is almost as good as `fzf`, which is why I've chosen it as a backup
-solution.
+In terms of overall features and performance, `fzf` is the strongest of.
+However, I have encountered issues when running `fzf` on Linux kernel 4.x,
+which is why I need to identify other fuzzy finders as backup solutions.
 
 `telescope`, which is written in `lua`, has the least impressive performance
-of the three due to the lack of a binary backend for searching. Furthermore,
-it is limited to `nvim` and cannot be used in shells like `bash`. Despite
-these limitations, I believe that `telescope` has the potential to be a 
-great fuzzy finder in the future. Therefore, if the previous commands fail,
-I'll use `telescope` as a last resort.
+due to the lack of a binary backend for searching. Furthermore, it is limited
+to `nvim` and cannot be used in shells like `bash`. Despite these limitations,
+I believe that `telescope` has the potential to be a great fuzzy finder in
+the future. Therefore, if the previous commands fail, I'll use `telescope`
+as a last resort.
 
 ### Dropped List With Reason
 
@@ -104,3 +93,7 @@ I'll use `telescope` as a last resort.
 
 - vim-clap
 	- similiar to `telescope`, but I always meet strange problem on it.
+	- `vim-clap.vim` was out-of-date
+- skim.vim
+	- both the binary tool and vim plugin are problematic.
+	- `skim.vim` was out-of-date

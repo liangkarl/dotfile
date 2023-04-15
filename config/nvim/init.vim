@@ -38,20 +38,16 @@ Plug 'hrsh7th/cmp-buffer'       " snippet engine of buffer words
 
 " Fuzzy Search
 if !empty(g:fuzzy_finder)
-    if g:fuzzy_finder == 'fzf'
-        Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-        Plug 'junegunn/fzf.vim'
-    elseif g:fuzzy_finder == 'skim'
-        " a backup solution when fzf was failed to work
-        Plug 'lotabout/skim', { 'dir': '~/.skim', 'do': './install' }
-        Plug 'lotabout/skim.vim'
-    elseif g:fuzzy_finder == 'telescope'
-        " when fzf and skim are not usable
-        Plug 'nvim-lua/plenary.nvim'
-        Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
-    endif
+  if g:fuzzy_finder == 'fzf'
+    Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+    Plug 'junegunn/fzf.vim'
+  elseif g:fuzzy_finder == 'telescope'
+    " when fzf was not usable
+    Plug 'nvim-lua/plenary.nvim'
+    Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
+  endif
 
-    exe 'source' g:finder_dir . '/' . g:fuzzy_finder . '.vim'
+  exe 'source' g:finder_dir . '/' . g:fuzzy_finder . '.vim'
 endif
 
 " Language Support
