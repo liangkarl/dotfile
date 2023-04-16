@@ -1,5 +1,11 @@
-" FIXME:
-" change the path to $XDG_CONFIG_HOME
+" Remember cursor position
+fun! s:RestoreCursorPosition()
+  " if last visited position is available
+  if line("'\"") > 1 && line("'\"") <= line("$")
+    " jump to the last position
+    exe "normal! g'\""
+  endif
+endfun
 
 let g:editor_theme = 'material'
 let g:fuzzy_finder = 'fzf'
@@ -258,14 +264,7 @@ hi Cursor guifg=none guibg=#7a4d4d
 " The PC is fast enough, do syntax highlight syncing from start
 autocmd BufEnter * :syntax sync fromstart
 
-" Remember cursor position
-fun! s:RestoreCursorPosition()
-  " if last visited position is available
-  if line("'\"") > 1 && line("'\"") <= line("$")
-    " jump to the last position
-    exe "normal! g'\""
-  endif
-endfun
+" A simple function to restore previous cursor position
 autocmd BufReadPost * call s:RestoreCursorPosition()
 
 " set no line number in terminal buffer
