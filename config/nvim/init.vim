@@ -18,6 +18,9 @@ let g:finder_dir = g:config_dir . '/finder'
 " import plugin install
 call plug#begin(g:nvim_dir . '/plugged')
 
+" Lua Library
+Plug 'nvim-lua/plenary.nvim'
+
 " Start Screen:
 Plug 'mhinz/vim-startify'
 
@@ -46,7 +49,6 @@ if !empty(g:fuzzy_finder)
     Plug 'junegunn/fzf.vim'
   elseif g:fuzzy_finder == 'telescope'
     " when fzf was not usable
-    Plug 'nvim-lua/plenary.nvim'
     Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
   endif
 
@@ -118,8 +120,10 @@ Plug 'mfussenegger/nvim-dap'
 
 " Git
 Plug 'mhinz/vim-signify'        " show diff symbols aside via git diff
-Plug 'liangkarl/tig-explorer.vim'   " use tig inside vim
+Plug 'liangkarl/tig-explorer.vim'   " git blame whole file
 Plug 'rbgrouleff/bclose.vim'    " needed by tig-explorer in Nvim config
+Plug 'TimUntersberger/neogit'   " git status
+Plug 'sindrets/diffview.nvim'   " git diff
 
 " Miscellaneous
 Plug 'tpope/vim-commentary'     " comment codes easily
