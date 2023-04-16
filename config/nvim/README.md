@@ -53,7 +53,148 @@ I believe that `telescope` has the potential to be a great fuzzy finder in
 the future. Therefore, if the previous commands fail, I'll use `telescope`
 as a last resort.
 
-### Dropped List With Reason
+### Available Plugin List
+
+#### Appearance
+
+##### Start Screen
+```vim
+Plug 'mhinz/vim-startify'
+```
+
+##### Statusline/ Bufferline:
+```vim
+Plug 'nvim-lualine/lualine.nvim'
+Plug 'akinsho/bufferline.nvim'
+```
+
+##### Theme
+```vim
+Plug 'sainnhe/sonokai'
+Plug 'marko-cerovac/material.nvim'
+Plug 'sainnhe/gruvbox-material'
+Plug 'navarasu/onedark.nvim'
+```
+
+#### Navigator
+
+##### File Explorer
+```vim
+Plug 'kyazdani42/nvim-tree.lua'
+```
+
+##### Symbol Explorer
+```vim
+Plug 'stevearc/aerial.nvim'
+Plug 'nvim-lua/lsp-status.nvim'
+```
+
+#### Infrastructure
+```vim
+Plug 'nvim-lua/plenary.nvim'
+Plug 'neovim/nvim-lspconfig'    " LSP configuration
+```
+
+##### Debug Tools
+```vim
+"   vim-startuptime is a Vim plugin for viewing vim and nvim startup
+" event timing information. The data is automatically obtained by
+" launching (n)vim with the --startuptime argument. See
+" :help startuptime-configuration for details on customization
+" options.
+" https://github.com/dstein64/vim-startuptime
+Plug 'dstein64/vim-startuptime'
+Plug 'mfussenegger/nvim-dap'
+```
+
+#### Enhancements
+```vim
+Plug 'roxma/vim-tmux-clipboard' " share clipboard between tmux and vim
+Plug 'andymass/vim-matchup'     " enhance '%' function, like if-endif
+Plug 'markonm/traces.vim'       " enhance replace/search result,
+                                "  previewing the last result.
+Plug 'haya14busa/is.vim'        " make string search more convenient.
+Plug 'osyo-manga/vim-anzu'      " show matched string number and total
+Plug 'Krasjet/auto.pairs'       " enhance [/{/'..., auto balance pairs
+Plug 'terryma/vim-expand-region'    " enhance visual mode, +/- to increase
+                                    " or decrease selected visual range
+Plug 'easymotion/vim-easymotion'    " move cursor location like vimium
+Plug 'unblevable/quick-scope'   " enhance f & F functions, rendering
+                                "  colors to index moving posisition in
+                                "  a line
+Plug 'tpope/vim-commentary'     " comment codes easily
+Plug 'tyru/open-browser.vim'    " open url from vim
+Plug 'rmagatti/alternate-toggler'   " switch boolean value easily,
+Plug 'arithran/vim-delete-hidden-buffers'   " delete hidden buffers
+Plug 'ntpeters/vim-better-whitespace'       " show/remove trailing space
+Plug 'ahmedkhalf/project.nvim'  " provides superior project management
+```
+
+#### Operation
+
+##### Cheatsheet
+```vim
+Plug 'folke/which-key.nvim'     " display shortcut-mapping functions
+```
+
+##### Autocompletion (without LSP source)
+
+###### Core
+```vim
+Plug 'hrsh7th/nvim-cmp'         " primary autocomplete function
+Plug 'saadparwaiz1/cmp_luasnip' " interface between nvim-cmp and LuaSnip
+```
+
+###### Source
+```vim
+Plug 'L3MON4D3/LuaSnip'         " snippet engine for neovim written in Lua
+Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }    " AI assist for completion
+Plug 'hrsh7th/cmp-buffer'       " snippet engine of buffer words
+Plug 'hrsh7th/cmp-nvim-lsp'     " snippet engine of LSP client
+```
+
+###### Misc
+```vim
+Plug 'onsails/lspkind.nvim'     " adjust scroll menu width
+```
+
+##### Fuzzy Finder
+```vim
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
+```
+
+#### Programming
+
+##### Formatter
+```vim
+Plug 'rhysd/vim-clang-format'   " format source code by clang-format
+Plug 'editorconfig/editorconfig-vim'    " coding style file
+```
+
+##### Language Support
+```vim
+Plug 'williamboman/mason.nvim'  " simplify the install of LSP
+Plug 'm-pilia/vim-ccls'     " provide unique ccls function
+Plug 'dhruvasagar/vim-table-mode'   " edit Markdown table easily
+```
+
+##### Syntax Highlight / Lint
+```vim
+Plug 'nvim-treesitter/nvim-treesitter'
+```
+
+##### Git
+```vim
+Plug 'mhinz/vim-signify'        " show diff symbols aside via git diff
+Plug 'liangkarl/tig-explorer.vim'   " use tig inside vim
+Plug 'rbgrouleff/bclose.vim'    " needed by tig-explorer in Nvim config
+Plug 'TimUntersberger/neogit'   " git status
+Plug 'sindrets/diffview.nvim'   " git diff
+```
+
+### Dropped Plugin List
 
 #### Startup Screen
 
