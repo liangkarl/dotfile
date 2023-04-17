@@ -28,8 +28,9 @@ fun! ChangeCWD()
   echo getcwd()
 endfun
 
-fun! ReloadConfig()
-  so $MYVIMRC
+" Prevent runtime error of function in use
+silent! fun! ReloadConfig()
+  source $MYVIMRC
   echo 'Reload nvim config:'
   echo $MYVIMRC
 endfun
