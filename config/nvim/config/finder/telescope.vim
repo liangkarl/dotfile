@@ -12,6 +12,7 @@ nnoremap <leader>fc <cmd>Telescope git_bcommits<cr>
 nnoremap <leader>fC <cmd>Telescope git_commits<cr>
 nnoremap <leader>fs <cmd>Telescope git_status<cr>
 nnoremap <leader>fg <cmd>Telescope grep_string<cr>
+nnoremap <leader>fG <cmd>Telescope live_grep<cr>
 
 " ### File Pickers
 

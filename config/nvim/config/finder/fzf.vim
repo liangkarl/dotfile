@@ -15,6 +15,7 @@ nnoremap <leader>fc :FzfBCommits<cr>
 nnoremap <leader>fC :FzfCommits<cr>
 nnoremap <leader>fs :FzfGFiles?<cr>
 nnoremap <leader>fg :exe 'FzfRg' expand('<cword>>')<cr>
+nnoremap <leader>fG :FzfRg<cr>
 
 " disable case insensitive
 command! -bang -nargs=* Rg
