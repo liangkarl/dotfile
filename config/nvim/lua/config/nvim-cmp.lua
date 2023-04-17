@@ -16,6 +16,9 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 cmp.setup {
+  completion = {
+    keyword_length = 3,
+  },
   snippet = {
     expand = function(args)
       luasnip.lsp_expand(args.body)
