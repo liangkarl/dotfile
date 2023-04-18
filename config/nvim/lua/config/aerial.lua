@@ -1,3 +1,7 @@
+if not pcall(require, "aerial") then
+  return
+end
+
 -- Call the setup function to change the default behavior
 require("aerial").setup({
   -- Priority list of preferred backends for aerial.
