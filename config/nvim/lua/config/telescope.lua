@@ -12,10 +12,10 @@ telescope.setup({
     layout_strategy = 'vertical',
     layout_config = {
       vertical = {
-				prompt_position = "bottom",
+        prompt_position = "bottom",
         preview_cutoff = 15,
-				width = 0.7,
-			},
+        width = 0.7,
+      },
     },
   },
 })
