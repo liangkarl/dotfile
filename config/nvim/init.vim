@@ -7,13 +7,13 @@ fun! s:RestoreCursorPosition()
   endif
 endfun
 
-let g:editor_theme = 'material'
-let g:fuzzy_finder = 'fzf'
 let g:nvim_dir = $XDG_CONFIG_HOME . '/nvim'
 let g:lua_dir = g:nvim_dir . '/lua'
 let g:config_dir = g:nvim_dir . '/config'
 let g:theme_dir = g:config_dir . '/theme'
 let g:finder_dir = g:config_dir . '/finder'
+
+source <sfile>:h/config.vim
 
 " import plugin install
 call plug#begin(g:nvim_dir . '/plugged')
