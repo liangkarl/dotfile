@@ -140,6 +140,8 @@ Plug 'ahmedkhalf/project.nvim'  " provides superior project management
 
 call plug#end()
 
+exe 'colorscheme' g:editor_theme
+
 " FIXME:
 " There may be some error for reserved plugin.vim as they setup
 " non-existed variables or functions.
@@ -253,8 +255,6 @@ set mouse=v " copy text without borders
 if (has("termguicolors"))
   set termguicolors
 endif
-
-exe 'colorscheme' g:editor_theme
 
 set cursorline
 
