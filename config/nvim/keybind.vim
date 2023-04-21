@@ -110,16 +110,6 @@ noremap <leader>ec :e <C-R>=getcwd() . "/"<cr>
 nnoremap <silent><leader>+ <C-a>
 nnoremap <silent><leader>- <C-x>
 
-" Plugin: is.vim - incremental search improved
-map n <Plug>(is-nohl)<Plug>(anzu-n-with-echo)
-map N <Plug>(is-nohl)<Plug>(anzu-N-with-echo)
-
-" Plugin: vim-anzu
-" nmap n <Plug>(anzu-n-with-echo)
-" nmap N <Plug>(anzu-N-with-echo)
-nmap * <Plug>(anzu-star-with-echo)
-nmap # <Plug>(anzu-sharp-with-echo)
-
 " Toggle boolean
 nnoremap <silent> <leader>! :ToggleAlternate<cr>
 

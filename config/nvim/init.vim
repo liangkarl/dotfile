@@ -97,7 +97,6 @@ Plug 'andymass/vim-matchup'     " enhance '%' function, like if-endif
 Plug 'markonm/traces.vim'       " enhance replace/search result,
                                 "  previewing the last result.
 Plug 'haya14busa/is.vim'        " make string search more convenient.
-Plug 'osyo-manga/vim-anzu'      " show matched string number and total
 Plug 'Krasjet/auto.pairs'       " enhance [/{/'..., auto balance pairs
 Plug 'terryma/vim-expand-region'    " enhance visual mode, +/- to increase
                                     " or decrease selected visual range
