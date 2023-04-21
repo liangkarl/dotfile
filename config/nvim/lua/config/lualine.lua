@@ -1,3 +1,6 @@
+-- Plugin: lualine.nvim
+-- https://github.com/nvim-lualine/lualine.nvim
+
 local lualine = require('lualine')
 
 lualine.setup {
@@ -42,5 +45,12 @@ lualine.setup {
 
   winbar = {},
   inactive_winbar = {},
-  extensions = {}
+  extensions = {
+      'aerial', 'symbols-outline',  -- symbol manager
+      'quickfix', 'man',            -- built-in windows
+      'fzf',                        -- fuzzy finder
+      'nvim-tree',                  -- file explorer
+      'toggleterm',                 -- terminal
+      'trouble'                     -- lsp hint
+      }
 }
