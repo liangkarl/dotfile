@@ -1,3 +1,6 @@
+-- Plugin: bufferline.nvim
+-- https://github.com/akinsho/bufferline.nvim
+
 vim.opt.termguicolors = true
 
 require('bufferline').setup {
@@ -68,6 +71,11 @@ require('bufferline').setup {
         filetype = "NvimTree",
         text = "File Explorer",
         highlight = "Directory",
+        text_align = "left"
+      },
+      {
+        filetype = "aerial",
+        text = "Symbol Manager",
         text_align = "left"
       }
     },
