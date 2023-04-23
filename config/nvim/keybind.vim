@@ -135,8 +135,10 @@ nnoremap <silent><leader>ss :StripWhitespace<cr>
 " Toggle comment
 noremap <silent><leader>gg :Commentary<cr>
 
-" vim-delete-hidden-buffers
-nnoremap <leader>bd :DeleteHiddenBuffers<cr>
+" Plugin: close-buffers.vim
+" close several types of buffers
+nnoremap <leader>bm :Bdelete menu<cr>
+nnoremap <leader>bs :Bdelete select<cr>
 
 
 " Plugin: vim-easymotion
