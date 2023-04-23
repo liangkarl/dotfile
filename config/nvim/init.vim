@@ -100,6 +100,7 @@ Plug 'haya14busa/is.vim'        " make string search more convenient.
 Plug 'Krasjet/auto.pairs'       " enhance [/{/'..., auto balance pairs
 Plug 'terryma/vim-expand-region'    " enhance visual mode, +/- to increase
                                     " or decrease selected visual range
+Plug 'Asheq/close-buffers.vim'      " delete buffers
 
 " Cursor Movement
 Plug 'easymotion/vim-easymotion'    " move cursor location like vimium
@@ -129,7 +130,6 @@ Plug 'tpope/vim-commentary'     " comment codes easily
 Plug 'tyru/open-browser.vim'    " open url from vim
 Plug 'rmagatti/alternate-toggler'   " switch boolean value easily,
 Plug 'dhruvasagar/vim-table-mode'   " edit Markdown table easily
-Plug 'arithran/vim-delete-hidden-buffers'   " delete hidden buffers
 Plug 'ntpeters/vim-better-whitespace'       " show/remove trailing space
 Plug 'ahmedkhalf/project.nvim'  " provides superior project management
 
