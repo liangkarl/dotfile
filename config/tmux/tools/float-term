@@ -16,19 +16,19 @@ ft_conf="${XDG_CONFIG_HOME}/tmux/float-term.conf"
 
 # toggle float terminal here
 if [[ "${src_term}" == "${ft_term}" ]]; then
-	tmux kill-session
+	tmux -L fterm kill-session -t "${ft_term}"
 	exit
 fi
 
 # create session with assigned .conf
-if ! tmux has-session -t ${ft_term}; then
-	tmux new-session -f ${ft_conf} -d -c $PWD -s ${ft_term}
+if ! tmux -L fterm has-session -t ${ft_term}; then
+	tmux -L fterm -f ${ft_conf} new-session -d -c $PWD -s ${ft_term}
 	new_term=y
 fi
 
 # attach session
 # '\;' is used for separating internal tmux command
-pop_cmd=("tmux attach-session -t ${ft_term} '\;'")
+pop_cmd=("tmux -L fterm attach-session -t ${ft_term} '\;'")
 
 if [[ "$new_term" == y ]]; then
 	# new session would have a new window
