@@ -127,6 +127,7 @@ Plug 'sindrets/diffview.nvim'   " git diff
 
 " Miscellaneous
 Plug 'tpope/vim-commentary'     " comment codes easily
+Plug 'echasnovski/mini.nvim'    " A 'Swiss Army Knife' with many small features
 Plug 'tyru/open-browser.vim'    " open url from vim
 Plug 'rmagatti/alternate-toggler'   " switch boolean value easily,
 Plug 'dhruvasagar/vim-table-mode'   " edit Markdown table easily
