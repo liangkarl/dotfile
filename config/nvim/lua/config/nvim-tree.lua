@@ -117,9 +117,6 @@ require('nvim-tree').setup {
   },
 }
 
-vim.g.nvim_tree_quit_on_open = 1
-vim.g.nvim_tree_icon_padding = ' '
-
 -- To function NvimTree auto-closed, here we may have side effect.
 -- https://github.com/kyazdani42/nvim-tree.lua/issues/1368
 vim.api.nvim_create_autocmd("BufEnter", {
