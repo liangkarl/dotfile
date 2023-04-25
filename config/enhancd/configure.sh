@@ -7,10 +7,11 @@ cmd="source $dir/bootstrap.sh"
 
 trap "rm -rf $tmp" EXIT
 
-git clone -n --depth=1 https://github.com/b4b4r07/enhancd.git $tmp
-
-cp -rf ${tmp}/.git $dir
-git -C $dir reset --hard HEAD
+if [[ ! -d "$dir/.git" ]]; then
+    git clone -n --depth=1 https://github.com/b4b4r07/enhancd.git $dir
+else
+    git -C $dir pull
+fi
 
 echo "source $dir/init.sh" >> $dir/bootstrap.sh
 grep -q -w "$cmd" ~/.bashrc ||
