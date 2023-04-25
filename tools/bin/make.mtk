@@ -73,43 +73,43 @@ split_build() {
 	local split_build merged_dir
 	local cmd out config
 
-	if [[ -z "$kernel_out_dir" \
-			  || -z "$vendor_out_dir" \
-			  || -z "$system_out_dir" ]]; then
+	if [[ -z "$kernel_out" \
+			  || -z "$vendor_out" \
+			  || -z "$system_out" ]]; then
 		exit_msg 3 "please run all compilation commands in the first run"
 	fi
 
 	merged_dir="$(readlink -f final-images)"
-	split_build=$system_out_dir/images/split_build.py
+	split_build=$system_out/images/split_build.py
 
 	rm -rf $merged_dir
 	cmd=$(trap -p ERR | awk -F\' '{print $2}')
 	trap "${cmd}; rm -rf ${merged_dir}" ERR
 
 	python $split_build \
-		--system-dir $system_out_dir/images \
-		--vendor-dir $vendor_out_dir/images \
-		--kernel-dir $kernel_out_dir/images \
+		--system-dir $system_out/images \
+		--vendor-dir $vendor_out/images \
+		--kernel-dir $kernel_out/images \
 		--output-dir $merged_dir $1
 }
 
 build_kernel() {
 	lunch $kernel_lunch
-	kernel_out_dir=$ANDROID_PRODUCT_OUT
+	kernel_out=$ANDROID_PRODUCT_OUT
 
-	rm -rf ${kernel_out_dir}/obj/KERNEL_OBJ
-	rm -rf ${kernel_out_dir}/images/krn*
+	rm -rf ${kernel_out}/obj/KERNEL_OBJ
+	rm -rf ${kernel_out}/images/krn*
 	make -j24 krn_images
 
-	gen_aosp_kernel_cmddb $kernel_dir $kernel_out_dir
+	gen_aosp_kernel_cmddb $kernel_dir $kernel_out
 }
 
 build_system() {
 	lunch $system_lunch
-	system_out_dir=$ANDROID_PRODUCT_OUT
+	system_out=$ANDROID_PRODUCT_OUT
 
-	rm -rf ${system_out_dir}/obj
-	rm -rf ${system_out_dir}/images
+	rm -rf ${system_out}/obj
+	rm -rf ${system_out}/images
 	make -j24 sys_images
 
 	create_and_link_cmddb system
@@ -117,11 +117,11 @@ build_system() {
 
 build_vendor() {
 	lunch $vendor_lunch
-	vendor_out_dir=$ANDROID_PRODUCT_OUT
+	vendor_out=$ANDROID_PRODUCT_OUT
 
 	# avoid to remove kernel obj with same config name
-	rm -rf ${vendor_out_dir}/images/vnd*
-	rm -rf ${vendor_out_dir}/obj/!(KERNEL_OBJ)
+	rm -rf ${vendor_out}/images/vnd*
+	rm -rf ${vendor_out}/obj/!(KERNEL_OBJ)
 	make -j24 vnd_images
 
 	create_and_link_cmddb vendor
@@ -132,7 +132,7 @@ add_build_note_header() {
 	# build-info
 	* start: $(date '+%D - %T')
 	* location: $(pwd)
-	* runtime conf: $RT_BCONF
+	* runtime property: runtime.pid$PPID
 	* commad: ${EXE_CMD}
 
 	# environment
@@ -317,24 +317,41 @@ save_conf() { jj -p -i $BUILD_JSON -o $BUILD_JSON -v "$2" "$1"; }
 
 load_conf() { jj -i $BUILD_JSON "$1"; }
 
+config() {
+	local json_path node var
+
+	json_path=(
+		'kernel.lunch' 'kernel.dir' 'kernel.out'
+		'vendor.lunch' 'vendor.out'
+		'system.lunch' 'system.out'
+	)
+	node="$1"
+
+	save() {
+		for node in "${json_path[@]}"; do
+			var=${node//./_}
+			save_conf ${1}.${node} ${!var}
+		done
+	}
+
+	load() {
+		for node in "${json_path[@]}"; do
+			eval "${node//./_}='$(load_conf ${1}.${node})'"
+		done
+	}
+
+	eval $@
+}
+
 pid="runtime.pid$PPID"
 load_build_json() {
 	[[ ! -e $BUILD_JSON ]] && return 1
 
 	if [[ -z "$(load_conf $pid)" || "${LOAD_DEFAULT}" == y ]]; then
-		[[ -z "$kernel_lunch" ]] && kernel_lunch="$(load_conf default.kernel.lunch)"
-		[[ -z "$kernel_dir" ]] && kernel_dir="$(load_conf default.kernel.dir)"
-		[[ -z "$vendor_lunch" ]] && vendor_lunch="$(load_conf default.vendor.lunch)"
-		[[ -z "$system_lunch" ]] && system_lunch="$(load_conf default.system.lunch)"
+		config load default
 	else
 		pr_info "load runtime config: $pid"
-		[[ -z "$kernel_lunch" ]] && kernel_lunch="$(load_conf $pid.kernel.lunch)"
-		[[ -z "$kernel_dir" ]] && kernel_dir="$(load_conf $pid.kernel.dir)"
-		[[ -z "$vendor_lunch" ]] && vendor_lunch="$(load_conf $pid.vendor.lunch)"
-		[[ -z "$system_lunch" ]] && system_lunch="$(load_conf $pid.system.lunch)"
-		kernel_out_dir="$(load_conf $pid.kernel.out)"
-		vendor_out_dir="$(load_conf $pid.vendor.out)"
-		system_out_dir="$(load_conf $pid.system.out)"
+		config load $pid
 	fi
 
 	if [[ "$LIST_CONFIG" == y ]]; then
@@ -345,27 +362,19 @@ load_build_json() {
 		system: $system_lunch
 
 		Output directory:
-		kernel: $kernel_out_dir
-		vendor: $vendor_out_dir
-		system: $system_out_dir
+		kernel: $kernel_out
+		vendor: $vendor_out
+		system: $system_out
 		EOF
 	fi
 }
 
 save_rt_build_json() {
-	save_conf ${pid}.kernel.lunch ${kernel_lunch}
-	save_conf ${pid}.vendor.lunch ${vendor_lunch}
-	save_conf ${pid}.system.lunch ${system_lunch}
-	save_conf ${pid}.kernel.out ${kernel_out_dir}
-	save_conf ${pid}.vendor.out ${vendor_out_dir}
-	save_conf ${pid}.system.out ${system_out_dir}
-	save_conf ${pid}.kernel.dir ${kernel_dir}
+	config save $pid
 	save_conf ${pid}.update "$(date -R)"
 
 	if [[ "$UPDATE_DEFAULT" == y ]]; then
-		save_conf default.kernel.lunch ${kernel_lunch}
-		save_conf default.vendor.lunch ${vendor_lunch}
-		save_conf default.system.lunch ${system_lunch}
+		config save default
 	fi
 }
 
