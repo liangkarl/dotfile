@@ -7,7 +7,7 @@ fun! s:RestoreCursorPosition()
   endif
 endfun
 
-let g:nvim_dir = $XDG_CONFIG_HOME . '/nvim'
+let g:nvim_dir = expand('<sfile>:h/nvim')
 let g:lua_dir = g:nvim_dir . '/lua'
 let g:config_dir = g:nvim_dir . '/config'
 let g:theme_dir = g:config_dir . '/theme'
