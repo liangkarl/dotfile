@@ -200,13 +200,16 @@ parse_options() {
 				UPDATE_DEFAULT=y
 				;;
 			ak|-ak|add-kernel)
-				shift; kernel_lunch="$1"
+				CONFIG=y
+				shift; config_kernel="$1"
 				;;
 			av|-av|add-vendor)
-				shift; vendor_lunch="$1"
+				CONFIG=y
+				shift; config_vendor="$1"
 				;;
 			as|-as|add-system)
-				shift; system_lunch="$1"
+				CONFIG=y
+				shift; config_system="$1"
 				;;
 			l|-l|list)
 				LIST_CONFIG=y
@@ -392,6 +395,12 @@ parse_options $@
 if ! load_build_json; then
 	pr_err "$BUILD_JSON does not exist."
 	exit 1
+fi
+
+if [[ "$CONFIG" == y ]]; then
+	[[ ! -z "$config_kernel" ]] && kernel_lunch="$config_kernel"
+	[[ ! -z "$config_vendor" ]] && vendor_lunch="$config_vendor"
+	[[ ! -z "$config_system" ]] && system_lunch="$config_system"
 fi
 
 if [[ "$COMPILE" == y ]]; then
