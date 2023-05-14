@@ -18,29 +18,69 @@ source <sfile>:h/config.vim
 " import plugin install
 call plug#begin(g:nvim_dir . '/plugged')
 
-" Lua Library
-Plug 'nvim-lua/plenary.nvim'
+" Prerequisite
+Plug 'nvim-lua/plenary.nvim'      " Affect telescope
+Plug 'neovim/nvim-lspconfig'      " LSP configuration
+Plug 'williamboman/mason.nvim'    " Install LSP servers
+Plug 'hrsh7th/nvim-cmp'           " Autocomplete framework
+Plug 'rbgrouleff/bclose.vim'      " needed by tig-explorer in Nvim config
 
-" Start Screen:
-Plug 'mhinz/vim-startify'
+" Integration Development Environment
+Plug 'mhinz/vim-startify'         " Start-up screen
+Plug 'nvim-lualine/lualine.nvim'  " Status line (button)
+Plug 'akinsho/bufferline.nvim'    " Buffer line (top)
+Plug 'kyazdani42/nvim-tree.lua'   " File Explorer
+Plug 'stevearc/aerial.nvim'       " Symbol Manager
+Plug 'nvim-lua/lsp-status.nvim'
+Plug 'folke/which-key.nvim'       " Display cheat sheet of vim shortcut
+Plug 'ahmedkhalf/project.nvim'    " provides superior project management
+Plug 'editorconfig/editorconfig-vim'  " setup indent, space, etc, look like
 
-" Statusline/ Bufferline:
-Plug 'nvim-lualine/lualine.nvim'
-Plug 'akinsho/bufferline.nvim'
+" Enhanced functions
+Plug 'roxma/vim-tmux-clipboard' " share clipboard between tmux and vim
+Plug 'Asheq/close-buffers.vim'  " delete buffers
+Plug 'echasnovski/mini.nvim'    " A 'Swiss Army Knife' with many small features
+Plug 'tpope/vim-commentary'     " comment codes easily
+Plug 'tyru/open-browser.vim'    " open url from vim
+Plug 'andymass/vim-matchup'     " enhance '%' function, like if-endif
+Plug 'markonm/traces.vim'       " preview the replace/search result
+Plug 'haya14busa/is.vim'        " make string search more convenient.
+Plug 'Krasjet/auto.pairs'       " enhance [/{/'..., auto balance pairs
+Plug 'unblevable/quick-scope'   " enhance f/F and rendering colors in a line
+Plug 'easymotion/vim-easymotion'    " move cursor location like vimium
+Plug 'rmagatti/alternate-toggler'   " switch boolean value easily,
+Plug 'dhruvasagar/vim-table-mode'   " edit Markdown table easily
+Plug 'terryma/vim-expand-region'    " text object selection with +/-
+Plug 'ntpeters/vim-better-whitespace'   " show/remove trailing space
+Plug 'nvim-treesitter/nvim-treesitter'  " Syntax highlight/lint with `treesitter`
 
-" File Explorer:
-Plug 'kyazdani42/nvim-tree.lua'
-
-" Operation Hint
-Plug 'folke/which-key.nvim'     " display shortcut-mapping functions
+" Formatter
+Plug 'rhysd/vim-clang-format'   " format code with clang-format
 
 " Autocompletion (without LSP source)
-Plug 'hrsh7th/nvim-cmp'         " primary autocomplete function
 Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }    " AI assist for completion
 Plug 'onsails/lspkind.nvim'     " adjust scroll menu width
 Plug 'hrsh7th/cmp-buffer'       " snippet engine of buffer words
 
 " Terminal
+
+" Language Support
+Plug 'm-pilia/vim-ccls'     " provide unique ccls function
+
+" Autocompletion Comparision (LSP source)
+Plug 'hrsh7th/cmp-nvim-lsp'     " snippet engine of LSP client
+Plug 'saadparwaiz1/cmp_luasnip' " interface between nvim-cmp and LuaSnip
+Plug 'L3MON4D3/LuaSnip'         " snippet engine for neovim written in Lua
+
+" Debug Tools
+Plug 'dstein64/vim-startuptime' " view startup event timing with `--startuptime`
+Plug 'mfussenegger/nvim-dap'    " Debug Adapter Protocol client implementation
+
+" Git
+Plug 'mhinz/vim-signify'        " show diff symbols aside via git diff
+Plug 'liangkarl/tig-explorer.vim'   " git blame whole file
+Plug 'TimUntersberger/neogit'   " git status
+Plug 'sindrets/diffview.nvim'   " git diff
 
 " Fuzzy Search
 if !empty(g:fuzzy_finder)
@@ -54,27 +94,6 @@ if !empty(g:fuzzy_finder)
 
   exe 'source' g:finder_dir . '/' . g:fuzzy_finder . '.vim'
 endif
-
-" Language Support
-Plug 'neovim/nvim-lspconfig'    " LSP configuration
-Plug 'williamboman/mason.nvim'  " simplify the install of LSP
-Plug 'm-pilia/vim-ccls'     " provide unique ccls function
-
-" Source Code Format
-Plug 'rhysd/vim-clang-format'   " format source code by clang-format
-Plug 'editorconfig/editorconfig-vim'    " coding style file
-
-" Syntax Highlight / Lint
-Plug 'nvim-treesitter/nvim-treesitter'
-
-" Symbol Manager
-Plug 'stevearc/aerial.nvim'
-Plug 'nvim-lua/lsp-status.nvim'
-
-" Autocompletion Comparision (LSP source)
-Plug 'hrsh7th/cmp-nvim-lsp'     " snippet engine of LSP client
-Plug 'saadparwaiz1/cmp_luasnip' " interface between nvim-cmp and LuaSnip
-Plug 'L3MON4D3/LuaSnip'         " snippet engine for neovim written in Lua
 
 "  Themes
 if !empty(g:editor_theme)
@@ -90,49 +109,6 @@ if !empty(g:editor_theme)
 
   exe 'source' g:theme_dir . '/' . g:editor_theme . '.vim'
 endif
-
-"  Enhancements
-Plug 'roxma/vim-tmux-clipboard' " share clipboard between tmux and vim
-Plug 'andymass/vim-matchup'     " enhance '%' function, like if-endif
-Plug 'markonm/traces.vim'       " enhance replace/search result,
-                                "  previewing the last result.
-Plug 'haya14busa/is.vim'        " make string search more convenient.
-Plug 'Krasjet/auto.pairs'       " enhance [/{/'..., auto balance pairs
-Plug 'terryma/vim-expand-region'    " enhance visual mode, +/- to increase
-                                    " or decrease selected visual range
-Plug 'Asheq/close-buffers.vim'      " delete buffers
-
-" Cursor Movement
-Plug 'easymotion/vim-easymotion'    " move cursor location like vimium
-Plug 'unblevable/quick-scope'   " enhance f & F functions, rendering
-                                "  colors to index moving posisition in
-                                "  a line
-
-" Debug Tools
-"   vim-startuptime is a Vim plugin for viewing vim and nvim startup
-" event timing information. The data is automatically obtained by
-" launching (n)vim with the --startuptime argument. See
-" :help startuptime-configuration for details on customization
-" options.
-" https://github.com/dstein64/vim-startuptime
-Plug 'dstein64/vim-startuptime'
-Plug 'mfussenegger/nvim-dap'
-
-" Git
-Plug 'mhinz/vim-signify'        " show diff symbols aside via git diff
-Plug 'liangkarl/tig-explorer.vim'   " git blame whole file
-Plug 'rbgrouleff/bclose.vim'    " needed by tig-explorer in Nvim config
-Plug 'TimUntersberger/neogit'   " git status
-Plug 'sindrets/diffview.nvim'   " git diff
-
-" Miscellaneous
-Plug 'tpope/vim-commentary'     " comment codes easily
-Plug 'echasnovski/mini.nvim'    " A 'Swiss Army Knife' with many small features
-Plug 'tyru/open-browser.vim'    " open url from vim
-Plug 'rmagatti/alternate-toggler'   " switch boolean value easily,
-Plug 'dhruvasagar/vim-table-mode'   " edit Markdown table easily
-Plug 'ntpeters/vim-better-whitespace'       " show/remove trailing space
-Plug 'ahmedkhalf/project.nvim'  " provides superior project management
 
 " NOTE:
 " autocompletion seems better in clangd, instead of ccls
