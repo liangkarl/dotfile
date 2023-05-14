@@ -191,7 +191,8 @@ set ttyfast
 " treat all files as binary to prevent from unexpected changes
 set binary
 
-set number
+" show the line numbers with hybrid mode in the left side
+set number relativenumber
 " show the cursor position all the time
 set ruler
 " display incomplete commands
