@@ -63,6 +63,7 @@ Plug 'onsails/lspkind.nvim'     " adjust scroll menu width
 Plug 'hrsh7th/cmp-buffer'       " snippet engine of buffer words
 
 " Terminal
+Plug 'akinsho/toggleterm.nvim', { 'tag' : 'v2.6.0' }  " Terminal
 
 " Language Support
 Plug 'm-pilia/vim-ccls'     " provide unique ccls function
