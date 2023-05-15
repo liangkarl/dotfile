@@ -28,7 +28,7 @@ Plug 'rbgrouleff/bclose.vim'      " needed by tig-explorer in Nvim config
 " Integration Development Environment
 Plug 'mhinz/vim-startify'         " Start-up screen
 Plug 'nvim-lualine/lualine.nvim'  " Status line (button)
-Plug 'akinsho/bufferline.nvim'    " Buffer line (top)
+Plug 'akinsho/bufferline.nvim', { 'tag' : 'v3.7.0' }   " Buffer line (top)
 Plug 'kyazdani42/nvim-tree.lua'   " File Explorer
 Plug 'stevearc/aerial.nvim'       " Symbol Manager
 Plug 'nvim-lua/lsp-status.nvim'
