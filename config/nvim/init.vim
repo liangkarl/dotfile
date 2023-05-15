@@ -47,7 +47,6 @@ Plug 'ahmedkhalf/project.nvim'    " provides superior project management
 Plug 'editorconfig/editorconfig-vim'  " setup indent, space, etc, look like
 
 " Enhanced functions
-Plug 'declancm/cinnamon.nvim'   " Smooth scrolling for ANY movement command
 Plug 'roxma/vim-tmux-clipboard' " share clipboard between tmux and vim
 Plug 'Asheq/close-buffers.vim'  " delete buffers
 Plug 'echasnovski/mini.nvim'    " A 'Swiss Army Knife' with many small features
