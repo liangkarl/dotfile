@@ -7,6 +7,14 @@ fun! s:RestoreCursorPosition()
   endif
 endfun
 
+fun! s:ToggleLineChars()
+  if &list == 1
+    set nolist
+  else
+    set list
+  endif
+endfun
+
 let g:nvim_dir = expand('<sfile>:h/nvim')
 let g:lua_dir = g:nvim_dir . '/lua'
 let g:config_dir = g:nvim_dir . '/config'
@@ -176,6 +184,13 @@ set wildignore+=*.o,*.obj,.git,*.rbc,.pyc,__pycache__
 set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
 " Preserve how many lines before reaching top/botton of screen
 set scrolloff=5
+
+" set non-characters
+set showbreak=↪\ 
+" other symbols for non-characters:
+" set listchars=tab:→\ ,space:·,nbsp:␣,trail:•,eol:¶,precedes:«,extends:»
+set listchars=tab:→\ ,nbsp:␣,precedes:«,extends:»
+call s:ToggleLineChars()
 
 " Use modeline overrides
 set modeline
