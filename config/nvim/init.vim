@@ -32,8 +32,6 @@ Plug 'neovim/nvim-lspconfig'      " LSP configuration
 Plug 'williamboman/mason.nvim'    " Install LSP servers
 Plug 'hrsh7th/nvim-cmp'           " Autocomplete framework
 Plug 'rbgrouleff/bclose.vim'      " needed by tig-explorer in Nvim config
-Plug 'rcarriga/nvim-notify'       " A fancy notification manager
-                                  " required by: hartime
 
 " Integration Development Environment
 Plug 'mhinz/vim-startify'         " Start-up screen
@@ -92,9 +90,6 @@ Plug 'mhinz/vim-signify'        " show diff symbols aside via git diff
 Plug 'liangkarl/tig-explorer.vim'   " git blame whole file
 Plug 'TimUntersberger/neogit'   " git status
 Plug 'sindrets/diffview.nvim'   " git diff
-
-" Learning
-Plug 'm4xshen/hardtime.nvim'  " A plugin to help give up bad practices in nvim.
 
 " Fuzzy Search
 if !empty(g:fuzzy_finder)
