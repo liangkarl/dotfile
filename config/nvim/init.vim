@@ -182,7 +182,14 @@ set wildignore+=*.o,*.obj,.git,*.rbc,.pyc,__pycache__
 
 " Set cursor pattern (no blink)
 set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
+
+" Keep cursor line centered only in Normal mode
+nnoremap j jzz
+nnoremap k kzz
+nnoremap <C-u> <C-u>zz
+nnoremap <C-d> <C-d>zz
 " Preserve how many lines before reaching top/botton of screen
+" Now, the setting would be available only in Insert mode
 set scrolloff=5
 
 " set non-characters
