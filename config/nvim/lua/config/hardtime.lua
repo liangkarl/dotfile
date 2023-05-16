@@ -13,8 +13,4 @@
 require('hardtime').setup({
   max_count = 4,
   max_time = 300,
-  -- check filetype with `echo &filetype`
-  disabled_filetypes = {
-      "help", "man", "qf",
-      "NvimTree", "aerial", "startify", "mason" },
 })
