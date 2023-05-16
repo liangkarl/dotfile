@@ -11,7 +11,7 @@
 -- 5. Use f F t T 0 ^ $ , ; for mid long distance horizontal movement.
 -- 6. Use operator + motion/text-object (eg: ci{ d5j) whenever possible.
 require('hardtime').setup({
-  max_count = 8,
+  max_count = 4,
   max_time = 300,
   -- check filetype with `echo &filetype`
   disabled_filetypes = {
