@@ -13,7 +13,7 @@
 -- | q    | quit explore                 |
 -- |------+------------------------------|
 
-local function opts(desc)
+local function opts(desc, bufnr)
   return {
     desc = 'nvim-tree: ' .. desc,
     buffer = bufnr,
@@ -31,9 +31,9 @@ local M = {}
 
 function M.on_attach(bufnr)
   -- FIXME: the help window would be placed in left side
-  vim.keymap.set('n', 'h', api.tree.toggle_help, opts('help'))
-  vim.keymap.set('n', '?', api.tree.toggle_help, opts('help'))
-  vim.keymap.set('n', '<C-c>', api.tree.close, opts('close'))
+  vim.keymap.set('n', 'h', api.tree.toggle_help, opts('help', bufnr))
+  vim.keymap.set('n', '?', api.tree.toggle_help, opts('help', bufnr))
+  vim.keymap.set('n', '<C-c>', api.tree.close, opts('close', bufnr))
 
   api.config.mappings.default_on_attach(bufnr)
 end
