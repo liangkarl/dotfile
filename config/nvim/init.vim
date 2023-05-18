@@ -7,14 +7,6 @@ fun! s:RestoreCursorPosition()
   endif
 endfun
 
-fun! s:ToggleLineChars()
-  if &list == 1
-    set nolist
-  else
-    set list
-  endif
-endfun
-
 let g:nvim_dir = expand('<sfile>:h/nvim')
 let g:lua_dir = g:nvim_dir . '/lua'
 let g:config_dir = g:nvim_dir . '/config'
@@ -184,20 +176,20 @@ set wildignore+=*.o,*.obj,.git,*.rbc,.pyc,__pycache__
 set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
 
 " Keep cursor line centered only in Normal mode
-nnoremap j jzz
-nnoremap k kzz
-nnoremap <C-u> <C-u>zz
-nnoremap <C-d> <C-d>zz
-" Preserve how many lines before reaching top/botton of screen
-" Now, the setting would be available only in Insert mode
-set scrolloff=5
+autocmd CursorMoved * set scrolloff=999
+autocmd InsertEnter * set scrolloff=5
 
-" set non-characters
+" Set wrap line symbol
 set showbreak=↪\ 
-" other symbols for non-characters:
-" set listchars=tab:→\ ,space:·,nbsp:␣,trail:•,eol:¶,precedes:«,extends:»
+" Symbols for non-charactors:
+"   tab:→\ , space:·, nbsp:␣, trail:•, eol:¶, precedes:«, extends:»
 set listchars=tab:→\ ,nbsp:␣,precedes:«,extends:»
-call s:ToggleLineChars()
+set list
+autocmd InsertEnter * set nolist showbreak=
+autocmd InsertLeave * set list showbreak=↪\ 
+" For all read-only buffer that I assume they are some special buffers,
+" don't show list chars
+autocmd BufEnter * if &modifiable == 0 | set nolist | endif
 
 " Use modeline overrides
 set modeline
