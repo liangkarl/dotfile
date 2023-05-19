@@ -47,7 +47,6 @@ Plug 'roxma/vim-tmux-clipboard' " share clipboard between tmux and vim
 Plug 'Asheq/close-buffers.vim'  " delete buffers
 Plug 'echasnovski/mini.nvim'    " A 'Swiss Army Knife' with many small features
 Plug 'tpope/vim-commentary'     " comment codes easily
-Plug 'tyru/open-browser.vim'    " open url from vim
 Plug 'andymass/vim-matchup'     " enhance '%' function, like if-endif
 Plug 'markonm/traces.vim'       " preview the replace/search result
 Plug 'haya14busa/is.vim'        " make string search more convenient.
