@@ -195,6 +195,7 @@ endfor
 " |man.lua| plugin is enabled, so |:Man| is available by default.
 " |matchit| plugin is enabled. To disable it in your config: >
 "   :let loaded_matchit = 1
+let loaded_matchit = 1
 " |g:vimsyn_embed| defaults to "l" to enable Lua highlighting
 
 " allow plugins by file type
