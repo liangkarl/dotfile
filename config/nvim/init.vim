@@ -209,7 +209,7 @@ set timeoutlen=300
 set backspace=indent,eol,start
 
 " Better modes.  Remeber where we are, support yankring
-set viminfo=!,'100,\"100,:20,<50,s10,h,n~/.viminfo
+set shada=!,'100,\"100,:20,<50,s10,h,n~/.vim.shada
 
 " Set the title text in the window
 set title
@@ -269,6 +269,8 @@ set fileencoding=utf-8
 " Don't show mode text(eg, INSERT) as lualine has already do it
 set noshowmode
 
+" Show unprintable characters hexadecimal as <xx> instead of using ^C and ~C.
+set display+=uhex
 
 set mouse=v " copy text without borders
 
