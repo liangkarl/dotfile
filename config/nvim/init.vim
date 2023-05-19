@@ -213,7 +213,6 @@ set viminfo=!,'100,\"100,:20,<50,s10,h,n~/.viminfo
 
 " Set the title text in the window
 set title
-set titleold="Terminal"
 set titlestring=%F
 
 " Tab completion in command bar
@@ -252,10 +251,6 @@ set number relativenumber
 " Close a split window in Vim without resizing other windows
 set noequalalways
 
-
-" To show buffer name for lightline-bufferline config
-set showtabline=2
-
 " Set up font for special characters
 set guifont=SauceCodePro\ Nerd\ Font\ Mono
 
@@ -281,9 +276,6 @@ set colorcolumn=80
 set termguicolors
 set cursorline
 
-" for material only
-hi CursorLine cterm=underline ctermbg=none gui=none guifg=BURLYWOOD guibg=#1c1c1c
-hi Cursor guifg=none guibg=#7a4d4d
 " no one is really happy until you have this shortcuts
 cab W! w!
 cab Q! q!
