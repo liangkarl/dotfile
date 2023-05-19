@@ -30,7 +30,6 @@ Plug 'nvim-lua/plenary.nvim'      " Affect telescope
 Plug 'neovim/nvim-lspconfig'      " LSP configuration
 Plug 'williamboman/mason.nvim'    " Install LSP servers
 Plug 'hrsh7th/nvim-cmp'           " Autocomplete framework
-Plug 'rbgrouleff/bclose.vim'      " needed by tig-explorer in Nvim config
 
 " Integration Development Environment
 Plug 'mhinz/vim-startify'         " Start-up screen
