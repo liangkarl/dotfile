@@ -59,6 +59,11 @@ let mapleader = ' '
 vnoremap > >gv
 vnoremap < <gv
 
+" quit vim diff at once
+if &diff
+  nnoremap <silent><leader>q :qall<cr>
+endif
+
 " Reload vim config
 nnoremap <silent><leader>so :call ReloadConfig()<cr>
 nnoremap <silent><leader>cf :call ShowFileInfo()<cr>
