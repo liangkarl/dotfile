@@ -7,6 +7,13 @@ fun! s:RestoreCursorPosition()
   endif
 endfun
 
+fun! s:ReadOnlyMode()
+  if &modifiable == 0
+    set nolist
+    set colorcolumn=
+  endif
+endfun
+
 let g:nvim_dir = expand('<sfile>:h/nvim')
 let g:lua_dir = g:nvim_dir . '/lua'
 let g:config_dir = g:nvim_dir . '/config'
@@ -136,23 +143,64 @@ for f in split(glob(g:lua_dir . '/config/*.lua'), '\n')
   exe 'luafile' f
 endfor
 
-" no one is really happy until you have this shortcuts
-cab W! w!
-cab Q! q!
-cab Wa wa
-cab Wq wq
-cab wQ wq
-cab WQ wq
-cab W w
-cab Q q
+" Nvim defaults:
+" 'autoindent' is enabled
+" 'autoread' is enabled
+" 'background' defaults to "dark" (unless set automatically by the terminal/UI)
+" 'backspace' defaults to "indent,eol,start"
+" 'backupdir' defaults to .,~/.local/state/nvim/backup// (|xdg|), auto-created
+" 'belloff' defaults to "all"
+" 'compatible' is always disabled
+" 'complete' excludes "i"
+" 'cscopeverbose' is enabled
+" 'directory' defaults to ~/.local/state/nvim/swap// (|xdg|), auto-created
+" 'display' defaults to "lastline,msgsep"
+" 'encoding' is UTF-8 (cf. 'fileencoding' for file-content encoding)
+" 'fillchars' defaults (in effect) to "vert:│,fold:·,sep:│"
+" 'formatoptions' defaults to "tcqj"
+" 'fsync' is disabled
+" 'hidden' is enabled
+" 'history' defaults to 10000 (the maximum)
+" 'hlsearch' is enabled
+" 'incsearch' is enabled
+" 'joinspaces' is disabled
+" 'langnoremap' is enabled
+" 'langremap' is disabled
+" 'laststatus' defaults to 2 (statusline is always shown)
+" 'listchars' defaults to "tab:> ,trail:-,nbsp:+"
+" 'mouse' defaults to "nvi"
+" 'mousemodel' defaults to "popup_setpos"
+" 'nrformats' defaults to "bin,hex"
+" 'ruler' is enabled
+" 'sessionoptions' includes "unix,slash", excludes "options"
+" 'shortmess' includes "F", excludes "S"
+" 'showcmd' is enabled
+" 'sidescroll' defaults to 1
+" 'smarttab' is enabled
+" 'startofline' is disabled
+" 'switchbuf' defaults to "uselast"
+" 'tabpagemax' defaults to 50
+" 'tags' defaults to "./tags;,tags"
+" 'ttimeoutlen' defaults to 50
+" 'ttyfast' is always set
+" 'undodir' defaults to ~/.local/state/nvim/undo// (|xdg|), auto-created
+" 'viewoptions' includes "unix,slash", excludes "options"
+" 'viminfo' includes "!"
+" 'wildmenu' is enabled
+" 'wildoptions' defaults to "pum,tagfile"
+"
+" Misc settings:
+" Filetype detection is enabled by default. This can be disabled by adding
+"   ":filetype off" to |init.vim|.
+" Syntax highlighting is enabled by default. This can be disabled by adding
+"   ":syntax off" to |init.vim|.
+" |man.lua| plugin is enabled, so |:Man| is available by default.
+" |matchit| plugin is enabled. To disable it in your config: >
+"   :let loaded_matchit = 1
+" |g:vimsyn_embed| defaults to "l" to enable Lua highlighting
 
 " allow plugins by file type
 filetype plugin indent on
-
-syntax on
-
-" no vi-compatible
-set nocompatible
 
 " set wait time for combined keys
 set timeoutlen=300
@@ -187,38 +235,23 @@ set listchars=tab:→\ ,nbsp:␣,precedes:«,extends:»
 set list
 autocmd InsertEnter * set nolist showbreak=
 autocmd InsertLeave * set list showbreak=↪\ 
-" For all read-only buffer that I assume they are some special buffers,
-" don't show list chars
-autocmd BufEnter * if &modifiable == 0 | set nolist | endif
+" For all read-only buffer, assume they are special buffers.
+autocmd BufWinEnter * call s:ReadOnlyMode()
 
 " Use modeline overrides
 set modeline
 set modelines=10
 
-" Searching
-set hlsearch
-set incsearch
-
 " Set Byte Order Mask(BOM) dealing with UTF8 in window
 set bomb
-" shorten the response time in tty
-set ttyfast
 " treat all files as binary to prevent from unexpected changes
 set binary
 
 " show the line numbers with hybrid mode in the left side
 set number relativenumber
-" show the cursor position all the time
-set ruler
-" display incomplete commands
-set showcmd
 " Close a split window in Vim without resizing other windows
 set noequalalways
 
-" opening a new file when the current buffer has unsaved changes
-" causes files to be hidden instead of closed
-set hidden
-" set cmdheight=2
 
 " To show buffer name for lightline-bufferline config
 set showtabline=2
@@ -228,8 +261,8 @@ set guifont=SauceCodePro\ Nerd\ Font\ Mono
 
 set diffopt+=algorithm:histogram
 
-"Directories for swp files
 set nobackup
+" When vim failed to write buffer, don't create backup-like file for it.
 set nowritebackup
 set noswapfile
 
@@ -238,30 +271,32 @@ set encoding=utf-8
 set fileencodings=utf-8
 set fileencoding=utf-8
 
-set colorcolumn=80
+" Don't show mode text(eg, INSERT) as lualine has already do it
+set noshowmode
 
-set noshowmode " hide default mode text (e.g. INSERT) as airline already displays it
-set display+=lastline " don't show '@@@' when there is no enough room
 
 set mouse=v " copy text without borders
 
-if (has("termguicolors"))
-  set termguicolors
-endif
-
+set colorcolumn=80
+set termguicolors
 set cursorline
 
 " for material only
 hi CursorLine cterm=underline ctermbg=none gui=none guifg=BURLYWOOD guibg=#1c1c1c
 hi Cursor guifg=none guibg=#7a4d4d
-
-" Some minor or more generic autocmd rules
+" no one is really happy until you have this shortcuts
+cab W! w!
+cab Q! q!
+cab Wa wa
+cab Wq wq
+cab wQ wq
+cab WQ wq
+cab W w
+cab Q q
 
 " The PC is fast enough, do syntax highlight syncing from start
 autocmd BufEnter * :syntax sync fromstart
-
 " A simple function to restore previous cursor position
 autocmd BufReadPost * call s:RestoreCursorPosition()
-
 " set no line number in terminal buffer
 autocmd TermOpen * setlocal nonumber norelativenumber
