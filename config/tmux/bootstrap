@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+me="$0"
+tmux_home="$(dirname $me)"
+tpm_dir="${tmux_home}/plugins/tpm"
+tpm="${tpm_dir}/tpm"
+tpm_url='https://github.com/tmux-plugins/tpm'
+
+if [[ -d $tpm_dir ]]; then
+	if [[ "${BOOTSTRAP_2ND_STAGE}" == y ]]; then
+		echo "3) Install plugins with external script"
+		eval ${tpm_dir}/scripts/install_plugins.sh
+	fi
+
+	if ! eval $tpm; then
+		echo "Fail to launch TPM: ${tpm_dir}/tpm, ($?)"
+		echo "Check $tpm_url"
+	fi
+else
+	echo "1) Start to download git repository for tpm."
+	if ! git clone --depth=1 $tpm_url $tpm_dir; then
+		echo "Failed to download TPM."
+		exit 1
+	fi
+
+	echo "2) TPM has been downloaded."
+	export BOOTSTRAP_2ND_STAGE=y
+	eval $me
+fi
