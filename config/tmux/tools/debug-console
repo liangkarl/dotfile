@@ -9,16 +9,7 @@
 # detect current session & window name
 session="$(tmux display-message -p '#S')"
 window="$(tmux display-message -p '#W')"
+d="clear; echo Take it easy. The console is loading; sleep 2; clear"
 
-# 1. create new window for debug console
-tmux new-window -n 'debug'\; \
-  send-keys 'logcat' C-m \; \
-  select-pane -T 'logcat'\; \
-  split-window -h \; \
-  select-pane -T 'console'\; \
-  split-window -h \; \
-  send-keys 'uart -l' C-m \; \
-  select-pane -T 'UART' \; \
-  set pane-border-format "#{pane_index} #{pane_title}" \; \
-  set pane-border-status top \; \
-  select-layout even-vertical \;
+tmux new-window -n 'debug' ';' \
+	send-keys "tmex 'pid$$' 3 '$d; logcat' '$d; kmsg' '$d; uart -l'" ENTER
