@@ -362,7 +362,7 @@ function split1d () {
     percentage=$(( 100 - percentage ))  # invert
 
     # split pane down the middle (adjusted according to size array)
-    tmuxargs+=( ";" "split-window" "-${direction}" "-p${percentage}" )
+    tmuxargs+=( ";" "split-window" "-${direction}" "-l" "${percentage}%" )
     executecmd "${cmds[${half}]-}"
     selectpane "${direction}" "UL" 1
 
@@ -380,7 +380,7 @@ function split1d () {
     percentage=$(( 100 - percentage ))  # invert
 
     # split off first pane (adjusted according to size array)
-    tmuxargs+=( ";" "split-window" "-${direction}" "-p${percentage}" )
+    tmuxargs+=( ";" "split-window" "-${direction}" "-l" "${percentage}%" )
     executecmd "${cmds[1]-}"
 
     # if more than 2 panes, keep splitting
