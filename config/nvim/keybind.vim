@@ -59,6 +59,10 @@ let mapleader = ' '
 vnoremap > >gv
 vnoremap < <gv
 
+" Use "P" to put without yanking the deleted text into the unnamed register
+" Replace 'p' with 'P' since the default keybind is too strange
+noremap p P
+
 " quit vim diff at once
 if &diff
   nnoremap <silent><leader>q :qall<cr>
