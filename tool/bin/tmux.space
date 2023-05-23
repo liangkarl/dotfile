@@ -147,7 +147,7 @@ remove() {
 set -eE
 
 declare -A stat dir space
-CONF="$XDG_CONFIG_HOME/tmux/space.json"
+CONF="$XDG_CONFIG_HOME/toolkit/config/space.json"
 wins="tmux.wm"
 
 case $1 in
