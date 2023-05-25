@@ -10,6 +10,17 @@ source $(mylib io)
 source $(mylib sys)
 source $(mylib menu)
 
+init() {
+	if has_cmd fzf; then
+		fuzzy_finder="fzf --print-query"
+	elif has_cmd fzy; then
+		fuzzy_finder=fzy
+	else
+		pr_err "no available fuzzy_finder"
+		exit 1
+	fi
+}
+
 usage() {
 	local n
 
@@ -31,124 +42,36 @@ usage() {
 	exit $1
 }
 
-load_conf() { jp -u -f $CONF "$@"; }
-
-sort_str() { printf '%s\n' "$@" | sort | xargs; }
-
-switch_session() {
-	local cmd
-
-	if [[ "$TMUX" == '' ]]; then # outside
-		cmd='tmux attach'
-	else # inside
-		TMUX=''
-		cmd="tmux switch-client"
-	fi
-
-	eval $cmd $@
-}
-
 edit_conf() {
-	local dir confg
+	[[ ! -d "$CONFDIR" ]] && mkdir $CONFDIR
 
-	if [[ ! -e $CONF ]]; then
-		dir=$(dirname $CONF)
-		[[ ! -e $dir ]] && mkdir -p $dir
-
-		jo -p num=2 \
-			list=$(jo -a \
-				"$(jo name='one' dir=/a/b/c)" \
-				"$(jo name='two' dir=/c/b/a)" \
-			) > $CONF
+	if [[ ! -e "$CONFDIR/${1}.yml" ]]; then
+		smug print |
+			sed -e '/layout/d' -e '/panes/d' -e '/- commands/d' \
+			> $CONFDIR/${1}.yml
 	fi
 
-	vim $CONF
+	smug edit $1
 }
 
 parse_conf() {
-	local name path i
-
-	i=0
-	while :; do
-		name="$(load_conf list[$i].name)"
-		[[ "$name" == null ]] && break
-
-		path="$(load_conf list[$i].dir)"
-		dir[$name]="$path"
-
-		stat[$name]='on'
-		tmux has -t "${name}" || stat[$name]='off'
-
-		((i++))
-	done 2> /dev/null
+	echo $(smug list | $fuzzy_finder)
 }
 
 enter() {
-	local name path
-
-	# show menu ${!list[@]}
-	menu_title "available project names:"
-	menu_prompt "select one to start:"
-	menu_select $(sort_str ${!stat[@]}) "cancel"
-	name=$(menu_choice)
-	path="${dir[$name]}"
-
-	[[ "$name" == "cancel" ]] && exit
-
-	# if project not exist
-	if [[ "${stat[$name]}" == 'off' ]]; then
-		# new a detached session
-		eval tmux new -d -s $name -n "$name" -c $path
-
-		# if wins is available
-		if has_cmd $wins; then
-			# add wins following by wins.conf
-			eval $wins -t $name $path || true
-
-			# kill #1 window in $name session
-			# select lowest-number window
-			# resort window
-			tmux kill-window -t $name:1 \; \
-				select-window -t $name:^ \; \
-				move-window -r \; || true
-		fi
-	fi
-
-	switch_session -t $name
-
-	# It's asynchronous condition that user would attach or switch
-	# to other session, but the original session would keep going
-	# down here.
+	smug start $1 -a
 }
 
 # delete session
 remove() {
-	local n name
-	# while session not exit
-	for n in ${!stat[@]}; do
-		# unset it
-		[[ "${stat[$n]}" == 'off' ]] && unset stat[$n]
-	done
-
-	(( ${#stat[@]} == 0 )) && exit_msg 0 "no session available"
-
-	# show menu
-	menu_title "available session names:"
-	menu_prompt "select one to remove:"
-	menu_select $(sort_str ${!stat[@]}) "cancel"
-	name=$(menu_choice)
-
-	[[ "$name" == "cancel" ]] && exit
-
-	tmux kill-session -t $name
+	smug stop $1
 }
 
 # set -xv
 set -eE
 
 declare -A stat dir space
-CONF="$XDG_CONFIG_HOME/toolkit/config/space.json"
-wins="tmux.wm"
+CONFDIR="$XDG_CONFIG_HOME/smug"
 
 case $1 in
 	'')
@@ -168,18 +91,13 @@ case $1 in
 		;;
 esac
 
-[[ "$EDIT_CONF" == y ]] && edit_conf
+init
 
-parse_conf || echo "there is something wrong with '$CONF'"
+session=$(parse_conf)
+[[ -z "$session" ]] && exit 1
 
-if [[ "$ENTER" == y ]]; then
-	enter
-	exit
-fi
+[[ "$EDIT_CONF" == y ]] && edit_conf "$session"
 
-if [[ "$REMOVE" == y ]]; then
-	while :; do
-		remove
-	done
-	exit
-fi
+[[ "$ENTER" == y ]] && enter "$session"
+
+[[ "$REMOVE" == y ]] && remove "$session"
