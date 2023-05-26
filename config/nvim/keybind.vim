@@ -35,6 +35,11 @@ silent! fun! ReloadConfig()
   echo $MYVIMRC
 endfun
 
+silent! fun! UpdateConfig()
+  edit $MYVIMRC
+  autocmd! BufDelete $MYVIMRC source $MYVIMRC | echo 'Reload: ' .. $MYVIMRC
+endfun
+
 fun! ToggleQuickFix()
   if empty(filter(getwininfo(), 'v:val.quickfix'))
     copen
@@ -70,6 +75,7 @@ endif
 
 " Reload vim config
 nnoremap <silent><leader>so :call ReloadConfig()<cr>
+nnoremap <silent><leader>pf :call UpdateConfig()<cr>
 nnoremap <silent><leader>cf :call ShowFileInfo()<cr>
 " Change the directory only for the current window
 nnoremap <silent><leader>cd :call ChangeCWD()<cr>
