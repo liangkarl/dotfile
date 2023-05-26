@@ -49,11 +49,11 @@ fun! ToggleQuickFix()
 endfun
 
 " Save buffer content if modifiable is 'on'
-fun! CloseBuf()
+silent! fun! CloseBuf()
   if !&modifiable
-    bdelete!
+    silent! bdelete!
   else
-    bdelete
+    silent! bdelete
   endif
 endfun
 
