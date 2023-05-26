@@ -222,8 +222,8 @@ set wildignore+=*.o,*.obj,.git,*.rbc,.pyc,__pycache__
 set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
 
 " Keep cursor line centered only in Normal mode
-autocmd CursorMoved * set scrolloff=999
-autocmd InsertEnter * set scrolloff=5
+autocmd! CursorMoved * set scrolloff=999
+autocmd! InsertEnter * set scrolloff=5
 
 " Set wrap line symbol
 set showbreak=↪\ 
@@ -231,10 +231,10 @@ set showbreak=↪\
 "   tab:→\ , space:·, nbsp:␣, trail:•, eol:¶, precedes:«, extends:»
 set listchars=tab:→\ ,nbsp:␣,precedes:«,extends:»
 set list
-autocmd InsertEnter * set nolist showbreak=
-autocmd InsertLeave * set list showbreak=↪\ 
+autocmd! InsertEnter * set nolist showbreak=
+autocmd! InsertLeave * set list showbreak=↪\ 
 " For all read-only buffer, assume they are special buffers.
-autocmd BufWinEnter * call s:ReadOnlyMode()
+autocmd! BufWinEnter * call s:ReadOnlyMode()
 
 " Use modeline overrides
 set modeline
@@ -288,8 +288,8 @@ cab W w
 cab Q q
 
 " The PC is fast enough, do syntax highlight syncing from start
-autocmd BufEnter * :syntax sync fromstart
+autocmd! BufEnter * :syntax sync fromstart
 " A simple function to restore previous cursor position
-autocmd BufReadPost * call s:RestoreCursorPosition()
+autocmd! BufReadPost * call s:RestoreCursorPosition()
 " set no line number in terminal buffer
-autocmd TermOpen * setlocal nonumber norelativenumber
+autocmd! TermOpen * setlocal nonumber norelativenumber
