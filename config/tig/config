@@ -100,7 +100,6 @@ bind status ca >?git commit --amend
 bind status cn @?git commit --amend --no-edit
 
 ## Stage/Unstage file
-bind main F @sh -c 'if git diff --cached --quiet; then git add -u; else git reset --quiet HEAD; fi'
 bind stage f @sh -c 'if git diff --cached --quiet %(file); then git add %(file); else git reset --quiet HEAD %(file); fi'
 bind stage F @sh -c 'if git diff --cached --quiet; then git add -u; else git reset --quiet HEAD; fi'
 
