@@ -1,0 +1,13 @@
+github:
+- name: junegunn/fzf
+  description: A command-line fuzzy finder
+  owner: junegunn
+  repo: fzf
+  release:
+    name: fzf
+    tag: 0.41.1
+  command:
+    link:
+    - from: '*fzf*'
+      to: fzf
+
