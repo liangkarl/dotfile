@@ -22,124 +22,9 @@ let g:finder_dir = g:config_dir . '/finder'
 
 source <sfile>:h/config.vim
 
-" import plugin install
-call plug#begin(g:nvim_dir . '/plugged')
-
-" Prerequisite
-Plug 'nvim-lua/plenary.nvim'      " Affect telescope
-Plug 'neovim/nvim-lspconfig'      " LSP configuration
-Plug 'williamboman/mason.nvim'    " Install LSP servers
-Plug 'hrsh7th/nvim-cmp'           " Autocomplete framework
-
-" Integration Development Environment
-Plug 'mhinz/vim-startify'         " Start-up screen
-Plug 'nvim-lualine/lualine.nvim'  " Status line (button)
-Plug 'akinsho/bufferline.nvim', { 'tag' : 'v3.7.0' }   " Buffer line (top)
-Plug 'kyazdani42/nvim-tree.lua'   " File Explorer
-Plug 'stevearc/aerial.nvim'       " Symbol Manager
-Plug 'nvim-lua/lsp-status.nvim'
-Plug 'folke/which-key.nvim'       " Display cheat sheet of vim shortcut
-Plug 'ahmedkhalf/project.nvim'    " provides superior project management
-Plug 'editorconfig/editorconfig-vim'  " setup indent, space, etc, look like
-
-" Enhanced functions
-Plug 'roxma/vim-tmux-clipboard' " share clipboard between tmux and vim
-Plug 'Asheq/close-buffers.vim'  " delete buffers
-Plug 'echasnovski/mini.nvim'    " A 'Swiss Army Knife' with many small features
-Plug 'tpope/vim-commentary'     " comment codes easily
-Plug 'andymass/vim-matchup'     " enhance '%' function, like if-endif
-Plug 'markonm/traces.vim'       " preview the replace/search result
-Plug 'haya14busa/is.vim'        " make string search more convenient.
-Plug 'Krasjet/auto.pairs'       " enhance [/{/'..., auto balance pairs
-Plug 'unblevable/quick-scope'   " enhance f/F and rendering colors in a line
-Plug 'easymotion/vim-easymotion'    " move cursor location like vimium
-Plug 'rmagatti/alternate-toggler'   " switch boolean value easily,
-Plug 'dhruvasagar/vim-table-mode'   " edit Markdown table easily
-Plug 'terryma/vim-expand-region'    " text object selection with +/-
-Plug 'ntpeters/vim-better-whitespace'   " show/remove trailing space
-Plug 'nvim-treesitter/nvim-treesitter'  " Syntax highlight/lint with `treesitter`
-
-" Formatter
-Plug 'rhysd/vim-clang-format'   " format code with clang-format
-
-" Autocompletion (without LSP source)
-Plug 'tzachar/cmp-tabnine', { 'do': './install.sh' }    " AI assist for completion
-Plug 'onsails/lspkind.nvim'     " adjust scroll menu width
-Plug 'hrsh7th/cmp-buffer'       " snippet engine of buffer words
-
-" Terminal
-Plug 'akinsho/toggleterm.nvim', { 'tag' : 'v2.6.0' }  " Terminal
-
-" Language Support
-Plug 'm-pilia/vim-ccls'     " provide unique ccls function
-
-" Autocompletion Comparision (LSP source)
-Plug 'hrsh7th/cmp-nvim-lsp'     " snippet engine of LSP client
-Plug 'saadparwaiz1/cmp_luasnip' " interface between nvim-cmp and LuaSnip
-Plug 'L3MON4D3/LuaSnip'         " snippet engine for neovim written in Lua
-
-" Debug Tools
-Plug 'dstein64/vim-startuptime' " view startup event timing with `--startuptime`
-Plug 'mfussenegger/nvim-dap'    " Debug Adapter Protocol client implementation
-
-" Git
-Plug 'mhinz/vim-signify'        " show diff symbols aside via git diff
-Plug 'liangkarl/tig-explorer.vim'   " git blame whole file
-Plug 'TimUntersberger/neogit'   " git status
-Plug 'sindrets/diffview.nvim'   " git diff
-
-" Fuzzy Search
-if !empty(g:fuzzy_finder)
-  if g:fuzzy_finder == 'fzf'
-    Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-    Plug 'junegunn/fzf.vim'
-  elseif g:fuzzy_finder == 'telescope'
-    " when fzf was not usable
-    Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
-  endif
-
-  exe 'source' g:finder_dir . '/' . g:fuzzy_finder . '.vim'
-endif
-
-"  Themes
-if !empty(g:editor_theme)
-  if g:editor_theme == 'sonokai'
-    Plug 'sainnhe/sonokai'
-  elseif g:editor_theme == 'material'
-    Plug 'marko-cerovac/material.nvim'
-  elseif g:editor_theme == 'gruvbox-material'
-    Plug 'sainnhe/gruvbox-material'
-  elseif g:editor_theme == 'onedark'
-    Plug 'navarasu/onedark.nvim'
-  endif
-
-  exe 'source' g:theme_dir . '/' . g:editor_theme . '.vim'
-endif
-
-" NOTE:
-" autocompletion seems better in clangd, instead of ccls
-" Try to switch multi LSP in config
-" xavierd/clang_complete
-
-call plug#end()
-
-exe 'colorscheme' g:editor_theme
-
-" FIXME:
-" There may be some error for reserved plugin.vim as they setup
-" non-existed variables or functions.
-" import plugin config
-for f in split(glob(g:config_dir . '/*.vim'), '\n')
-  exe 'source' f
-endfor
-
 " import common setup
 exe 'source' g:nvim_dir . '/keybind.vim'
-
-" import lua configs
-for f in split(glob(g:lua_dir . '/config/*.lua'), '\n')
-  exe 'luafile' f
-endfor
+exe 'luafile' g:nvim_dir . '/entry.lua'
 
 " Nvim defaults:
 " 'autoindent' is enabled
@@ -260,18 +145,13 @@ set nobackup
 set nowritebackup
 set noswapfile
 
-set termencoding=utf-8
-set encoding=utf-8
-set fileencodings=utf-8
-set fileencoding=utf-8
-
 " Don't show mode text(eg, INSERT) as lualine has already do it
 set noshowmode
 
 " Show unprintable characters hexadecimal as <xx> instead of using ^C and ~C.
 set display+=uhex
 
-set mouse=v " copy text without borders
+" set mouse=v " copy text without borders
 
 set colorcolumn=80
 set termguicolors

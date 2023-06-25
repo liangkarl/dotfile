@@ -17,4 +17,5 @@ echo "let g:editor_theme = 'material'" >> ${config_dir}/config.vim
 ln -sf ${config_dir}/misc/editorconfig ~/.editorconfig
 ln -sf ${config_dir}/misc/clang-format ~/.clang-format
 
-nvim +"PlugInstall" <<< "Close the window after all of the plugins installed."
+nvim +"nnoremap q :qa!<cr>" \
+        <<< "Press 'q' to exit nvim if all plugins were installed."

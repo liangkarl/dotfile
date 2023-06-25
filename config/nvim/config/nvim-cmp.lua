@@ -75,10 +75,10 @@ cmp.setup {
 --   rust_analyzer -> rust
 --   pyright -> python
 --   tsserver -> typescript
-local servers = { 'ccls', 'rust_analyzer', 'pyright', 'tsserver' }
-for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
-    -- on_attach = my_custom_on_attach,
-    capabilities = capabilities,
-  }
-end
+-- local servers = { 'ccls', 'rust_analyzer', 'pyright', 'tsserver' }
+-- for _, lsp in ipairs(servers) do
+--   lspconfig[lsp].setup {
+--     -- on_attach = my_custom_on_attach,
+--     capabilities = capabilities,
+--   }
+-- end
