@@ -188,14 +188,3 @@ nnoremap <silent><leader>tg :TableModeToggle<cr>
 nnoremap <silent><leader>tr :TableModeRealign<cr>
 " Tableize
 noremap <leader>tz :Tableize/,
-
-if !empty(g:fuzzy_finder)
-  if g:fuzzy_finder == 'fzf'
-    " Plugin: fzf - fuzzy finder
-    exe 'source' g:finder_dir . '/fzf.vim'
-  elseif g:fuzzy_finder == 'telescope'
-    " Plugin: telescope
-    exe 'source' g:finder_dir . '/telescope.vim'
-  endif
-endif
-

@@ -1,0 +1,2 @@
+-- Plugin: vim-ccls
+-- https://github.com/ranjithshegde/ccls.nvim
