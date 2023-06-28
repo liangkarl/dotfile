@@ -322,6 +322,16 @@ require("lazy").setup({
       require('config.mason')
     end,
   },
+  {
+    "williamboman/mason-lspconfig.nvim",
+    opts = {
+      ensure_installed = {
+        "lua_ls", "bashls", "vimls",
+        "clangd", "jdtls",
+        "pyright",
+      },
+    },
+  },
 
 
   {
