@@ -56,7 +56,7 @@ require("lazy").setup({
   -- Enhanced functions
   { -- Syntax highlight/lint with `treesitter`
     'nvim-treesitter/nvim-treesitter',
-    build = "TSUpdate",
+    build = ":TSUpdate",
     config = function()
       require('config.nvim-treesitter')
     end,
@@ -317,7 +317,7 @@ require("lazy").setup({
   },
   { -- Install LSP servers
     "williamboman/mason.nvim",
-    build = "MasonUpdate", -- :MasonUpdate updates registry contents
+    build = ":MasonUpdate", -- :MasonUpdate updates registry contents
     config = function()
       require('config.mason')
     end,
