@@ -1,5 +1,5 @@
--- Plugin: material.vim
--- https://github.com/sainnhe/sonokai/blob/master/doc/sonokai.txt
+-- Plugin: material.nvim
+-- https://github.com/marko-cerovac/material.nvim
 --
 -- There are 5 different styles available:
 -- darker
