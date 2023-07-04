@@ -68,7 +68,7 @@ lsp.jdtls.setup = {
 -- https://github.com/MaskRay/ccls
 lsp.ccls.setup {
   init_options = {
-    compilationDatabaseDirectory = "build";
+    -- compilationDatabaseDirectory = "";
     cache = {
       directory = ".ccls-cache";
     };
