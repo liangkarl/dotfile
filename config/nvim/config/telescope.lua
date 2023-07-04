@@ -5,7 +5,8 @@ if not pcall(require, "telescope") then
   return
 end
 
-local telescope = require('telescope');
+local telescope = require('telescope')
+local opts = { noremap=true, silent=true }
 
 telescope.setup({
   defaults = {
@@ -21,18 +22,16 @@ telescope.setup({
 })
 
 -- Find files using Telescope command-line sugar.
-vim.cmd('nnoremap <leader>ff <cmd>Telescope find_files<cr>')
-vim.cmd('nnoremap <leader>fb <cmd>Telescope buffers<cr>')
-vim.cmd('nnoremap <leader>fr <cmd>Telescope oldfiles<cr>')
-vim.cmd('nnoremap <leader>f? <cmd>Telescope keymaps<cr>')
-vim.cmd('nnoremap <leader>fe <cmd>Telescope filetypes<cr>')
-vim.cmd('nnoremap <leader>fh <cmd>Telescope help_tags<cr>')
-
-vim.cmd('nnoremap <leader>fc <cmd>Telescope git_bcommits<cr>')
-vim.cmd('nnoremap <leader>fC <cmd>Telescope git_commits<cr>')
-vim.cmd('nnoremap <leader>fs <cmd>Telescope git_status<cr>')
-vim.cmd('nnoremap <leader>fg <cmd>Telescope grep_string<cr>')
-vim.cmd('nnoremap <leader>fG <cmd>Telescope live_grep<cr>')
+vim.keymap.set('n', '<leader>fs', '<cmd>Telescope<cr>', opts)
+vim.keymap.set('n', '<leader>ff', '<cmd>Telescope oldfiles<cr>', opts)
+vim.keymap.set('n', '<leader>fF', '<cmd>Telescope find_files<cr>', opts)
+vim.keymap.set('n', '<leader>fg', '<cmd>Telescope grep_string<cr>', opts)
+vim.keymap.set('n', '<leader>fG', '<cmd>Telescope live_grep<cr>', opts)
+vim.keymap.set('n', '<leader>fb', '<cmd>Telescope buffers<cr>', opts)
+vim.keymap.set('n', '<leader>fr', '<cmd>Telescope registers<cr>', opts)
+vim.keymap.set('n', '<leader>f?', '<cmd>Telescope keymaps<cr>', opts)
+vim.keymap.set('n', '<leader>fe', '<cmd>Telescope filetypes<cr>', opts)
+vim.keymap.set('n', '<leader>fh', '<cmd>Telescope help_tags<cr>', opts)
 
 -- ### File Pickers
 
