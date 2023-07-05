@@ -131,7 +131,14 @@ apply_patch() {
 
 		# This resule maybe more than one, so keep '$' at the end to avoid
 		# getting aa/bb/cc when grep aa/bb
-		path=$(repo list | awk -F: '/'${project//'/'/'\/'}'$/{print $1}')
+		str=$project
+		while :; do
+			path=$(repo list | awk -F: '/'${str//'/'/'\/'}'$/{print $1}')
+			if [[ -n $path ]]; then
+				break
+			fi
+			str=${str#*/}
+		done
 
 		cd $path
 		git fetch ssh://${user}@${gerrit}:${port}/${project} ${ref} || {
