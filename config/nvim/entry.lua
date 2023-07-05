@@ -205,6 +205,7 @@ require("lazy").setup({
     'marko-cerovac/material.nvim',
     init = function()
       vim.g.material_style = 'darker'
+      vim.cmd('colorscheme material-darker')
     end,
   },
   {
