@@ -63,21 +63,12 @@ require("lazy").setup({
   },
   { -- share clipboard between tmux and vim
     'roxma/vim-tmux-clipboard',
-    config = function()
-      -- require('config.vim-tmux-clipboard')
-    end
   },
   { -- delete buffers
     'Asheq/close-buffers.vim',
-    config = function()
-      -- require('config.close-buffers')
-    end
   },
   { -- A 'Swiss Army Knife' with many small features
     'echasnovski/mini.nvim',
-    config = function()
-      -- require('config.mini')
-    end
   },
   { -- comment codes easily
     'tpope/vim-commentary',
@@ -93,15 +84,9 @@ require("lazy").setup({
   },
   { -- preview the replace/search result
     'markonm/traces.vim',
-    config = function()
-      -- require('config.traces')
-    end
   },
   { -- make string search more convenient.
     'haya14busa/is.vim',
-    config = function()
-      -- require('config.is')
-    end
   },
   { -- enhance [/{/'..., auto balance pairs
     'Krasjet/auto.pairs',
