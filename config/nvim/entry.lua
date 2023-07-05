@@ -190,7 +190,7 @@ require("lazy").setup({
       'nvim-lua/plenary.nvim',
     },
     config = function()
-      -- require('config.neogit')
+      require('config.neogit')
     end
   },
   { -- git diff
