@@ -209,8 +209,10 @@ esac
 
 if [[ "$APPLY_PATCH" == y ]]; then
 	apply_patch
-	add_patch_tag
-	echo "add '$PATCH_TAG' for convenience"
+	if [[ -n "$PATCH_TAG" ]]; then
+		add_patch_tag $rfile
+		echo "add '$PATCH_TAG' for convenience"
+	fi
 fi
 
 [[ "$RESTORE_REV" == y ]] && restore_oldest_git_revision "$rfile"
