@@ -114,15 +114,9 @@ require("lazy").setup({
   },
   { -- edit Markdown table easily
     'dhruvasagar/vim-table-mode',
-    config = function()
-      -- require('config.vim-table-mode')
-    end
   },
   { -- text object selection with +/-
     'terryma/vim-expand-region',
-    config = function()
-      -- require('config.vim-expand-region')
-    end
   },
   { -- show/remove trailing space
     'ntpeters/vim-better-whitespace',
