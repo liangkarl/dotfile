@@ -151,7 +151,8 @@ set noshowmode
 " Show unprintable characters hexadecimal as <xx> instead of using ^C and ~C.
 set display+=uhex
 
-" set mouse=v " copy text without borders
+" disable support mouse action in normal mode.
+set mouse=vi
 
 set colorcolumn=80
 set termguicolors
