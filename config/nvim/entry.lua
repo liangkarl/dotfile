@@ -368,3 +368,5 @@ require("lazy").setup({
     enabled = false,
   },
 })
+
+require('config.misc')
