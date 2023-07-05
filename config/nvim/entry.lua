@@ -142,7 +142,8 @@ require("lazy").setup({
     },
     config = function()
       -- require('config.cmp-tabnine')
-    end
+    end,
+    enabled = false
   },
   { -- adjust scroll menu width
     'onsails/lspkind.nvim',
