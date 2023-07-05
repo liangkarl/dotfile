@@ -186,10 +186,9 @@ require("lazy").setup({
     end
   },
   { -- show diff symbols aside via git diff
-    'mhinz/vim-signify',
-    init = function()
-      vim.cmd('set updatetime=100')
-    end,
+    'lewis6991/gitsigns.nvim',
+    config = true,
+    event = "VeryLazy",
   },
   { -- git status
     'TimUntersberger/neogit',
