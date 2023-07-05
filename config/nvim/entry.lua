@@ -97,7 +97,7 @@ require("lazy").setup({
   { -- enhance f/F and rendering colors in a line
     'unblevable/quick-scope',
     config = function()
-      -- require('config.quick-scope')
+      require('config.quick-scope')
     end
   },
   { -- move cursor location like vimium
