@@ -204,26 +204,31 @@ require("lazy").setup({
   {
     'marko-cerovac/material.nvim',
     init = function()
-      -- require('config.material')
-      vim.cmd('colorscheme material-darker')
+      vim.g.material_style = 'darker'
     end,
   },
   {
     'sainnhe/sonokai',
     config = function()
-      require('config.sonokai')
+      vim.g.sonokai_style = 'shusia'
+      vim.g.sonokai_enable_italic = 1
+      vim.g.sonokai_disable_italic_comment = 1
     end
   },
   {
     'sainnhe/gruvbox-material',
     config = function()
-      require('config.gruvbox-material')
+      vim.cmd('set background=dark')
+      vim.g.gruvbox_material_background = 'soft'
+      vim.g.gruvbox_material_enable_italic = 1
+      vim.g.gruvbox_material_disable_italic_comment = 1
+      vim.g.gruvbox_material_better_performance = 1
     end
   },
   {
     'navarasu/onedark.nvim',
     config = function()
-      require('config.onedark')
+      vim.g.onedark_style = 'warmer'
     end
   },
 
@@ -275,13 +280,14 @@ require("lazy").setup({
     -- load cmp on InsertEnter
     event = "InsertEnter",
     dependencies = {
-      -- LSP configuration
+      -- Snippet engine with LSP backend
       'neovim/nvim-lspconfig',
       'hrsh7th/cmp-nvim-lsp',
-      -- 'hrsh7th/cmp-buffer',
-      'saadparwaiz1/cmp_luasnip',
+      -- Interface between nvim-cmp and luasnip
       'L3MON4D3/LuaSnip',
-      -- 'onsails/lspkind.nvim',
+      'saadparwaiz1/cmp_luasnip',
+      -- Snippet engine of buffer words
+      'hrsh7th/cmp-buffer',
     },
     config = function()
       require('config.nvim-cmp')
@@ -346,3 +352,5 @@ require("lazy").setup({
 
   },
 })
+
+vim.cmd('colorscheme material-darker')
