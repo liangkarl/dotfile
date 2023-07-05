@@ -164,7 +164,6 @@ require("lazy").setup({
     'ranjithshegde/ccls.nvim',
   },
 
-
   -- Debug Tools
   { -- Debug Adapter Protocol client implementation
     'mfussenegger/nvim-dap',
@@ -245,7 +244,6 @@ require("lazy").setup({
     end,
   },
 
-
   -- Terminal
   {
     'akinsho/toggleterm.nvim',
@@ -253,6 +251,7 @@ require("lazy").setup({
     config = function()
       require('config.toggleterm')
     end,
+    event = "VeryLazy",
   },
 
   -- Integration Development Environment
@@ -300,6 +299,7 @@ require("lazy").setup({
     config = function()
       require('config.mason')
     end,
+    event = "VeryLazy",
   },
   {
     "williamboman/mason-lspconfig.nvim",
@@ -310,9 +310,8 @@ require("lazy").setup({
         "pyright",
       },
     },
+    event = "VeryLazy",
   },
-
-
   {
     'codota/tabnine-nvim',
     build = "./dl_binaries.sh",
