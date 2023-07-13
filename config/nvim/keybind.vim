@@ -155,26 +155,6 @@ noremap <silent><leader>gg :Commentary<cr>
 nnoremap <leader>bm :Bdelete menu<cr>
 nnoremap <leader>bs :Bdelete select<cr>
 
-
-" Plugin: vim-easymotion
-"
-" Jump to anywhere you want with minimal keystrokes, with just one key binding.
-" `s{char}{label}`
-" nmap <leader>s <Plug>(easymotion-overwin-f)
-" or
-" `s{char}{char}{label}`
-" Need one more keystroke, but on average, it may be more comfortable.
-
-" https://github.com/easymotion/vim-easymotion
-" meaning of symbols
-" f2 => hit two chars
-" f => hit one char
-" w => move to the begin of word
-" l => move to the begin of line
-" sol => start of line
-" eol => end of line
-nmap <leader>jj <Plug>(easymotion-overwin-f2)
-
 " Plugin: vim-table-mode
 " |----------+----------------|
 " | ORIG CMD |     explain    |
