@@ -7,10 +7,17 @@ fun! s:RestoreCursorPosition()
   endif
 endfun
 
-fun! s:ReadOnlyMode()
-  if &modifiable == 0
-    set nolist
-    set colorcolumn=
+fun! s:toggleEditMode(enable)
+  " list: show 'listchars'
+  " showbreak: set wrap line symbol
+  " colorcolumn: set color column
+  " FIXME: move trailing spaces function to somewhere else
+  if a:enable
+    set list showbreak=↪\  colorcolumn=80
+    EnableWhitespace
+  else
+    set nolist showbreak=NONE colorcolumn=
+    DisableWhitespace
   endif
 endfun
 
@@ -110,16 +117,13 @@ set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
 autocmd! CursorMoved * set scrolloff=999
 autocmd! InsertEnter * set scrolloff=5
 
-" Set wrap line symbol
 set showbreak=↪\ 
 " Symbols for non-charactors:
 "   tab:→\ , space:·, nbsp:␣, trail:•, eol:¶, precedes:«, extends:»
 set listchars=tab:→\ ,nbsp:␣,precedes:«,extends:»
-set list
-autocmd! InsertEnter * set nolist showbreak=
-autocmd! InsertLeave * set list showbreak=↪\ 
-" For all read-only buffer, assume they are special buffers.
-autocmd! BufWinEnter * call s:ReadOnlyMode()
+
+autocmd! InsertLeave * call s:toggleEditMode(0)
+autocmd! InsertEnter * call s:toggleEditMode(1)
 
 " Use modeline overrides
 set modeline
@@ -154,7 +158,6 @@ set display+=uhex
 " disable support mouse action in normal mode.
 set mouse=vi
 
-set colorcolumn=80
 set termguicolors
 set cursorline
 
