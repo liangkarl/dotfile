@@ -5,6 +5,28 @@ __menu_prompt=
 __menu_choice=
 __menu_default=
 __menu_default_text=
+__menu_style=
+
+menu_style() {
+	local styles
+
+	styles=('fzf' 'fzy' 'legacy')
+
+	if grep -q "$1" <<< "${style[@]}"; then
+		__menu_style="$1"
+	elif [[ "$1" == "auto" ]]; then
+		if type -p fzy; then
+			__menu_style="fzy"
+		elif type -p fzf; then
+			__menu_style="fzf"
+		else
+			__menu_style="legacy"
+		fi &> /dev/null
+	else
+		__menu_style="legacy"
+		echo "Found invalid menu style, $1. Set to '$__menu_style'"
+	fi
+}
 
 menu_choice() {
 	echo $__menu_choice
@@ -16,27 +38,28 @@ menu_default() {
 }
 
 menu_title() {
-	__menu_title="$@"
+	__menu_title="$*\n"
 }
 
 menu_prompt() {
-	__menu_prompt="$@"
+	__menu_prompt="$*"
 }
 
 menu_show() {
 	local i item
 
-	[[ -n "$__menu_title" ]] && echo "$__menu_title"
+	# output nothing is no title available
+	printf "$__menu_title"
 
-	for item in $@; do
+	for item in "$@"; do
 		echo "$((++i))) $item"
 	done
 }
 
-menu_select() {
+menu_legacy() {
 	local item opts ans
 
-	menu_show $@
+	menu_show "$@"
 
 	while :; do
 		read -p "$__menu_prompt $__menu_default_text" ans
@@ -55,4 +78,33 @@ menu_select() {
 
 	opts=("$@")
 	__menu_choice="${opts[$((ans-1))]}"
+}
+
+menu_fzf() {
+	# output nothing is no title available
+	printf "$__menu_title"
+	__menu_choice="$(echo ${@// /%} \
+			| sed -e 's/ /\n/g' -e 's/%/ /g' \
+			| fzf --height=~10 --cycle)"
+}
+
+menu_fzy() {
+	local l
+
+	if (( $@ > 10 )); then
+		l=10
+	fi
+
+	# output nothing is no title available
+	printf "$__menu_title"
+	__menu_choice="$(echo ${@// /%} \
+			| sed -e 's/ /\n/g' -e 's/%/ /g' \
+			| fzy --lines=$l)"
+}
+
+menu_select() {
+	if [[ -z "$__menu_style" ]]; then
+		menu_style auto
+	fi
+	menu_${__menu_style} "$@"
 }
