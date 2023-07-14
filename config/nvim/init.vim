@@ -111,7 +111,10 @@ set wildmode=full
 set wildignore+=*.o,*.obj,.git,*.rbc,.pyc,__pycache__
 
 " Set cursor pattern (no blink)
-set guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
+set guicursor=n-v-c-sm:block-nCursor,i-ci-ve:ver25-iCursor,r-cr-o:hor20-rCursor
+highlight nCursor gui=NONE cterm=NONE ctermbg=1 guibg=SlateBlue
+highlight iCursor gui=NONE cterm=NONE ctermbg=15 guibg=#ffffff
+highlight rCursor gui=NONE cterm=NONE ctermbg=12 guibg=Red
 
 " Keep cursor line centered only in Normal mode
 autocmd! CursorMoved * set scrolloff=999
