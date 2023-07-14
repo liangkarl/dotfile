@@ -31,7 +31,7 @@ __ps1_long_form() {
     var+=${purple}'$? '
     var+=${green}'\u@\h '
     var+=${blue}'\w '
-    [[ "$kernel" == Linux ]] && var+='${debian_chroot:+($debian_chroot)}'
+    var+=${purple}'${debian_chroot:+($debian_chroot) }'
     var+='$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/'${sed_purple}'-> '${sed_orange}'\1/") '
     var+=${reset}'\n└─ '
     var+=${yellow}'\$'${reset}' '
@@ -46,17 +46,15 @@ __ps1_short_form() {
     local green='\[\e[01;32m\]'
     local purple='\[\e[38;5;63m\]'
     local orange='\[\e[38;5;202m\]'
-    local sed_purple='\\\[\\\e[38;5;63m\\\]'
-    local sed_orange='\\\[\\\e[38;5;202m\\\]'
     local reset='\[\e[0m\]'
     local kernel=$(uname -s)
     local var
 
+    var=${purple}'$(printf "%*s\r" $(( COLUMNS-1 )) "$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/\1/")")'
     var+=${purple}'$? '
     var+=${green}'\u@\h '
     var+=${blue}'\W '
-    [[ "$kernel" == Linux ]] && var+='${debian_chroot:+($debian_chroot)} '
-    var+='$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/'${sed_purple}'-> '${sed_orange}'\1/") '
+    var+=${purple}'${debian_chroot:+($debian_chroot) }'
     var+=${yellow}'\$'${reset}' '
 
     echo "$var"
