@@ -10,17 +10,6 @@ source $(mylib io)
 source $(mylib sys)
 source $(mylib menu)
 
-init() {
-	if has_cmd fzf; then
-		fuzzy_finder="fzf --print-query"
-	elif has_cmd fzy; then
-		fuzzy_finder=fzy
-	else
-		pr_err "no available fuzzy_finder"
-		exit 1
-	fi
-}
-
 usage() {
 	local n
 
@@ -55,7 +44,10 @@ edit_conf() {
 }
 
 parse_conf() {
-	echo $(smug list | $fuzzy_finder)
+	menu_style "auto"
+	menu_title "choose a config:"
+	menu_select $(smug list)
+	session=$(menu_choice)
 }
 
 enter() {
@@ -91,9 +83,8 @@ case $1 in
 		;;
 esac
 
-init
+parse_conf
 
-session=$(parse_conf)
 [[ -z "$session" ]] && exit 1
 
 [[ "$EDIT_CONF" == y ]] && edit_conf "$session"
