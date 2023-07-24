@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
-__menu_title=
-__menu_prompt=
-__menu_choice=
-__menu_default=
-__menu_default_text=
-__menu_style=
+menu_reinit() {
+	__menu_title=
+	__menu_prompt=
+	__menu_choice=
+	__menu_default=
+	__menu_default_text=
+	__menu_style=
+}
 
 menu_style() {
 	local styles
@@ -116,3 +118,5 @@ menu_select() {
 	fi
 	menu_${__menu_style} "$@"
 }
+
+menu_reinit
