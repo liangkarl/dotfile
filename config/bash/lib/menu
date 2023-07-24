@@ -81,25 +81,33 @@ menu_legacy() {
 }
 
 menu_fzf() {
-	# output nothing is no title available
-	printf "$__menu_title"
-	__menu_choice="$(echo ${@// /%} \
-			| sed -e 's/ /\n/g' -e 's/%/ /g' \
-			| fzf --height=~10 --cycle)"
-}
+	local fzf
 
-menu_fzy() {
-	local l
-
-	if (( $@ > 10 )); then
-		l=10
+	fzf=("fzf" "--height=~10" "--cycle")
+	if [[ -n "$__menu_default" ]]; then
+		fzf+=("-q ${!__menu_default}")
 	fi
 
 	# output nothing is no title available
 	printf "$__menu_title"
 	__menu_choice="$(echo ${@// /%} \
 			| sed -e 's/ /\n/g' -e 's/%/ /g' \
-			| fzy --lines=$l)"
+			| ${fzf[*]})"
+}
+
+menu_fzy() {
+	local fzy
+
+	fzy=("fzy" "--lines=10")
+	if [[ -n "$__menu_default" ]]; then
+		fzy+=("-q ${!__menu_default}")
+	fi
+
+	# output nothing is no title available
+	printf "$__menu_title"
+	__menu_choice="$(echo ${@// /%} \
+			| sed -e 's/ /\n/g' -e 's/%/ /g' \
+			| ${fzy[*]})"
 }
 
 menu_select() {
