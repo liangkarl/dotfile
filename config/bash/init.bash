@@ -24,7 +24,6 @@ __ps1_long_form() {
     local sed_purple='\\\[\\\e[38;5;63m\\\]'
     local sed_orange='\\\[\\\e[38;5;202m\\\]'
     local reset='\[\e[0m\]'
-    local kernel=$(uname -s)
     local var
 
     var=${white}'[\t] ' # Current time
@@ -47,7 +46,6 @@ __ps1_short_form() {
     local purple='\[\e[38;5;63m\]'
     local orange='\[\e[38;5;202m\]'
     local reset='\[\e[0m\]'
-    local kernel=$(uname -s)
     local var
 
     var=${purple}'$(printf "%*s\r" $(( COLUMNS-1 )) "$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/\1/")")'
