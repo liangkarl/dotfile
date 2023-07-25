@@ -94,12 +94,6 @@ require("lazy").setup({
       require('config.auto-pairs')
     end
   },
-  { -- enhance f/F and rendering colors in a line
-    'unblevable/quick-scope',
-    config = function()
-      require('config.quick-scope')
-    end
-  },
   { -- move cursor location like vimium
     'easymotion/vim-easymotion',
     config = function()

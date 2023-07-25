@@ -119,9 +119,6 @@ Plug 'Krasjet/auto.pairs'       " enhance [/{/'..., auto balance pairs
 Plug 'terryma/vim-expand-region'    " enhance visual mode, +/- to increase
                                     " or decrease selected visual range
 Plug 'easymotion/vim-easymotion'    " move cursor location like vimium
-Plug 'unblevable/quick-scope'   " enhance f & F functions, rendering
-                                "  colors to index moving posisition in
-                                "  a line
 Plug 'tpope/vim-commentary'     " comment codes easily
 Plug 'tyru/open-browser.vim'    " open url from vim
 Plug 'rmagatti/alternate-toggler'   " switch boolean value easily,

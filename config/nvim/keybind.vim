@@ -128,12 +128,6 @@ nnoremap <silent><leader>- <C-x>
 " Toggle boolean
 nnoremap <silent> <leader>! :ToggleAlternate<cr>
 
-" Plugin: quick-scope
-" pink: 2f/2F <x> => jump to pink char
-" blue: f/F <x> => jump to blue char
-nmap <leader>jt <plug>(QuickScopeToggle)
-xmap <leader>jt <plug>(QuickScopeToggle)
-
 " Plugin: tig-explorer
 " open tig with current file
 nnoremap <leader>tf :TigOpenCurrentFile<cr>
