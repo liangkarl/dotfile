@@ -3,6 +3,7 @@ alias ls='ls -v --group-directories-first -N --color=auto'
 alias ll='ls -l --time-style=long-iso'
 alias la='ls -a'
 alias tree='tree --dirsfirst -h'
+alias l='ll'
 
 # misc
 alias cls='clear'
