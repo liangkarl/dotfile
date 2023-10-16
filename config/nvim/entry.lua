@@ -184,6 +184,7 @@ require("lazy").setup({
       'nvim-lua/plenary.nvim',
     },
     config = function()
+      require('neogit').setup {}
       require('config.neogit')
     end
   },
