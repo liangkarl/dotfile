@@ -8,7 +8,9 @@ cmd="source $dir/bootstrap.sh"
 trap "rm -rf $tmp" EXIT
 
 if [[ ! -d "$dir/.git" ]]; then
-    git clone -n --depth=1 https://github.com/b4b4r07/enhancd.git $dir
+    git clone -n --depth=1 https://github.com/b4b4r07/enhancd.git $tmp
+    mv $tmp/.git $dir
+    git -C $dir reset --hard
 else
     git -C $dir pull
 fi
