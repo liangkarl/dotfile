@@ -48,7 +48,8 @@ __ps1_short_form() {
     local reset='\[\e[0m\]'
     local var
 
-    var=${purple}'$(printf "%*s\r" $(( COLUMNS-1 )) "$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/\1/")")'
+    var=${orange}'$(printf "%*s\r" $(( COLUMNS-1 )) "$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/\1/")")'${reset}
+    var+=${white}'[\t] ' # Current time
     var+=${purple}'$? '
     var+=${green}'\u@\h '
     var+=${blue}'\W '
@@ -69,7 +70,7 @@ __ps1_switch_form() {
 }
 
 __ps1_prompt() {
-    __ps1_form=0
+    __ps1_form=1
     __ps1_switch_form
 }
 
