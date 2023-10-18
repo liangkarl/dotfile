@@ -17,7 +17,7 @@ capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 
 cmp.setup {
   completion = {
-    keyword_length = 3,
+    keyword_length = 1,
   },
   snippet = {
     expand = function(args)
