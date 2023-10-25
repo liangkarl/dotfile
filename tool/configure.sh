@@ -15,6 +15,7 @@ shopt -s extglob
 me="$(basename $0)"
 mydir="$(dirname $0)"
 pfx="$(uname -s)-$(uname -m)"
+pfx="${pfx//aarch64/arm64}"
 
 home_bin="${HOME}/bin"
 toolkit="${XDG_CONFIG_HOME}/toolkit"
