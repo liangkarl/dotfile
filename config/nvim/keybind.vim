@@ -74,8 +74,8 @@ if &diff
 endif
 
 " Reload vim config
-nnoremap <silent><leader>so :call ReloadConfig()<cr>
-nnoremap <silent><leader>pf :call UpdateConfig()<cr>
+nnoremap <silent><leader>R :call ReloadConfig()<cr>
+nnoremap <silent><leader>, :call UpdateConfig()<cr>
 nnoremap <silent><leader>cf :call ShowFileInfo()<cr>
 " Change the directory only for the current window
 nnoremap <silent><leader>cd :call ChangeCWD()<cr>
