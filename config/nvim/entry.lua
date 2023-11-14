@@ -301,7 +301,8 @@ require("lazy").setup({
     'neovim/nvim-lspconfig',
     config = function()
       require('config.nvim-lspconfig')
-    end
+    end,
+    event = "VeryLazy",
   },
   { -- Install LSP servers
     "williamboman/mason.nvim",
@@ -309,7 +310,6 @@ require("lazy").setup({
     config = function()
       require('config.mason')
     end,
-    event = "VeryLazy",
   },
   {
     "williamboman/mason-lspconfig.nvim",
@@ -320,7 +320,6 @@ require("lazy").setup({
         "pyright",
       },
     },
-    event = "VeryLazy",
   },
   {
     'codota/tabnine-nvim',
