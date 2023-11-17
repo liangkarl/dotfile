@@ -13,17 +13,19 @@ usage() {
 
 	cat <<-EOF
 	name:
-	    $name - A simple CLI serial console based on plink/putty
+	    $name - A simple CLI serial console that support tio, ss, plink and
+	            putty.
 
 	usage:
-	    $name [-lob] [-n]
+	    $name [-lob] [-p port]
 
 	options:
 	    -l: list available COM port
 	    -o: setup serial config
 	        eg, -o "br=115200;fc=N;db=8;sb=1;pa=n"
 	    -b: select supported serial console .exe
-	    -n: 'n' is the port number
+	    -p: serial port path in Linux, such as '-p /dev/ttyUSB0',
+	    -n: n is COM port number in WSL, such as '-1'.
 	EOF
 
 	exit $1
@@ -31,11 +33,16 @@ usage() {
 
 list_comport() {
 	local ls
-	if [[ "$bin" == 'ss.exe' ]]; then
-		eval $bin -list
+	pr_info "list serial ports:"
+	if [[ -n "$WSL_DISTRO_NAME" ]]; then
+		if [[ "$cmd" == 'ss' ]]; then
+			eval $cmd -list
+		else
+			ls="Get-CimInstance -Class Win32_SerialPort | Select-Object Description, DeviceID"
+			powershell.exe -Command $ls
+		fi
 	else
-		ls="Get-CimInstance -Class Win32_SerialPort | Select-Object Description, DeviceID"
-		powershell.exe -Command $ls
+		ls -l /dev/serial/by-id/ --color
 	fi
 }
 
@@ -77,18 +84,24 @@ plink_conf() {
 	pa=${pa_map[$parity]}
 	fc=${fc_map[$flow_control]}
 
-	echo -n "-v -serial COM${port} "
+	echo -n "-v -serial ${port} "
 	echo -n "-sercfg ${baudrate},${data_bits},${pa},${stop_bits},${fc}"
+	echo -n "| tee $log"
 }
 
-# download from https://www.putty.org/
-plink="plink.exe"
-putty="putty.exe"
+putty_conf() { plink_conf; }
 
-# download from https://github.com/fasteddy516/SimplySerial
-ss="ss.exe"
+tio_conf() {
+	echo -n "$port "
+	echo -n "-b $baudrate -d $data_bits "
+	echo -n "-s $stop_bits -p $parity "
+	echo -n "-t -l --log-file $log"
+}
 
-bin="$ss"
+# plink and putty are from https://www.putty.org/
+# ss is from https://github.com/fasteddy516/SimplySerial
+# tio is from https://github.com/tio/tio
+cmds=("tio" "ss" "plink" "putty")
 
 # default config:
 baudrate=921600
@@ -100,8 +113,6 @@ log=uart.$PPID.log
 conf=~/.uart.conf
 
 (( $# == 0 )) && usage 2
-
-[[ -z "$WSL_DISTRO_NAME" ]] && exit_msg 3 "only support WSL environment for now."
 
 # TODO: source project.conf to get project specific setup
 [[ -e $conf ]] && source $conf
@@ -115,10 +126,23 @@ while (( $# != 0 )); do
 			list_port=y
 			;;
 		-b)
-			select_exe=y
+			select_cmd=y
 			;;
 		-+([0-9]))
-			port=${1#-}
+			if [[ -z "$WSL_DISTRO_NAME" ]]; then
+				exit_msg 3 "Not in WSL. Invalid serial port"
+			fi
+
+			port=COM$1
+			select_port=y
+			;;
+		-p)
+			shift
+			if [[ ! -e "$1" ]]; then
+				exit_msg 3 "Invalid serial port"
+			fi
+
+			port=$1
 			select_port=y
 			;;
 		*)
@@ -128,6 +152,20 @@ while (( $# != 0 )); do
 	shift
 done
 
+for cmd in ${cmds[@]}; do
+	echo -en "check $cmd...\r"
+	if [[ -n "$WSL_DISTRO_NAME" ]]; then
+		if has_cmd ${cmd}.exe; then
+			echo -en "find $cmd\t\t\r"
+			cmd=${cmd}.exe
+			break
+		fi
+	elif has_cmd $cmd; then
+		echo -en "find $cmd\t\t\r"
+		break
+	fi
+done
+
 if [[ "$list_port" == y ]]; then
 	list_comport
 	exit
@@ -135,12 +173,24 @@ fi
 
 [[ "$select_port" != y ]] && exit_msg 1 "No assigned UART port."
 
-if [[ "$select_exe" == y ]]; then
-	menu_title "list supported .exe files"
-	menu_prompt "select one to execute"
-	menu_default 1
-	menu_select $ss $plink $putty
-	bin=$(menu_choice)
+if [[ "$select_cmd" == y ]]; then
+	while :; do
+		menu_title "list supported serial console tools"
+		menu_prompt "select one to execute"
+		menu_select ${cmds[@]} 'exit'
+		cmd=$(menu_choice)
+
+		if [[ "$cmd" == 'exit' ]]; then
+			exit
+		fi
+
+		if has_cmd $cmd; then
+			break
+		elif has_cmd ${cmd}.exe; then
+			cmd=${cmd}.exe
+			break
+		fi
+	done
 fi
 
 if [[ "$config_uart" == y ]]; then
@@ -193,6 +243,10 @@ if [[ "$config_uart" == y ]]; then
 	EOF
 fi
 
-# There must be an existed log file for ss.exe
 touch $log
-eval $bin $(${bin%%.exe}_conf)
+if [[ -n "$WSL_DISTRO_NAME" ]]; then
+	# There must be an existed log file for ss.exe
+	eval $cmd $(${cmd}_conf)
+else
+	eval sudo $cmd $(${cmd}_conf)
+fi
