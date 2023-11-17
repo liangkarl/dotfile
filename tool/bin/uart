@@ -5,6 +5,7 @@
 
 source $(mylib io)
 source $(mylib menu)
+source $(mylib sys)
 
 shopt -s extglob
 
@@ -64,7 +65,7 @@ ss_conf() {
 	echo -n "-log:$(wslpath -m $log)"
 }
 
-plink_conf() {
+putty_conf() {
 	local pa fc
 	declare -A pa_map fc_map
 
@@ -86,10 +87,11 @@ plink_conf() {
 
 	echo -n "-v -serial ${port} "
 	echo -n "-sercfg ${baudrate},${data_bits},${pa},${stop_bits},${fc}"
-	echo -n "| tee $log"
 }
 
-putty_conf() { plink_conf; }
+plink_conf() {
+	putty_conf
+	echo -n "| tee $log"
 
 tio_conf() {
 	echo -n "$port "
