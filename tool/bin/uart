@@ -92,6 +92,7 @@ putty_conf() {
 plink_conf() {
 	putty_conf
 	echo -n "| tee $log"
+}
 
 tio_conf() {
 	echo -n "$port "
