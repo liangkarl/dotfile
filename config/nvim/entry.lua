@@ -36,9 +36,9 @@ require("lazy").setup({
     end
   },
   { -- Symbol Manager
-    'stevearc/aerial.nvim',
+    'hedyhli/outline.nvim',
     config = function()
-      require('config.aerial')
+      require('config.outline')
     end
   },
   { -- File Explorer
