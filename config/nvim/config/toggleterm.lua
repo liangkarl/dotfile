@@ -7,7 +7,7 @@ require("toggleterm").setup({
       return math.floor(vim.o.columns * 0.7)
     end
   end,
-  direction = 'float',
+  direction = 'horizontal',
   auto_scroll = true,
   float_opts = {
     -- The border key is *almost* the same as 'nvim_open_win'
@@ -42,6 +42,10 @@ require("toggleterm").setup({
   open_mapping = [[<C-\>]],
 })
 
+vim.cmd('nnoremap <leader>ts <Cmd>ToggleTermSendCurrentLine<cr>')
+vim.cmd('vnoremap <leader>ts <Cmd>ToggleTermSendVisualSelection<cr>')
+
+vim.cmd('nnoremap <leader>\\ <Cmd>ToggleTerm direction=tab name=tab-term<cr>')
 vim.cmd('autocmd FileType toggleterm tnoremap <buffer> <Esc> <C-\\><C-n>')
 vim.cmd('autocmd FileType toggleterm tnoremap <buffer> <C-x> <C-\\><C-n>')
 vim.cmd('autocmd FileType toggleterm nnoremap <buffer> <Esc> <Cmd>ToggleTerm<cr>')
