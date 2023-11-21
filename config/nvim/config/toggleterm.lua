@@ -39,9 +39,10 @@ require("toggleterm").setup({
   autochdir = false, -- when neovim changes it current directory the terminal
                      -- will change it's own when next it's opened
   shell = vim.o.shell,
+  open_mapping = [[<C-\>]],
 })
 
-vim.cmd('nnoremap <leader>t <Cmd>exe v:count1 . "ToggleTerm"<cr>')
-vim.cmd('autocmd FileType toggleterm tnoremap <buffer> <C-d> <Cmd>ToggleTerm<cr>')
 vim.cmd('autocmd FileType toggleterm tnoremap <buffer> <Esc> <C-\\><C-n>')
-vim.cmd('autocmd FileType toggleterm nnoremap <buffer> <Esc> :ToggleTerm<cr>')
+vim.cmd('autocmd FileType toggleterm tnoremap <buffer> <C-x> <C-\\><C-n>')
+vim.cmd('autocmd FileType toggleterm nnoremap <buffer> <Esc> <Cmd>ToggleTerm<cr>')
+vim.cmd('autocmd FileType toggleterm nnoremap <buffer> q <Cmd>ToggleTerm<cr>')
