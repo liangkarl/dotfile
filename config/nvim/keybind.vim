@@ -50,10 +50,12 @@ endfun
 
 " Save buffer content if modifiable is 'on'
 silent! fun! CloseBuf()
-  if !&modifiable
-    silent! bdelete!
+  " Usually, modifiable buffer would be the main window and unmodifiable
+  " buffer would be the side window
+  if &modifiable
+    silent! lua MiniBufremove.delete(vim.fn.bufnr('%'))
   else
-    silent! bdelete
+    silent! bdelete!
   endif
 endfun
 
