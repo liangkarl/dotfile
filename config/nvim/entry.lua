@@ -70,7 +70,7 @@ require("lazy").setup({
   { -- A 'Swiss Army Knife' with many small features
     'echasnovski/mini.nvim',
     config = function ()
-      require('mini.bufremove').setup()
+      require('config.mini')
     end
   },
   { -- comment codes easily
