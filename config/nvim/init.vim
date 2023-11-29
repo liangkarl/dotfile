@@ -16,7 +16,7 @@ fun! s:toggleEditMode(enable)
     set list showbreak=↪\  colorcolumn=80
     EnableWhitespace
   else
-    set nolist showbreak=NONE colorcolumn=
+    set nolist showbreak= colorcolumn=
     DisableWhitespace
   endif
 endfun
