@@ -91,12 +91,6 @@ require("lazy").setup({
   { -- make string search more convenient.
     'haya14busa/is.vim',
   },
-  { -- enhance [/{/'..., auto balance pairs
-    'Krasjet/auto.pairs',
-    config = function()
-      require('config.auto-pairs')
-    end
-  },
   { -- move cursor location like vimium
     'easymotion/vim-easymotion',
     config = function()
