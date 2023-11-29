@@ -100,10 +100,10 @@ nnoremap <silent><leader>qt :call ToggleQuickFix()<cr>
 " |    *   | Use PRIMARY; Star is Select (for copy-on-select) |
 " |    +   | Use CLIPBOARD; <C-c> (for the common keybind)    |
 " |--------+--------------------------------------------------|
-noremap <leader><space>y "*y
-noremap <leader><space>p "*p
-noremap <leader><space>c "+y
-noremap <leader><space>v "+p
+" noremap <leader><space>y "*y
+" noremap <leader><space>p "*p
+noremap <leader><space>y "+y
+noremap <leader><space>p "+p
 
 " Tab motion (tab: a collection of windows, like workspace)
 "
