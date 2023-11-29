@@ -1,6 +1,11 @@
 require('mini.cursorword').setup()
 require('mini.bufremove').setup()
 require('mini.align').setup()
+require('mini.indentscope').setup({
+  draw = {
+    delay = 50,
+  }
+})
 require('mini.pairs').setup()
 
 local animate = require('mini.animate')
