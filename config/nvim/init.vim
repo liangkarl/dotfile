@@ -120,7 +120,6 @@ highlight rCursor gui=NONE cterm=NONE ctermbg=12 guibg=Red
 autocmd! CursorMoved * set scrolloff=999
 autocmd! InsertEnter * set scrolloff=5
 
-set showbreak=↪\ 
 " Symbols for non-charactors:
 "   tab:→\ , space:·, nbsp:␣, trail:•, eol:¶, precedes:«, extends:»
 set listchars=tab:→\ ,nbsp:␣,precedes:«,extends:»
