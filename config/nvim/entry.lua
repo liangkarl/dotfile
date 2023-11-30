@@ -67,6 +67,20 @@ require("lazy").setup({
   { -- delete buffers
     'Asheq/close-buffers.vim',
   },
+  {
+    'petertriho/nvim-scrollbar',
+    config = function ()
+      local mod = require("scrollbar")
+      mod.setup({
+        handlers = {
+          cursor = false,
+        },
+        handle = {
+          blend = 0,
+        }
+      })
+    end,
+  },
   { -- A 'Swiss Army Knife' with many small features
     'echasnovski/mini.nvim',
     config = function ()
