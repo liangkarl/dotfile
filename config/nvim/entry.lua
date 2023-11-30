@@ -194,6 +194,20 @@ require("lazy").setup({
   {
     'marko-cerovac/material.nvim',
     init = function()
+      require('material').setup({
+        plugins = {
+           "dap",
+           "gitsigns",
+           "neogit",
+           "nvim-cmp",
+           "nvim-tree",
+           "nvim-web-devicons",
+           "which-key",
+           "trouble",
+           "mini",
+           -- "telescope",
+        },
+      })
       vim.g.material_style = 'darker'
       vim.cmd('colorscheme material-darker')
     end,
