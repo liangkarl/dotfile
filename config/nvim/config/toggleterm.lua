@@ -39,14 +39,21 @@ require("toggleterm").setup({
   autochdir = false, -- when neovim changes it current directory the terminal
                      -- will change it's own when next it's opened
   shell = vim.o.shell,
-  open_mapping = [[<C-\>]],
 })
 
-vim.cmd('nnoremap <leader>ts <Cmd>ToggleTermSendCurrentLine<cr>')
-vim.cmd('vnoremap <leader>ts <Cmd>ToggleTermSendVisualSelection<cr>')
+-- Open terminal
+vim.cmd('nnoremap <leader>\\ <Cmd>1ToggleTerm direction=tab<cr>')
+vim.cmd('nnoremap <C-\\> <Cmd>2ToggleTerm direction=horizontal<cr>')
+vim.cmd('inoremap <C-\\> <Cmd>2ToggleTerm direction=horizontal<cr>')
 
-vim.cmd('nnoremap <leader>\\ <Cmd>ToggleTerm direction=tab name=tab-term<cr>')
+-- Change mode to normal mode
 vim.cmd('autocmd FileType toggleterm tnoremap <buffer> <Esc> <C-\\><C-n>')
 vim.cmd('autocmd FileType toggleterm tnoremap <buffer> <C-x> <C-\\><C-n>')
+
+-- Quit terminal in normal mode
 vim.cmd('autocmd FileType toggleterm nnoremap <buffer> <Esc> <Cmd>ToggleTerm<cr>')
-vim.cmd('autocmd FileType toggleterm nnoremap <buffer> q <Cmd>ToggleTerm<cr>')
+vim.cmd('autocmd FileType toggleterm nnoremap <buffer> <C-x> <Cmd>ToggleTerm<cr>')
+
+-- Override the old keymap to prevent from calling other term in the terminal buffer
+vim.cmd('autocmd FileType toggleterm tnoremap <buffer> <C-\\> <Cmd>ToggleTerm<cr>')
+vim.cmd('autocmd FileType toggleterm nnoremap <buffer> <C-\\> <Cmd>ToggleTerm<cr>')
