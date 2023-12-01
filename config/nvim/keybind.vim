@@ -53,7 +53,7 @@ silent! fun! CloseBuf()
   " Usually, modifiable buffer would be the main window and unmodifiable
   " buffer would be the side window
   if &modifiable
-    silent! lua MiniBufremove.delete(vim.fn.bufnr('%'))
+    silent! lua MiniBufremove.delete(0)
   else
     silent! bdelete!
   endif
