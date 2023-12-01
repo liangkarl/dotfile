@@ -81,6 +81,10 @@ require("lazy").setup({
       })
     end,
   },
+  {
+    'nmac427/guess-indent.nvim',
+    config = true,
+  },
   { -- A 'Swiss Army Knife' with many small features
     'echasnovski/mini.nvim',
     config = function ()
@@ -364,10 +368,15 @@ require("lazy").setup({
     config = true,
   },
   { -- setup appearance of indent, space, etc.
+    -- FIXME:
+    -- 1. This plugin is included in Nvim 0.9, so the config should be rewritten
+    -- 2. editorconfig could be used in creating new file, and disabled in
+    --    editing existed files
     'editorconfig/editorconfig-vim',
     config = function()
       require('config.editorconfig')
-    end
+    end,
+    enabled = false,
   },
 
   {
