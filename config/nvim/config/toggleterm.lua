@@ -41,6 +41,9 @@ require("toggleterm").setup({
   shell = vim.o.shell,
 })
 
+-- Setup environmental variable
+vim.env.NVIM_TERM = 1
+
 -- Open terminal
 vim.cmd('nnoremap <leader>\\ <Cmd>1ToggleTerm direction=tab<cr>')
 vim.cmd('nnoremap <C-\\> <Cmd>2ToggleTerm direction=horizontal<cr>')
