@@ -52,10 +52,7 @@ require("aerial").setup({
   -- To see all available values, see :help SymbolKind
   filter_kind = {
     "Class",
-    "Constructor",
-    "Enum",
     "Function",
-    "Interface",
     "Module",
     "Method",
     "Struct",
