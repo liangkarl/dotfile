@@ -164,7 +164,7 @@ require("aerial").setup({
   close_on_select = false,
 
   -- Show box drawing characters for the tree hierarchy
-  show_guides = false,
+  show_guides = true,
 
   -- The autocmds that trigger symbols update (not used for LSP backend)
   update_events = "TextChanged,InsertLeave",
