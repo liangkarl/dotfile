@@ -48,9 +48,8 @@ __ps1_short_form() {
     local reset='\[\e[0m\]'
     local var
 
-    var=${orange}'$(printf "%*s\r" $(( COLUMNS-1 )) "$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/\1/")")'${reset}
-    var+=${white}'[\t] ' # Current time
-    var+=${purple}'$? '
+    var='$(printf "'${orange}'%*s\r'${reset}''${white}'[\t] '${purple}'$? " \
+            $(( COLUMNS-1 )) "$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/\1/")")'
     var+=${green}'\u@\h '
     var+=${blue}'\W '
     var+=${purple}'${debian_chroot:+($debian_chroot) }'
