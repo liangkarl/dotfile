@@ -14,26 +14,18 @@ indent_size = 4
 indent_style = tab
 charset = utf-8
 
-[*.{js,lua,vim}]
+[*.{js,lua,vim,xml,html,htm,json,yml,ini}]
 indent_size = 2
-
-[*.{vim,yml,xml,html,htm,py,bash,sh,json,lua}]
 indent_style = space
 
-[*.{c,cpp,h}]
+[*.{py,bash,sh}]
+indent_style = space
+
+[*.{c,cc,cpp,h}]
 trim_trailing_whitespace = true
 
-####################################
-# Special Setup
-# Eg, [lib/**.js] here
-####################################
-
-# Indentation override for all JS under lib directory
-[lib/**.js]
-indent_style = space
-indent_size = 2
-
-# Matches the exact files either package.json or .travis.yml
-[{package.json,.travis.yml}]
-indent_style = space
-indent_size = 2
+# Other File Examples:
+#
+# [lib/**.js]
+#
+# [{package.json,.travis.yml}]
