@@ -43,9 +43,6 @@ exe 'luafile' g:nvim_dir . '/entry.lua'
 "   :let loaded_matchit = 1
 let loaded_matchit = 1
 
-" Add this as Neovim 0.9 includes editorconfig already
-let g:editorconfig = v:false
-
 " |g:vimsyn_embed| defaults to "l" to enable Lua highlighting
 
 " allow plugins by file type
