@@ -34,6 +34,13 @@ lsp.bashls.setup({})
 -- https://github.com/eclipse/eclipse.jdt.ls
 lsp.jdtls.setup({})
 
+lsp.pyright.setup({})
+
+lsp.html.setup({
+})
+
+lsp.tsserver.setup({})
+
 -- C/C++/Obj-C (ccls)
 -- https://github.com/MaskRay/ccls
 lsp.ccls.setup {

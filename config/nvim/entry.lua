@@ -345,7 +345,7 @@ require("lazy").setup({
       ensure_installed = {
         "lua_ls", "bashls", "vimls",
         "clangd", "jdtls",
-        "pyright",
+        "pyright", "html", "tsserver"
       },
     },
   },
