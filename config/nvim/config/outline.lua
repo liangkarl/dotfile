@@ -2,10 +2,7 @@ require('outline').setup({
   symbols = {
     filter = {
       "Class",
-      "Constructor",
-      "Enum",
       "Function",
-      "Interface",
       "Module",
       "Method",
       "Struct",
