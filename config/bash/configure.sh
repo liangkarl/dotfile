@@ -41,9 +41,12 @@ fi
 
 import="source ${ibash}"
 if ! grep -q "$import" ${bashrc}; then
-    echo "source customized bash config in ${bashrc}"
+	echo "source customized bash config in ${bashrc}"
 	cat >> $bashrc <<-EOF
-	# load dotfile bash config
-	$import
+	# Keep this command in the last line
+	# Load dotfile bash config
+	if [[ -n \$SHELL_DIR ]]; then
+		$import
+	fi
 	EOF
 fi
