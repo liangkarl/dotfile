@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-source $(mylib file)
-source $(mylib io)
-source $(mylib menu)
+lib.add file
+lib.add io
+lib.add menu
 
 set -eE
 

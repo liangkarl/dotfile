@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source $(mylib io)
+lib.add io
 
 set -eE
 

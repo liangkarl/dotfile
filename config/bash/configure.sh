@@ -14,6 +14,25 @@ echo "-- setup bash config --"
 # add customized variable
 echo "-- add path of shell dir --"
 cat > ${config_dir}/config <<-EOF
+lib.add() {
+    if [[ -z "\$SHELL_DIR" ]]; then
+        echo "\\\$SHELL_DIR wasn't defined"
+        return 1
+    elif [[ ! -e "\$SHELL_DIR" ]]; then
+        echo "'\$SHELL_DIR' wasn't existed"
+        return 2
+    elif [[ -z "\$1" ]]; then
+        echo "Empty input"
+        return 3
+    elif [[ ! -e "\$SHELL_DIR/lib/\$1" ]]; then
+        echo "'\$1' doesn't exist"
+        return 4
+    fi
+
+    source "\$SHELL_DIR/lib/\$1"
+}
+
+export -f lib.add
 export SHELL_DIR="$(dirname $0)"
 
 # Remove duplicated path

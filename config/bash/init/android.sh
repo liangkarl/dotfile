@@ -1,4 +1,4 @@
-source $(mylib sys)
+lib.add sys
 
 # Generate compile_commands.json
 export SOONG_GEN_COMPDB=1
