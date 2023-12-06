@@ -122,9 +122,6 @@ require("lazy").setup({
       require('config.alternate-toggler')
     end
   },
-  { -- edit Markdown table easily
-    'dhruvasagar/vim-table-mode',
-  },
   { -- text object selection with +/-
     'terryma/vim-expand-region',
   },
