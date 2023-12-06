@@ -3,9 +3,9 @@
 # This tool based on plink.exe, a CLI version of putty
 #
 
-source $(mylib io)
-source $(mylib menu)
-source $(mylib sys)
+lib.add io
+lib.add menu
+lib.add sys
 
 shopt -s extglob
 

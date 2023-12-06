@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-source $(mylib sys)
-source $(mylib io)
+lib.add sys
+lib.add io
 
 help() {
 	local name="$(basename $0)"

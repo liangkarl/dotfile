@@ -5,10 +5,10 @@
 # TARGET_DIR=$(fasd -d $@)
 TARGET_NAME="$1"
 
-source $(mylib file)
-source $(mylib io)
-source $(mylib sys)
-source $(mylib menu)
+lib.add file
+lib.add io
+lib.add menu
+lib.add sys
 
 usage() {
 	local n
