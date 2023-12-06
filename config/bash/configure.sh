@@ -13,8 +13,13 @@ echo "-- setup bash config --"
 
 # add customized variable
 echo "-- add path of shell dir --"
-echo "export SHELL_DIR=$(dirname $0)" |
-        tee ${config_dir}/config
+cat > ${config_dir}/config <<-EOF
+export SHELL_DIR="$(dirname $0)"
+
+# Remove duplicated path
+PATH="\$(echo -n \$PATH | sed -e 's/:/\n/g' | awk '!x[\$0]++' | tr '\n' ':')"
+EOF
+
 rc=( ['Linux']="$HOME/.bashrc"
 	 ['Darwin']="$HOME/.bash_profile" )
 
