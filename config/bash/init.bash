@@ -14,7 +14,7 @@
 # if there is no esecape section, PS1 would become buggy
 #
 
-__ps1_long_form() {
+__ps1_switch_form() {
     local white='\[\e[01;38m\]'
     local blue='\[\e[01;34m\]'
     local yellow='\[\e[38;5;11m\]'
@@ -26,51 +26,38 @@ __ps1_long_form() {
     local reset='\[\e[0m\]'
     local var
 
-    var=${white}'[\t] ' # Current time
-    var+=${purple}'$? '
-    var+=${green}'\u@\h '
-    var+=${blue}'\w '
-    var+=${purple}'${debian_chroot:+($debian_chroot) }'
-    var+='$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/'${sed_purple}'-> '${sed_orange}'\1/") '
-    var+=${reset}'\n└─ '
-    var+=${yellow}'\$'${reset}' '
+    ps1_short() {
+        var='$(printf "'${orange}'%*s\r'${reset}''${white}'[\t] '${purple}'$? " \
+                $(( COLUMNS-1 )) "$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/\1/")")'
+        var+=${green}'\u@\h '
+        var+=${blue}'\W '
+        var+=${purple}'${debian_chroot:+($debian_chroot) }'
+        var+=${yellow}'\$'${reset}' '
 
-    echo "$var"
-}
+        echo "$var"
+    }
 
-__ps1_short_form() {
-    local white='\[\e[01;38m\]'
-    local blue='\[\e[01;34m\]'
-    local yellow='\[\e[38;5;11m\]'
-    local green='\[\e[01;32m\]'
-    local purple='\[\e[38;5;63m\]'
-    local orange='\[\e[38;5;202m\]'
-    local reset='\[\e[0m\]'
-    local var
+    ps1_long() {
+        var=${white}'[\t] ' # Current time
+        var+=${purple}'$? '
+        var+=${green}'\u@\h '
+        var+=${blue}'\w '
+        var+=${purple}'${debian_chroot:+($debian_chroot) }'
+        var+='$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/'${sed_purple}'-> '${sed_orange}'\1/") '
+        var+=${reset}'\n└─ '
+        var+=${yellow}'\$'${reset}' '
 
-    var='$(printf "'${orange}'%*s\r'${reset}''${white}'[\t] '${purple}'$? " \
-            $(( COLUMNS-1 )) "$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/\1/")")'
-    var+=${green}'\u@\h '
-    var+=${blue}'\W '
-    var+=${purple}'${debian_chroot:+($debian_chroot) }'
-    var+=${yellow}'\$'${reset}' '
+        echo "$var"
+    }
 
-    echo "$var"
-}
 
-__ps1_switch_form() {
     if (( __ps1_form == 0 )); then
-        PS1="$(__ps1_long_form)"
+        PS1="$(ps1_long)"
     else
-        PS1="$(__ps1_short_form)"
+        PS1="$(ps1_short)"
     fi
 
     __ps1_form=$((__ps1_form ^ 0x1))
-}
-
-__ps1_prompt() {
-    __ps1_form=1
-    __ps1_switch_form
 }
 
 __xdg_config() {
@@ -96,4 +83,5 @@ eval source $(find ${SHELL_DIR}/{completion,alias,init} -type f \
         | xargs \
         | sed 's/ /; source /g')
 
-__ps1_prompt
+__ps1_form=1
+__ps1_switch_form
