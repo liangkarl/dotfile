@@ -15,14 +15,27 @@ require('mini.pairs').setup()
 
 animate = require('mini.animate')
 require('mini.animate').setup({
-  cursor = {
-    enable = false,
-  },
   scroll = {
     enable = true,
     timing = animate.gen_timing.linear({ duration = 10, unit = 'step' }),
     subscroll = animate.gen_subscroll.equal({ max_output_steps = 5 }),
-  }
+  },
+  cursor = {
+    enable = false,
+    timing = animate.gen_timing.none(),
+  },
+  resize = {
+    enable = false,
+    timing = animate.gen_timing.none(),
+  },
+  open = {
+    enable = false,
+    timing = animate.gen_timing.none(),
+  },
+  close = {
+    enable = false,
+    timing = animate.gen_timing.none(),
+  },
 })
 
 --[[
