@@ -35,8 +35,8 @@ fi
 echo "-- import setup in '$bashrc' --"
 ibash="$config_dir/init.bash"
 if [[ ! -e "$ibash" ]]; then
-    echo "'$ibash' isn't existed"
-    exit 1
+	echo "'$ibash' isn't existed"
+	exit 1
 fi
 
 import="source ${ibash}"
