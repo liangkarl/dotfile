@@ -15,21 +15,16 @@ echo "-- setup bash config --"
 echo "-- add path of shell dir --"
 echo "export SHELL_DIR=$(dirname $0)" |
         tee ${config_dir}/config
+rc=( ['Linux']="$HOME/.bashrc"
+	 ['Darwin']="$HOME/.bash_profile" )
 
 # check bash config
-case "$OS" in
-    Linux)
-        bashrc="$HOME/.bashrc"
-        ;;
-    Darwin)
-        bashrc="$HOME/.bash_profile"
-        ;;
-    *)
-        echo "warning: no suitable .bashrc for '$OS'"
-        bashrc="$HOME/.bashrc"
-        echo "use default bashrc, '$bashrc'"
-        ;;
-esac
+bashrc="${rc[$OS]}"
+if [[ -z ${bashrc} ]]; then
+	echo "warning: no suitable .bashrc for '$OS'"
+	bashrc="$HOME/.bashrc"
+	echo "use default bashrc, '$bashrc'"
+fi
 
 # import setup in .bashrc
 echo "-- import setup in '$bashrc' --"
