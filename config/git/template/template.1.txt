@@ -1,0 +1,11 @@
+# Title
+PRJ-CRID: TITLE
+
+# The change reasons and the solutions
+[Description]
+
+# The verified platforms, steps, and the test result
+[Test]
+
+# patch group for numberous patches across git repositories
+# [Group]
