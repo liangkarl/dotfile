@@ -24,3 +24,7 @@ if [[ "$(os_ver)" == $OS_MACOS ]]; then
 else
     export LC_ALL=C.UTF-8
 fi
+
+# Quanta
+alias logcat='adb wait-for-device logcat -v color'
+alias kmsg='adb wait-for-device shell dmesg -wr'
