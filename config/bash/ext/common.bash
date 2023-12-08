@@ -40,3 +40,8 @@ alias man=" \
     LESS_TERMCAP_se=$'\e[0m' \
     man\
 "
+
+# Override reboot command to avoid rebooting computer accidentally
+reboot() {
+    echo "If you want to reboot the computer, please try 'builtin reboot'." >&2
+}
