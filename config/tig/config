@@ -121,17 +121,10 @@ bind refs db @?git branch -D %(branch)
 
 ## Checkout
 bind main co @git checkout %(commit)
-bind refs co @git checkout %(commit)
+bind refs co @git checkout %(ref)
+bind refs cd @git checkout -d %(ref)
 bind reflog co @git checkout %(commit)
 
-bind main cb @git checkout %(ref)
-bind refs cb @git checkout %(ref)
-
-bind main cd @git checkout -d %(ref)
-bind refs cd @git checkout -d %(ref)
-
-### Reset in reflog
-bind reflog cd @git checkout -d %(commit)
 ### Reset file
 bind status co @?git checkout %(file)
 
