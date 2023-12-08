@@ -1,40 +1,42 @@
 #!/usr/bin/env bash
 
+here="$(dirname $0)"
+
 # $0 'config' 'backup'
 query_saved() {
-    local ans config backup value
+    local config backup value
 
     config="$1"
     backup="$2"
 
-    [[ -z "$config" ]] && exit 2
-
-    if [[ -n "$backup" ]] &&
-            read -p "keep old '${config}': '${backup}'? [Y/n] " ans &&
-            [[ "${ans,,}" != 'n' ]]; then
-        value="$backup"
-    else
-        read -p 'save new '$config': [empty to skip] ' value
+    if [[ "${ans,,}" == n ]]; then
+        read -p "save new $config: [$backup] " value
     fi
-
-    git config --global $config "$value"
+    git config --global $config "${value:-$backup}"
 }
 
-trap "rm -rf ${GIT_DB}" 0
-
 # add username & email to git config
-echo "-- setup git config --"
+echo "-- setup git config --" 
 
-read -p 'do you want to restore git config (Y/n) ' ans
-if [[ "${ans,,}" != 'n' ]]; then
-    while read -u 10 prop; do
-        key=${prop%%=*}
-        val=${prop#*=}
-        echo "$key = $val"
-        git config --global $key "$val"
-    done 10< "$GIT_DB"
-fi
+# TODO:
+# In the whole new environment, there may be some problem in git config
+# due to no XDG_xx definition
+
+username=$(git config --global user.name)
+email=$(git config --global user.email)
+username=${username:-$USER}
+email=${email:-$USER@$HOSTNAME}
+echo "current user.name = '$username'"
+echo "current user.email = '$email'"
+
+ans=x
+while [[ ! "${ans:-y}" =~ [yYnN] ]]; do
+    read -p 'do you want to keep the git config (Y/n) ' ans
+done
+
+mv -fv $here/config.new $here/config
+mv -fv $here/ignore.new $here/ignore
 
 echo "-- config name & email --"
-query_saved user.name "$(git config --global user.name)"
-query_saved user.email "$(git config --global user.email)"
+query_saved user.name "$username"
+query_saved user.email "$email"
