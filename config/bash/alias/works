@@ -1,3 +1,0 @@
-# Quanta
-alias logcat='adb wait-for-device logcat -v color'
-alias kmsg='adb wait-for-device shell dmesg -wr'
