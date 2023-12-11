@@ -353,7 +353,12 @@ require("lazy").setup({
     config = function()
       require('config.tabnine-nvim')
     end,
-    enabled = false,
+    enabled = function()
+      if vim.fn.has('macunix') then
+        return false
+      end
+      return true
+    end
   },
   {
     'nvim-lua/lsp-status.nvim',
