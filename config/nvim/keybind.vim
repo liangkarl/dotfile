@@ -66,6 +66,10 @@ let mapleader = ' '
 vnoremap > >gv
 vnoremap < <gv
 
+"" Move visual block
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
+
 " Use "P" to put without yanking the deleted text into the unnamed register
 " Replace 'p' with 'P' since the default keybind is too strange
 vnoremap p P
