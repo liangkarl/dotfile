@@ -22,8 +22,13 @@ __ps1_switch_form() {
     local var
 
     ps1_short() {
-        var='$(printf "'${orange}'%*s\r'${reset}''${white}'[\t] '${purple}'$? " \
-                $(( COLUMNS-1 )) "$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/\1/")")'
+        var='$(br="$(git branch 2>&- | sed -n "/\* /s///p")";
+            s=$(($(tput cols)-${#br}));
+            tput cuf $s;
+            echo -en "'${orange}'$br'${reset}'";
+            tput cub $((s+${#br})))'
+        var+=${white}'[\t] ' # Current time
+        var+=${purple}'$? '
         var+=${green}'\u@\h '
         var+=${blue}'\W '
         var+=${purple}'${debian_chroot:+($debian_chroot) }'
@@ -38,7 +43,7 @@ __ps1_switch_form() {
         var+=${green}'\u@\h '
         var+=${blue}'\w '
         var+=${purple}'${debian_chroot:+($debian_chroot) }'
-        var+='$(git branch 2>&- | sed -e "/^[^*]/d" -e "s/* \(.*\)/'${sed_purple}'-> '${sed_orange}'\1/") '
+        var+='$(git branch 2>/dev/null | sed -n "/\* /s/^\* \(.*\)$/'${sed_purple}'-> '${sed_orange}'\1/p") '
         var+=${reset}'\n└─ '
         var+=${yellow}'\$'${reset}' '
 
