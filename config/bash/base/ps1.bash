@@ -25,7 +25,7 @@ __ps1_switch_form() {
         var='$(br="$(git branch 2>&- | sed -n "/\* /s///p")";
             s=$(($(tput cols)-${#br}));
             tput cuf $s;
-            echo -en "'${orange}'$br'${reset}'";
+            printf "'${orange}'$br'${reset}'";
             tput cub $((s+${#br})))'
         var+=${white}'[\t] ' # Current time
         var+=${purple}'$? '
