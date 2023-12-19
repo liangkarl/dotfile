@@ -22,7 +22,7 @@ rc=( ['Linux']="$HOME/.bashrc"
 	 ['Darwin']="$HOME/.bash_profile" )
 
 # check bash config
-bashrc="${rc[$OS]}"
+bashrc="${rc[$(uname)]}"
 if [[ -z ${bashrc} ]]; then
 	echo "warning: no suitable .bashrc for '$OS'"
 	bashrc="$HOME/.bashrc"
