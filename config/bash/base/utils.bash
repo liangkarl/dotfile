@@ -18,7 +18,8 @@ lib.add() {
 
 path.dup() {
     # Remove duplicated path
-    PATH="\$(echo -n \$PATH | sed -e 's/:/\n/g' | awk '!x[\$0]++' | tr '\n' ':')"
+    PATH=$(echo -n $PATH | awk 'BEGIN {RS=":"; ORS=":"} !a[$0]++')
+    PATH=${PATH%:}
 }
 
 export -f lib.add
