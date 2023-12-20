@@ -22,11 +22,7 @@ __ps1_switch_form() {
     local var
 
     ps1_short() {
-        var='$(br="$(git branch 2>&- | sed -n "/\* /s///p")";
-            s=$(($(tput cols)-${#br}));
-            tput cuf $s;
-            printf "'${orange}'$br'${reset}'";
-            tput cub $((s+${#br})))'
+        var='$(br="$(git branch 2>&- | sed -n "/\* /s///p")"; s=$(($(tput cols)-${#br})); tput cuf $s; printf "'${orange}'$br'${reset}'"; tput cub $((s+${#br})))'
         var+=${white}'[\t] ' # Current time
         var+=${purple}'$? '
         var+=${green}'\u@\h '
