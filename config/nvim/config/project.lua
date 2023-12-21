@@ -18,7 +18,7 @@ require("project_nvim").setup {
 
   -- All the patterns used to detect root dir, when **"pattern"** is in
   -- detection_methods
-  patterns = { ".git", },
+  patterns = { ".project", ".git", },
 
   -- What scope to change the directory, valid options are
   -- * global (default)
