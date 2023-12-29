@@ -1,0 +1,12 @@
+PROJ-ID: Title
+
+# G6, G7 and etc
+<Project>
+# package name
+<Package>
+# Mantis tickets
+<Problem>
+
+<Solution>
+
+<Test>
