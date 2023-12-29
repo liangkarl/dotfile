@@ -2506,7 +2506,7 @@ __git_config_sections=
 __git_compute_config_sections ()
 {
 	test -n "$__git_config_sections" ||
-	__git_config_sections="$(git help --config-sections-for-completion)"
+	__git_config_sections="$(git help --config)"
 }
 
 # Completes possible values of various configuration variables.
