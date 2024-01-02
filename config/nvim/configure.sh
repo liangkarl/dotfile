@@ -17,5 +17,6 @@ echo "let g:editor_theme = 'material'" >> ${config_dir}/config.vim
 ln -sf ${config_dir}/misc/editorconfig ~/.editorconfig
 ln -sf ${config_dir}/misc/clang-format ~/.clang-format
 
-nvim +"nnoremap q :qa!<cr>" \
+nvim +"nnoremap q <cmd>qa!<cr>" \
+        +"set nomodifiable nomodified" \
         <<< "Press 'q' to exit nvim if all plugins were installed."
