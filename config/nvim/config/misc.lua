@@ -1,47 +1,38 @@
 -- https://alpha2phi.medium.com/neovim-for-beginners-lua-autocmd-and-keymap-functions-3bdfe0bebe42
 --
+local autocmd = vim.api.nvim_create_autocmd
+local augroup = vim.api.nvim_create_augroup
 local api = vim.api
 
 -- Highlight on yank
-local yankGrp = api.nvim_create_augroup("YankHighlight", { clear = true })
-api.nvim_create_autocmd("TextYankPost", {
+local yankGrp = augroup("YankHighlight", { clear = true })
+autocmd("TextYankPost", {
   command = "silent! lua vim.highlight.on_yank()",
   group = yankGrp,
 })
 
 -- windows to close with "q"
-api.nvim_create_autocmd(
-  "FileType",
+autocmd( "FileType",
   { pattern = { "help", "startuptime", "qf", "lspinfo" },
-    command = [[nnoremap <buffer><silent> q :close<CR>]] }
-)
-api.nvim_create_autocmd(
-  "FileType",
+    command = [[nnoremap <buffer><silent> q :close<CR>]] })
+
+autocmd( "FileType",
   { pattern = "man",
     command = [[nnoremap <buffer><silent> q :quit<CR>]] })
 
 -- show cursor line only in active window
-local cursorGrp = api.nvim_create_augroup("CursorLine", { clear = true })
-api.nvim_create_autocmd(
-  { "InsertLeave", "WinEnter" },
-  { pattern = "*", command = "set cursorline", group = cursorGrp }
-)
-api.nvim_create_autocmd(
-  { "InsertEnter", "WinLeave" },
-  { pattern = "*", command = "set nocursorline", group = cursorGrp }
-)
+local cursorGrp = augroup( "CursorLine", { clear = true })
+autocmd( { "InsertLeave", "WinEnter" },
+  { pattern = "*", command = "set cursorline", group = cursorGrp })
+
+autocmd( { "InsertEnter", "WinLeave" },
+  { pattern = "*", command = "set nocursorline", group = cursorGrp })
 
 -- Fix shifting issue that would reset the cursor position
-api.nvim_create_autocmd(
-  { "ModeChanged" },
+autocmd( { "ModeChanged" },
   { pattern = "*:[vV\x16]*",
-    callback = function ()
-      vim.b.minianimate_disable = true
-    end })
+    callback = function () vim.b.minianimate_disable = true end })
 
-api.nvim_create_autocmd(
-  { "ModeChanged" },
+autocmd( { "ModeChanged" },
   { pattern = "[vV\x16]*:*",
-    callback = function ()
-      vim.b.minianimate_disable = false
-    end })
+    callback = function () vim.b.minianimate_disable = false end })
