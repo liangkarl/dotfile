@@ -133,12 +133,6 @@ require("lazy").setup({
   { -- text object selection with +/-
     'terryma/vim-expand-region',
   },
-  { -- show/remove trailing space
-    'ntpeters/vim-better-whitespace',
-    config = function()
-      require('config.vim-better-whitespace')
-    end
-  },
 
   -- Formatter
   { -- format code with clang-format
