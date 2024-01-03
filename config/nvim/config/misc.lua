@@ -30,3 +30,18 @@ api.nvim_create_autocmd(
   { "InsertEnter", "WinLeave" },
   { pattern = "*", command = "set nocursorline", group = cursorGrp }
 )
+
+-- Fix shifting issue that would reset the cursor position
+api.nvim_create_autocmd(
+  { "ModeChanged" },
+  { pattern = "*:[vV\x16]*",
+    callback = function ()
+      vim.b.minianimate_disable = true
+    end })
+
+api.nvim_create_autocmd(
+  { "ModeChanged" },
+  { pattern = "[vV\x16]*:*",
+    callback = function ()
+      vim.b.minianimate_disable = false
+    end })
