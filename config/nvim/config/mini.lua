@@ -17,8 +17,8 @@ animate = require('mini.animate')
 require('mini.animate').setup({
   scroll = {
     enable = true,
-    timing = animate.gen_timing.linear({ duration = 10, unit = 'step' }),
-    subscroll = animate.gen_subscroll.equal({ max_output_steps = 5 }),
+    timing = animate.gen_timing.linear({ duration = 5, unit = 'step' }),
+    subscroll = animate.gen_subscroll.equal({ max_output_steps = 4 }),
   },
   cursor = {
     enable = false,
