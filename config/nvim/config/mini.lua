@@ -38,9 +38,12 @@ require('mini.animate').setup({
   },
 })
 
---[[
--- Low Performance when enabled in insert mode.
-require('mini.trailspace').setup({
-  only_in_normal_buffers = true
-})
---]]
+-- NOTE:
+-- Low Performance when enabled in insert mode(?).
+require('mini.trailspace').setup({ only_in_normal_buffers = true })
+vim.cmd([[
+  " WA for default environment setup
+  lua MiniTrailspace.unhighlight()
+  " Remove trailing whitespace
+  nnoremap <silent><leader>ss :lua MiniTrailspace.trim()<cr>
+]])

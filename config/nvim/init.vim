@@ -14,10 +14,10 @@ fun! s:toggleEditMode(enable)
   " FIXME: move trailing spaces function to somewhere else
   if a:enable
     set list showbreak=↪\  colorcolumn=80
-    EnableWhitespace
+    lua MiniTrailspace.highlight()
   else
     set nolist showbreak= colorcolumn=
-    DisableWhitespace
+    lua MiniTrailspace.unhighlight()
   endif
 endfun
 
