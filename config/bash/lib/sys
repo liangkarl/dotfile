@@ -31,5 +31,11 @@ os_ver() {
 	echo $os
 } 2> /dev/null
 
+# chk_ver [min-ver] [cur-ver]
+# return 0 if current ver >= min ver.
+chk_ver() {
+	[  "$1" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]
+}
+
 OS_MACOS='macOS'
 OS_UBUNTU='Ubuntu'
