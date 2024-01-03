@@ -130,27 +130,3 @@ noremap <leader>ec :e <C-R>=getcwd() . "/"<cr>
 " +1/-1 to the number
 nnoremap <silent><leader>+ <C-a>
 nnoremap <silent><leader>- <C-x>
-
-" Toggle boolean
-nnoremap <silent> <leader>! :ToggleAlternate<cr>
-
-" Plugin: tig-explorer
-" open tig with current file
-nnoremap <leader>tf :TigOpenCurrentFile<cr>
-" open tig with Project root path
-nnoremap <leader>td :TigOpenProjectRootDir<cr>
-" open tig blame with current file
-nnoremap <leader>tb :TigBlame<cr>
-
-" Plugin: vim-better-whitespace
-" Remove trailing whitespace
-nnoremap <silent><leader>ss :StripWhitespace<cr>
-
-" Plugin: vim-commentary
-" Toggle comment
-noremap <silent><leader>gg :Commentary<cr>
-
-" Plugin: close-buffers.vim
-" close several types of buffers
-nnoremap <leader>bm :Bdelete menu<cr>
-nnoremap <leader>bs :Bdelete select<cr>

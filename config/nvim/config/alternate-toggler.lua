@@ -19,11 +19,12 @@
 -- ["==="] = "!=="
 -- }
 
-local g = vim.g
-
-g.at_custom_alternates = {
+vim.g.at_custom_alternates = {
     ["=="] = "!=",
     ["y"] = "n",
     ["yes"] = "no",
     ["&&"] = "||",
 }
+
+-- Toggle boolean
+vim.cmd("nnoremap <silent> <leader>! :ToggleAlternate<cr>")

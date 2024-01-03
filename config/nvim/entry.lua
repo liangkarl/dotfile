@@ -66,6 +66,14 @@ require("lazy").setup({
   },
   { -- delete buffers
     'Asheq/close-buffers.vim',
+    config = function()
+      vim.cmd([[
+        " Plugin: close-buffers.vim
+        " close several types of buffers
+        nnoremap <leader>bm :Bdelete menu<cr>
+        nnoremap <leader>bs :Bdelete select<cr>
+      ]])
+    end
   },
   {
     'petertriho/nvim-scrollbar',
