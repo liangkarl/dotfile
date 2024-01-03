@@ -7,3 +7,8 @@ vim.g.strip_whitelines_at_eof = 1
 vim.g.show_spaces_that_precede_tabs = 1
 -- default disable whitespace warnings
 vim.g.better_whitespace_enabled = 0
+
+vim.cmd([[
+  " Remove trailing whitespace
+  nnoremap <silent><leader>ss :StripWhitespace<cr>
+]])

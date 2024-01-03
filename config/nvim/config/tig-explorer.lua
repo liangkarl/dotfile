@@ -7,6 +7,12 @@
 
 vim.cmd([[
   command! -bang -nargs=1 -complete=buffer Bclose lua require('myplugin').close_buffer(<f-args>)
+  " open tig with current file
+  nnoremap <leader>tf :TigOpenCurrentFile<cr>
+  " open tig with Project root path
+  nnoremap <leader>td :TigOpenProjectRootDir<cr>
+  " open tig blame with current file
+  nnoremap <leader>tb :TigBlame<cr>
 ]])
 
 -- 在你的 Lua 插件文件中定义 close_buffer 函数
