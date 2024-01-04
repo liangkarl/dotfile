@@ -16,3 +16,4 @@ transmit.conf
 
 *.log
 .netrwhist
+.DS_Store
