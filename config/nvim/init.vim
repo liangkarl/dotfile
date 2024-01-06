@@ -128,8 +128,6 @@ cab WQ wq
 cab W w
 cab Q q
 
-" The PC is fast enough, do syntax highlight syncing from start
-autocmd! BufEnter * :syntax sync fromstart
 " A simple function to restore previous cursor position
 autocmd! BufReadPost * call s:RestoreCursorPosition()
 " set no line number in terminal buffer
