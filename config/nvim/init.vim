@@ -130,7 +130,7 @@ cab Q q
 
 " WA for tig-explore
 " https://github.com/neovim/neovim/issues/14986
-autocmd! TermClose * execute 'bdelete! ' . expand('<abuf>')
+autocmd TermClose * execute 'bdelete! ' . expand('<abuf>')
 " The PC is fast enough, do syntax highlight syncing from start
 autocmd! BufEnter * :syntax sync fromstart
 " A simple function to restore previous cursor position
