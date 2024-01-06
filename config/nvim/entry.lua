@@ -91,10 +91,8 @@ require("lazy").setup({
   },
   {
     'nmac427/guess-indent.nvim',
-    config = function ()
-      require("guess-indent").setup({})
-      vim.cmd("autocmd! FileReadPost,BufReadPost * :GuessIndent")
-    end,
+    config = true,
+    event = "VeryLazy"
   },
   { -- A 'Swiss Army Knife' with many small features
     'echasnovski/mini.nvim',
