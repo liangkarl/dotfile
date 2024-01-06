@@ -24,10 +24,10 @@ __ps1_switch_form() {
     ps1_short() {
         var+=${purple}'$? '
         var+=${green}'\u@\h '
-        var+=${blue}'\W '
-        var+=${purple}'${debian_chroot:+($debian_chroot) }'
-        var+=${orange}'$(git branch 2>&- | sed -n "/\* /s/^\* \(.*\)$/(\1) /p")'${reset}
-        var+=${yellow}'\$'${reset}' '
+        var+=${blue}'\W'
+        var+=${purple}'${debian_chroot:+(:$debian_chroot)}'
+        var+='$(git branch 2>&- | sed -n "/\* /s/^\* \(.*\)$/'${sed_purple}':'${sed_orange}'\1/p")'
+        var+=${yellow}' \$'${reset}' '
         echo "$var"
     }
 
