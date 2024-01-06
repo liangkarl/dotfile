@@ -134,3 +134,5 @@ autocmd! BufEnter * :syntax sync fromstart
 autocmd! BufReadPost * call s:RestoreCursorPosition()
 " set no line number in terminal buffer
 autocmd! TermOpen * setlocal nonumber norelativenumber
+" FIXME: WA for autocmd not working
+autocmd! FileReadPost,BufReadPost * :GuessIndent
