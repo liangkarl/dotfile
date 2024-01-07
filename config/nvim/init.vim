@@ -15,9 +15,11 @@ fun! s:toggleEditMode(enable)
   if a:enable
     set list showbreak=↪\  colorcolumn=80
     lua MiniTrailspace.highlight()
+    lua vim.diagnostic.config({ virtual_text = false, virtual_lines = false, signs = false})
   else
     set nolist showbreak= colorcolumn=
     lua MiniTrailspace.unhighlight()
+    lua vim.diagnostic.config({ virtual_text = true, virtual_lines = true, signs = true})
   endif
 endfun
 
