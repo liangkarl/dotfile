@@ -8,7 +8,7 @@
 local treesitter = require('nvim-treesitter.configs')
 treesitter.setup {
   -- one of "all", "maintained" (parsers with maintainers), or a list of languages
-  ensure_installed = {"bash", "perl", "python", "lua", "vim", "r",
+  ensure_installed = {"bash", "perl", "python", "lua", "luadoc", "vim", "vimdoc", "r",
                       "c", "cpp", "c_sharp", "rust", "go", "java", "kotlin",
                       "html", "css", "typescript", "javascript",
                       "json", "markdown", "yaml", "toml",
