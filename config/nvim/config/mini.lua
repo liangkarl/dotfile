@@ -4,6 +4,12 @@ require('mini.cursorword').setup()
 require('mini.bufremove').setup()
 require('mini.align').setup()
 
+require('mini.files').setup({
+  window = {
+    preview = true
+  }
+})
+
 animate = require('mini.indentscope').gen_animation
 require('mini.indentscope').setup({
   draw = {
@@ -46,4 +52,5 @@ vim.cmd([[
   lua MiniTrailspace.unhighlight()
   " Remove trailing whitespace
   nnoremap <silent><leader>ss :lua MiniTrailspace.trim()<cr>
+  nnoremap <silent><leader>ft :lua MiniFiles.open()<cr>
 ]])

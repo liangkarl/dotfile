@@ -41,17 +41,6 @@ require("lazy").setup({
       require('config.outline')
     end
   },
-  { -- File Explorer
-    'kyazdani42/nvim-tree.lua',
-    version = "*",
-    dependencies = {
-      "nvim-tree/nvim-web-devicons",
-    },
-    config = function()
-      require('config.nvim-tree')
-    end,
-  },
-
 
   -- Enhanced functions
   { -- Syntax highlight/lint with `treesitter`
