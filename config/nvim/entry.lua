@@ -100,6 +100,9 @@ require("lazy").setup({
   },
   { -- A 'Swiss Army Knife' with many small features
     'echasnovski/mini.nvim',
+    dependencies = {
+      "nvim-tree/nvim-web-devicons",
+    },
     config = function ()
       require('config.mini')
     end
