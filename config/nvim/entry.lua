@@ -73,6 +73,7 @@ require("lazy").setup({
         callback = function(_)
           local stickybuf = require("stickybuf")
           if not stickybuf.is_pinned()
+              and vim.bo.filetype ~= "startify" -- FIXME: WA for Startify here
               and not vim.bo.modifiable then
             stickybuf.pin()
           end
