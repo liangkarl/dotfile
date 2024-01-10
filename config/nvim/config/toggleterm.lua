@@ -45,18 +45,22 @@ require("toggleterm").setup({
 vim.env.NVIM_TERM = 1
 
 -- Open terminal
-vim.cmd('nnoremap <leader>\\ <Cmd>1ToggleTerm direction=tab<cr>')
-vim.cmd('nnoremap <C-\\> <Cmd>2ToggleTerm direction=horizontal<cr>')
-vim.cmd('inoremap <C-\\> <Cmd>2ToggleTerm direction=horizontal<cr>')
+vim.cmd([[
+  nnoremap <leader>\\ <Cmd>1ToggleTerm direction=tab<cr>
 
--- Change mode to normal mode
-vim.cmd('autocmd FileType toggleterm tnoremap <buffer> <Esc> <C-\\><C-n>')
-vim.cmd('autocmd FileType toggleterm tnoremap <buffer> <C-x> <C-\\><C-n>')
+  nnoremap <C-\\> <Cmd>2ToggleTerm direction=horizontal<cr>
+  inoremap <C-\\> <Cmd>2ToggleTerm direction=horizontal<cr>
 
--- Quit terminal in normal mode
-vim.cmd('autocmd FileType toggleterm nnoremap <buffer> <Esc> <Cmd>ToggleTerm<cr>')
-vim.cmd('autocmd FileType toggleterm nnoremap <buffer> <C-x> <Cmd>ToggleTerm<cr>')
+  " Change mode to normal mode
+  autocmd FileType toggleterm tnoremap <buffer> <Esc> <C-\\><C-n>
+  autocmd FileType toggleterm tnoremap <buffer> <C-x> <C-\\><C-n>
 
--- Override the old keymap to prevent from calling other term in the terminal buffer
-vim.cmd('autocmd FileType toggleterm tnoremap <buffer> <C-\\> <Cmd>ToggleTerm<cr>')
-vim.cmd('autocmd FileType toggleterm nnoremap <buffer> <C-\\> <Cmd>ToggleTerm<cr>')
+  " Quit terminal in normal mode
+  autocmd FileType toggleterm nnoremap <buffer> <Esc> <Cmd>ToggleTerm<cr>
+  autocmd FileType toggleterm nnoremap <buffer> <C-x> <Cmd>ToggleTerm<cr>
+
+  " Override the old keymap to prevent from calling other term in the terminal buffer
+  autocmd FileType toggleterm tnoremap <buffer> <C-\\> <Cmd>ToggleTerm<cr>
+  autocmd FileType toggleterm nnoremap <buffer> <C-\\> <Cmd>ToggleTerm<cr>
+]])
+
