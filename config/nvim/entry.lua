@@ -108,12 +108,6 @@ require("lazy").setup({
       require('config.mini')
     end
   },
-  { -- comment codes easily
-    'tpope/vim-commentary',
-    config = function()
-      require('config.vim-commentary')
-    end
-  },
   { -- enhance '%' function, like if-endif
     'andymass/vim-matchup',
     config = function()

@@ -42,6 +42,23 @@ require('mini.trailspace').setup({
   only_in_normal_buffers = true
 })
 
+require('mini.comment').setup({
+  mappings = {
+    -- Toggle comment (like `gcip` - comment inner paragraph) for both
+    -- Normal and Visual modes
+    comment = 'g',
+
+    -- Toggle comment on current line
+    comment_line = 'gg',
+
+    -- Toggle comment on visual selection
+    comment_visual = 'gg',
+
+    -- Define 'comment' textobject (like `dgc` - delete whole comment block)
+    textobject = 'gg',
+  }
+})
+
 -- NOTE:
 -- Low Performance when enabled in insert mode(?).
 vim.cmd([[
