@@ -38,7 +38,8 @@ m.setup({
 require('mini.files').setup({
   windows = {
     preview = true,
-    width_preview = 50,
+    -- Following Linux Kernel guideline, the max length for a line is 80 chars
+    width_preview = 80,
   }
 })
 
