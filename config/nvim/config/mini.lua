@@ -32,8 +32,9 @@ m.setup({
 })
 
 require('mini.files').setup({
-  window = {
-    preview = true
+  windows = {
+    preview = true,
+    width_preview = 50,
   }
 })
 
