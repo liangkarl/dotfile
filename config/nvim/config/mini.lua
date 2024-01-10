@@ -2,6 +2,8 @@ require('mini.cursorword').setup()
 require('mini.bufremove').setup()
 require('mini.align').setup()
 require('mini.pairs').setup()
+require('mini.surround').setup()
+require('mini.notify').setup()
 
 local m
 
