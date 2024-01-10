@@ -5,7 +5,9 @@ require('mini.pairs').setup()
 require('mini.surround').setup()
 require('mini.notify').setup()
 
-local m
+local m, leader
+
+leader = vim.g.mapleader
 
 m = require('mini.indentscope')
 m.setup({
@@ -48,16 +50,16 @@ require('mini.comment').setup({
   mappings = {
     -- Toggle comment (like `gcip` - comment inner paragraph) for both
     -- Normal and Visual modes
-    comment = 'g',
+    comment = leader .. 'gb',
 
     -- Toggle comment on current line
-    comment_line = 'gg',
+    comment_line = leader .. 'gg',
 
     -- Toggle comment on visual selection
-    comment_visual = 'gg',
+    comment_visual = leader .. 'gg',
 
     -- Define 'comment' textobject (like `dgc` - delete whole comment block)
-    textobject = 'gg',
+    textobject = leader .. 'gb',
   }
 })
 
