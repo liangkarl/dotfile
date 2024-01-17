@@ -59,9 +59,6 @@ silent! fun! CloseBuf()
   endif
 endfun
 
-" map leader
-let mapleader = ' '
-
 " Retain the visual selection after indent lines
 vnoremap > >gv
 vnoremap < <gv
