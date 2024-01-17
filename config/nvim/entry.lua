@@ -11,8 +11,8 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-local nvim_dir = vim.fn.expand('<sfile>:h')
-package.path = nvim_dir .. '/?.lua;' .. package.path
+-- set <leader> key, otherwise there are some errors with the plugins
+vim.g.mapleader = ' '
 
 require("lazy").setup({
   -- Integration Development Environment
@@ -418,5 +418,3 @@ require("lazy").setup({
     end
   },
 })
-
-require('config.misc')

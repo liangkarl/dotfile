@@ -18,9 +18,6 @@ opt.titlestring = "%F"
 opt.wildmode = "full"
 opt.wildignore = "*.o,*.obj,.git,*.rbc,.pyc,__pycache__"
 
--- Set cursor pattern (no blink)
-opt.guicursor = "n-v-c-sm:block-nCursor,i-ci-ve:ver25-iCursor,r-cr-o:hor20-rCursor"
-
 -- Symbols for non-charactors:
 -- tab:→\ , space:·, nbsp:␣, trail:•, eol:¶, precedes:«, extends:»
 opt.listchars = "tab:→ ,nbsp:␣,precedes:«,extends:»"
