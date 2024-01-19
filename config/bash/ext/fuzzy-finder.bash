@@ -9,6 +9,8 @@ if type -t fzf; then
     # To apply the command to CTRL-T as well
     export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
+    export FZF_DEFAULT_OPTS="--ansi --track --bind 'ctrl-d:half-page-down,ctrl-u:half-page-up' --color='hl:1:underline,hl+:1:underline' --inline-info"
+
 elif type -t fzy; then
     __fzy_history__() {
         local output script
