@@ -63,12 +63,19 @@ bind refs    .  view-reflog
 bind reflog  .  view-main
 bind generic vr view-refs
 
+bind refs    ,  view-status
+bind status  .  view-refs
+
 bind tree    ,  view-blob
 bind blob    ,  view-blame
 bind blame   ,  view-tree
 bind generic vb view-blame
 bind generic vf view-tree
 # No independent keybind to view-blob
+
+# don't bind 'none' since 'none' would override 'view-xxxx'
+bind stage   ,  view-main
+bind stage   .  view-refs
 
 bind generic v/ view-grep
 bind generic vh view-help
@@ -150,15 +157,19 @@ bind reflog co @git checkout %(commit)
 
 ### Reset file
 bind status co @?git checkout %(file)
+bind stage  co @?git checkout %(file)
 
-## Reset
-bind main   rh @?git reset --hard %(commit)
-bind reflog rh @?git reset --hard %(commit)
-bind main   rs @?git reset %(commit)
-bind reflog rs @?git reset %(commit)
-bind main   rn @?git reset --hard HEAD
-bind stage  rn @?git reset --hard HEAD
-bind main   rp @?git reset HEAD@{1}
+## Reset commits
+bind generic r  none
+bind main    rh @?git reset --hard %(commit)
+bind reflog  rh @?git reset --hard %(commit)
+bind diff    rh @?git reset --hard %(commit)
+bind main    rs @?git reset %(commit)
+bind reflog  rs @?git reset %(commit)
+bind diff    rs @?git reset %(commit)
+bind stage   rn @?git reset --hard HEAD
+bind main    rn @?git reset --hard HEAD
+bind main    rp @?git reset HEAD@{1}
 
 ## Cherry-pick
 bind main   cp @sh -c 'git cherry-pick -s %(commit) || git cherry-pick --abort'
@@ -171,15 +182,12 @@ bind main   fP ?+git format-patch -k --binary --histogram -o patchset %(commit)^
 bind diff   fp ?+git format-patch -k --binary --histogram -1 -o . %(commit)
 bind blame  fp ?+git format-patch -k --binary --histogram -1 -o . %(commit)
 bind reflog fp ?+git format-patch -k --binary --histogram -1 -o . %(commit)
+bind stage  fp ?@sh -c 'git diff -k --binary --histogram > ./$(date +%s.%H%M).diff'
 # }
 
 # Stage {
 bind stage A stage-update-part
 bind stage a stage-update-line
-
-# don't bind 'none' since 'none' would override 'view-xxxx'
-bind stage 1 view-main
-bind stage 2 view-refs
 # }
 
 # Status {
