@@ -6,7 +6,7 @@ export ENHANCD_DIR="$XDG_CONFIG_HOME/enhancd"
 # don't override `cd ..` by default
 export ENHANCD_ARG_DOUBLE_DOT='...'
 
-__enhancd_fzf_filter="fzf --preview 'ls -v --group-directories-first -N --color=auto -l --time-style=long-iso {}' --preview-window right,50% --height 35% --reverse --ansi"
+__enhancd_fzf_filter='fzf --height 35% --reverse'
 
 # fzy for alternative usage
 __enhancd_fzy_filter="fzy -i"
