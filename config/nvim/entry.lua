@@ -11,9 +11,6 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- set <leader> key, otherwise there are some errors with the plugins
-vim.g.mapleader = ' '
-
 require("lazy").setup({
   -- Integration Development Environment
   { -- Start-up screen
