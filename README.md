@@ -1,26 +1,36 @@
 # Introduction
 
-A light weight dotfile for shell environment.
+A light weight dotfile for Linux BASH shell environment.
 
-Although there are many fancy shell extensions on the internet,
-not all of them are suitable for large project due to performance
-issue.
+Though there are many fancy CLI tools on the internet, not all
+of them are suitable for large projects due to performance issues.
+I've filtered out some tools and keep the rest putting together
+working efficiently.
 
-To keep the environment more simple, easy and efficient, I have
-tried serveral plugins to filter out improper ones.
+To make the environment more simple, easy and efficient, I would
+follow the KISS principle as possible as I can.
 
-## Integration
+# Requirements
+- `bash` >= 4.x
 
-### Configs
-- tmux
-- git
-- tig
+# Integration
+
+## Terminal/ Shell
 - bash
-- nvim
-- fasd
-- top
+- tmux
 - enhanced
 - kitty
+- fasd
 
-### Requirements
-- `bash` >= 4.x
+## VCS/ Patch
+- git
+- tig
+- quilt
+
+## Editor
+- nvim
+
+## System
+- top
+- htop
+
