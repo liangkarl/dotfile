@@ -50,3 +50,8 @@ if ! grep -q "$import" ${bashrc}; then
 	path.dup
 	EOF
 fi
+
+# $SHELL is from environment
+if [[ "$SHELL" == 'dash' ]]; then
+	sudo dpkg-reconfigure dash
+fi
