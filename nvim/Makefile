@@ -1,13 +1,7 @@
 config_dir=${XDG_CONFIG_HOME}/nvim
 
-clang-format:
-	@ln -sf ${config_dir}/misc/clang-format ~/.clang-format
-
-editorconfig:
-	@ln -sf ${config_dir}/misc/editorconfig ~/.editorconfig
-
 .ONESHELL:
-nvim-conf: clang-format editorconfig
+nvim-conf:
 	@echo "-- setup nvim config --"
 	PS3='select a fuzzy finder above: '
 	select opt in 'fzf' 'telescope' 'cancel'; do

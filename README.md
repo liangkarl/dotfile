@@ -10,7 +10,7 @@ working efficiently.
 To make the environment more simple, easy and efficient, I would
 follow the KISS principle as possible as I can.
 
-# Requirements
+# Minimal Requirements
 - `bash` >= 4.x
 
 # Integration
@@ -34,3 +34,11 @@ follow the KISS principle as possible as I can.
 - top
 - htop
 
+# Directory Stucture
+- `misc`
+    - for those dotfiles with only one configuration
+- `profile`
+    - a set of profile for specific environment or usage
+- `test`
+    - test file
+- (still working)

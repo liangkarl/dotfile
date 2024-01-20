@@ -7,13 +7,11 @@ TOP:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
 H=@
 
--include $(TOP)/config/package.mk
-
-tool: ## Install all tools
-	./tool/configure.sh
+-include $(TOP)/package.mk
+-include $(TOP)/dotfile.mk
 
 testpath: ## Echo PATH
 	PATH=$$PATH
 	@echo $$PATH
 
-.PHONY: all tool config
+.PHONY: all
