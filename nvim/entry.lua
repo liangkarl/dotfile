@@ -418,6 +418,10 @@ require("lazy").setup({
       vim.keymap.set("n", "<leader>xq", function() require("trouble").toggle("quickfix") end)
       vim.keymap.set("n", "<leader>xl", function() require("trouble").toggle("loclist") end)
       vim.keymap.set("n", "gR", function() require("trouble").toggle("lsp_references") end)
+
+      -- https://stackoverflow.com/questions/40867576/how-to-use-vimgrep-to-grep-work-thats-high-lighted-by-vim
+      vim.keymap.set('n', '<leader>/', "<Cmd>exe 'vimgrep' '/' input('search pattern: ') '/j %' | TroubleToggle quickfix<cr>")
+      vim.keymap.set('n', '<leader>#', "<Cmd>exe 'vimgrep' expand('<cword>') '%' | TroubleToggle quickfix<cr>")
     end
   },
 })
