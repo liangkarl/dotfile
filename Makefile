@@ -10,8 +10,4 @@ H=@
 -include $(TOP)/package.mk
 -include $(TOP)/dotfile.mk
 
-testpath: ## Echo PATH
-	PATH=$$PATH
-	@echo $$PATH
-
 .PHONY: all
