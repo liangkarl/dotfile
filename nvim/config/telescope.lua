@@ -43,6 +43,10 @@ telescope.setup({
   },
 })
 
+-- To get fzf loaded and working with telescope, you need to call
+-- load_extension, somewhere after setup function:
+telescope.load_extension('fzf')
+
 -- Find files using Telescope command-line sugar.
 vim.keymap.set('n', '<leader>fs', '<cmd>Telescope<cr>', opts)
 vim.keymap.set('n', '<leader>ff', '<cmd>Telescope oldfiles<cr>', opts)
