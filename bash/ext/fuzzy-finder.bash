@@ -9,7 +9,12 @@ if type -t fzf; then
     # To apply the command to CTRL-T as well
     export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
-    export FZF_DEFAULT_OPTS="--ansi --track --bind 'ctrl-d:half-page-down,ctrl-u:half-page-up' --color='hl:1:underline,hl+:1:underline' --inline-info"
+    # Hide the preview window at beginning and keep empty preview command to
+    # avoid conflict to the preview command setting from other apps
+    export FZF_DEFAULT_OPTS="--ansi --track
+            --bind 'ctrl-d:half-page-down,ctrl-u:half-page-up,ctrl-s:toggle-sort,ctrl-p:toggle-preview'
+            --preview-window=':hidden,nowrap'
+            --color='hl:1:underline,hl+:1:underline' --inline-info"
 
 elif type -t fzy; then
     __fzy_history__() {
