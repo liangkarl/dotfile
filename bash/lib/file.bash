@@ -15,7 +15,7 @@ is_rel_path() { [[ "$@" =~ ^([^/~]|$) ]] || return 1; }
 # usage:
 #   $0 file.name /path/to/dir
 find_path() {
-	local dir file
+	local dir file ret
 
 	file="$1"
 	[[ -z "$file" ]] && return 1
@@ -23,18 +23,18 @@ find_path() {
 	dir="$(abs_path $2)"
 	[[ -z "$dir" ]] && return 2
 
-	while true; do
-		if [[ -e ${dir}/${file} ]]; then
-			echo ${dir}/${file}
-			return 0
+	ret="${dir}/${file}"
+	while [[ ! -e ${ret} ]]; do
+		if [[ "$dir" == "/" ]]; then
+			ret=''
+			return 1
 		fi
 
-		[[ "$dir" == / ]] && break
-
-		dir="$(dirname $dir)"
+		dir=$(dirname $dir)
+		ret="${dir}/${file}"
 	done
 
-	return 3
+	echo $ret
 }
 
 # usage:
