@@ -13,7 +13,7 @@ lib.add() {
         return 4
     fi
 
-    source "$SHELL_DIR/lib/$1"
+    source "$SHELL_DIR/lib/${1}.bash"
 }
 
 path.dup() {
