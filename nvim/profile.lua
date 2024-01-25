@@ -90,7 +90,11 @@ m.autocmd("TermOpen", '*', function()
 
 gid = m.augroup("PluginConfig")
 -- FIXME: WA for autocmd not working
-m.autocmd({ "FileReadPost", "BufReadPost" }, '*', 'GuessIndent', {
+m.autocmd({ "FileReadPost", "BufReadPost" }, '*', function()
+    if vim.o.modifiable == true then
+      vim.cmd('silent !GuessIndent')
+    end
+  end, {
   desc = 'Auto Alignment',
   group = gid
 })
