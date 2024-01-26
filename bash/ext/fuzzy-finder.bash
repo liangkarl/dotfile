@@ -11,7 +11,7 @@ if type -t fzf; then
 
     # Hide the preview window at beginning and keep empty preview command to
     # avoid conflict to the preview command setting from other apps
-    export FZF_DEFAULT_OPTS="--ansi --track
+    export FZF_DEFAULT_OPTS="--ansi
             --bind 'ctrl-d:half-page-down,ctrl-u:half-page-up,ctrl-s:toggle-sort,ctrl-p:toggle-preview'
             --preview-window=':hidden,nowrap'
             --color='hl:1:underline,hl+:1:underline' --inline-info"
