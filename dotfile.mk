@@ -7,20 +7,17 @@ ALIAS:=
 
 all.dotfile: $(LIST)
 
-$(LIST):
-	$(H)$(eval SRC_DIR:=$(TOP)/misc/$@)
+
+$(LIST): __check_dotfile
 	$(H)$(eval DST_DIR:=$(CONF_HOME)/dotfile/$@)
+	$(H)$(eval SRC_DIR:=$(TOP)/misc/$@)
 
+	$(H)if [[ ! -d $(DST_DIR) ]]; then
+		mkdir $(shell dirname ${DST_DIR})
+	fi
+
+	$(H)cp -v $(SRC_DIR) $(DST_DIR)
+	$(H)ln -svf $(DST_DIR) $(HOME)/.$@
 	$(H)echo "Install dotfile: $@"
-	$(H)ln -svf $(DST_DIR)/$@ $(HOME)/.$@
-	$(H)echo "-------------------------------"
 
-clean.%:
-	$(H)$(eval NAME:=$(strip $(subst clean.,,$@)))
-	$(H)$(eval DST_DIR:=$(CONF_HOME)/dotfile/$(NAME))
-
-	$(H)echo "Remove dotfile: $(NAME)"
-	$(H)rm -rvf $(DST_DIR)
-	$(H)echo "-------------------------------"
-
-.PHONY: $(LIST) $(ALIAS) clean.% clean all.dotfile
+.PHONY: $(LIST) $(ALIAS) all.dotfile __check_dotfile
