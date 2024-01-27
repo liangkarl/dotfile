@@ -22,13 +22,4 @@ $(LIST):
 
 top: procps
 
-# FIXME: this target would override the same one in the package.mk
-clean.%:
-	$(H)$(eval NAME:=$(strip $(subst clean.,,$@)))
-	$(H)$(eval DST_DIR:=$(CONF_HOME)/$(NAME))
-
-	$(H)echo "Remove configuration: $(NAME)"
-	$(H)rm -rvf $(DST_DIR)
-	$(H)echo "-------------------------------"
-
-.PHONY: $(LIST) $(ALIAS) clean.% clean all.package
+.PHONY: $(LIST) $(ALIAS) all.package
