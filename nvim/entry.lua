@@ -41,8 +41,9 @@ require("lazy").setup({
 
   -- Enhanced functions
   { -- Syntax highlight/lint with `treesitter`
+    -- NOTE: treesitter might have to update after updating neovim
     'nvim-treesitter/nvim-treesitter',
-    build = ":TSUpdate",
+    build = ":TSUpdateSync",
     tag = 'v0.9.1',
     config = function()
       require('config.nvim-treesitter')
