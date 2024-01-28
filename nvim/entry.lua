@@ -64,23 +64,9 @@ require("lazy").setup({
       ]])
     end
   },
-  {
-    'stevearc/stickybuf.nvim',
-    config = function ()
-      require("stickybuf").setup({})
-      vim.api.nvim_create_autocmd("BufEnter", {
-        desc = "Pin the buffer to any window that is non-modifiable",
-        callback = function(_)
-          local stickybuf = require("stickybuf")
-          if not stickybuf.is_pinned()
-              and vim.bo.filetype ~= "startify" -- FIXME: WA for Startify here
-              and not vim.bo.modifiable then
-            stickybuf.pin()
-          end
-        end
-      })
-    end
-  },
+
+  require('config.stickybuf'),
+
   {
     'petertriho/nvim-scrollbar',
     config = function ()
