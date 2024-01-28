@@ -2,11 +2,10 @@
 --
 -- Set other options
 -- local colorscheme = require("helpers.colorscheme")
+local m = require('helpers.utils')
+
 local cmd = vim.cmd
 local fn = vim.fn
-local highlight = vim.api.nvim_set_hl
-local autocmd = vim.api.nvim_create_autocmd
-local augroup = vim.api.nvim_create_augroup
 local gid
 
 -- cmd.colorscheme('material-darker')
@@ -41,115 +40,94 @@ end
 
 vim.g.loaded_matchit = 1
 
-highlight(0, "nCursor", { fg=nil, bg='SlateBlue', cterm=nil, ctermbg=1 })
-highlight(0, "iCursor", { fg=nil, bg='#ffffff', cterm=nil, ctermbg=15 })
-highlight(0, "rCursor", { fg=nil, bg='Red', cterm=nil, ctermbg=12 })
+m.highlight("nCursor", { fg=nil, bg='SlateBlue', cterm=nil, ctermbg=1 })
+m.highlight("iCursor", { fg=nil, bg='#ffffff', cterm=nil, ctermbg=15 })
+m.highlight("rCursor", { fg=nil, bg='Red', cterm=nil, ctermbg=12 })
 
 -- Set cursor pattern (no blink)
 vim.o.guicursor = "n-v-c-sm:block-nCursor,i-ci-ve:ver25-iCursor,r-cr-o:hor20-rCursor"
 
-gid = augroup("Habbits", { clear = true })
+gid = m.augroup("Habbits")
 
 -- Keep cursor line centered only in Normal mode
-autocmd("CursorMoved", {
-  pattern = '*',
-  command = 'set scrolloff=999',
+m.autocmd("CursorMoved", '*', 'set scrolloff=999', {
   desc = 'Set cursor line in the center',
   group = gid
 })
-autocmd("InsertEnter", {
-  pattern = '*',
-  command = 'set scrolloff=5',
+
+m.autocmd("InsertEnter", '*', 'set scrolloff=5', {
   desc = 'Unset cursor line from center',
   group = gid
 })
 
 -- Reload layout
-autocmd("InsertLeave", {
-  pattern = '*',
-  callback = function() edit(false) end,
+m.autocmd("InsertLeave", '*', function()
+    edit(false)
+  end, {
   desc = 'Viewer Mode',
   group = gid
 })
-autocmd("InsertEnter", {
-  pattern = '*',
-  callback = function() edit(true) end,
+m.autocmd("InsertEnter", '*', function()
+    edit(true)
+  end, {
   desc = 'Edit Mode',
   group = gid
 })
 
 -- A simple function to restore previous cursor position
-autocmd("BufReadPost", {
-  pattern = '*',
-  callback = load_position,
+m.autocmd("BufReadPost", '*', load_position, {
   desc = 'Restore Previous Cursor Position',
   group = gid
 })
 -- Set no line number in terminal buffer
-autocmd("TermOpen", {
-  pattern = '*',
-  callback = function()
+m.autocmd("TermOpen", '*', function()
     vim.wo.number = false
     vim.wo.relativenumber = false
-  end,
+  end, {
   desc = 'Edit Mode',
   group = gid
 })
 
-gid = augroup("PluginConfig", { clear = true })
+gid = m.augroup("PluginConfig")
 -- FIXME: WA for autocmd not working
-autocmd({ "FileReadPost", "BufReadPost" }, {
-  pattern = '*',
-  command = 'GuessIndent',
+m.autocmd({ "FileReadPost", "BufReadPost" }, '*', 'GuessIndent', {
   desc = 'Auto Alignment',
   group = gid
 })
 
-gid = augroup("ExtraFeature", { clear = true })
+gid = m.augroup("ExtraFeature")
 -- Highlight on yank
-autocmd("TextYankPost", {
-  callback = function()
+m.autocmd("TextYankPost", '*', function()
     vim.highlight.on_yank()
-  end,
+  end, {
   group = gid,
 })
 
 -- windows to close with "q"
-autocmd( "FileType", {
-  pattern = { "help", "startuptime", "qf", "lspinfo" },
-  command = [[nnoremap <buffer><silent> q :close<CR>]],
+m.autocmd( "FileType", { "help", "startuptime", "qf", "lspinfo", "man" },
+  [[nnoremap <buffer><silent> q :close<CR>]], {
   group = gid,
 })
 
-autocmd( "FileType", {
-  pattern = "man",
-  command = [[nnoremap <buffer><silent> q :quit<CR>]],
-  group = gid
-})
-
 -- show cursor line only in active window
-autocmd( { "InsertLeave", "WinEnter" }, {
-  pattern = "*",
-  command = "set cursorline",
+m.autocmd( { "InsertLeave", "WinEnter" }, "*", "set cursorline", {
   group = gid
 })
 
-autocmd( { "InsertEnter", "WinLeave" }, {
-  pattern = "*",
-  command = "set nocursorline",
+m.autocmd( { "InsertEnter", "WinLeave" }, "*", "set nocursorline", {
   group = gid
 })
 
 -- Fix shifting issue that would reset the cursor position
-autocmd( { "ModeChanged" }, {
-  pattern = "*:[vV\x16]*",
-  callback = function () vim.b.minianimate_disable = true end,
+m.autocmd( { "ModeChanged" }, "*:[vV\x16]*", function ()
+    vim.b.minianimate_disable = true
+  end, {
   group = gid
 })
 
-autocmd( { "ModeChanged" }, {
-  pattern = "[vV\x16]*:*",
-  callback = function () vim.b.minianimate_disable = false end,
+m.autocmd( { "ModeChanged" }, "[vV\x16]*:*", function ()
+    vim.b.minianimate_disable = false
+  end, {
   group = gid
 })
 

@@ -1,4 +1,4 @@
-local opt = vim.o
+local opt = vim.o -- different from vim.opt
 
 opt.wrap = false
 opt.termguicolors = true
