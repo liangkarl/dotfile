@@ -131,6 +131,14 @@ m.autocmd( { "ModeChanged" }, "[vV\x16]*:*", function ()
   group = gid
 })
 
+-- FIXME: WA for mini.cursor as the color could not be changed in init.lua
+m.autocmd( "BufAdd", "*", function()
+    m.highlight("MiniCursorword", { fg = 'tomato', ctermfg = 'Red' })
+    m.highlight("MiniCursorwordCurrent", { fg = 'tomato', ctermfg = 'Red' })
+  end, {
+  group = gid
+})
+
 cmd([[
   " no one is really happy until you have this shortcuts
   cab W! w!
