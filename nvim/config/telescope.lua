@@ -1,11 +1,7 @@
 -- Plugin: telescope.nvim
 -- https://github.com/nvim-telescope/telescope.nvim
 
-if not pcall(require, "telescope") then
-  return
-end
-
-local telescope = require('telescope')
+local m = require('helpers.utils')
 local opts = { noremap=true, silent=true }
 
 -- WA for multi-selections
@@ -25,39 +21,100 @@ local select_one_or_multi = function(prompt_bufnr)
   end
 end
 
-telescope.setup({
-  defaults = {
-    layout_strategy = 'vertical',
-    layout_config = {
-      vertical = {
-        prompt_position = "bottom",
-        preview_cutoff = 15,
-        width = 0.7,
-      },
-    },
-    mappings = {
-      i = {
-        ['<CR>'] = select_one_or_multi,
+
+return {
+  { -- provides superior project management
+    "ahmedkhalf/project.nvim",
+    config = function()
+      require("project_nvim").setup {
+        -- Manual mode doesn't automatically change your root directory, so you have
+        -- the option to manually do so using `:ProjectRoot` command.
+        manual_mode = false,
+
+        -- Methods of detecting the root directory. **"lsp"** uses the native neovim
+        -- lsp, while **"pattern"** uses vim-rooter like glob pattern matching. Here
+        -- order matters: if one is not detected, the other is used as fallback. You
+        -- can also delete or rearangne the detection methods.
+        detection_methods = { "pattern", "lsp" },
+
+        -- All the patterns used to detect root dir, when **"pattern"** is in
+        -- detection_methods
+        patterns = { ".project", ".git", },
+
+        -- What scope to change the directory, valid options are
+        -- * global (default)
+        -- * tab
+        -- * win
+        scope_chdir = 'win',
+
+        -- Path where project.nvim will store the project history for use in
+        -- telescope
+        datapath = vim.fn.stdpath("data"),
       }
-    }
+    end,
   },
-})
+  {
+    'nvim-telescope/telescope.nvim', tag = '0.1.4',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+      'zane-/cder.nvim',
+      'LinArcX/telescope-scriptnames.nvim',
+      "SalOrak/whaler",
+      'debugloop/telescope-undo.nvim',
+      "benfowler/telescope-luasnip.nvim"
+    },
+    config = function()
+      local telescope = require('telescope')
 
--- To get fzf loaded and working with telescope, you need to call
--- load_extension, somewhere after setup function:
-telescope.load_extension('fzf')
+      telescope.setup({
+        defaults = {
+          layout_strategy = 'vertical',
+          layout_config = {
+            vertical = {
+              prompt_position = "bottom",
+              preview_cutoff = 15,
+              width = 0.7,
+            },
+          },
+          mappings = {
+            i = {
+              ['<CR>'] = select_one_or_multi,
+            }
+          }
+        },
+        extensions = {
+          cder = {
+            -- previewer_command = 'ls -v --group-directories-first -N --color=auto',
+            pager_command = 'less -RS',
+          }
+        }
+      })
 
--- Find files using Telescope command-line sugar.
-vim.keymap.set('n', '<leader>fs', '<cmd>Telescope<cr>', opts)
-vim.keymap.set('n', '<leader>ff', '<cmd>Telescope oldfiles<cr>', opts)
-vim.keymap.set('n', '<leader>fF', '<cmd>Telescope find_files<cr>', opts)
-vim.keymap.set('n', '<leader>fg', '<cmd>Telescope grep_string<cr>', opts)
-vim.keymap.set('n', '<leader>fG', '<cmd>Telescope live_grep<cr>', opts)
-vim.keymap.set('n', '<leader>fb', '<cmd>Telescope buffers<cr>', opts)
-vim.keymap.set('n', '<leader>fr', '<cmd>Telescope registers<cr>', opts)
-vim.keymap.set('n', '<leader>f?', '<cmd>Telescope keymaps<cr>', opts)
-vim.keymap.set('n', '<leader>fe', '<cmd>Telescope filetypes<cr>', opts)
-vim.keymap.set('n', '<leader>fh', '<cmd>Telescope help_tags<cr>', opts)
+      -- To get fzf loaded and working with telescope, you need to call
+      -- load_extension, somewhere after setup function:
+      telescope.load_extension('fzf')
+      telescope.load_extension('cder')
+      telescope.load_extension('projects')
+      telescope.load_extension('scriptnames')
+      telescope.load_extension('undo')
+      telescope.load_extension('whaler')
+      telescope.load_extension('luasnip')
+
+      -- Find files using Telescope command-line sugar.
+      m.noremap('n', '<leader>fs', '<cmd>Telescope builtin include_extensions=true<cr>', "Telescope main menu")
+      m.noremap('n', '<leader>ff', '<cmd>Telescope oldfiles<cr>', "Open recently closed files")
+      m.noremap('n', '<leader>fF', '<cmd>Telescope find_files<cr>', "Open files")
+      m.noremap('n', '<leader>fg', '<cmd>Telescope grep_string<cr>', "Grep current curosr word")
+      m.noremap('n', '<leader>fG', '<cmd>Telescope live_grep<cr>', "Grep assigned words")
+      m.noremap('n', '<leader>fb', '<cmd>Telescope buffers<cr>', "Pick up opened buffers")
+      m.noremap('n', '<leader>fr', '<cmd>Telescope registers<cr>', "Open registers")
+      m.noremap('n', '<leader>f?', '<cmd>Telescope keymaps<cr>', "Open keymaps")
+      m.noremap('n', '<leader>fe', '<cmd>Telescope filetypes<cr>', "Change filetypes")
+      m.noremap('n', '<leader>fh', '<cmd>Telescope help_tags<cr>', "Show help manuals like :help")
+    end,
+  },
+}
 
 -- ### File Pickers
 
