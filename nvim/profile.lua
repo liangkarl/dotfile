@@ -114,26 +114,8 @@ m.autocmd( "FileType", { "help", "startuptime", "qf", "lspinfo", "man" },
 })
 
 -- show cursor line only in active window
-m.autocmd( { "InsertLeave", "WinEnter" }, "*", "set cursorline", {
-  group = gid
-})
-
-m.autocmd( { "InsertEnter", "WinLeave" }, "*", "set nocursorline", {
-  group = gid
-})
-
--- Fix shifting issue that would reset the cursor position
-m.autocmd( { "ModeChanged" }, "*:[vV\x16]*", function ()
-    vim.b.minianimate_disable = true
-  end, {
-  group = gid
-})
-
-m.autocmd( { "ModeChanged" }, "[vV\x16]*:*", function ()
-    vim.b.minianimate_disable = false
-  end, {
-  group = gid
-})
+m.autocmd( { "InsertLeave", "WinEnter" }, "*", "set cursorline", { group = gid })
+m.autocmd( { "InsertEnter", "WinLeave" }, "*", "set nocursorline", { group = gid })
 
 -- FIXME: WA for mini.cursor as the color could not be changed in init.lua
 m.autocmd( "BufAdd", "*", function()
