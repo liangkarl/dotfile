@@ -6,8 +6,8 @@ config.nvim:
 	$(H)echo "-- setup nvim config --"
 	PS3='select a fuzzy finder above: '
 	$(H)select opt in 'fzf' 'telescope' 'cancel'; do
-		if [[ "$opt" != 'cancel' ]]; then
-			echo "let g:fuzzy_finder = '$opt'" > ${CONFIG_DIR}/config.vim
+		if [[ "${opt}" != 'cancel' ]]; then
+			echo "let g:fuzzy_finder = '${opt}'" > ${CONFIG_DIR}/config.vim
 		fi
 		break
 	done

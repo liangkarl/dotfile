@@ -15,7 +15,7 @@ $(LIST):
 	$(H)cp -rvf $(SRC_DIR) $(CONF_HOME)/
 	$(H)echo "-------------------------------"
 	$(H)if [[ -e $(DST_DIR)/Makefile ]]; then
-		make -C $(DST_DIR)
+		H=$(H) make -C $(DST_DIR)
 	elif [[ -e $(DST_DIR)/configure.sh ]]; then
 		eval $(DST_DIR)/configure.sh
 	fi
