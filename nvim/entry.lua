@@ -87,15 +87,7 @@ require("lazy").setup({
     'nmac427/guess-indent.nvim',
     config = true,
   },
-  { -- A 'Swiss Army Knife' with many small features
-    'echasnovski/mini.nvim',
-    dependencies = {
-      "nvim-tree/nvim-web-devicons",
-    },
-    config = function ()
-      require('config.mini')
-    end
-  },
+  require('config.mini'),
   { -- enhance '%' function, like if-endif
     'andymass/vim-matchup',
     config = function()
