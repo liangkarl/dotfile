@@ -68,7 +68,7 @@ require('bufferline').setup {
     --   -- add custom logic
     --   return buffer_a.modified > buffer_b.modified
     -- end
-    sort_by = 'id'
+    sort_by = 'directory'
   }
 }
 
