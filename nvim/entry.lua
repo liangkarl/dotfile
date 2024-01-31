@@ -42,15 +42,7 @@ require("lazy").setup({
   },
 
   -- Enhanced functions
-  { -- Syntax highlight/lint with `treesitter`
-    -- NOTE: treesitter might have to update after updating neovim
-    'nvim-treesitter/nvim-treesitter',
-    build = ":TSUpdateSync",
-    tag = 'v0.9.1',
-    config = function()
-      require('config.nvim-treesitter')
-    end,
-  },
+  require('config.nvim-treesitter'),
   require('config.sidebar'),
   { -- share clipboard between tmux and vim
     'roxma/vim-tmux-clipboard',
@@ -111,9 +103,6 @@ require("lazy").setup({
     config = function()
       require('config.alternate-toggler')
     end
-  },
-  { -- text object selection with +/-
-    'terryma/vim-expand-region',
   },
 
   -- Formatter

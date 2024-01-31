@@ -1,27 +1,57 @@
--- nvim-treesitter/nvim-treesitter:
--- https://github.com/nvim-treesitter/nvim-treesitter
---
--- The goal of nvim-treesitter is both to provide a simple and easy way
--- to use the interface for tree-sitter in Neovim and to provide some
--- basic functionality such as highlighting based on it
+return { -- Syntax highlight/lint with `treesitter`
+  -- NOTE: treesitter might have to update after updating neovim
+  'nvim-treesitter/nvim-treesitter',
+  build = ":TSUpdateSync",
+  tag = 'v0.9.1',
+  config = function()
+    local treesitter = require('nvim-treesitter.configs')
 
-local treesitter = require('nvim-treesitter.configs')
-treesitter.setup {
-  -- one of "all", "maintained" (parsers with maintainers), or a list of languages
-  ensure_installed = {"bash", "perl", "python", "lua", "luadoc", "vim", "vimdoc", "r",
-                      "c", "cpp", "c_sharp", "rust", "go", "java", "kotlin",
-                      "html", "css", "typescript", "javascript",
-                      "json", "markdown", "yaml", "toml",
-                      "make", "cmake", "ninja",
-                      "comment", "rst"},
-  ignore_install = { "javascript" }, -- List of parsers to ignore installing
-  highlight = {
-    enable = true,              -- false will disable the whole extension
-    disable = {},  -- list of language that will be disabled
-    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-    -- Using this option may slow down your editor, and you may see some duplicate highlights.
-    -- Instead of true it can also be a list of languages
-    additional_vim_regex_highlighting = false,
-  },
+    treesitter.setup {
+      -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+      ensure_installed = {
+          -- Scripts
+          "bash", "perl", "python", "lua", "luadoc", "vim", "vimdoc", "r",
+          -- Natives
+          "c", "cpp", "java", "kotlin",
+          -- Web
+          "html", "css", "typescript", "javascript",
+          -- Config
+          "json", "markdown", "yaml", "toml", "xml", "po",
+          -- Makefile
+          "make", "cmake", "ninja",
+          -- Text
+          "comment", "rst",
+          -- Misc
+          "csv", "strace", "udev"
+      },
+
+      -- Syntax highlight
+      highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = false,
+      },
+
+      -- Smart selection or text object selection
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          init_selection = '<CR>',
+          scope_incremental = '<CR>',
+          node_incremental = ']',
+          node_decremental = '[',
+        },
+      },
+
+      indent = {
+        enable = true
+      }
+    }
+
+    -- Report: https://www.reddit.com/r/neovim/comments/14n6iiy/if_you_have_treesitter_make_sure_to_disable/
+    vim.opt.smartindent = false
+
+    vim.opt.foldmethod = 'expr'
+    vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
+    vim.opt.foldenable = false
+  end,
 }
