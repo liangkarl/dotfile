@@ -85,8 +85,8 @@ return {
         },
         extensions = {
           cder = {
-            -- previewer_command = 'ls -v --group-directories-first -N --color=auto',
-            pager_command = 'less -RS',
+            previewer_command = 'ls -v --group-directories-first -N --color=auto',
+            pager_command = 'cat',
           }
         }
       })
