@@ -34,7 +34,7 @@ require("lazy").setup({
       require('config.bufferline')
     end
   },
-  require('config.aerial'),
+  require('config.symbol-list'),
 
   -- Enhanced functions
   require('config.nvim-treesitter'),
