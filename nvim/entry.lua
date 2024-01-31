@@ -75,12 +75,7 @@ require("lazy").setup({
     config = true,
   },
   require('config.mini'),
-  { -- enhance '%' function, like if-endif
-    'andymass/vim-matchup',
-    config = function()
-      require('config.vim-matchup')
-    end
-  },
+  require('config.vim-matchup'),
   { -- preview the replace/search result
     'markonm/traces.vim',
   },

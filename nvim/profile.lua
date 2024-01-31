@@ -8,16 +8,6 @@ local cmd = vim.cmd
 local fn = vim.fn
 local gid
 
--- cmd.colorscheme('material-darker')
-
--- Misc settings:
---
--- |matchit| plugin is enabled. Disable it with:
--- let loaded_matchit = 1
-vim.g.loaded_matchit = 1
-
--- |g:vimsyn_embed| defaults to "l" to enable Lua highlighting
-
 local function load_position()
   -- if last visited position is available
   if fn.line("'\"") > 1 and fn.line("'\"") <= fn.line("$") then
@@ -46,7 +36,7 @@ local function edit(enable)
   end
 end
 
-vim.g.loaded_matchit = 1
+-- cmd.colorscheme('material-darker')
 
 m.highlight("nCursor", { fg=nil, bg='SlateBlue', cterm=nil, ctermbg=1 })
 m.highlight("iCursor", { fg=nil, bg='#ffffff', cterm=nil, ctermbg=15 })
