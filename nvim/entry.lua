@@ -34,12 +34,7 @@ require("lazy").setup({
       require('config.bufferline')
     end
   },
-  { -- Symbol Manager
-    'hedyhli/outline.nvim',
-    config = function()
-      require('config.outline')
-    end
-  },
+  require('config.aerial'),
 
   -- Enhanced functions
   require('config.nvim-treesitter'),
