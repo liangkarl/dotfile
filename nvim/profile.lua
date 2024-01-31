@@ -18,7 +18,7 @@ vim.g.loaded_matchit = 1
 
 -- |g:vimsyn_embed| defaults to "l" to enable Lua highlighting
 
-function load_position()
+local function load_position()
   -- if last visited position is available
   if fn.line("'\"") > 1 and fn.line("'\"") <= fn.line("$") then
     -- jump to the last position
@@ -26,13 +26,19 @@ function load_position()
   end
 end
 
-function edit(enable)
+local function edit(enable)
   if enable then
-    cmd("set list showbreak=↪\\  colorcolumn=80")
+    vim.opt.list = true
+    vim.opt.showbreak = '↪ '
+    vim.opt.colorcolumn = '80'
+    vim.opt.scrolloff = 5
     MiniTrailspace.highlight()
     vim.diagnostic.config({ virtual_text = false, virtual_lines = false, signs = false})
   else
-    cmd("set nolist showbreak= colorcolumn=")
+    vim.opt.list = false
+    vim.opt.showbreak = ''
+    vim.opt.colorcolumn = ''
+    vim.opt.scrolloff = 999
     MiniTrailspace.unhighlight()
     vim.diagnostic.config({ virtual_text = true, virtual_lines = true, signs = true})
   end
@@ -45,31 +51,21 @@ m.highlight("iCursor", { fg=nil, bg='#ffffff', cterm=nil, ctermbg=15 })
 m.highlight("rCursor", { fg=nil, bg='Red', cterm=nil, ctermbg=12 })
 
 -- Set cursor pattern (no blink)
-vim.o.guicursor = "n-v-c-sm:block-nCursor,i-ci-ve:ver25-iCursor,r-cr-o:hor20-rCursor"
+vim.opt.guicursor = {
+  "n-v-c-sm:block-nCursor",
+  "i-ci-ve:ver25-iCursor",
+  "r-cr-o:hor20-rCursor"
+}
+vim.opt.scrolloff = 999
 
 gid = m.augroup("Habbits")
 
--- Keep cursor line centered only in Normal mode
-m.autocmd("CursorMoved", '*', 'set scrolloff=999', {
-  desc = 'Set cursor line in the center',
-  group = gid
-})
-
-m.autocmd("InsertEnter", '*', 'set scrolloff=5', {
-  desc = 'Unset cursor line from center',
-  group = gid
-})
-
 -- Reload layout
-m.autocmd("InsertLeave", '*', function()
-    edit(false)
-  end, {
+m.autocmd("InsertLeave", '*', function() edit(false) end, {
   desc = 'Viewer Mode',
   group = gid
 })
-m.autocmd("InsertEnter", '*', function()
-    edit(true)
-  end, {
+m.autocmd("InsertEnter", '*', function() edit(true) end, {
   desc = 'Edit Mode',
   group = gid
 })
@@ -101,9 +97,7 @@ m.autocmd({ "FileReadPost", "BufReadPost" }, '*', function()
 
 gid = m.augroup("ExtraFeature")
 -- Highlight on yank
-m.autocmd("TextYankPost", '*', function()
-    vim.highlight.on_yank()
-  end, {
+m.autocmd("TextYankPost", '*', function() vim.highlight.on_yank() end, {
   group = gid,
 })
 
