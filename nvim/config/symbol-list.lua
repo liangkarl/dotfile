@@ -1,6 +1,31 @@
 local m = require('helpers.utils')
+local outline, aerial
 
-return {
+local function get_symbol()
+  return aerial
+end
+
+outline = { -- Symbol Manager
+  'hedyhli/outline.nvim',
+  config = function()
+    require('outline').setup({
+      symbols = {
+        filter = {
+          "Class",
+          "Function",
+          "Module",
+          "Method",
+          "Struct",
+        },
+      }
+    })
+
+    m.noremap('n', '<leader>sm', '<cmd>Outline<cr>', 'Toggle Outline Symbol Manager')
+    m.noremap('n', '<leader>si', '<cmd>OutlineStatus<cr>', 'Get Outline Symbol Manager info')
+  end
+}
+
+aerial = {
   'stevearc/aerial.nvim',
   -- Optional dependencies
   dependencies = {
@@ -8,8 +33,7 @@ return {
      "nvim-tree/nvim-web-devicons"
   },
   config = function()
-    local aerial = require("aerial")
-    aerial.setup({
+    require("aerial").setup({
       -- Priority list of preferred backends for aerial.
       -- This can be a filetype map (see :help aerial-filetype-map)
       backends = { "lsp", "treesitter" },
@@ -207,3 +231,5 @@ return {
     m.noremap('n', '<leader>si', '<cmd>AerialInfo<cr>', 'Get Aerial Symbol Manager status')
   end
 }
+
+return get_symbol()
