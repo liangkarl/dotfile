@@ -1,6 +1,8 @@
 local opt = vim.o -- different from vim.opt
 
-opt.wrap = false
+opt.wrap = true
+opt.wrapmargin = 8 -- wrap lines when coming within n characters from side
+
 opt.termguicolors = true
 -- set wait time for combined keys
 opt.timeoutlen = 300
