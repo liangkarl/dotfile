@@ -1,4 +1,7 @@
 lib.add() {
+    local file
+
+    file="${1}.bash"
     if [[ -z "$SHELL_DIR" ]]; then
         echo "$SHELL_DIR wasn't defined"
         return 1
@@ -8,12 +11,12 @@ lib.add() {
     elif [[ -z "$1" ]]; then
         echo "Empty input"
         return 3
-    elif [[ ! -e "$SHELL_DIR/lib/$1" ]]; then
+    elif [[ ! -e "$SHELL_DIR/lib/${file}" ]]; then
         echo "'$1' doesn't exist"
         return 4
     fi
 
-    source "$SHELL_DIR/lib/${1}.bash"
+    source "$SHELL_DIR/lib/${file}"
 }
 
 path.dup() {
