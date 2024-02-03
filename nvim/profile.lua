@@ -22,7 +22,7 @@ local function edit(enable)
     vim.opt.showbreak = '↪ '
     vim.opt.colorcolumn = '80'
     vim.opt.scrolloff = 5
-    vim.opt.sidescrolloff = 10
+    vim.opt.sidescrolloff = 5
     MiniTrailspace.highlight()
     vim.diagnostic.config({ virtual_text = false, virtual_lines = false, signs = false})
   else
@@ -30,7 +30,7 @@ local function edit(enable)
     vim.opt.showbreak = ''
     vim.opt.colorcolumn = ''
     vim.opt.scrolloff = 999
-    vim.opt.sidescrolloff = 30
+    vim.opt.sidescrolloff = 10
     MiniTrailspace.unhighlight()
     vim.diagnostic.config({ virtual_text = true, virtual_lines = true, signs = true})
   end
@@ -49,7 +49,7 @@ vim.opt.guicursor = {
   "r-cr-o:hor20-rCursor"
 }
 vim.opt.scrolloff = 999
-vim.opt.sidescrolloff = 30
+vim.opt.sidescrolloff = 10
 
 gid = m.augroup("Habbits")
 
