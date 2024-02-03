@@ -17,22 +17,24 @@ local function load_position()
 end
 
 local function edit(enable)
+  local space = require("mini.trailspace")
+
   if enable then
     vim.opt.list = true
     vim.opt.showbreak = '↪ '
     vim.opt.colorcolumn = '80'
     vim.opt.scrolloff = 5
     vim.opt.sidescrolloff = 5
-    MiniTrailspace.highlight()
     vim.diagnostic.config({ virtual_text = false, virtual_lines = false, signs = false})
+    space.highlight()
   else
     vim.opt.list = false
     vim.opt.showbreak = ''
     vim.opt.colorcolumn = ''
     vim.opt.scrolloff = 999
     vim.opt.sidescrolloff = 10
-    MiniTrailspace.unhighlight()
     vim.diagnostic.config({ virtual_text = true, virtual_lines = true, signs = true})
+    space.unhighlight()
   end
 end
 
