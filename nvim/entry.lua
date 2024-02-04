@@ -21,6 +21,9 @@ require("lazy").setup({
       require('config.vim-startify')
     end
   },
+
+  require('config.trouble'),
+
   { -- Status line (button)
     'nvim-lualine/lualine.nvim',
     config = function()
@@ -270,25 +273,5 @@ require("lazy").setup({
       "nvim-telescope/telescope.nvim"
     },
     enabled = false,
-  },
-  {
-    "folke/trouble.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    config = function()
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
-      -- Lua
-      vim.keymap.set("n", "<leader>xx", function() require("trouble").toggle() end)
-      vim.keymap.set("n", "<leader>xw", function() require("trouble").toggle("workspace_diagnostics") end)
-      vim.keymap.set("n", "<leader>xd", function() require("trouble").toggle("document_diagnostics") end)
-      vim.keymap.set("n", "<leader>xq", function() require("trouble").toggle("quickfix") end)
-      vim.keymap.set("n", "<leader>xl", function() require("trouble").toggle("loclist") end)
-      vim.keymap.set("n", "gR", function() require("trouble").toggle("lsp_references") end)
-
-      -- https://stackoverflow.com/questions/40867576/how-to-use-vimgrep-to-grep-work-thats-high-lighted-by-vim
-      vim.keymap.set('n', '<leader>/', "<Cmd>exe 'vimgrep' '/' input('search pattern: ') '/j %' | TroubleToggle quickfix<cr>")
-      vim.keymap.set('n', '<leader>#', "<Cmd>exe 'vimgrep' expand('<cword>') '%' | TroubleToggle quickfix<cr>")
-    end
   },
 })
