@@ -22,105 +22,114 @@
 -- Configure LSP server
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
 
-local lsp = require('lspconfig')
+local m = require('helpers.utils')
 
-lsp.vimls.setup({})
-
--- Bash (bash-language-server)
--- https://github.com/bash-lsp/bash-language-server
-lsp.bashls.setup({})
-
--- Java (jdtls)
--- https://github.com/eclipse/eclipse.jdt.ls
-lsp.jdtls.setup({})
-
-lsp.pyright.setup({})
-
-lsp.html.setup({
-})
-
-lsp.tsserver.setup({})
-
--- C/C++/Obj-C (ccls)
--- https://github.com/MaskRay/ccls
-lsp.ccls.setup {
-  init_options = {
-    -- compilationDatabaseDirectory = "";
-    cache = {
-      directory = ".ccls-cache";
-    };
-    client = {
-      snippetSupport = true;
-    };
-    index = {
-      threads = 0;
-      onChange = true;
-    };
-    clang = {
-      excludeArgs = { "-frounding-math"} ;
-    };
-  },
-}
-
--- Lua (sumneko_lua)
--- https://github.com/sumneko/lua-language-server
-lsp.lua_ls.setup {
-  settings = {
-    Lua = {
-      runtime = {
-        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-        version = 'LuaJIT',
+return { -- LSP configuration
+  'neovim/nvim-lspconfig',
+  dependencies = {
+    {
+      "williamboman/mason-lspconfig.nvim",
+      dependencies = {
+        { -- Following mason's requirements, install `mason.nvim`, `mason-lspconfig` and `nvim-lspconfig` by order
+          "williamboman/mason.nvim",
+          build = ":MasonUpdate", -- :MasonUpdate updates registry contents
+          config = true
+        },
       },
-      diagnostics = {
-        -- Get the language server to recognize the `vim` global
-        globals = {'vim'},
-      },
-      workspace = {
-        checkThirdParty = false
-      },
-      -- Do not send telemetry data containing a randomized but unique identifier
-      telemetry = {
-        enable = false,
+      opts = {
+        ensure_installed = {
+          "lua_ls", "bashls", "vimls",
+          "clangd", "jdtls",
+          "pyright", "html", "tsserver"
+        },
       },
     },
   },
-}
+  config = function()
+    local lsp = require('lspconfig')
+    local mason_lsp = require('mason-lspconfig.settings').current.ensure_installed
+    local conf_tbl = {}
 
-vim.keymap.set('n', '<leader>li', ':LspInfo<cr>')
+    for _, server in ipairs(mason_lsp) do
+      conf_tbl[server] = {}
+    end
 
-local opts = { noremap=true, silent=true }
-vim.keymap.set('n', '<space>ge', vim.diagnostic.open_float, opts)
-vim.keymap.set('n', '<space>gp', vim.diagnostic.goto_prev, opts)
-vim.keymap.set('n', '<space>gn', vim.diagnostic.goto_next, opts)
-vim.keymap.set('n', '<space>gq', vim.diagnostic.setloclist, opts)
+    -- customize configurations here
+    conf_tbl['lua_ls'] = {
+      settings = {
+        Lua = {
+          runtime = {
+            -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+            version = 'LuaJIT',
+          },
+          diagnostics = {
+            -- Get the language server to recognize the `vim` global
+            globals = { 'vim' },
+          },
+          workspace = {
+            checkThirdParty = false
+          },
+          -- Do not send telemetry data containing a randomized but unique identifier
+          telemetry = {
+            enable = false,
+          },
+        },
+      },
+    }
 
--- Use LspAttach autocommand to only map the following keys
--- after the language server attaches to the current buffer
-vim.api.nvim_create_autocmd('LspAttach', {
-  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
-  callback = function(ev)
-    -- Enable completion triggered by <c-x><c-o>
-    vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
+    -- initialize basic configurations for LSP servers installed by mason
+    for _, server in ipairs(mason_lsp) do
+      lsp[server].setup(conf_tbl[server])
+    end
 
-    -- Buffer local mappings.
-    -- See `:help vim.lsp.*` for documentation on any of the below functions
-    local opts = { buffer = ev.buf }
-    vim.keymap.set('n', '<space>gD', vim.lsp.buf.declaration, opts)
-    vim.keymap.set('n', '<space>gd', vim.lsp.buf.definition, opts)
-    vim.keymap.set('n', '<space>gi', vim.lsp.buf.implementation, opts)
-    vim.keymap.set('n', '<space>gr', vim.lsp.buf.references, opts)
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, opts)
-    vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, opts)
-    vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, opts)
-    vim.keymap.set('n', '<space>wl', function()
-      print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-    end, opts)
-    vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, opts)
-    vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, opts)
-    vim.keymap.set({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, opts)
-    vim.keymap.set('n', '<space>lf', function()
-      vim.lsp.buf.format { async = true }
-    end, opts)
+    -- configurations for external installation of LSP
+    -- C/C++/Obj-C (ccls)
+    -- https://github.com/MaskRay/ccls
+    lsp.ccls.setup {
+      init_options = {
+        -- compilationDatabaseDirectory = "";
+        cache = {
+          directory = ".ccls-cache",
+        },
+        client = {
+          snippetSupport = true,
+        },
+        index = {
+          threads = 0,
+          onChange = true,
+        },
+        clang = {
+          excludeArgs = { "-frounding-math" },
+        },
+      },
+    }
+
+    m.noremap('n', '<leader>li', '<cmd>LspInfo<cr>', "LSP: LSP Server Status")
+    m.noremap('n', '<leader>ms', '<cmd>Mason<cr>', "LSP: Open Mason")
+
+    -- Use LspAttach autocommand to only map the following keys
+    -- after the language server attaches to the current buffer
+    m.autocmd('LspAttach', '*', function(ev)
+      local lspb = vim.lsp.buf
+
+      -- Improve format codes
+      m.noremap({ 'n', 'v' }, '=', function() lspb.format({ async = true }) end, "LSP: Format code")
+      -- Enable completion triggered by <c-x><c-o>
+      vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
+
+      m.noremap('n', '<space>lv', lspb.hover, "LSP: Show info")
+      m.noremap('n', '<space>lh', lspb.signature_help, "LSP: Show signatures")
+      m.noremap('n', '<space>la', lspb.add_workspace_folder, "LSP: Add workspace")
+      m.noremap('n', '<space>ld', lspb.remove_workspace_folder, "LSP: Remove workspace")
+      m.noremap('n', '<leader>ls', function()
+        print(vim.inspect(lspb.list_workspace_folders()))
+      end, "LSP: Show workspace")
+
+      m.noremap('n', '<space>rn', lspb.rename, "LSP: Rename var/func")
+      m.noremap({ 'n', 'v' }, '<space>lc', lspb.code_action, "LSP: Show code action menu")
+    end, {
+      group = m.augroup('UserLspConfig'),
+    })
   end,
-})
+  event = "VeryLazy",
+}

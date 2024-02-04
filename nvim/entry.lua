@@ -215,35 +215,11 @@ require("lazy").setup({
     end,
   },
 
-  -- Prerequisite
-  -- NOTE:
+  require('config.nvim-lspconfig'),
+
   -- Autocompletion
   require('config.nvim-cmp'),
 
-  { -- LSP configuration
-    'neovim/nvim-lspconfig',
-    config = function()
-      require('config.nvim-lspconfig')
-    end,
-    event = "VeryLazy",
-  },
-  { -- Install LSP servers
-    "williamboman/mason.nvim",
-    build = ":MasonUpdate", -- :MasonUpdate updates registry contents
-    config = function()
-      require('config.mason')
-    end,
-  },
-  {
-    "williamboman/mason-lspconfig.nvim",
-    opts = {
-      ensure_installed = {
-        "lua_ls", "bashls", "vimls",
-        "clangd", "jdtls",
-        "pyright", "html", "tsserver"
-      },
-    },
-  },
   {
     'codota/tabnine-nvim',
     build = "./dl_binaries.sh",
