@@ -103,31 +103,6 @@ require("lazy").setup({
     end
   },
 
-  -- Autocompletion (without LSP source)
-  { -- AI assist for completion
-    'tzachar/cmp-tabnine',
-    build = './install.sh',
-    dependencies = {
-      'hrsh7th/nvim-cmp'
-    },
-    config = function()
-      -- require('config.cmp-tabnine')
-    end,
-  },
-  { -- adjust scroll menu width
-    'onsails/lspkind.nvim',
-    config = function()
-      require('config.lspkind')
-    end
-
-  },
-  { -- snippet engine of buffer words
-    'hrsh7th/cmp-buffer',
-    config = function()
-      -- require('config.cmp-buffer')
-    end
-  },
-
   -- LSP plugin
   { -- provide unique ccls function
     'ranjithshegde/ccls.nvim',
@@ -242,36 +217,9 @@ require("lazy").setup({
 
   -- Prerequisite
   -- NOTE:
-  -- autocompletion seems better in clangd, instead of ccls
-  -- Try to switch multi LSP in config
-  -- xavierd/clang_complete
-  { -- Autocomplete framework
-    'hrsh7th/nvim-cmp',
-    -- load cmp on InsertEnter
-    event = "InsertEnter",
-    dependencies = {
-      -- Snippet engine with LSP backend
-      'neovim/nvim-lspconfig',
-      'hrsh7th/cmp-nvim-lsp',
-      -- Interface between nvim-cmp and luasnip
-      'L3MON4D3/LuaSnip',
-      'saadparwaiz1/cmp_luasnip',
-      -- Snippet engine of buffer words
-      'hrsh7th/cmp-buffer',
-    },
-    config = function()
-      require('config.nvim-cmp')
-    end,
-  },
-  {
-    'L3MON4D3/LuaSnip',
-    build = "make install_jsregexp",
-    dependencies = { "rafamadriz/friendly-snippets" },
-    event = "InsertEnter",
-    config = function ()
-      require("luasnip.loaders.from_vscode").lazy_load()
-    end,
-  },
+  -- Autocompletion
+  require('config.nvim-cmp'),
+
   { -- LSP configuration
     'neovim/nvim-lspconfig',
     config = function()
