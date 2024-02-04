@@ -24,6 +24,11 @@ require("lazy").setup({
 
   require('config.trouble'),
 
+  {
+    'kevinhwang91/nvim-bqf',
+    config = true
+  },
+
   { -- Status line (button)
     'nvim-lualine/lualine.nvim',
     config = function()
