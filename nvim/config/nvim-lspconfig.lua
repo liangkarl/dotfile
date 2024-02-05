@@ -46,12 +46,15 @@ return { -- LSP configuration
     },
   },
   config = function()
-    local lsp = require('lspconfig')
+    local lspconfig = require('lspconfig')
+    local lsp_status = require('lsp-status')
     local mason_lsp = require('mason-lspconfig.settings').current.ensure_installed
     local conf_tbl = {}
 
     for _, server in ipairs(mason_lsp) do
-      conf_tbl[server] = {}
+      conf_tbl[server] = {
+        on_attach = lsp_status.on_attach,
+      }
     end
 
     -- customize configurations here
@@ -79,13 +82,13 @@ return { -- LSP configuration
 
     -- initialize basic configurations for LSP servers installed by mason
     for _, server in ipairs(mason_lsp) do
-      lsp[server].setup(conf_tbl[server])
+      lspconfig[server].setup(conf_tbl[server])
     end
 
     -- configurations for external installation of LSP
     -- C/C++/Obj-C (ccls)
     -- https://github.com/MaskRay/ccls
-    lsp.ccls.setup {
+    lspconfig['ccls'].setup {
       init_options = {
         -- compilationDatabaseDirectory = "";
         cache = {
@@ -131,5 +134,4 @@ return { -- LSP configuration
       group = m.augroup('UserLspConfig'),
     })
   end,
-  event = "VeryLazy",
 }

@@ -244,12 +244,7 @@ require("lazy").setup({
       return true
     end
   },
-  {
-    'nvim-lua/lsp-status.nvim',
-    config = function()
-      -- require('config.lsp-status')
-    end
-  },
+  require('config.lsp-status'),
   { -- Display cheat sheet of vim shortcut
     'folke/which-key.nvim',
     config = true,
