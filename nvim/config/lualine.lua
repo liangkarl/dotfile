@@ -28,7 +28,7 @@ lualine.setup {
     lualine_a = {'mode'},
     lualine_b = {'branch', 'diff', 'diagnostics'},
     lualine_c = {'filename'},
-    lualine_x = {'searchcount', 'encoding', 'fileformat', 'filetype'},
+    lualine_x = {'searchcount', "require('lsp-status').status()", 'encoding', 'fileformat', 'filetype'},
     lualine_y = {'progress'},
     lualine_z = {'location'}
   },
