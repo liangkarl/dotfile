@@ -29,12 +29,9 @@ require("lazy").setup({
     config = true
   },
 
-  { -- Status line (button)
-    'nvim-lualine/lualine.nvim',
-    config = function()
-      require('config.lualine')
-    end
-  },
+  -- Status line (button)
+  require('config.lualine'),
+
   { -- Buffer line (top)
     'akinsho/bufferline.nvim',
     tag = 'v3.7.0',
@@ -66,7 +63,7 @@ require("lazy").setup({
 
   {
     'petertriho/nvim-scrollbar',
-    config = function ()
+    config = function()
       local mod = require("scrollbar")
       mod.setup({
         handlers = {
@@ -161,16 +158,16 @@ require("lazy").setup({
     init = function()
       require('material').setup({
         plugins = {
-           "dap",
-           "gitsigns",
-           "neogit",
-           "nvim-cmp",
-           "nvim-tree",
-           "nvim-web-devicons",
-           "which-key",
-           "trouble",
-           "mini",
-           -- "telescope",
+          "dap",
+          "gitsigns",
+          "neogit",
+          "nvim-cmp",
+          "nvim-tree",
+          "nvim-web-devicons",
+          "which-key",
+          "trouble",
+          "mini",
+          -- "telescope",
         },
       })
       vim.g.material_style = 'darker'
