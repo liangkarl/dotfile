@@ -16,13 +16,11 @@ return { -- Syntax highlight/lint with `treesitter`
           -- Web
           "html", "css", "typescript", "javascript",
           -- Config
-          "json", "markdown", "yaml", "toml", "xml", "po",
+          "json", "markdown", "yaml", "toml", "po",
           -- Makefile
           "make", "cmake", "ninja",
           -- Text
           "comment", "rst",
-          -- Misc
-          "csv", "strace", "udev"
       },
 
       -- Syntax highlight
