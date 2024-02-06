@@ -17,7 +17,7 @@ return {
     -- https://neovim.io/doc/user/lsp.html#lsp-buf
     m.noremap("n", "<leader>lr", function() t.toggle("lsp_references") end, "LSP: List referenced codes")
     m.noremap('n', '<leader>ld', function() t.toggle('lsp_definitions') end, "LSP: Jump to definition")
-    m.noremap('n', '<leader>lt', function() t.toggle('lsp_type_definitions') end, "LSP: Jump to type definition")
+    m.noremap('n', '<leader>lD', function() t.toggle('lsp_type_definitions') end, "LSP: Jump to type definition")
     m.noremap('n', '<leader>lp', function() t.toggle('lsp_implementations') end, "LSP: Jump to implementations")
 
     -- Quickfix

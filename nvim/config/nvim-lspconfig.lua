@@ -123,7 +123,7 @@ return { -- LSP configuration
       m.noremap('n', '<space>lv', lspb.hover, "LSP: Show info")
       m.noremap('n', '<space>lh', lspb.signature_help, "LSP: Show signatures")
       m.noremap('n', '<space>la', lspb.add_workspace_folder, "LSP: Add workspace")
-      m.noremap('n', '<space>ld', lspb.remove_workspace_folder, "LSP: Remove workspace")
+      m.noremap('n', '<space>lm', lspb.remove_workspace_folder, "LSP: Remove workspace")
       m.noremap('n', '<leader>ls', function()
         print(vim.inspect(lspb.list_workspace_folders()))
       end, "LSP: Show workspace")
