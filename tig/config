@@ -172,9 +172,11 @@ bind main    rn @?git reset --hard HEAD
 bind main    rp @?git reset HEAD@{1}
 
 ## Cherry-pick
-bind main   cp @sh -c 'git cherry-pick -s %(commit) || git cherry-pick --abort'
-bind refs   cp @sh -c 'git cherry-pick -s %(commit) || git cherry-pick --abort'
-bind reflog cp @sh -c 'git cherry-pick -s %(commit) || git cherry-pick --abort'
+### Templete: f() $cmd "$opts" $commit
+bind main   cp +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f cherry-pick -s %(commit)'
+bind refs   cp +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f cherry-pick -s %(commit)'
+bind reflog cp +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f cherry-pick -s %(commit)'
+bind diff   cp +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f cherry-pick -s %(commit)'
 
 ## Format patch
 bind main   fp ?+git format-patch -k --binary --histogram -1 -o . %(commit)
@@ -202,8 +204,8 @@ bind refs C none
 bind refs ! none
 
 bind refs fa       @git fetch --all
-bind refs m<ENTER> @sh -c 'git merge  %(ref) || git merge  --abort'
-bind refs rb       @sh-c 'git rebase %(ref) || git rebase --abort'
+bind refs m<ENTER> +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f merge "" %(commit)'
+bind refs rb       +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f rebase "" %(ref)'
 # only available in FF
 bind refs ps +?git fetch . HEAD:%(ref)
 # }
@@ -212,9 +214,11 @@ bind refs ps +?git fetch . HEAD:%(ref)
 bind main C none
 bind main ! none
 
-bind main rv @sh -c 'git revert --no-edit %(commit) || git revert --abort'
+bind main rv +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f revert --no-edit %(commit)'
+bind diff rv +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f revert --no-edit %(commit)'
 bind main rb >?git rebase -i %(commit)
 bind main ra >?git rebase --abort
+bind main rc >?git rebase --continue
 bind main D  @?git clean -fd
 # }
 
