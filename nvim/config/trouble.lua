@@ -9,8 +9,8 @@ return {
     -- refer to the configuration section below
     -- Lua
     -- m.noremap("n", "<leader>xx", function() t.toggle() end)
-    m.noremap("n", "<leader>lw", function() t.toggle("workspace_diagnostics") end)
-    m.noremap("n", "<leader>lf", function() t.toggle("document_diagnostics") end)
+    m.noremap("n", "<leader>lw", function() t.toggle("workspace_diagnostics") end, "LSP: Diagnostic Workspace")
+    m.noremap("n", "<leader>lf", function() t.toggle("document_diagnostics") end, "LSP: Diagnostic Document")
 
     -- LSP
     -- Only covered parts of vim.diagnostics API. The rest of them are in `nvim-lspconfig`
@@ -21,10 +21,10 @@ return {
     m.noremap('n', '<leader>lp', function() t.toggle('lsp_implementations') end, "LSP: Jump to implementations")
 
     -- Quickfix
-    m.noremap("n", "<leader>tq", function() t.toggle("quickfix") end)
+    m.noremap("n", "<leader>tq", function() t.toggle("quickfix") end, "Trouble: Toggle Quickfix")
 
     -- Loclist
-    m.noremap("n", "<leader>tl", function() t.toggle("loclist") end)
+    m.noremap("n", "<leader>tl", function() t.toggle("loclist") end, "Trouble: Toggle Loclist")
 
     -- https://stackoverflow.com/questions/40867576/how-to-use-vimgrep-to-grep-work-thats-high-lighted-by-vim
     m.noremap('n', '<leader>fW', function()
