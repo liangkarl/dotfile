@@ -1,7 +1,7 @@
 -- Plugin: vim-matchup
 return { -- enhance '%' function, like if-endif
   'andymass/vim-matchup',
-  dependency = {
+  dependencies = {
     'nvim-treesitter/nvim-treesitter',
   },
   config = function()
