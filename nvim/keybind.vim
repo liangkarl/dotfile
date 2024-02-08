@@ -83,6 +83,8 @@ nnoremap <silent><leader>cf :call ShowFileInfo()<cr>
 " Change the directory only for the current window
 nnoremap <silent><leader>cd :call ChangeCWD()<cr>
 
+vnoremap <silent>/ <Esc>/\%V
+
 " <C-c>: leave Insert Mode and return to Normal Mode.
 "   The difference between <C-c> and <Esc> is as below:
 "   1. Would not check abbreviations
