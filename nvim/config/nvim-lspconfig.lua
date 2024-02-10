@@ -116,7 +116,7 @@ return { -- LSP configuration
       local lspb = vim.lsp.buf
 
       -- Improve format codes
-      m.noremap({ 'n', 'v' }, '=', function() lspb.format({ async = true }) end, "LSP: Format code")
+      m.noremap({ 'n', 'v' }, '<space>=', function() lspb.format({ async = true }) end, "LSP: Format code")
       -- Enable completion triggered by <c-x><c-o>
       vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
