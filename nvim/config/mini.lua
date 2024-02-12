@@ -9,7 +9,13 @@ return { -- A 'Swiss Army Knife' with many small features
     require('mini.align').setup()
     require('mini.pairs').setup()
     require('mini.surround').setup()
-    require('mini.notify').setup()
+    require('mini.notify').setup({
+      window = {
+        config = {
+          height = 5
+        }
+      }
+    })
 
     m = require('mini.indentscope')
     m.setup({
