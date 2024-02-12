@@ -107,29 +107,12 @@ return { -- LSP configuration
       },
     }
 
-    m.noremap('n', '<leader>li', '<cmd>LspInfo<cr>', "LSP: LSP Server Status")
-    m.noremap('n', '<leader>ms', '<cmd>Mason<cr>', "LSP: Open Mason")
-
     -- Use LspAttach autocommand to only map the following keys
     -- after the language server attaches to the current buffer
     m.autocmd('LspAttach', '*', function(ev)
-      local lspb = vim.lsp.buf
-
-      -- Improve format codes
-      m.noremap({ 'n', 'v' }, '<space>=', function() lspb.format({ async = true }) end, "LSP: Format code")
       -- Enable completion triggered by <c-x><c-o>
       vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
-      m.noremap('n', '<space>lv', lspb.hover, "LSP: Show info")
-      m.noremap('n', '<space>lh', lspb.signature_help, "LSP: Show signatures")
-      m.noremap('n', '<space>la', lspb.add_workspace_folder, "LSP: Add workspace")
-      m.noremap('n', '<space>lm', lspb.remove_workspace_folder, "LSP: Remove workspace")
-      m.noremap('n', '<leader>ls', function()
-        print(vim.inspect(lspb.list_workspace_folders()))
-      end, "LSP: Show workspace")
-
-      m.noremap('n', '<space>rn', lspb.rename, "LSP: Rename var/func")
-      m.noremap({ 'n', 'v' }, '<space>lc', lspb.code_action, "LSP: Show code action menu")
     end, {
       group = m.augroup('UserLspConfig'),
     })

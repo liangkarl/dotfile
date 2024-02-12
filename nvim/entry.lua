@@ -52,15 +52,8 @@ require("lazy").setup({
     'roxma/vim-tmux-clipboard',
   },
   { -- delete buffers
-    'Asheq/close-buffers.vim',
-    config = function()
-      vim.cmd([[
-        " Plugin: close-buffers.vim
-        " close several types of buffers
-        nnoremap <leader>bm :Bdelete menu<cr>
-        nnoremap <leader>bs :Bdelete select<cr>
-      ]])
-    end
+    'kazhala/close-buffers.nvim',
+    config = true
   },
 
   require('config.stickybuf'),
@@ -124,12 +117,7 @@ require("lazy").setup({
   },
 
   -- Debug Tools
-  { -- Debug Adapter Protocol client implementation
-    'mfussenegger/nvim-dap',
-    config = function()
-      require('config.nvim-dap')
-    end
-  },
+  require('config.nvim-dap'),
 
   -- Git
   { --   " git blame whole file
@@ -143,15 +131,7 @@ require("lazy").setup({
     config = true,
     event = "VeryLazy",
   },
-  { -- git status
-    'TimUntersberger/neogit',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-    },
-    config = function()
-      require('config.neogit')
-    end
-  },
+  require('config.neogit'),
   { -- git diff
     'sindrets/diffview.nvim',
     config = function()
@@ -249,10 +229,6 @@ require("lazy").setup({
     end
   },
   require('config.lsp-status'),
-  { -- Display cheat sheet of vim shortcut
-    'folke/which-key.nvim',
-    config = true,
-  },
   require('config.fold-preview'),
   { -- setup appearance of indent, space, etc.
     -- FIXME:
@@ -281,4 +257,5 @@ require("lazy").setup({
     },
     enabled = false,
   },
+  require("config.keybind")
 })

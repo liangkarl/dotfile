@@ -19,9 +19,6 @@ outline = { -- Symbol Manager
         },
       }
     })
-
-    m.noremap('n', '<leader>sm', '<cmd>Outline<cr>', 'Toggle Outline Symbol Manager')
-    m.noremap('n', '<leader>si', '<cmd>OutlineStatus<cr>', 'Get Outline Symbol Manager info')
   end
 }
 
@@ -227,8 +224,6 @@ aerial = {
       },
     })
 
-    m.noremap('n', '<leader>sm', '<cmd>AerialToggle<cr>', 'Toggle Aerial Symbol Manager')
-    m.noremap('n', '<leader>si', '<cmd>AerialInfo<cr>', 'Get Aerial Symbol Manager status')
   end
 }
 

@@ -71,8 +71,3 @@ require('bufferline').setup {
     sort_by = 'directory'
   }
 }
-
-vim.keymap.set('n', '<leader>n', ':BufferLineCycleNext<cr>')
-vim.keymap.set('n', '<leader>p', ':BufferLineCyclePrev<cr>')
-vim.keymap.set('n', '<leader>bp', ':BufferLinePick<cr>')
-vim.keymap.set('n', '<leader>bc', ':BufferLinePickClose<cr>')

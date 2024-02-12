@@ -46,11 +46,6 @@ vim.env.NVIM_TERM = 1
 
 -- Open terminal
 vim.cmd([[
-  nnoremap <leader>\ <Cmd>1ToggleTerm direction=tab<cr>
-
-  nnoremap <C-\> <Cmd>2ToggleTerm direction=horizontal<cr>
-  inoremap <C-\> <Cmd>2ToggleTerm direction=horizontal<cr>
-
   " Change mode to normal mode
   autocmd FileType toggleterm tnoremap <buffer> <Esc> <C-\><C-n>
   autocmd FileType toggleterm tnoremap <buffer> <C-x> <C-\><C-n>
