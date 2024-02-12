@@ -54,7 +54,7 @@ vim.opt.guicursor = {
 vim.opt.scrolloff = 999
 vim.opt.sidescrolloff = 10
 
-gid = m.augroup("Habbits")
+gid = m.augroup("UserProfile")
 
 -- Reload layout
 m.autocmd("InsertLeave", '*', function() edit(false) end, {
@@ -88,7 +88,6 @@ m.autocmd("TermLeave", '*', function()
   group = gid
 })
 
-gid = m.augroup("PluginConfig")
 -- FIXME: WA for autocmd not working
 m.autocmd({ "FileReadPost", "BufReadPost" }, '*', function()
     if vim.o.modifiable == true then
@@ -102,15 +101,8 @@ m.autocmd({ "FileReadPost", "BufReadPost" }, '*', function()
   group = gid
 })
 
-gid = m.augroup("ExtraFeature")
 -- Highlight on yank
 m.autocmd("TextYankPost", '*', function() vim.highlight.on_yank() end, {
-  group = gid,
-})
-
--- windows to close with "q"
-m.autocmd( "FileType", { "help", "startuptime", "qf", "lspinfo", "man" },
-  [[nnoremap <buffer><silent> q :close<CR>]], {
   group = gid,
 })
 

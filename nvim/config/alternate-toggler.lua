@@ -25,6 +25,3 @@ vim.g.at_custom_alternates = {
     ["yes"] = "no",
     ["&&"] = "||",
 }
-
--- Toggle boolean
-vim.cmd("nnoremap <silent> <leader>! :ToggleAlternate<cr>")

@@ -100,18 +100,6 @@ return {
       telescope.load_extension('undo')
       telescope.load_extension('whaler')
       telescope.load_extension('luasnip')
-
-      -- Find files using Telescope command-line sugar.
-      m.noremap('n', '<leader>fs', '<cmd>Telescope builtin include_extensions=true<cr>', "Telescope main menu")
-      m.noremap('n', '<leader>ff', '<cmd>Telescope oldfiles<cr>', "Open recently closed files")
-      m.noremap('n', '<leader>fF', '<cmd>Telescope find_files<cr>', "Open files")
-      m.noremap('n', '<leader>fg', '<cmd>Telescope grep_string<cr>', "Grep current curosr word")
-      m.noremap('n', '<leader>fG', '<cmd>Telescope live_grep<cr>', "Grep assigned words")
-      m.noremap('n', '<leader>fb', '<cmd>Telescope buffers<cr>', "Pick up opened buffers")
-      m.noremap('n', '<leader>fr', '<cmd>Telescope registers<cr>', "Open registers")
-      m.noremap('n', '<leader>f?', '<cmd>Telescope keymaps<cr>', "Open keymaps")
-      m.noremap('n', '<leader>fe', '<cmd>Telescope filetypes<cr>', "Change filetypes")
-      m.noremap('n', '<leader>fh', '<cmd>Telescope help_tags<cr>', "Show help manuals like :help")
     end,
   },
 }

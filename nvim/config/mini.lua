@@ -53,10 +53,6 @@ return { -- A 'Swiss Army Knife' with many small features
       }
     })
 
-    m = require('helpers.utils')
-    m.noremap('n', '<leader>ft', '<cmd>lua MiniFiles.open()<cr>', 'Open FileExplorer')
-    m.noremap('n', '<leader>ss', '<cmd>lua MiniTrailspace.trim()<cr>', 'Remove trailing spaces')
-
     -- NOTE:
     -- Low Performance when enabled in insert mode(?).
     vim.cmd([[

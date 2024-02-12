@@ -12,7 +12,6 @@ package.path = nvim_dir .. '/?.lua;' .. package.path
 vim.g.mapleader = ' '
 
 vim.cmd("source " .. nvim_dir .. "/config.vim")
-vim.cmd("source " .. nvim_dir .. "/keybind.vim")
 
 require('options')
 require('entry')
