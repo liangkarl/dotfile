@@ -1,12 +1,23 @@
-PROJ-ID: Title
+PRJ-ID: Title
 
 # G6, G7 and etc
-<Project>
+Project
+-------
+
+
 # package name
-<Package>
+Package
+-------
+
+
 # Mantis tickets
-<Problem>
+Problem
+-------
 
-<Solution>
 
-<Test>
+Solution
+--------
+
+
+Test: Pass
+----------
