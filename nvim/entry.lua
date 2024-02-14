@@ -83,7 +83,8 @@ require("lazy").setup({
     end,
   },
   require('config.mini'),
-  require('config.vim-matchup'),
+  -- FIXME: replace with new matchup plugin
+  -- require('config.vim-matchup'),
   { -- preview the replace/search result
     'markonm/traces.vim',
   },
