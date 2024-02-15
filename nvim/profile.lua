@@ -72,11 +72,19 @@ m.autocmd("BufReadPost", '*', load_position, {
   group = gid
 })
 -- Set no line number in terminal buffer
-m.autocmd("TermOpen", '*', function()
+m.autocmd("TermEnter", '*', function()
     vim.wo.number = false
     vim.wo.relativenumber = false
   end, {
-  desc = 'Edit Mode',
+  desc = 'Hide numbers while enter',
+  group = gid
+})
+
+m.autocmd("TermLeave", '*', function()
+    vim.wo.number = true
+    vim.wo.relativenumber = true
+  end, {
+  desc = 'Show numbers after leave',
   group = gid
 })
 
