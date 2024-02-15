@@ -11,6 +11,7 @@ set commit-order = default
 set main-options = -n 20000
 set main-view-commit-title-graph = v1
 set refresh-mode = after-command
+set log-options = -p
 
 # Addjust the column width of author
 set main-view = line-number:no,interval=5 \
@@ -44,42 +45,50 @@ bind generic p none
 bind generic q none
 bind generic b none
 bind generic o none
+bind generic w none
+bind generic t none
 # }
 
 # Views {
 ## Functional
-bind generic v  none
-bind generic v<Enter> view-main
-bind generic vl view-log
+bind generic 0  view-main
+bind generic 9  view-reflog
+bind generic 8  view-log
+bind generic 1  view-status
+bind generic 2  view-refs
+bind generic 3  view-stash
+bind generic B  view-blame
+bind generic T  view-tree
+bind generic \  view-grep
+bind generic H  view-help
 
-bind main    ,  view-status
-bind status  ,  view-stash
-bind stash   ,  view-main
-bind generic vs view-status
-# No independent keybind to view-log
+bind stage   1  none
+bind stage   2  none
+bind main    H  view-help
 
-bind main    .  view-refs
-bind refs    .  view-reflog
-bind reflog  .  view-main
-bind generic vr view-refs
+# 0 -> 1 -> 2 -> 3 -> 8 -> 9 -> 0
+# main -> status -> refs -> stash -> log -> reflog -> main
+bind main   , view-status
+bind status , view-refs
+bind refs   , view-stash
+bind stash  , view-log
+bind log    , view-reflog
+bind reflog , view-main
 
-bind refs    ,  view-status
-bind status  .  view-refs
+bind main   . view-reflog
+bind reflog . view-log
+bind log    . view-stash
+bind stash  . view-refs
+bind refs   . view-status
+bind status . view-main
 
-bind tree    ,  view-blob
-bind blob    ,  view-blame
-bind blame   ,  view-tree
-bind generic vb view-blame
-bind generic vf view-tree
-# No independent keybind to view-blob
+bind tree   , view-blob
+bind blob   , view-blame
+bind blame  , view-tree
 
-# don't bind 'none' since 'none' would override 'view-xxxx'
-bind stage   ,  view-main
-bind stage   .  view-refs
-
-bind generic v/ view-grep
-bind generic vh view-help
-bind generic vm maximize
+bind tree   . view-blame
+bind blame  . view-blob
+bind blob   . view-tree
 
 ## Options
 bind generic o  none
@@ -112,7 +121,7 @@ bind generic K  previous
 bind generic Q  quit
 bind generic <Ctrl-C> none
 
-bind generic pwd      +git rev-parse --show-toplevel
+bind generic ;  +git rev-parse --show-toplevel
 # }
 
 # Feature {
