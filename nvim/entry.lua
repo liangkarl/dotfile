@@ -78,8 +78,10 @@ require("lazy").setup({
   {
     'nmac427/guess-indent.nvim',
     config = function()
-      require('guess-indent').setup({})
-      m.noremap('n', '<leader>st', '<cmd>GuessIndent<cr>', 'Invoke GuessIndent')
+      require('guess-indent').setup({
+        auto_cmd = false,
+        override_editor = false,
+      })
     end,
   },
   require('config.mini'),

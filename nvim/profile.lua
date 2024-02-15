@@ -38,6 +38,7 @@ local function edit(enable)
   end
 end
 
+vim.g.editorconfig = false
 -- cmd.colorscheme('material-darker')
 
 m.highlight("nCursor", { fg=nil, bg='SlateBlue', cterm=nil, ctermbg=1 })
@@ -83,6 +84,9 @@ gid = m.augroup("PluginConfig")
 -- FIXME: WA for autocmd not working
 m.autocmd({ "FileReadPost", "BufReadPost" }, '*', function()
     if vim.o.modifiable == true then
+      vim.g.editorconfig = true
+      require('editorconfig').config(0)
+      vim.g.editorconfig = false
       vim.cmd('silent !GuessIndent')
     end
   end, {
