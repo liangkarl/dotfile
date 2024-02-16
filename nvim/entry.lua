@@ -43,7 +43,7 @@ require("lazy").setup({
 
   -- Enhanced functions
   require('config.nvim-treesitter'),
-  require('config.sidebar'),
+  require('config.nvim-ide'),
   { -- share clipboard between tmux and vim
     'roxma/vim-tmux-clipboard',
   },
