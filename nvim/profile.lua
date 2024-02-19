@@ -4,6 +4,7 @@
 -- local colorscheme = require("helpers.colorscheme")
 local m = require('helpers.utils')
 
+local vim = vim
 local cmd = vim.cmd
 local fn = vim.fn
 local gid
@@ -115,7 +116,8 @@ m.autocmd( "BufAdd", "*", function()
     m.highlight("MiniCursorword", { fg = 'tomato', ctermfg = 'Red' })
     m.highlight("MiniCursorwordCurrent", { fg = 'tomato', ctermfg = 'Red' })
   end, {
-  group = gid
+  desc = "WA for setting MiniCursorWord",
+  group = gid,
 })
 
 cmd([[

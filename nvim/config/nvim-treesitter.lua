@@ -5,6 +5,7 @@ return { -- Syntax highlight/lint with `treesitter`
   tag = 'v0.9.1',
   config = function()
     local treesitter = require('nvim-treesitter.configs')
+    local vim = vim
 
     treesitter.setup {
       -- one of "all", "maintained" (parsers with maintainers), or a list of languages
@@ -38,6 +39,10 @@ return { -- Syntax highlight/lint with `treesitter`
           node_incremental = ']',
           node_decremental = '[',
         },
+        -- Report https://github.com/nvim-treesitter/nvim-treesitter/issues/2634
+        is_supported = function ()
+          return vim.api.nvim_get_mode().mode ~= "c"
+        end
       },
 
       indent = {

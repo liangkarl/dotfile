@@ -53,6 +53,9 @@ end
 return { -- Display cheat sheet of vim shortcut
   'folke/which-key.nvim',
   dependencies = {
+    -- FIXME:
+    -- Check dependencies
+    -- For now, we use vim command to avoid dependency problems
   },
   config = function()
     local wk = require("which-key")
@@ -214,13 +217,13 @@ return { -- Display cheat sheet of vim shortcut
     m.noremap('n', '<leader>sw', function()
       print(vim.inspect(lsp.list_workspace_folders()))
     end, "Show LSP workspace")
-    m.noremap('n', '<leader>sc', M.change_cwd, "Set CWD to current buffer")
     m.noremap('n', '<leader>st', '<cmd>Telescope filetypes<cr>', "Change filetypes")
     m.noremap('n', '<leader>sl', '<cmd>Mason<cr>', "Mason: Main Menu")
     m.noremap('n', '<leader>sp', '<cmd>Lazy<cr>', "Lazy: Main Menu")
     m.noremap('n', '<leader>si', '<cmd>LspInfo<cr>', "LSP Server Info (LspInfo)")
     m.noremap('n', '<leader>sm', '<cmd>AerialInfo<cr>', 'Symbol Manager Info (AerialInfo)')
     m.noremap('n', '<leader>sg', '<cmd>GuessIndent<cr>', 'Set up indent (GuessIndent)')
+    m.noremap('n', '<leader>sc', M.change_cwd, "Set CWD to current buffer")
     m.noremap('n', '<leader>sf', M.show_file_info, "Show File and CWD info")
     m.noremap('n', '<leader>sr', M.reload_settings, "Reload init.lua")
     m.noremap('n', '<leader>s,', M.edit_settings, "Edit runtime init.lua")
