@@ -97,13 +97,8 @@ return { -- Display cheat sheet of vim shortcut
     m.noremap('i', '<C-c>', '<Esc>', "<ESC>")
     m.noremap('v', 'p', 'P', "Paste without yanking the deleted text")
 
-    -- bd => bidirection
-    -- f => hit one char
-    -- s => search string
-    m.noremap('n', 'f', '<Plug>(easymotion-bd-f)')
-    m.noremap('n', 'W', '<Plug>(easymotion-w)')
-    m.noremap('n', 'E', '<Plug>(easymotion-e)')
-    m.noremap('n', 'B', '<Plug>(easymotion-b)')
+    m.noremap('', 'f', '<cmd>HopChar1<cr>')
+    m.noremap('', 'W', '<cmd>HopWord<cr>')
 
     -- Retain the visual selection after indent lines
     m.noremap('v', '>', '>gv', 'Indent line(s) more')

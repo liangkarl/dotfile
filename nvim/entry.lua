@@ -90,12 +90,7 @@ require("lazy").setup({
   { -- make string search more convenient.
     'haya14busa/is.vim',
   },
-  { -- move cursor location like vimium
-    'easymotion/vim-easymotion',
-    config = function()
-      require('config.vim-easymotion')
-    end
-  },
+  require('config.hop'),
   { -- switch boolean value easily,
     'rmagatti/alternate-toggler',
     config = function()
