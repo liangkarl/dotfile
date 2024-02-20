@@ -60,9 +60,9 @@ return {
       { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
       'zane-/cder.nvim',
       'LinArcX/telescope-scriptnames.nvim',
-      "SalOrak/whaler",
+      'SalOrak/whaler',
       'debugloop/telescope-undo.nvim',
-      "benfowler/telescope-luasnip.nvim"
+      'benfowler/telescope-luasnip.nvim',
     },
     config = function()
       local telescope = require('telescope')
