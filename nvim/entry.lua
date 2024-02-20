@@ -72,15 +72,7 @@ require("lazy").setup({
       })
     end,
   },
-  {
-    'nmac427/guess-indent.nvim',
-    config = function()
-      require('guess-indent').setup({
-        auto_cmd = false,
-        override_editor = false,
-      })
-    end,
-  },
+  require('config.guess-indent'),
   require('config.mini'),
   -- FIXME: replace with new matchup plugin
   -- require('config.vim-matchup'),
