@@ -76,11 +76,9 @@ require("lazy").setup({
   require('config.mini'),
   -- FIXME: replace with new matchup plugin
   -- require('config.vim-matchup'),
-  { -- preview the replace/search result
-    'markonm/traces.vim',
-  },
-  { -- make string search more convenient.
-    'haya14busa/is.vim',
+  {
+    'nvimdev/hlsearch.nvim',
+    config = true
   },
   require('config.hop'),
   { -- switch boolean value easily,

@@ -54,6 +54,7 @@ vim.opt.guicursor = {
 }
 vim.opt.scrolloff = 999
 vim.opt.sidescrolloff = 10
+vim.opt.inccommand='nosplit'
 
 gid = m.augroup("UserProfile")
 
