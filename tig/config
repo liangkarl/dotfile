@@ -147,16 +147,20 @@ bind main    ay @git stash save "%(prompt new stash: )"
 bind stage   ay @git stash save "%(prompt new stash: )"
 bind status  ay @git stash save "%(prompt new stash: )"
 
-## Add/Del tag/branch
+## Add/Remove/Move tag and branch
 bind main   at @git tag "%(prompt new tag: )" %(commit)
 bind reflog at @git tag "%(prompt new tag: )" %(commit)
-bind main   dt @?git tag -d %(tag)
-bind refs   dt @?git tag -d %(tag)
-
+bind diff   at @git tag "%(prompt new tag: )" %(commit)
 bind main   ab @git branch "%(prompt new branch: )" %(commit)
 bind reflog ab @git branch "%(prompt new branch: )" %(commit)
-bind main   db @?git branch -D %(branch)
-bind refs   db @?git branch -D %(branch)
+bind diff   ab @git branch "%(prompt new branch: )" %(commit)
+bind main   a<ENTER> @sh -c 't=/tmp/tig.tag; b=/tmp/tig.branch; if [ -f $b ]; then git branch "$(cat $b)" %(commit); elif [ -f $t ]; then git tag "$(cat $t)" %(commit); else echo "no assigned tag or branch"; fi; rm $t $b'
+bind reflog a<ENTER> @sh -c 't=/tmp/tig.tag; b=/tmp/tig.branch; if [ -f $b ]; then git branch "$(cat $b)" %(commit); elif [ -f $t ]; then git tag "$(cat $t)" %(commit); else echo "no assigned tag or branch"; fi; rm $t $b'
+bind diff   a<ENTER> @sh -c 't=/tmp/tig.tag; b=/tmp/tig.branch; if [ -f $b ]; then git branch "$(cat $b)" %(commit); elif [ -f $t ]; then git tag "$(cat $t)" %(commit); else echo "no assigned tag or branch"; fi; rm $t $b'
+bind main   d<ENTER> @sh -c 'if [ -z "%(tag)" ]; then git branch -D "%(branch)"; echo "%(branch)" > /tmp/tig.branch; else git tag -d %(tag); echo "%(tag)" > /tmp/tig.tag; fi'
+bind reflog d<ENTER> @sh -c 'if [ -z "%(tag)" ]; then git branch -D "%(branch)"; echo "%(branch)" > /tmp/tig.branch; else git tag -d %(tag); echo "%(tag)" > /tmp/tig.tag; fi'
+bind diff   d<ENTER> @sh -c 'if [ -z "%(tag)" ]; then git branch -D "%(branch)"; echo "%(branch)" > /tmp/tig.branch; else git tag -d %(tag); echo "%(tag)" > /tmp/tig.tag; fi'
+bind refs   d<ENTER> @sh -c 'if [ -z "%(tag)" ]; then git branch -D "%(branch)"; echo "%(branch)" > /tmp/tig.branch; else git tag -d %(tag); echo "%(tag)" > /tmp/tig.tag; fi'
 
 ## Checkout
 bind main   co @git checkout %(commit)
@@ -205,7 +209,8 @@ bind stage a stage-update-line
 bind status C none
 bind status ! none
 bind status d @?rm -rf %(file)
-bind status D @?git clean -fd
+bind status D @?sh -c 'rm -rf $(dirname %(file))'
+bind status C @?git clean -fd
 # }
 
 # Reference {
