@@ -138,14 +138,17 @@ bind status  ca       >?git commit -v --amend
 bind status  cn       @?git commit --amend --no-edit
 
 ## Stage/Unstage file
-bind stage   f        @sh -c 'if git diff --cached --quiet %(file); then git add %(file); else git reset --quiet HEAD %(file); fi'
-bind stage   F        @sh -c 'if git diff --cached --quiet; then git add -u; else git reset --quiet HEAD; fi'
+bind stage   f<Enter> @sh -c 'if git diff --cached --quiet %(file); then git add %(file); else git reset --quiet HEAD %(file); fi'
+bind stage   fa       @sh -c 'if git diff --cached --quiet; then git add -u; else git reset --quiet HEAD; fi'
 
 ## Add stash
 bind generic a        none
 bind main    ay       @git stash save "%(prompt new stash: )"
+bind main    y<Enter> @sh -c 'git stash save "$(basename $(git rev-parse --show-toplevel)).$(git rev-parse --short HEAD)"'
 bind stage   ay       @git stash save "%(prompt new stash: )"
+bind stage   y<Enter> @sh -c 'git stash save "$(basename $(git rev-parse --show-toplevel)).$(git rev-parse --short HEAD)"'
 bind status  ay       @git stash save "%(prompt new stash: )"
+bind status  y<Enter> @sh -c 'git stash save "$(basename $(git rev-parse --show-toplevel)).$(git rev-parse --short HEAD)"'
 
 ## Add/Remove/Move tag and branch
 bind main   at @git tag "%(prompt new tag: )" %(commit)
@@ -208,9 +211,9 @@ bind stage a stage-update-line
 # Status {
 bind status C none
 bind status ! none
-bind status d @?rm -rf %(file)
-bind status D @?sh -c 'rm -rf $(dirname %(file))'
-bind status C @?git clean -fd
+bind status d<Enter> @?rm -rf %(file)
+bind status dd @?sh -c 'rm -rf $(dirname %(file))'
+bind status D @?git clean -fd
 # }
 
 # Reference {
@@ -218,6 +221,7 @@ bind refs C none
 bind refs ! none
 
 bind refs fa       @git fetch --all
+bind main fa       @git fetch --all
 bind refs m<ENTER> +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f merge "" %(commit)'
 bind refs rb       +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f rebase "" %(ref)'
 # only available in FF
