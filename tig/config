@@ -232,12 +232,23 @@ bind refs ps +?git fetch . HEAD:%(ref)
 bind main C none
 bind main ! none
 
+bind main bs @sh -c 'git bisect start'
+bind main bg @sh -c 'git bisect good %(commit)'
+bind main bb @sh -c 'git bisect bad %(commit)'
+bind main br @sh -c 'git bisect reset'
+bind main =  :set main-options = -n 20000
+bind main f/ :set main-options = '--author=%(prompt search author name: )'
 bind main rv +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f revert --no-edit %(commit)'
 bind diff rv +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f revert --no-edit %(commit)'
 bind main rb >?git rebase -i %(commit)
 bind main ra >?git rebase --abort
 bind main rc >?git rebase --continue
 bind main D  @?git clean -fd
+# }
+
+# Log {
+bind log = :set log-options = -p
+bind log f/ :set log-options = '--author=%(prompt search author name: )'
 # }
 
 # Reflog {
