@@ -1,3 +1,6 @@
+# process
+alias psa='ps -elf'
+
 # list files
 alias ls='ls -v --group-directories-first -N --color=auto'
 alias ll='ls -l --time-style=long-iso'
@@ -45,3 +48,5 @@ alias man=" \
 reboot() {
     echo "If you want to reboot the computer, please try 'builtin reboot'." >&2
 }
+
+kill_dependant() { kill $(ps -s $1 -o pid=); }
