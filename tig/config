@@ -92,17 +92,14 @@ bind blob   . view-tree
 
 ## Options
 bind generic o  none
-bind generic oo :toggle sort-order
 bind generic os :toggle sort-field
-bind generic on :toggle line-number
 bind generic od :toggle date
 bind generic oa :toggle author
 bind generic oi :toggle id
-bind generic og :toggle line-graphics
+bind generic og :toggle graph
 bind generic of :toggle file-name
 bind generic oF :toggle file-filter
 bind generic op :toggle ignore-space
-bind generic ot :toggle commit-title-overflow
 bind generic or :toggle commit-title-refs
 # }
 
@@ -142,28 +139,42 @@ bind stage   f<Enter> @sh -c 'if git diff --cached --quiet %(file); then git add
 bind stage   fa       @sh -c 'if git diff --cached --quiet; then git add -u; else git reset --quiet HEAD; fi'
 
 ## Add stash
-bind generic a        none
-bind main    ay       @git stash save "%(prompt new stash: )"
+bind generic y        none
+bind main    ya       @git stash save "%(prompt new stash: )"
 bind main    y<Enter> @sh -c 'git stash save "$(basename $(git rev-parse --show-toplevel)).$(git rev-parse --short HEAD)"'
-bind stage   ay       @git stash save "%(prompt new stash: )"
+bind main    p<Enter> @sh -c 'git stash pop stash@{0}'
+bind stage   ya       @git stash save "%(prompt new stash: )"
 bind stage   y<Enter> @sh -c 'git stash save "$(basename $(git rev-parse --show-toplevel)).$(git rev-parse --short HEAD)"'
-bind status  ay       @git stash save "%(prompt new stash: )"
+bind stage   p<Enter> @sh -c 'git stash pop stash@{0}'
+bind status  ya       @git stash save "%(prompt new stash: )"
 bind status  y<Enter> @sh -c 'git stash save "$(basename $(git rev-parse --show-toplevel)).$(git rev-parse --short HEAD)"'
+bind status  p<Enter> @sh -c 'git stash pop stash@{0}'
 
 ## Add/Remove/Move tag and branch
-bind main   at @git tag "%(prompt new tag: )" %(commit)
-bind main   ab @git branch "%(prompt new branch: )" %(commit)
-bind main   a<ENTER> @sh -c 't=/tmp/tig.tag; b=/tmp/tig.branch; if [ -f $b ]; then git branch "$(cat $b)" %(commit); elif [ -f $t ]; then git tag "$(cat $t)" %(commit); else echo "no assigned tag or branch"; fi; rm $t $b'
-bind main   d<ENTER> @sh -c 'if [ -z "%(tag)" ]; then git branch -D "%(branch)"; echo "%(branch)" > /tmp/tig.branch; else git tag -d %(tag); echo "%(tag)" > /tmp/tig.tag; fi'
-bind reflog at @git tag "%(prompt new tag: )" %(commit)
-bind reflog ab @git branch "%(prompt new branch: )" %(commit)
-bind reflog a<ENTER> @sh -c 't=/tmp/tig.tag; b=/tmp/tig.branch; if [ -f $b ]; then git branch "$(cat $b)" %(commit); elif [ -f $t ]; then git tag "$(cat $t)" %(commit); else echo "no assigned tag or branch"; fi; rm $t $b'
-bind reflog d<ENTER> @sh -c 'if [ -z "%(tag)" ]; then git branch -D "%(branch)"; echo "%(branch)" > /tmp/tig.branch; else git tag -d %(tag); echo "%(tag)" > /tmp/tig.tag; fi'
-bind diff   at @git tag "%(prompt new tag: )" %(commit)
-bind diff   ab @git branch "%(prompt new branch: )" %(commit)
-bind diff   a<ENTER> @sh -c 't=/tmp/tig.tag; b=/tmp/tig.branch; if [ -f $b ]; then git branch "$(cat $b)" %(commit); elif [ -f $t ]; then git tag "$(cat $t)" %(commit); else echo "no assigned tag or branch"; fi; rm $t $b'
-bind diff   d<ENTER> @sh -c 'if [ -z "%(tag)" ]; then git branch -D "%(branch)"; echo "%(branch)" > /tmp/tig.branch; else git tag -d %(tag); echo "%(tag)" > /tmp/tig.tag; fi'
-bind refs   d<ENTER> @sh -c 'if [ -z "%(tag)" ]; then git branch -D "%(branch)"; echo "%(branch)" > /tmp/tig.branch; else git tag -d %(tag); echo "%(tag)" > /tmp/tig.tag; fi'
+bind main   ta       @git tag "%(prompt new tag: )" %(commit)
+bind main   t<ENTER> @sh -c 'git tag tag.$(git rev-parse --short %(commit)) %(commit)'
+bind main   ba       @git branch "%(prompt new branch: )" %(commit)
+bind main   b<ENTER> @sh -c 'git branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)'
+bind main   a<ENTER> @sh -c 't=/tmp/tig.tag; b=/tmp/tig.branch; if [ -f $b ]; then git branch $(cat $b) %(commit); elif [ -f $t ]; then git tag $(cat $t) %(commit); else echo "no assigned tag or branch"; fi; rm $t $b'
+bind main   d<ENTER> @sh -c 'if [ -z "%(tag)" ]; then git branch -D %(branch); echo "%(branch)" > /tmp/tig.branch; else git tag -d %(tag); echo %(tag) > /tmp/tig.tag; fi'
+bind reflog ta       @git tag "%(prompt new tag: )" %(commit)
+bind reflog t<ENTER> @sh -c 'git tag tag.$(git rev-parse --short %(commit)) %(commit)'
+bind reflog ba       @git branch "%(prompt new branch: )" %(commit)
+bind reflog b<ENTER> @sh -c 'git branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)'
+bind reflog a<ENTER> @sh -c 't=/tmp/tig.tag; b=/tmp/tig.branch; if [ -f $b ]; then git branch $(cat $b) %(commit); elif [ -f $t ]; then git tag $(cat $t) %(commit); else echo "no assigned tag or branch"; fi; rm $t $b'
+bind reflog d<ENTER> @sh -c 'if [ -z "%(tag)" ]; then git branch -D %(branch); echo "%(branch)" > /tmp/tig.branch; else git tag -d %(tag); echo "%(tag)" > /tmp/tig.tag; fi'
+bind diff   ta       @git tag "%(prompt new tag: )" %(commit)
+bind diff   t<ENTER> @sh -c 'git tag tag.$(git rev-parse --short %(commit)) %(commit)'
+bind diff   ba       @git branch "%(prompt new branch: )" %(commit)
+bind diff   b<ENTER> @sh -c 'git branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)'
+bind diff   a<ENTER> @sh -c 't=/tmp/tig.tag; b=/tmp/tig.branch; if [ -f $b ]; then git branch $(cat $b) %(commit); elif [ -f $t ]; then git tag $(cat $t) %(commit); else echo "no assigned tag or branch"; fi; rm $t $b'
+bind diff   d<ENTER> @sh -c 'if [ -z "%(tag)" ]; then git branch -D %(branch); echo "%(branch)" > /tmp/tig.branch; else git tag -d %(tag); echo "%(tag)" > /tmp/tig.tag; fi'
+bind refs   ta       @git tag "%(prompt new tag: )" HEAD
+bind refs   t<ENTER> @sh -c 'git tag tag.$(git rev-parse --short HEAD) HEAD'
+bind refs   ba       @git branch "%(prompt new branch: )" HEAD
+bind refs   b<ENTER> @sh -c 'git branch branch.$(basename $(git rev-parse --show-toplevel)) HEAD'
+bind refs   a<ENTER> @sh -c 't=/tmp/tig.tag; b=/tmp/tig.branch; if [ -f $b ]; then git branch $(cat $b) HEAD; elif [ -f $t ]; then git tag $(cat $t) HEAD; else echo "no assigned tag or branch"; fi; rm $t $b'
+bind refs   d<ENTER> @sh -c 'if [ -z "%(tag)" ]; then git branch -D %(branch); echo "%(branch)" > /tmp/tig.branch; else git tag -d %(tag); echo "%(tag)" > /tmp/tig.tag; fi'
 
 ## Checkout
 bind main   co @git checkout %(commit)
@@ -221,7 +232,6 @@ bind refs C none
 bind refs ! none
 
 bind refs fa       @git fetch --all
-bind main fa       @git fetch --all
 bind refs m<ENTER> +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f merge "" %(commit)'
 bind refs rb       +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f rebase "" %(ref)'
 # only available in FF
@@ -237,7 +247,8 @@ bind main bg @sh -c 'git bisect good %(commit)'
 bind main bb @sh -c 'git bisect bad %(commit)'
 bind main br @sh -c 'git bisect reset'
 bind main =  :set main-options = -n 20000
-bind main f/ :set main-options = '--author=%(prompt search author name: )'
+bind main fa :set main-options = '--author=%(prompt search author name: )'
+bind main fm :set main-options = '--no-merges'
 bind main rv +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f revert --no-edit %(commit)'
 bind diff rv +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f revert --no-edit %(commit)'
 bind main rb >?git rebase -i %(commit)
@@ -248,10 +259,15 @@ bind main D  @?git clean -fd
 
 # Log {
 bind log = :set log-options = -p
-bind log f/ :set log-options = '--author=%(prompt search author name: )'
+bind log fa :set log-options = '--author=%(prompt search author name: )'
+bind log fm :set log-options = '--no-merges'
 # }
 
 # Reflog {
 bind reflog C none
 bind reflog ! none
+# }
+
+# Pager {
+bind pager <Space> view-close-no-quit
 # }
