@@ -121,6 +121,14 @@ bind generic <Ctrl-C> none
 bind generic ;  +git rev-parse --show-toplevel
 # }
 
+# TODO:
+# c: commit
+# s: stash
+# b: branch
+# t: tag
+# p: patch / push / pull / fetch
+# r: rebase / merge
+
 # Feature {
 ## Commit
 bind generic c        none
@@ -135,46 +143,46 @@ bind status  ca       >?git commit -v --amend
 bind status  cn       @?git commit --amend --no-edit
 
 ## Stage/Unstage file
-bind stage   f<Enter> @sh -c 'if git diff --cached --quiet %(file); then git add %(file); else git reset --quiet HEAD %(file); fi'
-bind stage   fa       @sh -c 'if git diff --cached --quiet; then git add -u; else git reset --quiet HEAD; fi'
+bind stage   f<Enter> @sh -c 'tig.cmd stage_file "%(file)"'
+bind stage   fa       @sh -c 'tig.cmd stage_file'
 
 ## Add stash
-bind generic y        none
-bind main    ya       @git stash save "%(prompt new stash: )"
-bind main    y<Enter> @sh -c 'git stash save "$(basename $(git rev-parse --show-toplevel)).$(git rev-parse --short HEAD)"'
-bind main    p<Enter> @sh -c 'git stash pop stash@{0}'
-bind stage   ya       @git stash save "%(prompt new stash: )"
-bind stage   y<Enter> @sh -c 'git stash save "$(basename $(git rev-parse --show-toplevel)).$(git rev-parse --short HEAD)"'
-bind stage   p<Enter> @sh -c 'git stash pop stash@{0}'
-bind status  ya       @git stash save "%(prompt new stash: )"
-bind status  y<Enter> @sh -c 'git stash save "$(basename $(git rev-parse --show-toplevel)).$(git rev-parse --short HEAD)"'
-bind status  p<Enter> @sh -c 'git stash pop stash@{0}'
+bind generic s        none
+bind main    sa       @git stash save "%(prompt new stash: )"
+bind main    s<Enter> @sh -c 'tig.cmd stash'
+bind main    sp       @sh -c 'tig.cmd cmd stash pop stash@{0}'
+bind stage   sa       @git stash save "%(prompt new stash: )"
+bind stage   s<Enter> @sh -c 'tig.cmd stash'
+bind stage   sp       @sh -c 'tig.cmd cmd stash pop stash@{0}'
+bind status  sa       @git stash save "%(prompt new stash: )"
+bind status  s<Enter> +sh -c 'tig.cmd stash'
+bind status  sp       +sh -c 'tig.cmd cmd stash pop stash@{0}'
 
 ## Add/Remove/Move tag and branch
 bind main   ta       @git tag "%(prompt new tag: )" %(commit)
 bind main   t<ENTER> @sh -c 'git tag tag.$(git rev-parse --short %(commit)) %(commit)'
 bind main   ba       @git branch "%(prompt new branch: )" %(commit)
 bind main   b<ENTER> @sh -c 'git branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)'
-bind main   a<ENTER> @sh -c 't=/tmp/tig.tag; b=/tmp/tig.branch; if [ -f $b ]; then git branch $(cat $b) %(commit); elif [ -f $t ]; then git tag $(cat $t) %(commit); else echo "no assigned tag or branch"; fi; rm $t $b'
-bind main   d<ENTER> @sh -c 'if [ -z "%(tag)" ]; then git branch -D %(branch); echo "%(branch)" > /tmp/tig.branch; else git tag -d %(tag); echo %(tag) > /tmp/tig.tag; fi'
+bind main   a<ENTER> @sh -c 'tig.cmd add "%(commit)"'
+bind main   d<ENTER> @sh -c 'tig.cmd del "%(tag)" "%(branch)"'
 bind reflog ta       @git tag "%(prompt new tag: )" %(commit)
 bind reflog t<ENTER> @sh -c 'git tag tag.$(git rev-parse --short %(commit)) %(commit)'
 bind reflog ba       @git branch "%(prompt new branch: )" %(commit)
 bind reflog b<ENTER> @sh -c 'git branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)'
-bind reflog a<ENTER> @sh -c 't=/tmp/tig.tag; b=/tmp/tig.branch; if [ -f $b ]; then git branch $(cat $b) %(commit); elif [ -f $t ]; then git tag $(cat $t) %(commit); else echo "no assigned tag or branch"; fi; rm $t $b'
-bind reflog d<ENTER> @sh -c 'if [ -z "%(tag)" ]; then git branch -D %(branch); echo "%(branch)" > /tmp/tig.branch; else git tag -d %(tag); echo "%(tag)" > /tmp/tig.tag; fi'
+bind reflog a<ENTER> @sh -c 'tig.cmd add "%(commit)"'
+bind reflog d<ENTER> @sh -c 'tig.cmd del "%(tag)" "%(branch)"'
 bind diff   ta       @git tag "%(prompt new tag: )" %(commit)
 bind diff   t<ENTER> @sh -c 'git tag tag.$(git rev-parse --short %(commit)) %(commit)'
 bind diff   ba       @git branch "%(prompt new branch: )" %(commit)
 bind diff   b<ENTER> @sh -c 'git branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)'
-bind diff   a<ENTER> @sh -c 't=/tmp/tig.tag; b=/tmp/tig.branch; if [ -f $b ]; then git branch $(cat $b) %(commit); elif [ -f $t ]; then git tag $(cat $t) %(commit); else echo "no assigned tag or branch"; fi; rm $t $b'
-bind diff   d<ENTER> @sh -c 'if [ -z "%(tag)" ]; then git branch -D %(branch); echo "%(branch)" > /tmp/tig.branch; else git tag -d %(tag); echo "%(tag)" > /tmp/tig.tag; fi'
+bind diff   a<ENTER> @sh -c 'tig.cmd add "%(commit)"'
+bind diff   d<ENTER> @sh -c 'tig.cmd del "%(tag)" "%(branch)"'
 bind refs   ta       @git tag "%(prompt new tag: )" HEAD
 bind refs   t<ENTER> @sh -c 'git tag tag.$(git rev-parse --short HEAD) HEAD'
 bind refs   ba       @git branch "%(prompt new branch: )" HEAD
 bind refs   b<ENTER> @sh -c 'git branch branch.$(basename $(git rev-parse --show-toplevel)) HEAD'
-bind refs   a<ENTER> @sh -c 't=/tmp/tig.tag; b=/tmp/tig.branch; if [ -f $b ]; then git branch $(cat $b) HEAD; elif [ -f $t ]; then git tag $(cat $t) HEAD; else echo "no assigned tag or branch"; fi; rm $t $b'
-bind refs   d<ENTER> @sh -c 'if [ -z "%(tag)" ]; then git branch -D %(branch); echo "%(branch)" > /tmp/tig.branch; else git tag -d %(tag); echo "%(tag)" > /tmp/tig.tag; fi'
+bind refs   a<ENTER> @sh -c 'tig.cmd add "%(commit)"'
+bind refs   d<ENTER> @sh -c 'tig.cmd del "\"%(tag)\"" "\"%(branch)\""'
 
 ## Checkout
 bind main   co @git checkout %(commit)
@@ -200,18 +208,28 @@ bind main    rp @?git reset HEAD@{1}
 
 ## Cherry-pick
 ### Templete: f() $cmd "$opts" $commit
-bind main   cp +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f cherry-pick -s %(commit)'
-bind refs   cp +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f cherry-pick -s %(commit)'
-bind reflog cp +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f cherry-pick -s %(commit)'
-bind diff   cp +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f cherry-pick -s %(commit)'
+bind main   cp +sh -c 'tig.cmd cmd cherry-pick -s %(commit)'
+bind refs   cp +sh -c 'tig.cmd cmd cherry-pick -s %(commit)'
+bind reflog cp +sh -c 'tig.cmd cmd cherry-pick -s %(commit)'
+bind diff   cp +sh -c 'tig.cmd cmd cherry-pick -s %(commit)'
 
-## Format patch
-bind main   fp ?+git format-patch -k --binary --histogram -1 -o . %(commit)
-bind main   fP ?+git format-patch -k --binary --histogram -o patchset %(commit)^
-bind diff   fp ?+git format-patch -k --binary --histogram -1 -o . %(commit)
-bind blame  fp ?+git format-patch -k --binary --histogram -1 -o . %(commit)
-bind reflog fp ?+git format-patch -k --binary --histogram -1 -o . %(commit)
-bind stage  fp ?@sh -c 'git diff -k --binary --histogram > ./$(date +%s.%H%M).diff'
+## Format patch {
+bind main   ps       @sh -c 'tig.cmd aim patch %(commit)'
+bind main   p<Enter> +sh -c 'tig.cmd patch.create'
+bind main   pf       ?+git format-patch -k --binary --histogram -1 -o . %(commit)
+bind main   pF       ?+git format-patch -k --binary --histogram -o patchset %(commit)^
+bind main   pr       @sh -c 'tig.cmd patch.reset'
+bind diff   ps       @sh -c 'tig.cmd aim patch %(commit)'
+bind diff   p<Enter> +sh -c 'tig.cmd patch.create'
+bind diff   pf       ?+git format-patch -k --binary --histogram -1 -o . %(commit)
+bind diff   pr       @sh -c 'tig.cmd patch.reset'
+bind reflog ps       @sh -c 'tig.cmd aim patch %(commit)'
+bind reflog p<Enter> +sh -c 'tig.cmd patch.create'
+bind reflog pf       ?+git format-patch -k --binary --histogram -1 -o . %(commit)
+bind reflog pr       @sh -c 'tig.cmd patch.reset'
+
+bind blame  pf       ?+git format-patch -k --binary --histogram -1 -o . %(commit)
+bind stage  pf       ?@sh -c 'git diff -k --binary --histogram > ./$(date +%s.%H%M).diff'
 # }
 
 # Stage {
@@ -232,8 +250,8 @@ bind refs C none
 bind refs ! none
 
 bind refs fa       @git fetch --all
-bind refs m<ENTER> +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f merge "" %(commit)'
-bind refs rb       +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f rebase "" %(ref)'
+bind refs m<ENTER> +sh -c 'tig.cmd cmd.rcv merge %(commit)'
+bind refs rb       +sh -c 'tig.cmd cmd.rcv rebase %(refs)'
 # only available in FF
 bind refs ps +?git fetch . HEAD:%(ref)
 # }
@@ -249,8 +267,8 @@ bind main br @sh -c 'git bisect reset'
 bind main =  :set main-options = -n 20000
 bind main fa :set main-options = '--author=%(prompt search author name: )'
 bind main fm :set main-options = '--no-merges'
-bind main rv +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f revert --no-edit %(commit)'
-bind diff rv +sh -c 'f() { if git $1 $2 $3 > /dev/null; then echo $1 "$3" done; else echo $1 "$3" failed; git $1 --abort; fi; }; f revert --no-edit %(commit)'
+bind main rv +sh -c 'tig.cmd cmd.rcv revert --no-edit %(commit)'
+bind diff rv +sh -c 'tig.cmd cmd.rcv revert --no-edit %(commit)'
 bind main rb >?git rebase -i %(commit)
 bind main ra >?git rebase --abort
 bind main rc >?git rebase --continue
