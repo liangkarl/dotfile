@@ -88,7 +88,7 @@ return { -- Display cheat sheet of vim shortcut
     })
 
     -- Available list:
-    -- '(', ')', ';', ',', Z, H, L, t, T, F, M
+    -- '(', ')', ';', ',', Z, H, L, t, T, F, M, sX
 
     --  <C-c>: leave Insert Mode and return to Normal Mode.
     --    The difference between <C-c> and <Esc> is as below:
@@ -96,9 +96,6 @@ return { -- Display cheat sheet of vim shortcut
     --    2. Would not trigger `InsertLeave` event of autocommand.
     m.noremap('i', '<C-c>', '<Esc>', "<ESC>")
     m.noremap('v', 'p', 'P', "Paste without yanking the deleted text")
-
-    m.noremap('', 'f', '<cmd>HopChar1<cr>')
-    m.noremap('', 'W', '<cmd>HopWord<cr>')
 
     -- Retain the visual selection after indent lines
     m.noremap('v', '>', '>gv', 'Indent line(s) more')
@@ -114,6 +111,9 @@ return { -- Display cheat sheet of vim shortcut
     m.noremap('n', '<S-Tab>', '<cmd>BufferLineCyclePrev<cr>', "Switch to previous buffer")
     m.noremap('n', '<Tab>', '<cmd>BufferLineCycleNext<cr>', "Switch to next buffer")
     m.noremap({ 't', 'i', 'n' }, '<C-\\>', '<cmd>1ToggleTerm direction=tab<cr>', "ToggleTern in Tab")
+
+    m.noremap('',  'f', '<cmd>HopChar1CurrentLineAC<cr>')
+    m.noremap('',  'F', '<cmd>HopChar1CurrentLineBC<cr>')
 
     -------------------
     -- Direct Keymap --
@@ -134,11 +134,15 @@ return { -- Display cheat sheet of vim shortcut
     m.noremap('',  '<leader>Y', '"*y', "Copy to 'copy-on-select' Clipboard")
     m.noremap('',  '<leader>P', '"*p', "Paste from 'copy-on-select' Clipboard")
     m.noremap('',  '<leader>=', function() lsp.format({ async = true }) end, "Format code (LSP)")
-    m.noremap('n', '<leader>f', '<cmd>Telescope buffers<cr>', "Switch opened buffers")
+    m.noremap('n', '<leader>b', '<cmd>Telescope buffers<cr>', "Switch opened buffers")
     m.noremap('',  '<leader><Tab>', '<cmd>b#<cr>', "Switch to last buffer")
     m.noremap('n', '<leader>S', '<cmd>AerialToggle<cr>', 'Symbol Manager')
     m.noremap('n', '<leader>F', '<cmd>lua MiniFiles.open()<cr>', 'File Explorer')
     m.noremap('n', '<leader>d', M.close_buf, "Close current buffer")
+    m.noremap('',  '<leader>j', '<cmd>HopChar1<cr>')
+    m.noremap('',  '<leader>J', '<cmd>HopPattern<cr>')
+    m.noremap('',  '<leader>l', '<cmd>HopWord<cr>')
+    m.noremap('',  '<leader>k', '<cmd>HopVertical<cr>')
 
     -------------------
     -- Folded Keymap --
@@ -156,6 +160,7 @@ return { -- Display cheat sheet of vim shortcut
     })
 
     -- File (Open/Close/Save)
+    -- m.noremap('n', '<leader>', '', "Open file (Current file path)")
     m.noremap('n', '<leader>fr', '<cmd>Telescope oldfiles<cr>', "Open recently closed files")
     m.noremap('n', '<leader>ff', '<cmd>Telescope find_files<cr>', "Open files")
     m.noremap('n', '<leader>fw', '<cmd>w<cr>', "Save")
@@ -164,17 +169,15 @@ return { -- Display cheat sheet of vim shortcut
     m.noremap('n', '<leader>fg', '<cmd>TigOpenCurrentFile<cr>', "Git log with current file")
     m.noremap('n', '<leader>fb', '<cmd>TigBlame<cr>', "Blame file")
 
-    -- Search/ Replace
-    -- m.noremap('n', '<leader>', '', "Open file (Current file path)")
-    m.noremap('n', '<leader>/f', '<cmd>Telescope current_buffer_fuzzy_find<cr>', "Search in current buffer (Telescope)")
-    m.noremap('n', '<leader>/g', '<cmd>Telescope grep_string<cr>', "Search <cword> under CWD (Telescope)")
-    m.noremap('n', '<leader>/G', '<cmd>Telescope live_grep<cr>', "Grep under CWD (Telescope)")
+    -- Search
+    m.noremap('n', '<leader>/', '<cmd>Telescope live_grep<cr>', "Grep under CWD (Telescope)")
+    m.noremap('n', '<leader>/w', '<cmd>Telescope grep_string<cr>', "Search <cword> under CWD (Telescope)")
+    m.noremap('n', '<leader>/b', '<cmd>Telescope current_buffer_fuzzy_find<cr>', "Search in current buffer (Telescope)")
     -- https://stackoverflow.com/questions/40867576/how-to-use-vimgrep-to-grep-work-thats-high-lighted-by-vim
     m.noremap('n', '<leader>/s', function()
       vim.cmd("exe 'vimgrep' expand('<cword>') '%'")
       vim.cmd("copen")
     end, "Search current cursor string (Quickfix)")
-    m.noremap('n', '<leader>/t', '<cmd>lua MiniTrailspace.trim()<cr>', 'Remove trailing spaces')
 
     -- Coding
     m.noremap("n", "<leader>;r", '<cmd>Glance references<cr>', "Code Reference (Glance)")
@@ -210,6 +213,7 @@ return { -- Display cheat sheet of vim shortcut
     m.noremap('n', '<leader>sa', lsp.add_workspace_folder, "Add LSP workspace")
     m.noremap('n', '<leader>sr', lsp.remove_workspace_folder, "Remove LSP workspace")
     m.noremap('n', '<leader>sw', function()
+      -- TODO: Add to quickfix list
       print(vim.inspect(lsp.list_workspace_folders()))
     end, "Show LSP workspace")
     m.noremap('n', '<leader>st', '<cmd>Telescope filetypes<cr>', "Change filetypes")
@@ -222,6 +226,9 @@ return { -- Display cheat sheet of vim shortcut
     m.noremap('n', '<leader>sf', M.show_file_info, "Show File and CWD info")
     m.noremap('n', '<leader>sr', M.reload_settings, "Reload init.lua")
     m.noremap('n', '<leader>s,', M.edit_settings, "Edit runtime init.lua")
+
+    -- Replace
+    m.noremap('n', '<leader>sd', '<cmd>lua MiniTrailspace.trim()<cr>', 'Remove trailing spaces')
 
   end
 }
