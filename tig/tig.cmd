@@ -12,13 +12,12 @@ _cmd() {
     local opt="$@"
     local ret
 
-    $git $cmd $opt > /dev/null
-    ret=$?
-    if (( $? == 0 )); then
+    $git $cmd $opt > /dev/null; ret=$?
+    if (( $ret == 0 )); then
         echo "'$cmd $opt' done"
     else
-        echo "'$cmd $opt' failed ($?)"
-		return $?
+        echo "'$cmd $opt' failed ($ret)"
+		return $ret
     fi
 }
 
