@@ -1,0 +1,14 @@
+PKG_NAME=
+CONFIG_DIR=${XDG_CONFIG_HOME}/$(PKG_NAME)
+
+.ONESHELL:
+config.$(PKG_NAME):
+	$(H)echo "-- $(PKG_NAME): setup config --"
+
+install.$(PKG_NAME):
+	$(H)echo "-- $(PKG_NAME): install package --"
+
+remove.$(PKG_NAME):
+	$(H)echo "-- $(PKG_NAME): remove package --"
+
+.PHONY: config.$(PKG_NAME) install.$(PKG_NAME) remove.$(PKG_NAME)
