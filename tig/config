@@ -47,6 +47,7 @@ bind generic b none
 bind generic o none
 bind generic w none
 bind generic t none
+bind generic / none
 # }
 
 # Views {
@@ -59,7 +60,7 @@ bind generic 2  view-refs
 bind generic 3  view-stash
 bind generic B  view-blame
 bind generic T  view-tree
-bind generic \  view-grep
+bind generic /g view-grep
 bind generic H  view-help
 
 bind stage   1  none
@@ -105,6 +106,7 @@ bind generic or :toggle commit-title-refs
 
 # Misc {
 ## Move light bar to top/button
+bind generic // search
 bind generic g  none
 bind generic gg move-first-line
 bind generic G  move-last-line
@@ -119,6 +121,11 @@ bind generic Q  quit
 bind generic <Ctrl-C> none
 
 bind generic ;  +git rev-parse --show-toplevel
+
+bind generic yy +sh -c 'tig.cmd copy %(commit)'
+bind generic yf +sh -c 'tig.cmd copy %(file)'
+bind generic /a >!tig --no-merges --author="%(prompt search author name: )"
+bind generic /f >!tig -- "%(file)"
 # }
 
 # TODO:
@@ -147,7 +154,6 @@ bind stage   f<Enter> @sh -c 'tig.cmd stage_file "%(file)"'
 bind stage   fa       @sh -c 'tig.cmd stage_file'
 
 ## Add stash
-bind generic s        none
 bind main    sa       @git stash save "%(prompt new stash: )"
 bind main    s<Enter> @sh -c 'tig.cmd stash'
 bind main    sp       @sh -c 'tig.cmd cmd stash pop stash@{0}'
@@ -159,30 +165,30 @@ bind status  s<Enter> +sh -c 'tig.cmd stash'
 bind status  sp       +sh -c 'tig.cmd cmd stash pop stash@{0}'
 
 ## Add/Remove/Move tag and branch
-bind main   ta       @git tag "%(prompt new tag: )" %(commit)
-bind main   t<ENTER> @sh -c 'git tag tag.$(git rev-parse --short %(commit)) %(commit)'
-bind main   ba       @git branch "%(prompt new branch: )" %(commit)
-bind main   b<ENTER> @sh -c 'git branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)'
+bind main   ta       @sh -c 'tig.cmd cmd tag "%(prompt new tag: )" %(commit)'
+bind main   t<ENTER> @sh -c 'tig.cmd cmd tag tag.$(git rev-parse --short %(commit)) %(commit)'
+bind main   ba       @sh -c 'tig.cmd cmd branch "%(prompt new branch: )" %(commit)'
+bind main   b<ENTER> @sh -c 'tig.cmd cmd branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)'
 bind main   a<ENTER> @sh -c 'tig.cmd add "%(commit)"'
-bind main   d<ENTER> @sh -c 'tig.cmd del "%(tag)" "%(branch)"'
-bind reflog ta       @git tag "%(prompt new tag: )" %(commit)
-bind reflog t<ENTER> @sh -c 'git tag tag.$(git rev-parse --short %(commit)) %(commit)'
-bind reflog ba       @git branch "%(prompt new branch: )" %(commit)
-bind reflog b<ENTER> @sh -c 'git branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)'
+bind main   d<ENTER> @sh -c 'tig.cmd del "%(commit)"'
+bind reflog ta       @sh -c 'tig.cmd cmd tag "%(prompt new tag: )" %(commit)'
+bind reflog t<ENTER> @sh -c 'tig.cmd cmd tag tag.$(git rev-parse --short %(commit)) %(commit)'
+bind reflog ba       @sh -c 'tig.cmd cmd branch "%(prompt new branch: )" %(commit)'
+bind reflog b<ENTER> @sh -c 'tig.cmd cmd branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)'
 bind reflog a<ENTER> @sh -c 'tig.cmd add "%(commit)"'
-bind reflog d<ENTER> @sh -c 'tig.cmd del "%(tag)" "%(branch)"'
-bind diff   ta       @git tag "%(prompt new tag: )" %(commit)
-bind diff   t<ENTER> @sh -c 'git tag tag.$(git rev-parse --short %(commit)) %(commit)'
-bind diff   ba       @git branch "%(prompt new branch: )" %(commit)
-bind diff   b<ENTER> @sh -c 'git branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)'
+bind reflog d<ENTER> @sh -c 'tig.cmd del "%(commit)"'
+bind diff   ta       @sh -c 'tig.cmd cmd tag "%(prompt new tag: )" %(commit)'
+bind diff   t<ENTER> @sh -c 'tig.cmd cmd tag tag.$(git rev-parse --short %(commit)) %(commit)'
+bind diff   ba       @sh -c 'tig.cmd cmd branch "%(prompt new branch: )" %(commit)'
+bind diff   b<ENTER> @sh -c 'tig.cmd cmd branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)'
 bind diff   a<ENTER> @sh -c 'tig.cmd add "%(commit)"'
-bind diff   d<ENTER> @sh -c 'tig.cmd del "%(tag)" "%(branch)"'
-bind refs   ta       @git tag "%(prompt new tag: )" HEAD
-bind refs   t<ENTER> @sh -c 'git tag tag.$(git rev-parse --short HEAD) HEAD'
-bind refs   ba       @git branch "%(prompt new branch: )" HEAD
-bind refs   b<ENTER> @sh -c 'git branch branch.$(basename $(git rev-parse --show-toplevel)) HEAD'
+bind diff   d<ENTER> @sh -c 'tig.cmd del "%(commit)"'
+bind refs   ta       @sh -c 'tig.cmd cmd tag "%(prompt new tag: )" HEAD'
+bind refs   t<ENTER> @sh -c 'tig.cmd cmd tag tag.$(git rev-parse --short HEAD) HEAD'
+bind refs   ba       @sh -c 'tig.cmd cmd branch "%(prompt new branch: )" HEAD'
+bind refs   b<ENTER> @sh -c 'tig.cmd cmd branch branch.$(basename $(git rev-parse --show-toplevel)) HEAD'
 bind refs   a<ENTER> @sh -c 'tig.cmd add "%(commit)"'
-bind refs   d<ENTER> @sh -c 'tig.cmd del "\"%(tag)\"" "\"%(branch)\""'
+bind refs   d<ENTER> @sh -c 'tig.cmd del "%(commit)"'
 
 ## Checkout
 bind main   co @git checkout %(commit)
@@ -214,22 +220,25 @@ bind reflog cp +sh -c 'tig.cmd cmd cherry-pick -s %(commit)'
 bind diff   cp +sh -c 'tig.cmd cmd cherry-pick -s %(commit)'
 
 ## Format patch {
-bind main   ps       @sh -c 'tig.cmd aim patch %(commit)'
+bind main   ps       @sh -c 'tig.cmd choose patch %(commit)'
 bind main   p<Enter> +sh -c 'tig.cmd patch.create'
-bind main   pf       ?+git format-patch -k --binary --histogram -1 -o . %(commit)
-bind main   pF       ?+git format-patch -k --binary --histogram -o patchset %(commit)^
+bind main   p1       ?+git format-patch -k --binary --histogram -o .patch -1 %(commit)
+bind main   pn       ?+git format-patch -k --binary --histogram -o .patch %(commit)^
 bind main   pr       @sh -c 'tig.cmd patch.reset'
-bind diff   ps       @sh -c 'tig.cmd aim patch %(commit)'
+bind diff   ps       @sh -c 'tig.cmd choose patch %(commit)'
 bind diff   p<Enter> +sh -c 'tig.cmd patch.create'
-bind diff   pf       ?+git format-patch -k --binary --histogram -1 -o . %(commit)
+bind diff   p1       ?+git format-patch -k --binary --histogram -o .patch -1 %(commit)
+bind diff   pn       ?+git format-patch -k --binary --histogram -o .patch %(commit)^
+bind diff   pf       ?+git format-patch -k --binary --histogram -o .patch %(commit) %(file)
 bind diff   pr       @sh -c 'tig.cmd patch.reset'
-bind reflog ps       @sh -c 'tig.cmd aim patch %(commit)'
+bind reflog ps       @sh -c 'tig.cmd choose patch %(commit)'
 bind reflog p<Enter> +sh -c 'tig.cmd patch.create'
-bind reflog pf       ?+git format-patch -k --binary --histogram -1 -o . %(commit)
+bind reflog p1       ?+git format-patch -k --binary --histogram -o .patch -1 %(commit)
 bind reflog pr       @sh -c 'tig.cmd patch.reset'
 
-bind blame  pf       ?+git format-patch -k --binary --histogram -1 -o . %(commit)
-bind stage  pf       ?@sh -c 'git diff -k --binary --histogram > ./$(date +%s.%H%M).diff'
+bind blame  p1       ?+git format-patch -k --binary --histogram -o .patch -1 %(commit)
+bind stage  p1       ?@sh -c 'git diff -k --binary --histogram > ./$(date +%y%m%d%H%M%S%H%M).diff'
+bind stage  pf       ?@sh -c 'git diff -k --binary --histogram %(file) > ./$(date +%y%m%d%H%M%S)-$(basename %(file)).diff'
 # }
 
 # Stage {
@@ -251,7 +260,11 @@ bind refs ! none
 
 bind refs fa       @git fetch --all
 bind refs m<ENTER> +sh -c 'tig.cmd cmd.rcv merge %(commit)'
-bind refs rb       +sh -c 'tig.cmd cmd.rcv rebase %(refs)'
+bind refs rb       +sh -c 'tig.cmd cmd.rcv rebase %(commit)'
+bind refs su       !sh -c 'tig.cmd choose push %(commit) %(refname)'
+bind refs sm       +sh -c 'tig.cmd choose rebase %(commit) %(refname)'
+bind refs sr       +sh -c 'tig.cmd choose merge %(commit) %(refname)'
+bind refs sc       +sh -c 'tig.cmd choose clean'
 # only available in FF
 bind refs ps +?git fetch . HEAD:%(ref)
 # }
@@ -265,7 +278,6 @@ bind main bg @sh -c 'git bisect good %(commit)'
 bind main bb @sh -c 'git bisect bad %(commit)'
 bind main br @sh -c 'git bisect reset'
 bind main =  :set main-options = -n 20000
-bind main fa :set main-options = '--author=%(prompt search author name: )'
 bind main fm :set main-options = '--no-merges'
 bind main rv +sh -c 'tig.cmd cmd.rcv revert --no-edit %(commit)'
 bind diff rv +sh -c 'tig.cmd cmd.rcv revert --no-edit %(commit)'
@@ -273,11 +285,14 @@ bind main rb >?git rebase -i %(commit)
 bind main ra >?git rebase --abort
 bind main rc >?git rebase --continue
 bind main D  @?git clean -fd
+bind main su !sh -c 'tig.cmd choose push %(commit) %(refname)'
+bind main sm +sh -c 'tig.cmd choose merge %(commit) %(refname)'
+bind main sr +sh -c 'tig.cmd choose rebase %(commit) %(refname)'
+bind main sc +sh -c 'tig.cmd choose clean'
 # }
 
 # Log {
 bind log = :set log-options = -p
-bind log fa :set log-options = '--author=%(prompt search author name: )'
 bind log fm :set log-options = '--no-merges'
 # }
 
