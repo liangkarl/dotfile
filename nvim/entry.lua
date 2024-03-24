@@ -206,12 +206,7 @@ require("lazy").setup({
     config = function()
       require('config.tabnine-nvim')
     end,
-    enabled = function()
-      if vim.fn.has('macunix') then
-        return false
-      end
-      return true
-    end
+    enabled = false,
   },
   require('config.lsp-status'),
   require('config.fold-preview'),
