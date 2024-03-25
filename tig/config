@@ -205,11 +205,11 @@ bind stage  co @?git checkout %(file)
 bind main    rh +sh -c '[[ "%(prompt enter "y" to hard reset: )" == "y" ]] && git reset --hard %(commit)'
 bind reflog  rh +sh -c '[[ "%(prompt enter "y" to hard reset: )" == "y" ]] && git reset --hard %(commit)'
 bind diff    rh +sh -c '[[ "%(prompt enter "y" to hard reset: )" == "y" ]] && git reset --hard %(commit)'
-bind main    rh +sh -c '[[ "%(prompt enter "y" to soft reset: )" == "y" ]] && git reset %(commit)'
-bind reflog  rh +sh -c '[[ "%(prompt enter "y" to soft reset: )" == "y" ]] && git reset %(commit)'
-bind diff    rh +sh -c '[[ "%(prompt enter "y" to soft reset: )" == "y" ]] && git reset %(commit)'
-bind stage   rh +sh -c '[[ "%(prompt enter "y" to hard reset HEAD: )" == "y" ]] && git reset --hard'
-bind main    rh +sh -c '[[ "%(prompt enter "y" to hard reset HEAD: )" == "y" ]] && git reset --hard'
+bind main    rs +sh -c '[[ "%(prompt enter "y" to soft reset: )" == "y" ]] && git reset %(commit)'
+bind reflog  rs +sh -c '[[ "%(prompt enter "y" to soft reset: )" == "y" ]] && git reset %(commit)'
+bind diff    rs +sh -c '[[ "%(prompt enter "y" to soft reset: )" == "y" ]] && git reset %(commit)'
+bind stage   rn +sh -c '[[ "%(prompt enter "y" to hard reset HEAD: )" == "y" ]] && git reset --hard'
+bind main    rn +sh -c '[[ "%(prompt enter "y" to hard reset HEAD: )" == "y" ]] && git reset --hard'
 bind main    rp +sh -c '[[ "%(prompt enter "y" to hard reset HEAD@{1}: )" == "y" ]] && git reset HEAD@{1}'
 
 ## Cherry-pick
@@ -260,8 +260,8 @@ bind refs f<ENTER> +sh -c 'tig.cmd cmd fetch --prune'
 bind refs m<ENTER> +sh -c 'tig.cmd cmd.rcv merge %(commit)'
 bind refs rb       +sh -c 'tig.cmd cmd.rcv rebase %(commit)'
 bind refs su       !sh -c 'tig.cmd choose push %(commit) %(refname)'
-bind refs sm       +sh -c 'tig.cmd choose rebase %(commit) %(refname)'
-bind refs sr       +sh -c 'tig.cmd choose merge %(commit) %(refname)'
+bind refs sm       +sh -c 'tig.cmd choose merge %(commit) %(refname)'
+bind refs sr       +sh -c 'tig.cmd choose rebase %(commit) %(refname)'
 bind refs sc       +sh -c 'tig.cmd choose clean'
 # }
 
