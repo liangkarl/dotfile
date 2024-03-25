@@ -191,29 +191,27 @@ bind refs   a<ENTER> @sh -c 'tig.cmd add "%(commit)"'
 bind refs   d<ENTER> @sh -c 'tig.cmd del "%(commit)"'
 
 ## Checkout
-bind main   co @git checkout %(commit)
-bind refs   co @git checkout %(ref)
-bind refs   cd @git checkout -d %(ref)
-bind reflog co @git checkout %(commit)
+bind main   co +sh -c 'git checkout %(commit)'
+bind refs   co +sh -c 'git checkout %(ref)'
+bind refs   cd +sh -c 'git checkout -d %(ref)'
+bind reflog co +sh -c 'git checkout %(commit)'
 
 ### Reset file
 bind status co @?git checkout %(file)
 bind stage  co @?git checkout %(file)
 
 ## Reset commits
-bind generic r  none
-bind main    rh @?git reset --hard %(commit)
-bind reflog  rh @?git reset --hard %(commit)
-bind diff    rh @?git reset --hard %(commit)
-bind main    rs @?git reset %(commit)
-bind reflog  rs @?git reset %(commit)
-bind diff    rs @?git reset %(commit)
-bind stage   rn @?git reset --hard HEAD
-bind main    rn @?git reset --hard HEAD
-bind main    rp @?git reset HEAD@{1}
+bind main    rh +sh -c '[[ "%(prompt enter "y" to hard reset: )" == "y" ]] && git reset --hard %(commit)'
+bind reflog  rh +sh -c '[[ "%(prompt enter "y" to hard reset: )" == "y" ]] && git reset --hard %(commit)'
+bind diff    rh +sh -c '[[ "%(prompt enter "y" to hard reset: )" == "y" ]] && git reset --hard %(commit)'
+bind main    rh +sh -c '[[ "%(prompt enter "y" to soft reset: )" == "y" ]] && git reset %(commit)'
+bind reflog  rh +sh -c '[[ "%(prompt enter "y" to soft reset: )" == "y" ]] && git reset %(commit)'
+bind diff    rh +sh -c '[[ "%(prompt enter "y" to soft reset: )" == "y" ]] && git reset %(commit)'
+bind stage   rh +sh -c '[[ "%(prompt enter "y" to hard reset HEAD: )" == "y" ]] && git reset --hard'
+bind main    rh +sh -c '[[ "%(prompt enter "y" to hard reset HEAD: )" == "y" ]] && git reset --hard'
+bind main    rp +sh -c '[[ "%(prompt enter "y" to hard reset HEAD@{1}: )" == "y" ]] && git reset HEAD@{1}'
 
 ## Cherry-pick
-### Templete: f() $cmd "$opts" $commit
 bind main   cp +sh -c 'tig.cmd cmd cherry-pick -s %(commit)'
 bind refs   cp +sh -c 'tig.cmd cmd cherry-pick -s %(commit)'
 bind reflog cp +sh -c 'tig.cmd cmd cherry-pick -s %(commit)'
@@ -222,23 +220,22 @@ bind diff   cp +sh -c 'tig.cmd cmd cherry-pick -s %(commit)'
 ## Format patch {
 bind main   ps       @sh -c 'tig.cmd choose patch %(commit)'
 bind main   p<Enter> +sh -c 'tig.cmd patch.create'
-bind main   p1       ?+git format-patch -k --binary --histogram -o .patch -1 %(commit)
-bind main   pn       ?+git format-patch -k --binary --histogram -o .patch %(commit)^
+bind main   p1       +sh -c 'tig.cmd cmd format-patch -k --binary --histogram -o .patch -1 %(commit)'
+bind main   pn       +sh -c 'tig.cmd cmd format-patch -k --binary --histogram -o .patch %(commit)^'
 bind main   pr       @sh -c 'tig.cmd patch.reset'
 bind diff   ps       @sh -c 'tig.cmd choose patch %(commit)'
 bind diff   p<Enter> +sh -c 'tig.cmd patch.create'
-bind diff   p1       ?+git format-patch -k --binary --histogram -o .patch -1 %(commit)
-bind diff   pn       ?+git format-patch -k --binary --histogram -o .patch %(commit)^
-bind diff   pf       ?+git format-patch -k --binary --histogram -o .patch %(commit) %(file)
+bind diff   p1       +sh -c 'tig.cmd cmd format-patch -k --binary --histogram -o .patch -1 %(commit)'
+bind diff   pn       +sh -c 'tig.cmd cmd format-patch -k --binary --histogram -o .patch %(commit)^'
+bind diff   pf       +sh -c 'tig.cmd cmd format-patch -k --binary --histogram -o .patch %(commit) %(file)'
 bind diff   pr       @sh -c 'tig.cmd patch.reset'
 bind reflog ps       @sh -c 'tig.cmd choose patch %(commit)'
 bind reflog p<Enter> +sh -c 'tig.cmd patch.create'
-bind reflog p1       ?+git format-patch -k --binary --histogram -o .patch -1 %(commit)
+bind reflog p1       +sh -c 'tig.cmd cmd format-patch -k --binary --histogram -o .patch -1 %(commit)'
 bind reflog pr       @sh -c 'tig.cmd patch.reset'
-
-bind blame  p1       ?+git format-patch -k --binary --histogram -o .patch -1 %(commit)
-bind stage  p1       ?@sh -c 'git diff -k --binary --histogram > ./$(date +%y%m%d%H%M%S%H%M).diff'
-bind stage  pf       ?@sh -c 'git diff -k --binary --histogram %(file) > ./$(date +%y%m%d%H%M%S)-$(basename %(file)).diff'
+bind blame  p1       +sh -c 'tig.cmd cmd format-patch -k --binary --histogram -o .patch -1 %(commit)'
+bind stage  p1       @sh -c 'tig.cmd cmd.out $(date +%y%m%d%H%M%S%H%M).diff diff -k --binary --histogram'
+bind stage  pf       @sh -c 'tig.cmd cmd.out $(date +%y%m%d%H%M%S)-$(basename %(file)).diff diff -k --binary --histogram %(file)'
 # }
 
 # Stage {
@@ -250,8 +247,8 @@ bind stage a stage-update-line
 bind status C none
 bind status ! none
 bind status d<Enter> @?rm -rf %(file)
-bind status dd @?sh -c 'rm -rf $(dirname %(file))'
-bind status D @?git clean -fd
+bind status dd       @?sh -c 'rm -rf $(dirname %(file))'
+bind status D        +?sh -c 'tig.cmd cmd clean -fd'
 # }
 
 # Reference {
@@ -273,10 +270,10 @@ bind refs ps +?git fetch . HEAD:%(ref)
 bind main C none
 bind main ! none
 
-bind main bs @sh -c 'git bisect start'
-bind main bg @sh -c 'git bisect good %(commit)'
-bind main bb @sh -c 'git bisect bad %(commit)'
-bind main br @sh -c 'git bisect reset'
+bind main bs +sh -c 'tig.cmd cmd bisect start'
+bind main bg +sh -c 'tig.cmd cmd bisect good %(commit)'
+bind main bb +sh -c 'tig.cmd cmd bisect bad %(commit)'
+bind main br +sh -c 'tig.cmd cmd bisect reset'
 bind main =  :set main-options = -n 20000
 bind main fm :set main-options = '--no-merges'
 bind main rv +sh -c 'tig.cmd cmd.rcv revert --no-edit %(commit)'
@@ -284,7 +281,7 @@ bind diff rv +sh -c 'tig.cmd cmd.rcv revert --no-edit %(commit)'
 bind main rb >?git rebase -i %(commit)
 bind main ra >?git rebase --abort
 bind main rc >?git rebase --continue
-bind main D  @?git clean -fd
+bind main D  >?git clean -fd
 bind main su !sh -c 'tig.cmd choose push %(commit) %(refname)'
 bind main sm +sh -c 'tig.cmd choose merge %(commit) %(refname)'
 bind main sr +sh -c 'tig.cmd choose rebase %(commit) %(refname)'

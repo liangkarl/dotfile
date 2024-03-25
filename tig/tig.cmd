@@ -28,6 +28,11 @@ cmd() { _cmd $@; }
 # cmd_abort [git commands ...]
 cmd.rcv() { _cmd $@ || $git $1 --abort; }
 
+cmd.out() {
+	local file=$1; shift
+	_cmd $@ > $file
+}
+
 # Convert SHA to branch
 # _to_branch <sha> [branch]
 _to_branch() {
