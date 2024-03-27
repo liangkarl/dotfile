@@ -12,7 +12,7 @@ config.$(PKG_NAME): install.$(PKG_NAME)
 			echo -e "$(CMD)" >> ~/.bashrc
 
 install.$(PKG_NAME):
-	$(H)echo "-- $(PKG_NAME): download and install latest version --"
+	$(H)echo "-- $(PKG_NAME): install package --"
 	$(H)if [[ ! -d $(CONFIG_DIR)/.git ]]; then
 		git clone -n --depth=1 https://github.com/b4b4r07/enhancd.git $(TMP)
 		mv $(TMP)/.git $(CONFIG_DIR)
@@ -23,6 +23,7 @@ install.$(PKG_NAME):
 	fi
 
 remove.$(PKG_NAME):
-	rm -rf $(CONFIG_DIR)
+	$(H)echo "-- $(PKG_NAME): remove package --"
+	$(H)rm -rf $(CONFIG_DIR)
 
 .PHONY: config.$(PKG_NAME) install.$(PKG_NAME) remove.$(PKG_NAME)

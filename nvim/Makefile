@@ -4,7 +4,7 @@ NVIM_VER=0.9.4
 
 .ONESHELL:
 config.$(PKG_NAME):
-	$(H)echo "-- setup $(PKG_NAME) config --"
+	$(H)echo "-- $(PKG_NAME): setup config --"
 	PS3='select a fuzzy finder above: '
 	$(H)select opt in 'fzf' 'telescope' 'cancel'; do
 		if [[ "${opt}" != 'cancel' ]]; then
@@ -17,9 +17,11 @@ config.$(PKG_NAME):
 			<<< "Press 'q' to exit nvim if all plugins were installed."
 
 install.$(PKG_NAME):
+	$(H)echo "-- $(PKG_NAME): install package --"
 	$(H)brew install neovim@${NVIM_VER}
 
 remove.$(PKG_NAME):
+	$(H)echo "-- $(PKG_NAME): remove package --"
 	$(H)brew remove neovim
 
 .PHONY: config.$(PKG_NAME) install.$(PKG_NAME) remove.$(PKG_NAME)
