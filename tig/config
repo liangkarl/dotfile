@@ -48,6 +48,7 @@ bind generic o none
 bind generic w none
 bind generic t none
 bind generic / none
+bind generic <Ctrl-C> none
 # }
 
 # Views {
@@ -118,7 +119,7 @@ bind generic q  view-close-no-quit
 bind generic J  next
 bind generic K  previous
 bind generic Q  quit
-bind generic <Ctrl-C> none
+bind generic <Ctrl-r> <tig
 
 bind generic ;  +git rev-parse --show-toplevel
 
@@ -255,15 +256,13 @@ bind status D        +?sh -c 'tig.cmd cmd clean -fd'
 bind refs C none
 bind refs ! none
 
-bind refs fa       @git fetch --all
+bind refs f<ENTER> +sh -c 'tig.cmd cmd fetch --prune'
 bind refs m<ENTER> +sh -c 'tig.cmd cmd.rcv merge %(commit)'
 bind refs rb       +sh -c 'tig.cmd cmd.rcv rebase %(commit)'
 bind refs su       !sh -c 'tig.cmd choose push %(commit) %(refname)'
 bind refs sm       +sh -c 'tig.cmd choose rebase %(commit) %(refname)'
 bind refs sr       +sh -c 'tig.cmd choose merge %(commit) %(refname)'
 bind refs sc       +sh -c 'tig.cmd choose clean'
-# only available in FF
-bind refs ps +?git fetch . HEAD:%(ref)
 # }
 
 # Main {
