@@ -156,15 +156,15 @@ while (( $# != 0 )); do
 done
 
 for cmd in ${cmds[@]}; do
-	echo -en "check $cmd...\r"
+	printf -- "check $cmd...\r"
 	if [[ -n "$WSL_DISTRO_NAME" ]]; then
 		if has_cmd ${cmd}.exe; then
-			echo -en "find $cmd\t\t\r"
+			printf -- "find $cmd\t\t\r"
 			cmd=${cmd}.exe
 			break
 		fi
 	elif has_cmd $cmd; then
-		echo -en "find $cmd\t\t\r"
+		printf -- "find $cmd\t\t\r"
 		break
 	fi
 done

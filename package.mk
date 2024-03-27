@@ -11,14 +11,14 @@ $(LIST):
 	$(H)$(eval SRC_DIR:=$(TOP)/$@)
 	$(H)$(eval DST_DIR:=$(CONF_HOME)/$@)
 
-	$(H)echo "-- $@: copy files --"
+	$(H)printf -- "-- $@: copy files --\n"
 	$(H)cp -rvf $(SRC_DIR) $(CONF_HOME)/
 	$(H)if [[ -e $(DST_DIR)/Makefile ]]; then
 		H=$(H) make -C $(DST_DIR)
 	elif [[ -e $(DST_DIR)/configure.sh ]]; then
 		eval $(DST_DIR)/configure.sh
 	fi
-	$(H)echo ""
+	$(H)printf -- "-- $@: completed --\n\n"
 
 top: procps
 

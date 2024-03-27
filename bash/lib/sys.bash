@@ -34,7 +34,7 @@ os_ver() {
 # chk_ver [min-ver] [cur-ver]
 # return 0 if current ver >= min ver.
 chk_ver() {
-	[  "$1" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]
+	[  "$1" = "$(printf -- "$1\n$2\n" | sort -V | head -n1)" ]
 }
 
 OS_MACOS='macOS'
