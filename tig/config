@@ -7,11 +7,13 @@
 # https://jonas.github.io/tig/doc/tigrc.5.html
 
 # used for boosting loading speed
-set commit-order = default
 set main-options = -n 20000
+set diff-options = --patience
+set log-options  = --patience -p
+
+set commit-order = default
 set main-view-commit-title-graph = v1
 set refresh-mode = after-command
-set log-options = -p
 
 # Addjust the column width of author
 set main-view = line-number:no,interval=5 \
@@ -47,8 +49,8 @@ bind generic b none
 bind generic o none
 bind generic w none
 bind generic t none
-bind generic / none
 bind generic <Ctrl-C> none
+bind generic - none
 # }
 
 # Views {
@@ -61,7 +63,7 @@ bind generic 2  view-refs
 bind generic 3  view-stash
 bind generic B  view-blame
 bind generic T  view-tree
-bind generic /g view-grep
+bind generic -g view-grep
 bind generic H  view-help
 
 bind stage   1  none
@@ -92,6 +94,38 @@ bind tree   . view-blame
 bind blame  . view-blob
 bind blob   . view-tree
 
+## Blame format
+bind blame -<ENTER> <tig blame -w -C -C -C %(file)
+bind blame -f       <tig --no-merges -- %(file)
+bind blame =        <tig blame %(file)
+
+## Diff format
+bind diff  -<ENTER> :set diff-options = --patience --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
+bind diff  -f       <tig --no-merges -- %(file)
+bind diff  -b       <tig blame %(file)
+bind diff  =        <tig show %(commit)
+
+## Stage format
+bind stage -<ENTER> :set diff-options = --patience --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
+bind stage -f       <tig --no-merges -- %(file)
+bind stage -b       <tig blame %(file)
+bind stage =        <tig
+
+## Main format
+bind main  -<ENTER> <tig --no-merges
+bind main  -a       <tig --no-merges --author="%(prompt search author name: )"
+bind main  =        <tig
+
+## tree/blob format
+bind blob  -f       <tig --no-merges -- %(file)
+bind tree  -f       <tig --no-merges -- %(file)
+
+# Log format
+bind log   -<ENTER> :set log-options = --patience -p --no-merges --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
+bind log   -a       <tig log --no-merges --author="%(prompt search author name: )"
+bind log   -f       <tig log -- "%(file)"
+bind log   =        <tig log
+
 ## Options
 bind generic o  none
 bind generic os :toggle sort-field
@@ -107,7 +141,6 @@ bind generic or :toggle commit-title-refs
 
 # Misc {
 ## Move light bar to top/button
-bind generic // search
 bind generic g  none
 bind generic gg move-first-line
 bind generic G  move-last-line
@@ -125,8 +158,6 @@ bind generic ;  +git rev-parse --show-toplevel
 
 bind generic yy +sh -c 'tig.cmd copy %(commit)'
 bind generic yf +sh -c 'tig.cmd copy %(file)'
-bind generic /a >!tig --no-merges --author="%(prompt search author name: )"
-bind generic /f >!tig -- "%(file)"
 # }
 
 # TODO:
@@ -273,8 +304,6 @@ bind main bs +sh -c 'tig.cmd cmd bisect start'
 bind main bg +sh -c 'tig.cmd cmd bisect good %(commit)'
 bind main bb +sh -c 'tig.cmd cmd bisect bad %(commit)'
 bind main br +sh -c 'tig.cmd cmd bisect reset'
-bind main =  :set main-options = -n 20000
-bind main fm :set main-options = '--no-merges'
 bind main rv +sh -c 'tig.cmd cmd.rcv revert --no-edit %(commit)'
 bind diff rv +sh -c 'tig.cmd cmd.rcv revert --no-edit %(commit)'
 bind main rb >?git rebase -i %(commit)
@@ -288,8 +317,6 @@ bind main sc +sh -c 'tig.cmd choose clean'
 # }
 
 # Log {
-bind log = :set log-options = -p
-bind log fm :set log-options = '--no-merges'
 # }
 
 # Reflog {
