@@ -223,14 +223,14 @@ bind refs   a<ENTER> @sh -c 'tig.cmd add "%(commit)"'
 bind refs   d<ENTER> @sh -c 'tig.cmd del "%(commit)"'
 
 ## Checkout
-bind main   co +sh -c 'git checkout %(commit)'
-bind refs   co +sh -c 'git checkout %(ref)'
-bind refs   cd +sh -c 'git checkout -d %(ref)'
-bind reflog co +sh -c 'git checkout %(commit)'
+bind main   co +sh -c 'tig.cmd cmd checkout %(commit)'
+bind refs   co +sh -c 'tig.cmd cmd checkout %(ref)'
+bind refs   cd +sh -c 'tig.cmd cmd checkout -d %(ref)'
+bind reflog co +sh -c 'tig.cmd cmd checkout %(commit)'
 
 ### Reset file
-bind status co @?git checkout %(file)
-bind stage  co @?git checkout %(file)
+bind status co +?sh -c 'tig.cmd cmd checkout %(file)'
+bind stage  co +?sh -c 'tig.cmd cmd checkout %(file)'
 
 ## Reset commits
 bind main    rh +sh -c '[[ "%(prompt enter "y" to hard reset: )" == "y" ]] && git reset --hard %(commit)'
