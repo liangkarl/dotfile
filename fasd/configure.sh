@@ -17,4 +17,4 @@ git -C $dir reset --hard HEAD
 ln -sf $dir/fasd ~/bin/fasd
 ln -sf $dir/fasdrc ~/.fasdrc
 grep -q -w "$line" ~/.bashrc ||
-        echo -e "\n$line" >> ~/.bashrc
+        printf -- "\n$line\n" >> ~/.bashrc

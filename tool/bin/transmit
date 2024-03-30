@@ -66,7 +66,7 @@ subtask() {
 
 		sleep 1
 	done
-	echo -e "\r$BASHPID: transmit '$file' complete"
+	printf -- "\r$BASHPID: transmit '$file' complete\n"
 }
 
 scan_list() {
@@ -78,7 +78,7 @@ scan_list() {
 	# keep scanning process list
 	while (( $(wc -l < $plist) > $thd )); do
 		# TODO: show download status here
-		echo -e -n "\rwait subtask finished. ($((timer++)))"
+		printf -- "\rwait subtask finished. ($((timer++)))"
 		sleep 1
 	done
 }
