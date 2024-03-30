@@ -1,9 +1,10 @@
-CONFIG_DIR=${XDG_CONFIG_HOME}/nvim
+PKG_NAME=nvim
+CONFIG_DIR=${XDG_CONFIG_HOME}/$(PKG_NAME)
 NVIM_VER=0.9.4
 
 .ONESHELL:
-config.nvim:
-	$(H)echo "-- setup nvim config --"
+config.$(PKG_NAME):
+	$(H)echo "-- $(PKG_NAME): setup config --"
 	PS3='select a fuzzy finder above: '
 	$(H)select opt in 'fzf' 'telescope' 'cancel'; do
 		if [[ "${opt}" != 'cancel' ]]; then
@@ -15,10 +16,12 @@ config.nvim:
 	$(H)nvim +"set nomodifiable nomodified" \
 			<<< "Press 'q' to exit nvim if all plugins were installed."
 
-install.nvim:
+install.$(PKG_NAME):
+	$(H)echo "-- $(PKG_NAME): install package --"
 	$(H)brew install neovim@${NVIM_VER}
 
-remove.nvim:
+remove.$(PKG_NAME):
+	$(H)echo "-- $(PKG_NAME): remove package --"
 	$(H)brew remove neovim
 
-.PHONY: config.nvim
+.PHONY: config.$(PKG_NAME) install.$(PKG_NAME) remove.$(PKG_NAME)

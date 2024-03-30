@@ -23,6 +23,7 @@ install.$(PKG_NAME):
 	fi
 
 remove.$(PKG_NAME):
-	rm -rf $(CONFIG_DIR)
+	$(H)echo "-- $(PKG_NAME): remove package --"
+	$(H)rm -rf $(CONFIG_DIR)
 
 .PHONY: config.$(PKG_NAME) install.$(PKG_NAME) remove.$(PKG_NAME)
