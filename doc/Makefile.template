@@ -1,9 +1,15 @@
 PKG_NAME=
 CONFIG_DIR=${XDG_CONFIG_HOME}/$(PKG_NAME)
+MK_PATH    := $(abspath $(lastword $(MAKEFILE_LIST)))
+MK_DIR     := $(shell dirname $(MK_PATH))
 
 .ONESHELL:
-config.$(PKG_NAME):
+config.$(PKG_NAME): # Run in $(CONFIG_DIR)
 	$(H)echo "-- $(PKG_NAME): setup config --"
+	echo PKG_NAME:$(PKG_NAME)
+	echo CONFIG_DIR:$(CONFIG_DIR)
+	echo MK_PATH:$(MK_PATH)
+	echo MK_DIR:$(MK_DIR)
 
 install.$(PKG_NAME):
 	$(H)echo "-- $(PKG_NAME): install package --"
