@@ -4,6 +4,8 @@
 	ui = auto
 [core]
 	editor = nvim
+[rerere]
+	enabled = true
 [difftool]
 	prompt = true
 [difftool "nvim"]
