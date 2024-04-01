@@ -6,6 +6,8 @@
 	editor = nvim
 [rerere]
 	enabled = true
+[fetch]
+	prune = true
 [difftool]
 	prompt = true
 [difftool "nvim"]
