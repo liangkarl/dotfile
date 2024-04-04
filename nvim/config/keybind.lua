@@ -118,6 +118,9 @@ return { -- Display cheat sheet of vim shortcut
     -------------------
     -- Direct Keymap --
     -------------------
+    m.noremap('n', '<leader>\\', '<C-w>w', "Switch to next window")
+    m.noremap('n', '<leader><S-Tab>', '<cmd>BufferLineCyclePrev<cr>', "Switch to previous buffer")
+    m.noremap('n', '<leader><Tab>', '<cmd>BufferLineCycleNext<cr>', "Switch to next buffer")
     m.noremap('',  '<leader>0', '^', "Go to the first character of line")
     m.noremap('',  '<leader>9', '$', "Go to the end of line")
     m.noremap('n', '<leader>?', '<cmd>Telescope keymaps<cr>', "Open keymaps")
