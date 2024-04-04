@@ -175,7 +175,7 @@ require("lazy").setup({
   require('config.telescope'),
 
   -- Terminal
-  require('config.toggleterm')
+  -- NOTE: Remove it as change to tmux console
 
   -- Integration Development Environment
   { -- view startup event timing with `--startuptime`

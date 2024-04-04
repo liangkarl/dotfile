@@ -110,7 +110,6 @@ return { -- Display cheat sheet of vim shortcut
     m.noremap('n', '\\', '<C-w>w', "Switch to next window")
     m.noremap('n', '<S-Tab>', '<cmd>BufferLineCyclePrev<cr>', "Switch to previous buffer")
     m.noremap('n', '<Tab>', '<cmd>BufferLineCycleNext<cr>', "Switch to next buffer")
-    m.noremap({ 't', 'i', 'n' }, '<C-\\>', '<cmd>1ToggleTerm direction=tab<cr>', "ToggleTern in Tab")
 
     m.noremap('',  'f', '<cmd>HopChar1CurrentLineAC<cr>')
     m.noremap('',  'F', '<cmd>HopChar1CurrentLineBC<cr>')
