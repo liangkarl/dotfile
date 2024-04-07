@@ -175,14 +175,7 @@ require("lazy").setup({
   require('config.telescope'),
 
   -- Terminal
-  {
-    'akinsho/toggleterm.nvim',
-    version = "v2.7.0",
-    config = function()
-      require('config.toggleterm')
-    end,
-    event = "VeryLazy",
-  },
+  require('config.toggleterm')
 
   -- Integration Development Environment
   { -- view startup event timing with `--startuptime`
