@@ -7,22 +7,19 @@ session="$(tmux display-message -p '#S')"
 window="$(tmux display-message -p '#W')"
 client="$(tmux display-message -p '#{client_name}')"
 pane="$(tmux display-message -p '#{pane_id}')"
+finder='fzf-tmux -p 40%,40% -- --reverse'
 
-if type -t fzf; then
-	finder='fzf --reverse'
-elif type -t fzy; then
-	finder='fzy -i'
-else
-	echo "no fuzzy finder found!" >&2
+if ! type -t fzf; then
+    echo "no 'fzf' found!" | $finder
+    return 1
 fi &> /dev/null
 
-# TODO:
-# "Update-Plugins" is not available due to deadlock on waiting user input
-menu=( "Install-Plugins"
+menu=(
+    "Install-Plugins"
 	"Update-Plugins"
 	"Clean-Plugins"
 	"Cancel"
-	)
+)
 ans=$(echo ${menu[@]} | sed -e 's/ /\n/g' -e 's/-/ /g' | $finder)
 
 case $ans in
