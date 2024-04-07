@@ -49,4 +49,10 @@ reboot() {
     echo "If you want to reboot the computer, please try 'builtin reboot'." >&2
 }
 
-kill_dependant() { kill $(ps -s $1 -o pid=); }
+kill.contain() {
+    if [[ -z "$1" ]]; then
+        echo "kill the process including its children"
+        return 1
+    fi
+    kill $(ps -s $1 -o pid=);
+}
