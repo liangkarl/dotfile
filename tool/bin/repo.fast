@@ -34,7 +34,7 @@ job=${job:-8}
 
 # TODO: load build.conf
 
-has_cmd repo || exit_msg 2 "no 'repo' installed"
+env.cmd repo || exit_msg 2 "no 'repo' installed"
 
 opt=('--no-repo-verify' "-j$job")
 case $fepo_opt in

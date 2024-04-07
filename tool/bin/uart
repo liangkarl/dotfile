@@ -158,12 +158,12 @@ done
 for cmd in ${cmds[@]}; do
 	printf -- "check $cmd...\r"
 	if [[ -n "$WSL_DISTRO_NAME" ]]; then
-		if has_cmd ${cmd}.exe; then
+		if env.cmd ${cmd}.exe; then
 			printf -- "find $cmd\t\t\r"
 			cmd=${cmd}.exe
 			break
 		fi
-	elif has_cmd $cmd; then
+	elif env.cmd $cmd; then
 		printf -- "find $cmd\t\t\r"
 		break
 	fi
@@ -187,9 +187,9 @@ if [[ "$select_cmd" == y ]]; then
 			exit
 		fi
 
-		if has_cmd $cmd; then
+		if env.cmd $cmd; then
 			break
-		elif has_cmd ${cmd}.exe; then
+		elif env.cmd ${cmd}.exe; then
 			cmd=${cmd}.exe
 			break
 		fi

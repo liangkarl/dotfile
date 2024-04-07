@@ -7,7 +7,7 @@ FASD='fasd'
 FASD_DIR="$SHELL_CONFIG_DIR/$FASD"
 
 install() {
-    already_has_cmd $FASD && return $?
+    env.cmd $FASD && return $?
 
     echo "Install $FASD..."
     add_ppa_repo "ppa:aacebedo/fasd"
