@@ -1,9 +1,18 @@
-# Readme
+# Bash
 
-## Description
+There are some additional features for this `bash` configuration, like
+colorful `man`, sorted `ls`, detailed `PS1` and add more autocompletion
+that are not included in `bash-completion`
 
-### completion/ directory
+## `startup/`
 
-These completion files are used for the shell already installed
-bash-completion, which couldn't complete these commands so that
-we add some completion file here to solve the problem.
+Include many environment setup of other CLI tools
+
+## `completion/`
+
+Collection of excluded completion files in `bash-completion`
+
+## `lib/`
+
+An library that includes some frequently-used functions. It's pretty old
+that need to be rewritten

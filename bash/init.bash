@@ -44,21 +44,21 @@ __init_bash() {
         echo $os
     } 2> /dev/null
 
-    local base
+    local core
 
-    base="$(dirname $BASH_SOURCE)/base"
+    core="$(dirname $BASH_SOURCE)/core"
 
     export SYS_OS=$(env.sys)
     export SYS_WSL=$(env.wsl && echo 1 || echo 0)
 
     # set up XDG_xxx
-    source ${base}/xdg.bash
+    source ${core}/xdg.bash
 
     grep -q -w "${HOME}/bin" <<< "$PATH" || PATH="${HOME}/bin:${PATH}"
 
-    source ${base}/ps1.bash
+    source ${core}/ps1.bash
 
-    eval $(find ${SHELL_DIR}/{completion,ext} -type f -exec 'echo' 'source' '{};' ';')
+    eval $(find ${SHELL_DIR}/{completion,startup} -type f -exec 'echo' 'source' '{};' ';')
 }
 
 export -f lib.add
