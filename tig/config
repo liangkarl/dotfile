@@ -151,6 +151,10 @@ bind generic h  view-close-no-quit
 bind generic q  view-close-no-quit
 bind generic J  next
 bind generic K  previous
+bind diff    l  scroll-right
+bind diff    h  scroll-left
+bind stage   l  scroll-right
+bind stage   h  scroll-left
 bind generic Q  quit
 bind generic <Ctrl-r> <tig
 
