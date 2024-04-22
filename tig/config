@@ -227,14 +227,24 @@ bind refs   a<ENTER> @sh -c 'tig.cmd add "%(commit)"'
 bind refs   d<ENTER> @sh -c 'tig.cmd del "%(commit)"'
 
 ## Checkout
-bind main   co +sh -c 'tig.cmd cmd checkout %(commit)'
-bind refs   co +sh -c 'tig.cmd cmd checkout %(ref)'
-bind refs   cd +sh -c 'tig.cmd cmd checkout -d %(ref)'
-bind reflog co +sh -c 'tig.cmd cmd checkout %(commit)'
-
-### Reset file
+bind main   co +sh  -c 'tig.cmd cmd checkout %(commit)'
+bind refs   co +sh  -c 'tig.cmd cmd checkout %(ref)'
+bind refs   cd +sh  -c 'tig.cmd cmd checkout -d %(ref)'
+bind reflog co +sh  -c 'tig.cmd cmd checkout %(commit)'
 bind status co +?sh -c 'tig.cmd cmd checkout %(file)'
 bind stage  co +?sh -c 'tig.cmd cmd checkout %(file)'
+bind diff   co +?sh -c 'tig.cmd cmd checkout %(file)'
+
+### File Operation
+bind main   dc       +?sh -c 'tig.cmd cmd clean -fd'
+bind status d<Enter> @?rm -rf %(file)
+bind status dd       @?sh -c 'rm -rf $(dirname %(file))'
+bind status dc       +?sh -c 'tig.cmd cmd clean -fd'
+bind stage  d<Enter> @?rm -rf %(file)
+bind stage  dd       @?sh -c 'rm -rf $(dirname %(file))'
+bind stage  dc       +?sh -c 'tig.cmd cmd clean -fd'
+bind diff   d<Enter> @?rm -rf %(file)
+bind diff   dd       @?sh -c 'rm -rf $(dirname %(file))'
 
 ## Reset commits
 bind main    rh +sh -c '[[ "%(prompt enter "y" to hard reset: )" == "y" ]] && git reset --hard %(commit)'
@@ -265,6 +275,12 @@ bind diff   p1       +sh -c 'tig.cmd cmd format-patch -k --binary --histogram -o
 bind diff   pn       +sh -c 'tig.cmd cmd format-patch -k --binary --histogram -o .patch %(commit)^'
 bind diff   pf       +sh -c 'tig.cmd cmd format-patch -k --binary --histogram -o .patch %(commit) %(file)'
 bind diff   pr       @sh -c 'tig.cmd patch.reset'
+bind log    ps       @sh -c 'tig.cmd choose patch %(commit)'
+bind log    p<Enter> +sh -c 'tig.cmd patch.create'
+bind log    p1       +sh -c 'tig.cmd cmd format-patch -k --binary --histogram -o .patch -1 %(commit)'
+bind log    pn       +sh -c 'tig.cmd cmd format-patch -k --binary --histogram -o .patch %(commit)^'
+bind log    pf       +sh -c 'tig.cmd cmd format-patch -k --binary --histogram -o .patch %(commit) %(file)'
+bind log    pr       @sh -c 'tig.cmd patch.reset'
 bind reflog ps       @sh -c 'tig.cmd choose patch %(commit)'
 bind reflog p<Enter> +sh -c 'tig.cmd patch.create'
 bind reflog p1       +sh -c 'tig.cmd cmd format-patch -k --binary --histogram -o .patch -1 %(commit)'
@@ -282,9 +298,6 @@ bind stage a stage-update-line
 # Status {
 bind status C none
 bind status ! none
-bind status d<Enter> @?rm -rf %(file)
-bind status dd       @?sh -c 'rm -rf $(dirname %(file))'
-bind status D        +?sh -c 'tig.cmd cmd clean -fd'
 # }
 
 # Reference {
@@ -313,7 +326,6 @@ bind diff rv +sh -c 'tig.cmd cmd.rcv revert --no-edit %(commit)'
 bind main rb >?git rebase -i %(commit)
 bind main ra >?git rebase --abort
 bind main rc >?git rebase --continue
-bind main D  >?git clean -fd
 bind main su !sh -c 'tig.cmd choose push %(commit) %(refname)'
 bind main sm +sh -c 'tig.cmd choose merge %(commit) %(refname)'
 bind main sr +sh -c 'tig.cmd choose rebase %(commit) %(refname)'
