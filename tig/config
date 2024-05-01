@@ -286,8 +286,8 @@ bind reflog p<Enter> +sh -c 'tig.cmd patch.create'
 bind reflog p1       +sh -c 'tig.cmd cmd format-patch -k --binary --histogram -o .patch -1 %(commit)'
 bind reflog pr       @sh -c 'tig.cmd patch.reset'
 bind blame  p1       +sh -c 'tig.cmd cmd format-patch -k --binary --histogram -o .patch -1 %(commit)'
-bind stage  p1       @sh -c 'tig.cmd cmd.out $(date +%y%m%d%H%M%S%H%M).diff diff -k --binary --histogram'
-bind stage  pf       @sh -c 'tig.cmd cmd.out $(date +%y%m%d%H%M%S)-$(basename %(file)).diff diff -k --binary --histogram %(file)'
+bind stage  p1       @sh -c 'tig.cmd cmd.out $(date +%y%m%d%H%M%S%H%M).diff diff --binary --histogram'
+bind stage  pf       @sh -c 'tig.cmd cmd.out $(date +%y%m%d%H%M%S)-$(basename %(file)).diff diff --binary --histogram %(file)'
 # }
 
 # Stage {
