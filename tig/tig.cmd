@@ -6,6 +6,7 @@ t=${dir}/tig.tag
 b=${dir}/tig.branch
 p=${dir}/tig.patch
 m=${dir}/tig.commit
+OUT=/dev/null
 
 mkdir $dir 2>&-
 
@@ -14,11 +15,14 @@ _cmd() {
     local opt="$@"
     local ret
 
-    $git $cmd $opt > /dev/null; ret=$?
+    $git $cmd $opt > $OUT; ret=$?
     if (( $ret == 0 )); then
         echo "'$cmd $opt' done"
     else
         echo "'$cmd $opt' failed ($ret)"
+		if [[ "$OUT" != "/dev/null" && -e "$OUT" ]]; then
+			rm $OUT
+		fi
 		return $ret
     fi
 }
@@ -29,8 +33,8 @@ cmd() { _cmd $@; }
 cmd.rcv() { _cmd $@ || $git $1 --abort; }
 
 cmd.out() {
-	local file=$1; shift
-	_cmd $@ > $file
+	OUT="$1"; shift
+	_cmd $@
 }
 
 # Convert SHA to branch
