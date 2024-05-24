@@ -330,6 +330,7 @@ bind main su !sh -c 'tig.cmd choose push %(commit) %(refname)'
 bind main sm +sh -c 'tig.cmd choose merge %(commit) %(refname)'
 bind main sr +sh -c 'tig.cmd choose rebase %(commit) %(refname)'
 bind main sc +sh -c 'tig.cmd choose clean'
+bind main <SingleQuote> :!sh -c 'printf -- "-- Commit Statistics --\\n\\nCommit\\tAuthor\\n"; git shortlog --summary --numbered --all --no-merges'
 # }
 
 # Log {
