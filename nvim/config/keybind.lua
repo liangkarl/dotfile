@@ -87,6 +87,10 @@ return { -- Display cheat sheet of vim shortcut
       group = gid
     })
 
+    -- XXX: WA for 'E335: Menu not defined for Insert mode'
+    -- https://github.com/neovim/neovim/issues/19473
+    m.noremap('v', '<RightMouse>', '<C-\\><C-g>gv<cmd>:popup! PopUp<cr>', "FIX E335 for popup issue")
+
     -- Available list:
     -- '(', ')', ';', ',', Z, H, L, t, T, F, M, sX
 
