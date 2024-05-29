@@ -5,14 +5,15 @@ NVIM_VER=0.9.4
 .ONESHELL:
 config.$(PKG_NAME):
 	$(H)echo "-- $(PKG_NAME): setup config --"
-	PS3='select a fuzzy finder above: '
-	$(H)select opt in 'fzf' 'telescope' 'cancel'; do
-		if [[ "${opt}" != 'cancel' ]]; then
-			echo "let g:fuzzy_finder = '${opt}'" > ${CONFIG_DIR}/config.vim
-		fi
-		break
-	done
-	$(H)echo "let g:editor_theme = 'material'" >> ${CONFIG_DIR}/config.vim
+	# TODO: implement different fuzzy_finder
+	# PS3='select a fuzzy finder above: '
+	# $(H)select opt in 'fzf' 'telescope' 'cancel'; do
+	# 	if [[ "${opt}" != 'cancel' ]]; then
+	# 		echo "let g:fuzzy_finder = '${opt}'" > ${CONFIG_DIR}/config.vim
+	# 	fi
+	# 	break
+	# done
+	$(H)echo "let g:editor_theme = 'material'" > ${CONFIG_DIR}/config.vim
 	$(H)nvim +"set nomodifiable nomodified" \
 			<<< "Press 'q' to exit nvim if all plugins were installed."
 
