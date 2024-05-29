@@ -333,15 +333,19 @@ bind refs cs        +tig.run clean
 bind main C none
 bind main ! none
 
-bind main bs +tig.run git.full bisect start
-bind main bg +tig.run git.full bisect good %(commit)
-bind main bb +tig.run git.full bisect bad %(commit)
-bind main br +tig.run git.full bisect reset
+bind main bs +?tig.run git.full bisect start
+bind main bg +?tig.run git.full bisect good %(commit)
+bind main bb +?tig.run git.full bisect bad %(commit)
 bind main rv :!tig.run git.rcv revert --no-edit %(commit)
 bind diff rv :!tig.run git.rcv revert --no-edit %(commit)
 bind main rb >?git rebase -i %(commit)
-bind main ra >?git rebase --abort
-bind main rc >?git rebase --continue
+bind main rk >?git rebase --skip
+# progress stop: rebase, merge, revert, cherry-pick, bisect
+bind main pa  +?tig.run abort
+# progress continue: rebase, merge, revert, cherry-pick, bisect
+bind main pc !?tig.run going
+# progress info
+bind main pi +tig.run progress
 bind main pp !?tig.run push %(commit)
 bind main <SingleQuote> :!tig.run commit_report
 # }

@@ -381,6 +381,57 @@ clean() {
 	rm -f $s
 }
 
+progress() {
+	local cmd bis
+	for cmd in REBASE_HEAD MERGE_HEAD REVERT_HEAD CHERRY_PICK_HEAD; do
+		if git rev-parse --verify $cmd &> /dev/null; then
+			cmd=${cmd%%_HEAD}
+			cmd=${cmd//_/-}
+			cmd=${cmd~~}
+			echo "'$cmd' is in progress"
+			return
+		fi
+	done
+
+	bis=$(git rev-parse --show-toplevel)/.git/BISECT_ANCESTORS_OK
+	if [[ -e $bis ]]; then
+		echo "'bisect' is in progress"
+	fi
+
+	echo "not in any git session"
+}
+
+abort() {
+	local cmd bis
+	for cmd in REBASE_HEAD MERGE_HEAD REVERT_HEAD CHERRY_PICK_HEAD; do
+		if git rev-parse --verify $cmd &> /dev/null; then
+			cmd=${cmd%%_HEAD}
+			cmd=${cmd//_/-}
+			cmd=${cmd~~}
+			git.full $cmd --abort
+			return
+		fi
+	done
+
+	bis=$(git rev-parse --show-toplevel)/.git/BISECT_ANCESTORS_OK
+	if [[ -e $bis ]]; then
+		git.full bisect reset
+	fi
+}
+
+going() {
+	local cmd
+	for cmd in REBASE_HEAD MERGE_HEAD REVERT_HEAD CHERRY_PICK_HEAD; do
+		if git rev-parse --verify $cmd &> /dev/null; then
+			cmd=${cmd%%_HEAD}
+			cmd=${cmd//_/-}
+			cmd=${cmd~~}
+			git.full $cmd --continue
+			return
+		fi
+	done
+}
+
 commit_report() {
 	cat <<-EOF
 	-- Commit Report --
