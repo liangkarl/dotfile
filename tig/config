@@ -304,7 +304,7 @@ bind status ! none
 bind refs C none
 bind refs ! none
 
-bind refs f<ENTER> +sh -c 'tig.cmd cmd fetch --prune'
+bind refs f<ENTER> +sh -c 'tig.cmd cmd fetch --prune --all'
 bind refs m<ENTER> +sh -c 'tig.cmd cmd.rcv merge %(commit)'
 bind refs rb       +sh -c 'tig.cmd cmd.rcv rebase %(commit)'
 bind refs su       !sh -c 'tig.cmd choose push %(commit) %(refname)'
