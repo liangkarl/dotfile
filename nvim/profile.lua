@@ -112,14 +112,8 @@ m.autocmd("TextYankPost", '*', function() vim.highlight.on_yank() end, {
 m.autocmd( { "InsertLeave", "WinEnter" }, "*", "set cursorline", { group = gid })
 m.autocmd( { "InsertEnter", "WinLeave" }, "*", "set nocursorline", { group = gid })
 
--- FIXME: WA for mini.cursor as the color could not be changed in init.lua
-m.autocmd( "BufAdd", "*", function()
-    m.highlight("MiniCursorword", { fg = 'tomato', ctermfg = 'Red' })
-    m.highlight("MiniCursorwordCurrent", { fg = 'tomato', ctermfg = 'Red' })
-  end, {
-  desc = "WA for setting MiniCursorWord",
-  group = gid,
-})
+m.highlight("MiniCursorword", { fg = 'tomato', ctermfg = 'Red' })
+m.highlight("MiniCursorwordCurrent", { fg = 'tomato', ctermfg = 'Red' })
 
 cmd([[
   " no one is really happy until you have this shortcuts

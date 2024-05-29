@@ -141,9 +141,12 @@ require("lazy").setup({
           "mini",
           -- "telescope",
         },
+        -- Fix mini.cursor color could not be changed as the async loading
+        -- makes setup sequence unstable
+        async_loading = false,
       })
       vim.g.material_style = 'darker'
-      vim.cmd('colorscheme material-darker')
+      vim.cmd.colorscheme('material-darker')
     end,
   },
   {
