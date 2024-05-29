@@ -159,17 +159,7 @@ require("lazy").setup({
   },
   require('config.lsp-status'),
   require('config.fold-preview'),
-  { -- setup appearance of indent, space, etc.
-    -- FIXME:
-    -- 1. This plugin is included in Nvim 0.9, so the config should be rewritten
-    -- 2. editorconfig could be used in creating new file, and disabled in
-    --    editing existed files
-    'editorconfig/editorconfig-vim',
-    config = function()
-      require('config.editorconfig')
-    end,
-    enabled = false,
-  },
+  require('config.editorconfig'),
 
   {
     "jackMort/ChatGPT.nvim",
