@@ -126,6 +126,8 @@ m.autocmd( { "InsertEnter", "WinLeave" }, "*", "set nocursorline", { group = gid
 m.highlight("MiniCursorword", { fg = 'tomato', ctermfg = 'Red' })
 m.highlight("MiniCursorwordCurrent", { fg = 'tomato', ctermfg = 'Red' })
 
+m.autocmd("BufReadPost", "*", 'GuessIndent', { group = gid })
+
 cmd([[
   " no one is really happy until you have this shortcuts
   cab W! w!
