@@ -42,7 +42,7 @@ local function edit(enable)
     vim.opt.colorcolumn = ''
     vim.opt.scrolloff = 999
     vim.opt.sidescrolloff = 10
-    vim.diagnostic.config({ virtual_text = true, virtual_lines = true, signs = true})
+    vim.diagnostic.config({ virtual_text = true, virtual_lines = true, signs = false})
     space.unhighlight()
     if check_ts_parser() then
       vim.treesitter.start()
