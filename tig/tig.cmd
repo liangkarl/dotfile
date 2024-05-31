@@ -232,7 +232,50 @@ ref.push() {
 	:;
 }
 
-save() { :; }
+# save "<commit>" "<branch>" "<refname>" "<tag>" "<file>"
+save() {
+	local save=${dir}/tig.save
+	local mg co br rm tg fl
+
+	if [[ "$1" =~ ^0+$ ]]; then
+		co=
+		br=
+	else
+		if [[ $(git cat-file -p $2 | grep -c '^parent ') > 1 ]]; then
+			# it's a merge commit
+			mg=1
+		fi
+		co=$1
+		br=$2
+	fi
+
+	# remote
+	for str in $(git remote show); do
+		if [[ "$3" != "${3#$str\/}" ]]; then
+			rm=$str
+			break
+		fi
+	done
+
+	tg=$4
+
+	# check file
+	if [[ -e "$5" ]]; then
+		fl=$5
+	else
+		fl="not-exist"
+	fi
+
+	cat | tee $save <<-EOF
+	merge=$mg
+	commit=$co
+	branch=$br
+	remote=$rm
+	tag=$tg
+	# $([[ -e "$5" ]] || echo "'$5' doesn't exist")
+	file=${fl#not-exist}
+	EOF
+}
 
 # choose [config] [type]
 choose() {
