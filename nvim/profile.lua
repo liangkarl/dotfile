@@ -35,6 +35,7 @@ local function edit(enable)
     space.highlight()
     if check_ts_parser() then
       vim.treesitter.stop()
+      vim.cmd('syntax off')
     end
   else
     vim.opt.list = false
@@ -46,6 +47,7 @@ local function edit(enable)
     space.unhighlight()
     if check_ts_parser() then
       vim.treesitter.start()
+      vim.cmd('syntax on')
     end
   end
 end
