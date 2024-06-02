@@ -56,6 +56,9 @@ vim.g.editorconfig = false
 m.highlight("nCursor", { fg=nil, bg='SlateBlue', cterm=nil, ctermbg=1 })
 m.highlight("iCursor", { fg=nil, bg='#ffffff', cterm=nil, ctermbg=15 })
 m.highlight("rCursor", { fg=nil, bg='Red', cterm=nil, ctermbg=12 })
+vim.cmd('hi CurSearch guifg=gray90 guibg=PeachPuff4')
+vim.cmd('hi IncSearch guifg=PeachPuff4 guibg=gray90')
+vim.cmd('hi Search guifg=PeachPuff4 guibg=PeachPuff1')
 
 -- Set cursor pattern (no blink)
 vim.opt.guicursor = {
