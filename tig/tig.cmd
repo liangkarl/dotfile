@@ -248,10 +248,10 @@ save() {
 	else
 		if [[ $(git cat-file -p $2 | grep -c '^parent ') > 1 ]]; then
 			# it's a merge commit
-			mg=1
+			mg=y
 		fi
 		co=$1
-		br=$2
+		br=$(_to_branch $1 $2)
 	fi
 
 	# remote
@@ -267,19 +267,32 @@ save() {
 	# check file
 	if [[ -e "$5" ]]; then
 		fl=$5
-	else
-		fl="not-exist"
 	fi
 
 	cat | tee $save <<-EOF
+	# This is $([[ -z $mg ]] && echo "not") merged commit
 	merge=$mg
+
+	# $([[ "$1" =~ ^0+$ ]] && echo "un")committed
 	commit=$co
+
+	# ${2:-<null>}: branch is $([[ -z "$(_to_branch $1 $2)" ]] || echo "in")correct
 	branch=$br
+
+	# ${3:-<null>}: remote is $([[ -n "$(_to_remote_branch $br)" ]] || echo "non-")existed
 	remote=$rm
+
+	# ${4:-<null>}: tag is $([[ -z "$(_to_tag $1 $4)" ]] || echo "non-")existed
 	tag=$tg
-	# $([[ -e "$5" ]] || echo "'$5' doesn't exist")
-	file=${fl#not-exist}
+
+	# ${5:-<null>}: file is $([[ -e "$5" ]] || echo "non-")existed
+	file=$fl
 	EOF
+}
+
+clean() {
+	echo "clean choose config"
+	rm -f $save
 }
 
 # choose [config] [type]
