@@ -7,7 +7,7 @@ config.$(PKG_NAME):
 	$(H)if [[ ! -e ~/bin ]]; then
 		mkdir ~/bin
 	fi
-	$(H)ln -sf $(CONFIG_DIR)/tig.cmd ~/bin/
+	$(H)ln -sf $(CONFIG_DIR)/tig.run ~/bin/
 
 install.$(PKG_NAME):
 	$(H)echo "-- $(PKG_NAME): install package --"
