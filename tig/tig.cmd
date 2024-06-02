@@ -38,6 +38,8 @@ cmd.out() {
 }
 
 # Convert SHA to branch
+# 1. giving both SHA and branch would return the branch name on the SHA
+# 2. giving SHA would return any branch name on the SHA
 # _to_branch <sha> [branch]
 _to_branch() {
 	local branch rev
@@ -46,8 +48,10 @@ _to_branch() {
 		rev=$(git rev-parse $2 2>&- || echo "")
 		if [[ "$1" == "$rev" ]]; then
 			echo $2
-			return
+		else
+			false
 		fi
+		return
 	fi
 
 	for branch in $(git branch --format='%(refname:short)'); do
@@ -57,31 +61,29 @@ _to_branch() {
 			return
 		fi
 	done
-	echo ""; false
+
+	false
 }
 
+# Check remote branch
+# _to_branch <branch>
 _to_remote_branch() {
-	local branch rev
+	local remote
 
-	if [[ -n "$2" ]]; then
-		rev=$(git rev-parse $2 2>&- || echo "")
-		if [[ "$1" == "$rev" ]]; then
-			echo $2
-			return
-		fi
+	if ! git show-ref --verify --quiet refs/heads/${1}; then
+		return
 	fi
 
-	for branch in $(git branch -r --format='%(refname:short)'); do
-		rev=$(git rev-parse $branch)
-		if [[ "$rev" == "$1" ]]; then
-			echo $branch
-			return
-		fi
-	done
-	echo ""; false
+	remote=$(git rev-parse --abbrev-ref ${1}@{upstream} 2>/dev/null)
+
+	if [ -n "$remote" ]; then
+		echo $remote
+	fi
 }
 
 # Convert SHA to tag
+# 1. giving both SHA and tag would return the tag name on the SHA
+# 2. giving SHA would return any tag name on the SHA
 # _to_tag <sha> [tag]
 _to_tag() {
 	local tag rev
@@ -90,8 +92,10 @@ _to_tag() {
 		rev=$(git rev-parse $2 2>&- || echo "")
 		if [[ "$1" == "$rev" ]]; then
 			echo $2
-			return
+		else
+			false
 		fi
+		return
 	fi
 
 	for tag in $(git tag -l); do
@@ -101,7 +105,8 @@ _to_tag() {
 			return
 		fi
 	done
-	echo ""; false
+
+	false
 }
 
 # To know which is the last action
