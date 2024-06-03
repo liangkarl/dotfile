@@ -316,7 +316,9 @@ bind refs ! none
 bind refs s<ENTER> :!tig.run save "%(commit),%(branch),%(refname),%(tag),%(file)"
 bind refs f<ENTER> :!tig.run git.full fetch --prune --all
 bind refs rb       :!tig.run git.rcv rebase %(commit)
-bind refs sP       !?tig.run ref.push
+bind refs pp       !?tig.run push
+bind refs pb       !?tig.run push.create "%(branch)"
+bind refs pt       !?tig.run push.create "%(tag)"
 bind refs cs        +tig.run clean
 # }
 
@@ -333,7 +335,7 @@ bind diff rv :!tig.run git.rcv revert --no-edit %(commit)
 bind main rb >?git rebase -i %(commit)
 bind main ra >?git rebase --abort
 bind main rc >?git rebase --continue
-bind main sP !?tig.run ref.push %(commit)
+bind main pp !?tig.run push %(commit)
 bind main <SingleQuote> :!tig.run commit_report
 # }
 

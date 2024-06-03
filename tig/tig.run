@@ -271,8 +271,8 @@ patch.add() {
 	fi
 }
 
-# ref.push <commit>
-ref.push() {
+# push <commit>
+push() {
 	source $s
 
 	if [[ -z "$remote" ]]; then
@@ -281,6 +281,35 @@ ref.push() {
 	fi
 
 	git.full push $remote ${1:-HEAD}:${branch}
+}
+
+# push <branch|tag>
+push.create() {
+	source $s
+
+	if [[ -z "$remote" ]]; then
+		echo "no remote name"; false
+		return
+	fi
+
+	if [[ -z "$1" ]]; then
+		echo "Empty branch or tag name"; false
+		return
+	fi
+
+	git.full push $remote $1
+}
+
+# rebase <commit>
+rebase() {
+	local change
+
+	change=$(git status --porcelain | grep -v '^??')
+	if [[ -n "$change" ]]; then
+		git stash
+	fi
+
+	git.full rebase $1
 }
 
 # save "<commit>,<branch>,<refname>,<tag>,<file>"
