@@ -308,7 +308,7 @@ bind refs C none
 bind refs ! none
 
 bind refs s<ENTER> :!tig.run save "%(commit),%(branch),%(refname),%(tag),%(file)"
-bind refs f<ENTER> :!tig.run cmd fetch --prune --all
+bind refs f<ENTER> :!tig.run git.full fetch --prune --all
 bind refs rb       :!tig.run git.rcv rebase %(commit)
 bind refs sP       !?tig.run ref.push
 bind refs cs        +tig.run clean
