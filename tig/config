@@ -115,6 +115,12 @@ bind main  -<ENTER> <tig --no-merges
 bind main  -a       <tig --no-merges --author="%(prompt search author name: )"
 bind main  =        <tig
 
+## Refs format
+bind refs  =        <tig refs
+bind refs  -b       <tig refs --branches
+bind refs  -t       <tig refs --tags
+bind refs  -r       <tig refs --remotes
+
 ## tree/blob format
 bind blob  -f       <tig --no-merges -- %(file)
 bind tree  -f       <tig --no-merges -- %(file)
