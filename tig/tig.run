@@ -1,48 +1,71 @@
 #!/usr/bin/env bash
 
-git='git'
 dir='/tmp/tig'
 t=${dir}/tig.tag
 b=${dir}/tig.branch
 p=${dir}/tig.patch
 m=${dir}/tig.commit
-OUT=/dev/null
+s=${dir}/tig.save
+o=${dir}/tig.out
 
 mkdir $dir 2>&-
 
-_cmd() {
-    local cmd="$1"; shift
-    local opt="$@"
-    local ret
+cmd() { eval $@ &> $o; }
+cmd.full() {
+	local ret
 
-    $git $cmd $opt > $OUT; ret=$?
+	cmd $@
+	ret=$?
     if (( $ret == 0 )); then
-        echo "'$cmd $opt' done"
+        echo "'$@' done"
     else
-        echo "'$cmd $opt' failed ($ret)"
-		if [[ "$OUT" != "/dev/null" && -e "$OUT" ]]; then
-			rm $OUT
-		fi
-		return $ret
+        echo "'$@' failed ($ret)"
     fi
+
+	echo ""
+	cat $o
+}
+cmd.file() {
+	local ret file
+
+	file="$1"; shift
+
+	cmd $@; ret=$?
+	cp -f $o $file
+
+	return $ret
 }
 
-# cmd [git commands ...]
-cmd() { _cmd $@; }
-# cmd_abort [git commands ...]
-cmd.rcv() { _cmd $@ || $git $1 --abort; }
+git.quiet() { cmd git $@; }
+git.full() { cmd.full git $@; }
+git.file() {
+	local file
 
-cmd.out() {
-	OUT="$1"; shift
-	_cmd $@
+	file="$1"; shift
+	cmd.full $file git $@
 }
+
+git.rcv() { git.full $@ || git $1 --abort; }
+
+# is_commit <sha>
+is_commit() { git rev-parse --verify --quiet ${1} &> /dev/null; }
+# is_branch <branch>
+is_branch() { git show-ref --verify --quiet refs/heads/${1} &> /dev/null; }
+# is_tag <tag>
+is_tag() { git show-ref --verify --quiet refs/tags/${1} &> /dev/null; }
+# is_remote_branch <refname>
+is_remote_branch() { git show-ref --verify --quiet refs/remotes/${1} &> /dev/null; }
 
 # Convert SHA to branch
 # 1. giving both SHA and branch would return the branch name on the SHA
 # 2. giving SHA would return any branch name on the SHA
-# _to_branch <sha> [branch]
-_to_branch() {
+# check_branch <sha> [branch]
+check_branch() {
 	local branch rev
+
+	if ! is_commit $1; then
+		return 1
+	fi
 
 	if [[ -n "$2" ]]; then
 		rev=$(git rev-parse $2 2>&- || echo "")
@@ -66,15 +89,15 @@ _to_branch() {
 }
 
 # Check remote branch
-# _to_branch <branch>
-_to_remote_branch() {
+# get_remote_branch <branch>
+get_remote_branch() {
 	local remote
 
-	if ! git show-ref --verify --quiet refs/heads/${1}; then
-		return
+	if ! is_commit $1; then
+		return 1
 	fi
 
-	remote=$(git rev-parse --abbrev-ref ${1}@{upstream} 2>/dev/null)
+	remote=$(git rev-parse --abbrev-ref ${1}@{upstream} &> /dev/null)
 
 	if [ -n "$remote" ]; then
 		echo $remote
@@ -84,9 +107,13 @@ _to_remote_branch() {
 # Convert SHA to tag
 # 1. giving both SHA and tag would return the tag name on the SHA
 # 2. giving SHA would return any tag name on the SHA
-# _to_tag <sha> [tag]
-_to_tag() {
+# check_tag <sha> [tag]
+check_tag() {
 	local tag rev
+
+	if ! is_commit $1; then
+		return 1
+	fi
 
 	if [[ -n "$2" ]]; then
 		rev=$(git rev-parse $2 2>&- || echo "")
@@ -115,11 +142,11 @@ _load_last_action() {
 	local cmd
 }
 
-stash() {
+git.stash() {
 	local repo="$(basename $(git rev-parse --show-toplevel))"
 	local sha="$(git rev-parse --short HEAD)"
-	cmd stash save ${repo}.${sha}
-	# git stash save "${repo}.${sha}"
+
+	git.quiet stash save ${1:-${repo}.${sha}}
 }
 
 # add <commit>
@@ -138,8 +165,8 @@ add() {
 
 # del <commit>
 del() {
-	local tag=$(_to_tag $1)
-	local branch=$(_to_branch $1)
+	local tag=$(check_tag $1)
+	local branch=$(check_branch $1)
 
 	if [[ -n "$tag" ]]; then
 		git tag -d $tag
@@ -225,136 +252,113 @@ patch.create() {
 	echo "$((i - 100)) patches has been created."
 }
 
-# ref.push <commit>
-ref.push() {
-	source $b
+# patch.add <commit>
+patch.add() {
+	local file idx
+	local commit
 
-	if [[ -z "$remote" ]]; then
-		echo "no remote name"
+	commit="$1"
+	file=$p
+	touch $file
+
+	idx=$(wc -l $file | cut -d' ' -f 1)
+	if ! cat $file | grep -q $commit; then
+		echo "select commit patch. ($commit)"
+		git tag patch.${idx} $commit
+		echo $commit >> $file
+	else
+		echo "same commit patch has been detected. ($commit)"
 	fi
-
-	cmd push $remote ${1}:${branch}
-	:;
 }
 
-# save "<commit>" "<branch>" "<refname>" "<tag>" "<file>"
-save() {
-	local save=${dir}/tig.save
-	local mg co br rm tg fl
+# ref.push <commit>
+ref.push() {
+	source $s
 
-	if [[ "$1" =~ ^0+$ ]]; then
-		co=
-		br=
-	else
-		if [[ $(git cat-file -p $2 | grep -c '^parent ') > 1 ]]; then
-			# it's a merge commit
-			mg=y
-		fi
-		co=$1
-		br=$(_to_branch $1 $2)
+	if [[ -z "$remote" ]]; then
+		echo "no remote name"; false
+		return
 	fi
 
-	# remote
-	for str in $(git remote show); do
-		if [[ "$3" != "${3#$str\/}" ]]; then
-			rm=$str
-			break
-		fi
-	done
+	git.full push $remote ${1:-HEAD}:${branch}
+}
 
-	tg=$4
+# save "<commit>,<branch>,<refname>,<tag>,<file>"
+save() {
+	local commit branch refname tag file
+	local is_merged is_remote remote raw
+
+	IFS=',' read -ra raw <<< "$*"
+	commit=${raw[0]}
+	branch=${raw[1]}
+	refname=${raw[2]}
+	tag=${raw[3]}
+	file=${raw[4]}
+
+	if [[ "$commit" =~ ^0+$ ]]; then
+		commit=
+		branch=
+		tag=
+	else
+		if [[ $(git cat-file -p $commit | grep -c '^parent ') > 1 ]]; then
+			is_merged=y
+		fi
+
+		#       tag: branch:'',   refname:tag,         tag:tag
+		#  local br: branch:name, refname:name,        tag:''
+		# remote br: branch:name, refname:origin/name, tag:''
+		if [[ "$branch" == "$refname" ]]; then
+			remote=''
+			branch=$(check_branch $commit $branch)
+		else
+			is_remote=y
+			remote="${refname%/$branch}"
+		fi
+
+		tag=$(check_tag $commit $tag)
+	fi
 
 	# check file
-	if [[ -e "$5" ]]; then
-		fl=$5
+	if [[ -e "$file" ]]; then
+		file=$file
 	fi
 
-	cat | tee $save <<-EOF
-	# This is $([[ -z $mg ]] && echo "not") merged commit
-	merge=$mg
+	cat | tee $s <<-EOF
+	# This is $([[ -z $is_merged ]] && echo "not ")merged commit
+	is_merged=$is_merged
 
-	# $([[ "$1" =~ ^0+$ ]] && echo "un")committed
-	commit=$co
+	# This is $([[ -z $is_remote ]] && echo "not ")remote branch
+	is_remote=$is_remote
 
-	# ${2:-<null>}: branch is $([[ -z "$(_to_branch $1 $2)" ]] || echo "in")correct
-	branch=$br
+	# $(is_commit "${raw[0]}" || echo "un")committed
+	commit=$commit
 
-	# ${3:-<null>}: remote is $([[ -n "$(_to_remote_branch $br)" ]] || echo "non-")existed
-	remote=$rm
+	# ${raw[1]:-<null>}: branch is $(check_branch ${raw[0]} ${raw[1]} || echo "in")correct
+	branch=$branch
 
-	# ${4:-<null>}: tag is $([[ -z "$(_to_tag $1 $4)" ]] || echo "non-")existed
-	tag=$tg
+	# ${raw[2]:-<null>}: remote is $(get_remote_branch ${raw[2]} || echo "non-")existed
+	remote=$remote
 
-	# ${5:-<null>}: file is $([[ -e "$5" ]] || echo "non-")existed
-	file=$fl
+	# ${raw[3]:-<null>}: tag is $(check_tag ${raw[0]} ${raw[3]} || echo "non-")existed
+	tag=$tag
+
+	# ${raw[4]:-<null>}: file is $([[ -e "${raw[4]}" ]] || echo "non-")existed
+	file=$file
 	EOF
 }
 
 clean() {
-	echo "clean choose config"
-	rm -f $save
+	echo "clean configurations"
+	rm -f $s
 }
 
-# choose [config] [type]
-choose() {
-	local config="$1"; shift
-	local file idx src
-	local commit branch
+commit_report() {
+	cat <<-EOF
+	-- Commit Report --
 
-	case $config in
-		# patch <commit>
-		patch)
-			commit="$1"
-			file=$p
-			touch $file
-
-			idx=$(wc -l $file | cut -d' ' -f 1)
-			if ! cat $file | grep -q $commit; then
-				echo "select commit patch. ($commit)"
-				git tag patch.${idx} $commit
-				echo $commit >> $file
-			else
-				echo "same commit patch has been detected. ($commit)"
-			fi
-			;;
-		# remote <commit> <refname>
-		push | pull)
-			source $b 2>&- || touch $b
-
-			if [[ -z "$remote" ]]; then
-				remote="${2%%/*}"
-				branch="${2#*/}"
-
-				echo "local remote=$remote" >> $b
-				echo "local branch=$branch" >> $b
-				echo "set remote: $remote, $branch"
-			else
-				cmd.rcv $config $remote ${1}:${branch}
-				rm $b
-			fi
-			;;
-		# merge/rebase <commit> <branch>
-		merge | rebase)
-			source $m 2>&- || touch $m
-
-			if [[ -z "$dst" ]]; then
-				echo "set dst=$2"
-				echo "local dst=$2" >> $m
-			else
-				cmd.rcv $config $dst $1
-				rm $m
-			fi
-			;;
-		clean)
-			echo "clean choose config"
-			rm -f $m $b
-			;;
-	esac
+	$(printf -- "Commit\tAuthor\n")
+	EOF
+	git shortlog --summary --numbered --all --no-merges
 }
 
-# WA for the empty input to del()
-if [[ $1 == 'del' ]]; then
-	del "$2" "$3"
-else
-	$@
-fi
+eval $@
