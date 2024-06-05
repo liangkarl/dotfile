@@ -93,36 +93,36 @@ bind tree   . view-blame
 bind blame  . view-blob
 bind blob   . view-tree
 
+## Force refresh view
+bind main   = <tig
+bind status = <tig status
+bind refs   = <tig refs
+bind stash  = <tig stash
+bind log    = <tig log
+bind reflog = <tig reflog
+bind blame  = <tig blame %(file)
+bind diff   = <tig show %(commit)
+bind stage  = <tig
+
 ## Blame format
 bind blame -<ENTER> <tig blame -w -C -C -C %(file)
 bind blame -f       <tig --no-merges -- %(file)
-bind blame =        <tig blame %(file)
 
 ## Diff format
 bind diff  -<ENTER> :set diff-options = --patience --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
 bind diff  -f       <tig --no-merges -- %(file)
 bind diff  -b       <tig blame %(file)
-bind diff  =        <tig show %(commit)
 
 ## Stage format
 bind stage -<ENTER> :set diff-options = --patience --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
 bind stage -f       <tig --no-merges -- %(file)
 bind stage -b       <tig blame %(file)
-bind stage =        <tig
 
 ## Main format
 bind main  -<ENTER> <tig --no-merges
 bind main  -a       <tig --no-merges --author="%(prompt search author name: )"
-bind main  =        <tig
-
-## Reflog format
-bind reflog =       <tig reflog
-
-## Status format
-bind main  =        <tig status
 
 ## Refs format
-bind refs  =        <tig refs
 bind refs  -b       <tig refs --branches
 bind refs  -t       <tig refs --tags
 bind refs  -r       <tig refs --remotes
@@ -135,7 +135,6 @@ bind tree  -f       <tig --no-merges -- %(file)
 bind log   -<ENTER> :set log-options = --patience -p --no-merges --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
 bind log   -a       <tig log --no-merges --author="%(prompt search author name: )"
 bind log   -f       <tig log -- "%(file)"
-bind log   =        <tig log
 
 ## Options
 bind generic o  none
