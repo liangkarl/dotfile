@@ -242,6 +242,8 @@ bind refs   co  +tig.run git.full checkout %(ref)
 bind reflog co  +tig.run git.full checkout %(commit)
 bind status co +?tig.run git.full checkout %(file)
 bind stage  co +?tig.run git.full checkout %(file)
+bind stage  ct +?tig.run git.full checkout --theirs %(file)
+bind stage  cu +?tig.run git.full checkout --ours %(file)
 bind diff   co +?tig.run git.full checkout %(file)
 
 ### File Operation
