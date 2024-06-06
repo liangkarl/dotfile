@@ -281,6 +281,8 @@ push() {
 	fi
 
 	git.full push $remote ${1:-HEAD}:${branch}
+
+	rm -rf $s
 }
 
 # push <branch|tag>
@@ -298,6 +300,8 @@ push.create() {
 	fi
 
 	git.full push $remote $1
+
+	rm -rf $s
 }
 
 # rebase <commit>
