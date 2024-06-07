@@ -273,6 +273,8 @@ patch.add() {
 
 # push <commit>
 push() {
+	local dst
+
 	source $s
 
 	if [[ -z "$remote" ]]; then
@@ -280,7 +282,16 @@ push() {
 		return
 	fi
 
-	git.full push $remote ${1:-HEAD}:${branch}
+	if [[ -n "$branch" ]]; then
+		dst="$branch"
+	elif [[ -n "$tag" ]]; then
+		dst="$tag"
+	else
+		echo "no remote branch or tag"; false
+		return
+	fi
+
+	git.full push $remote ${1:-HEAD}:${dst}
 
 	rm -rf $s
 }
