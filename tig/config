@@ -70,27 +70,30 @@ bind main    H  view-help
 
 # 0 -> 1 -> 2 -> 3 -> 8 -> 9 -> 0
 # main -> status -> refs -> stash -> log -> reflog -> main
-bind main   , view-status
-bind status , view-refs
-bind refs   , view-stash
-bind stash  , view-log
-bind log    , view-reflog
-bind reflog , view-main
+# ',': previous (left)
+# '.': next (right)
+bind main   . view-status
+bind status . view-refs
+bind refs   . view-stash
+bind stash  . view-log
+bind log    . view-reflog
+bind reflog . view-main
 
-bind main   . view-reflog
-bind reflog . view-log
-bind log    . view-stash
-bind stash  . view-refs
-bind refs   . view-status
-bind status . view-main
+bind main   , view-reflog
+bind reflog , view-log
+bind log    , view-stash
+bind stash  , view-refs
+bind refs   , view-status
+bind status , view-main
 
-bind tree   , view-blob
-bind blob   , view-blame
-bind blame  , view-tree
+# tree -> blob -> blame
+bind tree   . view-blob
+bind blob   . view-blame
+bind blame  . view-tree
 
-bind tree   . view-blame
-bind blame  . view-blob
-bind blob   . view-tree
+bind tree   , view-blame
+bind blame  , view-blob
+bind blob   , view-tree
 
 ## Force refresh view
 bind main   = <tig
