@@ -47,7 +47,6 @@ bind generic p none
 bind generic q none
 bind generic b none
 bind generic o none
-bind generic w none
 bind generic t none
 bind generic <Ctrl-C> none
 bind generic - none
@@ -137,7 +136,6 @@ bind log   -a       <tig log --no-merges --author="%(prompt search author name: 
 bind log   -f       <tig log -- "%(file)"
 
 ## Options
-bind generic o  none
 bind generic os :toggle sort-field
 bind generic od :toggle date
 bind generic oa :toggle author
@@ -151,7 +149,6 @@ bind generic or :toggle commit-title-refs
 
 # Misc {
 ## Move light bar to top/button
-bind generic g  none
 bind generic gg move-first-line
 bind generic G  move-last-line
 bind main    G  move-last-line
