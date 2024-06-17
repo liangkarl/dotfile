@@ -19,8 +19,11 @@ LS_COLORS="*.json=00;35:*.xml=00;35:$LS_COLORS"
 # Fix showing '_' symbols with extension fonts in tmux
 if [[ "$(uname)" == "Darwin" ]]; then
     export LANG=C LC_CTYPE=UTF-8
-else
-    export LC_ALL=C.UTF-8
+# else
+#   FIXME: check whether or not this command is available
+#   The original command is `sudo dpkg-reconfigure locales`
+#
+#   export LC_ALL=C.UTF-8
 fi
 
 # Quanta
