@@ -32,13 +32,8 @@ require("lazy").setup({
   -- Status line (button)
   require('config.lualine'),
 
-  { -- Buffer line (top)
-    'akinsho/bufferline.nvim',
-    tag = 'v3.7.0',
-    config = function()
-      require('config.bufferline')
-    end
-  },
+  require('config.bufferline'),
+
   require('config.symbol-list'),
 
   -- Enhanced functions
