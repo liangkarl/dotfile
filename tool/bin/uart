@@ -8,6 +8,10 @@ lib.add menu
 lib.add sys
 
 shopt -s extglob
+tio=$(which tio)
+ss=$(which ss)
+plink=$(which plink)
+putty=$(which putty)
 
 usage() {
 	local name="$(basename $0)"
@@ -104,7 +108,7 @@ tio_conf() {
 # plink and putty are from https://www.putty.org/
 # ss is from https://github.com/fasteddy516/SimplySerial
 # tio is from https://github.com/tio/tio
-cmds=("tio" "ss" "plink" "putty")
+cmds=("${tio}" "${ss}" "${plink}" "${putty}")
 
 # default config:
 baudrate=921600
@@ -180,7 +184,7 @@ if [[ "$select_cmd" == y ]]; then
 	while :; do
 		menu_title "list supported serial console tools"
 		menu_prompt "select one to execute"
-		menu_select ${cmds[@]} 'exit'
+		menu_select "${cmds[@]}" 'exit'
 		cmd=$(menu_choice)
 
 		if [[ "$cmd" == 'exit' ]]; then
@@ -249,7 +253,7 @@ fi
 touch $log
 if [[ -n "$WSL_DISTRO_NAME" ]]; then
 	# There must be an existed log file for ss.exe
-	eval $cmd $(${cmd}_conf)
+	eval $cmd $($(basename $cmd)_conf)
 else
-	eval sudo $cmd $(${cmd}_conf)
+	eval sudo $cmd $($(basename $cmd)_conf)
 fi
