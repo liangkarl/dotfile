@@ -102,7 +102,7 @@ tio_conf() {
 	echo -n "$port "
 	echo -n "-b $baudrate -d $data_bits "
 	echo -n "-s $stop_bits -p $parity "
-	echo -n "-t -l --log-file $log"
+	echo -n "-t --log-file $log"
 }
 
 # plink and putty are from https://www.putty.org/
