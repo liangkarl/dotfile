@@ -14,7 +14,9 @@ if type -t fzf; then
     # `toggle-track` is only available after fzf 0.40
     export FZF_DEFAULT_OPTS="--ansi
             --bind 'ctrl-d:half-page-down,ctrl-u:half-page-up,ctrl-s:toggle-sort,ctrl-p:toggle-preview,ctrl-a:first,ctrl-e:last,ctrl-c:cancel,ctrl-t:toggle-track'
-            --preview-window=':hidden,nowrap'
+            --preview-window=':hidden,wrap'
+            --preview='echo -- Full String --; echo {}; if [[ -f {} ]]; then echo; echo -- File Preview --; head {}; fi'
+            --keep-right
             --color='hl:1:underline,hl+:1:underline' --inline-info"
 
 elif type -t fzy; then
