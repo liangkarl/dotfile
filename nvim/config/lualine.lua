@@ -34,7 +34,7 @@ return { -- Status line (button)
         lualine_a = { 'mode' },
         lualine_b = { 'branch', 'diff', 'diagnostics' },
         lualine_c = { 'filename' },
-        lualine_x = { 'searchcount', "require('lsp-status').status():gsub('%%', ''):gsub(',', '')", 'encoding', 'fileformat', 'filetype' },
+        lualine_x = { 'searchcount', "require('lsp-status').status():gsub('%%', '%%%%')", 'encoding', 'fileformat', 'filetype' },
         lualine_y = { 'progress' },
         lualine_z = { 'location' }
       },
