@@ -25,6 +25,10 @@ end
 local function edit(enable)
   local space = require("mini.trailspace")
 
+  if vim.b.skip_edit == true then
+    return
+  end
+
   if enable then
     vim.opt.list = true
     vim.opt.showbreak = '↪ '
@@ -73,6 +77,10 @@ vim.opt.inccommand='nosplit'
 gid = m.augroup("UserProfile")
 
 -- Reload layout
+m.autocmd("FIleType", "Telescope*", function () vim.b.skip_edit = true end, {
+  desc = "Black list for edit mode",
+  group = gid
+})
 m.autocmd("InsertLeave", '*', function() edit(false) end, {
   desc = 'Viewer Mode',
   group = gid
