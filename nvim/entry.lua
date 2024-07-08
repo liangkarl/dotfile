@@ -39,10 +39,6 @@ require("lazy").setup({
   -- Enhanced functions
   require('config.nvim-treesitter'),
 
-  {
-    'dnlhc/glance.nvim',
-    config = true
-  },
   { -- share clipboard between tmux and vim
     'roxma/vim-tmux-clipboard',
   },

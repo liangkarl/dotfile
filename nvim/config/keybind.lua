@@ -62,6 +62,20 @@ return { -- Display cheat sheet of vim shortcut
     local lsp = vim.lsp.buf
     local gid
 
+    local exe_loop = function(list)
+      local ok
+
+      for _,t in ipairs(list) do
+        ok = pcall(require, t.id)
+        if ok == true then
+          vim.cmd(t.action)
+          return
+        end
+      end
+
+      print("no matched function for the key")
+    end
+
     -- NOTE:
     -- '' in map mode means normal, visual and select modes
 
@@ -186,10 +200,30 @@ return { -- Display cheat sheet of vim shortcut
     end, "Search current cursor string (Quickfix)")
 
     -- Coding
-    m.noremap("n", "<leader>;r", '<cmd>Glance references<cr>', "Code Reference (Glance)")
-    m.noremap('n', '<leader>;d', '<cmd>Glance definitions<cr>', "Definition (Glance)")
-    m.noremap('n', '<leader>;D', '<cmd>Glance type_definitions<cr>', "Type Definition (Glance)")
-    m.noremap('n', '<leader>;p', '<cmd>Glance implementations<cr>', "Implementations (Glance)")
+    m.noremap("n", "<leader>;r", function ()
+      exe_loop({
+        { id = 'glance', action = 'Glance references' },
+        { id = 'trouble', action = 'Trouble lsp_references toggle' }
+      })
+    end, "Code Reference")
+    m.noremap('n', '<leader>;d', function ()
+      exe_loop({
+        { id = 'glance', action = 'Glance definitions' },
+        { id = 'trouble', action = 'Trouble lsp_definitions toggle' }
+      })
+    end, "Definition")
+    m.noremap('n', '<leader>;D', function ()
+      exe_loop({
+        { id = 'glance', action = 'Glance type_definitions' },
+        { id = 'trouble', action = 'Trouble lsp_type_definitions toggle' }
+      })
+    end, "Type Definition")
+    m.noremap('n', '<leader>;p', function ()
+      exe_loop({
+        { id = 'glance', action = 'Glance implementations' },
+        { id = 'trouble', action = 'Trouble lsp_implementations toggle' }
+      })
+    end, "Implementations")
     m.noremap('n', '<leader>;n', lsp.rename, "Rename (LSP)")
     m.noremap('',  '<leader>;c', lsp.code_action, "Show code action menu (LSP)")
     m.noremap('n', '<leader>;v', lsp.hover, "Show info (LSP)")
