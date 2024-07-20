@@ -272,8 +272,9 @@ patch.add() {
 }
 
 # push <commit>
+# push -f <commit>
 push() {
-	local dst
+	local dst args
 
 	source $s
 
@@ -291,7 +292,12 @@ push() {
 		return
 	fi
 
-	git.full push $remote ${1:-HEAD}:${dst}
+	if [[ "$1" == '-f' ]]; then
+		args="--force-with-lease"
+		shift
+	fi
+
+	git.full push $args $remote ${1:-HEAD}:${dst}
 
 	rm -rf $s
 }
