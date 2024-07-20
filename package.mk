@@ -1,6 +1,6 @@
 CONF_HOME:=${XDG_CONFIG_HOME}
 
-LIST:=bash nvim tmux git tig kitty tool procps enhancd
+LIST:=bash nvim tmux git tig kitty tool procps enhancd homebrew
 ALIAS:=top
 
 .ONESHELL:
