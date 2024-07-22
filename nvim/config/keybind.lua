@@ -125,9 +125,6 @@ return { -- Display cheat sheet of vim shortcut
 
     -- The highest keybind priority
     -- m.noremap('n', 'H', '<C-w>W', "Switch to preview window")
-    m.noremap('n', '\\', '<C-w>w', "Switch to next window")
-    m.noremap('n', '<S-Tab>', '<cmd>BufferLineCyclePrev<cr>', "Switch to previous buffer")
-    m.noremap('n', '<Tab>', '<cmd>BufferLineCycleNext<cr>', "Switch to next buffer")
 
     m.noremap('',  'f', '<cmd>HopChar1CurrentLineAC<cr>')
     m.noremap('',  'F', '<cmd>HopChar1CurrentLineBC<cr>')
@@ -155,7 +152,6 @@ return { -- Display cheat sheet of vim shortcut
     m.noremap('',  '<leader>P', '"*p', "Paste from 'copy-on-select' Clipboard")
     m.noremap('',  '<leader>=', function() lsp.format({ async = true }) end, "Format code (LSP)")
     m.noremap('n', '<leader>b', '<cmd>Telescope buffers<cr>', "Switch opened buffers")
-    m.noremap('',  '<leader><Tab>', '<cmd>b#<cr>', "Switch to last buffer")
     m.noremap('n', '<leader>S', '<cmd>AerialToggle<cr>', 'Symbol Manager')
     m.noremap('n', '<leader>F', '<cmd>lua MiniFiles.open()<cr>', 'File Explorer')
     m.noremap('n', '<leader>d', M.close_buf, "Close current buffer")
