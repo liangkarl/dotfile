@@ -2,6 +2,8 @@ if type -t fzf; then
     # Default options
     # export FZF_DEFAULT_OPTS="--layout=reverse --inline-info"
 
+    eval "$(fzf --bash)"
+
     # Default command to use when input is tty
     # Now fzf (w/o pipe) will use fd instead of find
     export FZF_DEFAULT_COMMAND='fd --type f'
