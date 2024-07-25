@@ -11,6 +11,8 @@ vars=(
 	"__m_view"
 	"__m_width"
 	"__m_height"
+	"__m_sel_idx"
+	"__m_sel_opt"
 )
 
 for f in ${vars[@]}; do
@@ -44,6 +46,8 @@ menu.reset() {
 	unset __m_exit
 	unset __m_view
 	unset __m_width
+	unset __m_sel_idx
+	unset __m_sel_opt
 	__m_height=10
 	__m_opts=()
 	__m_backend='fzf'
@@ -79,8 +83,10 @@ menu.run() {
 
 	sel="$(menu.${__m_backend})"
 
-    if [[ -n "$__m_callback" ]]; then
-		eval $__m_callback $sel ${__m_opts[$sel]}
+	__m_sel_idx="$sel"
+	__m_sel_opt="${__m_opts[$sel]}"
+	if [[ -n "$__m_callback" ]]; then
+		eval $__m_callback $__m_sel_idx $__m_sel_opt
 	fi
 }
 
