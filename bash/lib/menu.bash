@@ -1,5 +1,39 @@
 #!/usr/bin/env bash
 
+vars=(
+	"__m_title"
+	"__m_prompt"
+	"__m_defopt"
+	"__m_backend"
+	"__m_callback"
+	"__m_cancel"
+	"__m_exit"
+	"__m_view"
+	"__m_width"
+	"__m_height"
+)
+
+for f in ${vars[@]}; do
+	eval "function ${f//__m_/menu.}() {
+		if [[ \$# -eq 0 ]]; then
+			echo \"\$$f\"
+			return
+		fi
+
+		$f="\$1"
+	}"
+done
+unset vars
+
+menu.opts() {
+	if [[ $# -eq 0 ]]; then
+		echo "${__m_opts[@]}"
+		return
+	fi
+
+	__m_opts=("$@")
+}
+
 menu.reset() {
 	unset __m_defopt
 	unset __m_title
@@ -9,6 +43,8 @@ menu.reset() {
 	unset __m_cancel
 	unset __m_exit
 	unset __m_view
+	unset __m_width
+	__m_height=10
 	__m_opts=()
 	__m_backend='fzf'
 }
@@ -48,64 +84,39 @@ menu.run() {
 	fi
 }
 
-menu.title() {
-	if [[ $# -eq 0 ]]; then
-		echo "$__m_title"
-		return
-	fi
-
-	__m_title="$1"
-}
-
-menu.prompt() {
-	if [[ $# -eq 0 ]]; then
-		echo "$__m_prompt"
-		return
-	fi
-
-	__m_prompt="$1"
-}
-
-menu.defopt() {
-	if [[ $# -eq 0 ]]; then
-		echo "$__m_defopt"
-		return
-	fi
-
-	__m_defopt="$1"
-}
-
-menu.backend() {
-	if [[ $# -eq 0 ]]; then
-		echo "$__m_backend"
-		return
-	fi
-
-	__m_backend="$1"
-}
-
-menu.opts() {
-	if [[ $# -eq 0 ]]; then
-		echo "${__m_opts[@]}"
-		return
-	fi
-
-	__m_opts=("$@")
-}
-
-menu.cb() {
-	if [[ $# -eq 0 ]]; then
-		echo "$__m_callback"
-		return
-	fi
-
-	__m_callback="$1"
-}
-
 menu.fzf() {
 	local fzf sel i
 
-	fzf=("$(which fzf)" "--height=~10" "--cycle")
+	fzf=("$(which fzf)" "--height=~${__m_height}" "--cycle")
+
+	if [[ -n "$__m_defopt" ]]; then
+		fzf+=("--query=${__m_opts[$__m_defopt]}")
+	fi
+
+	if [[ -n "$__m_title" ]]; then
+		fzf+=("--header=${__m_title}")
+	fi
+
+	if [[ -n "$__m_prompt" ]]; then
+		fzf+=("--prompt=${__m_prompt}: ")
+	fi
+
+	sel="$(echo ${__m_opts[@]// /%} \
+			| sed -e 's/ /\n/g' -e 's/%/ /g' \
+			| ${fzf[*]} 2>&1)"
+
+	for i in "${!__m_opts[@]}"; do
+		if [[ "${__m_opts[$i]}" == "$sel" ]]; then
+			echo "$i"
+			return
+		fi
+	done
+}
+
+menu.fzf-tmux() {
+	local fzf sel i
+
+	fzf=("$(which fzf-tmux)" "-p" "-h ${__m_height}" "--")
 
 	if [[ -n "$__m_defopt" ]]; then
 		fzf+=("--query=${__m_opts[$__m_defopt]}")
@@ -134,7 +145,7 @@ menu.fzf() {
 menu.fzy() {
 	local fzy
 
-	fzy=("fzy" "--lines=10")
+	fzy=("fzy" "--lines=${__m_height}")
 
 	if [[ -n "$__m_defopt" ]]; then
 		fzy+=("-q ${__m_opts[$__m_defopt]}")
@@ -190,7 +201,7 @@ menu.legacy() {
 menu_style() {
 	local styles
 
-	styles=('fzf' 'fzy' 'legacy')
+	styles=('fzf-tmux' 'fzf' 'fzy' 'legacy')
 
 	if grep -q "$1" <<< "${style[@]}"; then
 		__menu_style="$1"
