@@ -6,6 +6,7 @@
 lib.add io
 lib.add menu
 lib.add sys
+lib.add config
 
 shopt -s extglob
 tio="$(which tio || which tio.exe)"
@@ -149,12 +150,6 @@ while :; do
 			select_port=y
 			;;
 		-p)
-			shift
-			if [[ ! -e "$1" ]]; then
-				exit_msg 3 "Invalid serial port"
-			fi
-
-			port=$1
 			select_port=y
 			;;
 		--)
@@ -164,18 +159,25 @@ while :; do
 	shift
 done
 
-for cmd in ${cmds[@]}; do
-	printf -- "use $cmd..."
-done
+# FIXME: WA for getopt
+port=$1
 
 if [[ -z "$cmd" ]]; then
-	exit_msg 4 "No supported commands for serial console."
+	for cmd in ${cmds[@]}; do
+		printf -- "use $cmd..."
+	done
+
+	if [[ -z "$cmd" ]]; then
+		exit_msg 4 "No supported commands for serial console."
+	fi
 fi
 
 if [[ "$list_port" == y ]]; then
 	list_comport
 	exit
 fi
+
+config_load $conf
 
 menu.backend 'fzf'
 menu.callback update_cb
@@ -228,16 +230,18 @@ if [[ "$config_uart" == y ]]; then
 	stop_bits=${opt}
 	echo "stop bits: $opt"
 
-	cat > $conf <<-EOF
-	baudrate=${baudrate}
-	flow_control=$flow_control
-	parity=$parity
-	data_bits=$data_bits
-	stop_bits=$stop_bits
-	EOF
+	config_set cmd "$cmd"
+	config_set baudrate "$baudrate"
+	config_set flow_control "$flow_control"
+	config_set parity "$parity"
+	config_set data_bits "$data_bits"
+	config_set stop_bits "$stop_bits"
+	config_save
 fi
 
-[[ "$select_port" != y ]] && exit_msg 1 "No assigned UART port."
+[[ -z "$port" ]] && exit_msg 1 "No assigned UART port."
+
+config_set port "$port"
 
 touch $log
 if [[ -n "$WSL_DISTRO_NAME" ]]; then
@@ -246,3 +250,5 @@ if [[ -n "$WSL_DISTRO_NAME" ]]; then
 else
 	eval sudo $cmd $(config.$(basename ${cmd#.exe}))
 fi
+
+config_save
