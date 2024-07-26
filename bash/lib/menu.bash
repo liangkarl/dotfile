@@ -94,16 +94,14 @@ menu.fzf() {
 	fi
 
 	if [[ -n "$__m_title" ]]; then
-		fzf+=("--header=${__m_title}")
+		fzf+=("--header='${__m_title}'")
 	fi
 
 	if [[ -n "$__m_prompt" ]]; then
-		fzf+=("--prompt=${__m_prompt}: ")
+		fzf+=("--prompt='${__m_prompt}: '")
 	fi
 
-	sel="$(echo ${__m_opts[@]// /%} \
-			| sed -e 's/ /\n/g' -e 's/%/ /g' \
-			| ${fzf[*]} 2>&1)"
+	sel=$(eval "echo ${__m_opts[@]// /%} | sed -e 's/ /\n/g' -e 's/%/ /g' | ${fzf[*]}")
 
 	for i in "${!__m_opts[@]}"; do
 		if [[ "${__m_opts[$i]}" == "$sel" ]]; then
@@ -130,9 +128,7 @@ menu.fzf-tmux() {
 		fzf+=("--prompt=${__m_prompt}: ")
 	fi
 
-	sel="$(echo ${__m_opts[@]// /%} \
-			| sed -e 's/ /\n/g' -e 's/%/ /g' \
-			| ${fzf[*]} 2>&1)"
+	sel=$(eval "echo ${__m_opts[@]// /%} | sed -e 's/ /\n/g' -e 's/%/ /g' | ${fzf[*]}")
 
 	for i in "${!__m_opts[@]}"; do
 		if [[ "${__m_opts[$i]}" == "$sel" ]]; then
@@ -154,9 +150,7 @@ menu.fzy() {
 	# output nothing is no title available
 	printf "$__m_title"
 
-	sel="$(echo ${__m_opts[@]// /%} \
-			| sed -e 's/ /\n/g' -e 's/%/ /g' \
-			| ${fzy[*]} 2>&1)"
+	sel=$(eval "echo ${__m_opts[@]// /%} | sed -e 's/ /\n/g' -e 's/%/ /g' | ${fzy[*]}")
 
 	for i in "${!__m_opts[@]}"; do
 		if [[ "${__m_opts[$i]}" == "$sel" ]]; then
