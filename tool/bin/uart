@@ -105,6 +105,10 @@ config.tio() {
 	echo -n "-t --log-file $log"
 }
 
+update_cb() {
+	opt="$2"
+}
+
 # plink and putty are from https://www.putty.org/
 # ss is from https://github.com/fasteddy516/SimplySerial
 # tio is from https://github.com/tio/tio
@@ -172,67 +176,59 @@ if [[ "$list_port" == y ]]; then
 	exit
 fi
 
+menu.backend 'fzf'
+menu.callback update_cb
 
 if [[ "$select_cmd" == y ]]; then
 	while :; do
-		menu_title "list supported serial console tools"
-		menu_prompt "select one to execute"
-		menu_select "${cmds[@]}" 'exit'
-		cmd=$(menu_choice)
-
-		if [[ "$cmd" == 'exit' ]]; then
-			exit
-		fi
-
-		if env.cmd $cmd; then
-			break
-		elif env.cmd ${cmd}.exe; then
-			cmd=${cmd}.exe
-			break
-		fi
+		menu.title "Select a command as backend"
+		menu.opts "${cmds[@]}"
+		menu.add_exit
+		menu.run
+		cmd=$opt
 	done
 fi
 
 if [[ "$config_uart" == y ]]; then
 	# baudrate
-	menu_title 'baudrate setup'
-	menu_prompt 'select:'
-	menu_default 3
-	menu_select 'b9600' 'b921600' 'b115200'
-	opt=$(menu_choice)
+	menu.title 'baudrate setup'
+	menu.defopt 2
+	menu.opts 'b9600' 'b921600' 'b115200'
+	menu.run
 	baudrate=${opt#b}
+	echo "baudrate: $opt"
 
 	# flow control
-	menu_title 'flow control setup'
-	menu_prompt 'select:'
-	menu_default 1
-	menu_select 'none' 'XON_OFF' 'RST_CTS' 'DSR_STR'
-	opt=$(menu_choice)
+	menu.title 'flow control setup'
+	menu.defopt 0
+	menu.opts 'none' 'XON_OFF' 'RST_CTS' 'DSR_STR'
+	menu.run
 	flow_control=${opt}
+	echo "flow control: $opt"
 
 	# parity
-	menu_title 'parity setup'
-	menu_prompt 'select:'
-	menu_default 1
-	menu_select 'none' 'odd' 'even' 'mark' 'space'
-	opt=$(menu_choice)
+	menu.title 'parity setup'
+	menu.defopt 0
+	menu.opts 'none' 'odd' 'even' 'mark' 'space'
+	menu.run
 	parity=${opt}
+	echo "parity: $opt"
 
 	# data bit
-	menu_title 'data bit setup'
-	menu_prompt 'select:'
-	menu_default 4
-	menu_select '5' '6' '7' '8' '9'
-	opt=$(menu_choice)
+	menu.title 'data bit setup'
+	menu.defopt 3
+	menu.opts '5' '6' '7' '8' '9'
+	menu.run
 	data_bits=${opt}
+	echo "data bits: $opt"
 
 	# stop bit
-	menu_title 'stop bit setup'
-	menu_prompt 'select:'
-	menu_default 1
-	menu_select '1' '1.5' '2'
-	opt=$(menu_choice)
+	menu.title 'stop bit setup'
+	menu.defopt 0
+	menu.opts '1' '1.5' '2'
+	menu.run
 	stop_bits=${opt}
+	echo "stop bits: $opt"
 
 	cat > $conf <<-EOF
 	baudrate=${baudrate}
