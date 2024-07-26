@@ -123,21 +123,22 @@ stop_bits=1
 log=uart.$PPID.log
 conf=~/.uart.conf
 
-(( $# == 0 )) && usage 2
+args=$(getopt lop0123456789 $*)
+if [[ $? -ne 0 ]]; then
+	usage 1
+fi
+set -- $args
 
 # TODO: source project.conf to get project specific setup
 [[ -e $conf ]] && source $conf
 
-while (( $# != 0 )); do
+while :; do
 	case $1 in
 		-o)
 			config_uart=y
 			;;
 		-l)
 			list_port=y
-			;;
-		-b)
-			select_cmd=y
 			;;
 		-+([0-9]))
 			if [[ -z "$WSL_DISTRO_NAME" ]]; then
@@ -156,8 +157,8 @@ while (( $# != 0 )); do
 			port=$1
 			select_port=y
 			;;
-		*)
-			usage 2
+		--)
+			shift; break
 			;;
 	esac
 	shift
@@ -179,17 +180,14 @@ fi
 menu.backend 'fzf'
 menu.callback update_cb
 
-if [[ "$select_cmd" == y ]]; then
-	while :; do
-		menu.title "Select a command as backend"
-		menu.opts "${cmds[@]}"
-		menu.add_exit
-		menu.run
-		cmd=$opt
-	done
-fi
-
 if [[ "$config_uart" == y ]]; then
+	menu.title "Select a command as backend"
+	menu.opts "${cmds[@]}"
+	menu.add_exit
+	menu.run
+	cmd=$opt
+	echo "backend: $(basename $cmd)"
+
 	# baudrate
 	menu.title 'baudrate setup'
 	menu.defopt 2
