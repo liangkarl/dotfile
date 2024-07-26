@@ -27,10 +27,9 @@ config_load() {
 
     tmp=$(mktemp)
     __config="$*"
-    cp -f $__config $tmp
-    sed -i .exp -e '/^[^#[:space:]]/s/^/export __CONFIG_BASH_/' $tmp
-    source ${tmp}.exp
-    rm -f ${tmp}*
+    sed -e '/^[^#[:space:]]/s/^/export __CONFIG_BASH_/' $__config > $tmp
+    source $tmp
+    rm -f $tmp
 }
 
 config_save() {
