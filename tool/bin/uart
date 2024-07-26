@@ -38,8 +38,8 @@ usage() {
 }
 
 list_comport() {
-	local ls
-	pr_info "list serial ports:"
+	local ls d
+	pr_info "Ports List:"
 	if [[ -n "$WSL_DISTRO_NAME" ]]; then
 		if [[ "$cmd" == 'ss' ]]; then
 			eval $cmd -list
@@ -48,7 +48,10 @@ list_comport() {
 			powershell.exe -Command $ls
 		fi
 	else
-		ls -l /dev/serial/by-id/ --color
+		ls="/dev/serial/by-id/"
+		for d in $(ls $ls); do
+			echo "$(realpath -e $ls/$d): $d"
+		done
 	fi
 }
 
