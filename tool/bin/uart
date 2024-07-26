@@ -8,10 +8,10 @@ lib.add menu
 lib.add sys
 
 shopt -s extglob
-tio=$(which tio)
-ss=$(which ss)
-plink=$(which plink)
-putty=$(which putty)
+tio="$(which tio || which tio.exe)"
+ss="$(which ss || which ss.exe)"
+plink="$(which plink || which plink.exe)"
+putty="$(which putty || which putty.exe)"
 
 usage() {
 	local name="$(basename $0)"
@@ -51,7 +51,7 @@ list_comport() {
 	fi
 }
 
-ss_conf() {
+config.ss() {
 	local pa
 	declare -A pa_map
 
@@ -69,7 +69,7 @@ ss_conf() {
 	echo -n "-log:$(wslpath -m $log)"
 }
 
-putty_conf() {
+config.putty() {
 	local pa fc
 	declare -A pa_map fc_map
 
@@ -93,12 +93,12 @@ putty_conf() {
 	echo -n "-sercfg ${baudrate},${data_bits},${pa},${stop_bits},${fc}"
 }
 
-plink_conf() {
-	putty_conf
+config.plink() {
+	config.putty
 	echo -n "| tee $log"
 }
 
-tio_conf() {
+config.tio() {
 	echo -n "$port "
 	echo -n "-b $baudrate -d $data_bits "
 	echo -n "-s $stop_bits -p $parity "
@@ -108,7 +108,7 @@ tio_conf() {
 # plink and putty are from https://www.putty.org/
 # ss is from https://github.com/fasteddy516/SimplySerial
 # tio is from https://github.com/tio/tio
-cmds=("${tio}" "${ss}" "${plink}" "${putty}")
+cmds=(${tio} ${ss} ${plink} ${putty})
 
 # default config:
 baudrate=921600
@@ -160,25 +160,18 @@ while (( $# != 0 )); do
 done
 
 for cmd in ${cmds[@]}; do
-	printf -- "check $cmd...\r"
-	if [[ -n "$WSL_DISTRO_NAME" ]]; then
-		if env.cmd ${cmd}.exe; then
-			printf -- "find $cmd\t\t\r"
-			cmd=${cmd}.exe
-			break
-		fi
-	elif env.cmd $cmd; then
-		printf -- "find $cmd\t\t\r"
-		break
-	fi
+	printf -- "use $cmd..."
 done
+
+if [[ -z "$cmd" ]]; then
+	exit_msg 4 "No supported commands for serial console."
+fi
 
 if [[ "$list_port" == y ]]; then
 	list_comport
 	exit
 fi
 
-[[ "$select_port" != y ]] && exit_msg 1 "No assigned UART port."
 
 if [[ "$select_cmd" == y ]]; then
 	while :; do
@@ -250,10 +243,12 @@ if [[ "$config_uart" == y ]]; then
 	EOF
 fi
 
+[[ "$select_port" != y ]] && exit_msg 1 "No assigned UART port."
+
 touch $log
 if [[ -n "$WSL_DISTRO_NAME" ]]; then
 	# There must be an existed log file for ss.exe
-	eval $cmd $($(basename $cmd)_conf)
+	eval $cmd $(config.$(basename ${cmd#.exe}))
 else
-	eval sudo $cmd $($(basename $cmd)_conf)
+	eval sudo $cmd $(config.$(basename ${cmd#.exe}))
 fi
