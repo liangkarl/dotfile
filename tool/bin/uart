@@ -160,11 +160,12 @@ while :; do
 done
 
 # FIXME: WA for getopt
-port=$1
+[[ -n "$1" ]] && port=$1
 
 if [[ -z "$cmd" ]]; then
 	for cmd in ${cmds[@]}; do
-		printf -- "use $cmd..."
+		echo "use $cmd..."
+		[[ -n "$cmd" ]] && break
 	done
 
 	if [[ -z "$cmd" ]]; then
