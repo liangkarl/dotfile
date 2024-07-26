@@ -7,8 +7,8 @@ chk_ver() {
 }
 
 backtrace() {
-	TRACE=""
-	CP=$$ # PID of the script itself [1]
+	local TRACE=""
+	local CP=${1:-$$} # PID of the script itself [1]
 
 	while true # safe because "all starts with init..."
 	do
