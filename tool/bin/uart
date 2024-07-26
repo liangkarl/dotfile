@@ -166,11 +166,7 @@ done
 [[ -n "$1" ]] && port=$1
 
 if [[ -z "$cmd" ]]; then
-	for cmd in ${cmds[@]}; do
-		echo "use $cmd..."
-		[[ -n "$cmd" ]] && break
-	done
-
+	cmd=${cmds[0]}
 	if [[ -z "$cmd" ]]; then
 		exit_msg 4 "No supported commands for serial console."
 	fi
