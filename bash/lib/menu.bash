@@ -73,11 +73,11 @@ menu.run() {
 
 	if [[ -z "$__m_opts" ]]; then
 		echo "No opts exist." >&2
-		return
+		return 1
 	fi
 
 	if [[ -n "$__m_view" ]]; then
-		eval menu.view;
+		eval menu.view
 		return
 	fi
 
