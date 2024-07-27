@@ -88,6 +88,10 @@ menu.run() {
 	if [[ -n "$__m_callback" ]]; then
 		eval $__m_callback $__m_sel_idx $__m_sel_opt
 	fi
+
+	if [[ "${__m_opts[$sel]}" == "exit" ]]; then
+		exit
+	fi
 }
 
 menu.fzf() {
