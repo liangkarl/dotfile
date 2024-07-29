@@ -44,7 +44,6 @@ config_save() {
         echo "${var#__CONFIG_BASH_}='${!var}'" >> $tmp
     done
 
-    cat $tmp | sort > $__config
     rm -f $tmp
 }
 
