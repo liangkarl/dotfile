@@ -3,7 +3,7 @@ config_set() {
     local var val
     var=$1; shift
     val="$*"; shift
-    eval "export __CONFIG_BASH_${var}=${val}"
+    eval "export __CONFIG_BASH_${var}='${val}'"
 }
 
 # config_get o_var name def
@@ -12,7 +12,7 @@ config_get() {
     out=$1; shift
     var=$1; shift
     def=$1; shift
-    eval "$out=\${__CONFIG_BASH_${var}:-$def}"
+    eval "$out=\"\${__CONFIG_BASH_${var}:-$def}\""
 }
 
 # config_load conf
@@ -41,7 +41,7 @@ config_save() {
         if [[ -z "${!var}" ]]; then
             continue
         fi
-        echo "${var#__CONFIG_BASH_}=${!var}" >> $tmp
+        echo "${var#__CONFIG_BASH_}='${!var}'" >> $tmp
     done
 
     cat $tmp | sort > $__config
