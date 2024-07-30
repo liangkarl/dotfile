@@ -259,6 +259,7 @@ return { -- Display cheat sheet of vim shortcut
     m.noremap('n', '<leader>sm', '<cmd>AerialInfo<cr>', 'Symbol Manager Info (AerialInfo)')
     m.noremap('n', '<leader>sg', '<cmd>GuessIndent<cr>', 'Set up indent (GuessIndent)')
     m.noremap('n', '<leader>sc', M.change_cwd, "Set CWD to current buffer")
+    m.noremap('n', '<leader>sC', '<cmd>Telescope cder<cr>', "Change CWD with specified path")
     m.noremap('n', '<leader>sf', M.show_file_info, "Show File and CWD info")
     m.noremap('n', '<leader>sr', M.reload_settings, "Reload init.lua")
     m.noremap('n', '<leader>s,', M.edit_settings, "Edit runtime init.lua")
