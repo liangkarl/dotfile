@@ -155,8 +155,8 @@ return { -- Display cheat sheet of vim shortcut
     m.noremap('n', '<leader>S', '<cmd>AerialToggle<cr>', 'Symbol Manager')
     m.noremap('n', '<leader>F', '<cmd>lua MiniFiles.open()<cr>', 'File Explorer')
     m.noremap('n', '<leader>d', M.close_buf, "Close current buffer")
-    m.noremap('',  '<leader>j', '<cmd>HopChar1<cr>')
-    m.noremap('',  '<leader>J', '<cmd>HopPattern<cr>')
+    m.noremap('',  '<leader>g', '<cmd>HopChar1<cr>')
+    m.noremap('',  '<leader>j', '<cmd>HopPattern<cr>')
     m.noremap('',  '<leader>l', '<cmd>HopWord<cr>')
     m.noremap('',  '<leader>k', '<cmd>HopVertical<cr>')
 
