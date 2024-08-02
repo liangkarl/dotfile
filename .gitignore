@@ -14,6 +14,10 @@ config/nvim/shada/
 # For local NB
 transmit.conf
 
+*.diff
+*.patch
+*.ttf
+*.bak
 *.log
 .netrwhist
 .DS_Store
