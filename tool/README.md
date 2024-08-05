@@ -8,8 +8,6 @@
     - helper.aosp
 - space.json
     - tmux.space
-- win.json
-    - tmux.wm
 - transmit.conf
     - transmit
 - uart.conf
