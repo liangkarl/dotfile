@@ -65,23 +65,22 @@ set -eE
 declare -A stat dir space
 CONFDIR="$XDG_CONFIG_HOME/smug"
 
-case $1 in
-	'')
-		ENTER=y
-		;;
-	-d)
-		REMOVE=y
-		;;
-	-e)
-		EDIT_CONF=y
-		;;
-	-h)
-		usage 0
-		;;
-	*)
-		usage 2
-		;;
-esac
+set -- $(getopt deh $*)
+
+EMPTY=y
+while [[ $# -ne 0 ]]; do
+	case $1 in
+		-d) REMOVE=y;;
+		-e) EDIT_CONF=y;;
+		-h) usage 0;;
+		--)
+			[[ "$EMPTY" == y ]] && ENTER=y
+			break
+			;;
+	esac
+	EMPTY=n
+	shift
+done
 
 parse_conf
 
