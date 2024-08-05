@@ -2,7 +2,7 @@ if type -t fzf; then
     # Default options
     # export FZF_DEFAULT_OPTS="--layout=reverse --inline-info"
 
-    eval "$(fzf --bash)"
+    eval "$(fzf --bash 2>&-)"
 
     # Default command to use when input is tty
     # Now fzf (w/o pipe) will use fd instead of find
