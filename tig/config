@@ -221,25 +221,25 @@ bind main   t<ENTER> @tig.run git.quiet tag tag.$(git rev-parse --short %(commit
 bind main   ba       @tig.run git.quiet branch "%(prompt new branch: )" %(commit)
 bind main   b<ENTER> @tig.run git.quiet branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)
 bind main   a<ENTER> @tig.run add "%(commit)"
-bind main   d<ENTER> @tig.run del "%(commit)"
+bind main   d<ENTER> @tig.run del "%(commit),%(branch),%(tag)"
 bind reflog ta       @tig.run git.quiet tag "%(prompt new tag: )" %(commit)
 bind reflog t<ENTER> @tig.run git.quiet tag tag.$(git rev-parse --short %(commit)) %(commit)
 bind reflog ba       @tig.run git.quiet branch "%(prompt new branch: )" %(commit)
 bind reflog b<ENTER> @tig.run git.quiet branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)
 bind reflog a<ENTER> @tig.run add "%(commit)"
-bind reflog d<ENTER> @tig.run del "%(commit)"
+bind reflog d<ENTER> @tig.run del "%(commit),%(branch),%(tag)"
 bind diff   ta       @tig.run git.quiet tag "%(prompt new tag: )" %(commit)
 bind diff   t<ENTER> @tig.run git.quiet tag tag.$(git rev-parse --short %(commit)) %(commit)
 bind diff   ba       @tig.run git.quiet branch "%(prompt new branch: )" %(commit)
 bind diff   b<ENTER> @tig.run git.quiet branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)
 bind diff   a<ENTER> @tig.run add "%(commit)"
-bind diff   d<ENTER> @tig.run del "%(commit)"
+bind diff   d<ENTER> @tig.run del "%(commit),%(branch),%(tag)"
 bind refs   ta       @tig.run git.quiet tag "%(prompt new tag: )" HEAD
 bind refs   t<ENTER> @tig.run git.quiet tag tag.$(git rev-parse --short HEAD) HEAD
 bind refs   ba       @tig.run git.quiet branch "%(prompt new branch: )" HEAD
 bind refs   b<ENTER> @tig.run git.quiet branch branch.$(basename $(git rev-parse --show-toplevel)) HEAD
 bind refs   a<ENTER> @tig.run add "%(commit)"
-bind refs   d<ENTER> @tig.run del "%(commit)"
+bind refs   d<ENTER> @tig.run del "%(commit),%(branch),%(tag)"
 
 ## Checkout
 bind main   co  +tig.run git.full checkout %(commit)

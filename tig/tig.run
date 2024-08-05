@@ -163,10 +163,15 @@ add() {
 	rm $t $b
 }
 
-# del <commit>
+# del <commit>,<branch>,<tag>
 del() {
-	local tag=$(check_tag $1)
-	local branch=$(check_branch $1)
+	local args raw
+
+	IFS=',' read -ra raw <<< "$*"
+	set -- "${raw[@]}"
+
+	local tag=$(check_tag $1 $3)
+	local branch=$(check_branch $1 $2)
 
 	if [[ -n "$tag" ]]; then
 		git tag -d $tag
@@ -339,11 +344,12 @@ save() {
 	local is_merged is_remote remote raw
 
 	IFS=',' read -ra raw <<< "$*"
-	commit=${raw[0]}
-	branch=${raw[1]}
-	refname=${raw[2]}
-	tag=${raw[3]}
-	file=${raw[4]}
+	set -- "${raw[@]}"
+	commit="$1"
+	branch="$2"
+	refname="$3"
+	tag="$4"
+	file="$5"
 
 	if [[ "$commit" =~ ^0+$ ]]; then
 		commit=
