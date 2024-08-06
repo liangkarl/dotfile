@@ -66,22 +66,39 @@ return {
     },
     config = function()
       local telescope = require('telescope')
+      local actions = require("telescope.actions")
+      local action_layout = require("telescope.actions.layout")
 
       telescope.setup({
         defaults = {
-          layout_strategy = 'vertical',
+          layout_strategy = 'bottom_pane',
           layout_config = {
             vertical = {
               prompt_position = "bottom",
               preview_cutoff = 15,
               width = 0.7,
             },
+            bottom_pane = {
+              prompt_position = "bottom",
+              height = 0.36,
+              preview_width = 0.7,
+            },
           },
           mappings = {
             i = {
-              ['<CR>'] = select_one_or_multi,
+              ["<CR>"] = select_one_or_multi,
+              ["<c-p>"] = action_layout.toggle_preview,
+              ["<c-o>"] = action_layout.toggle_mirror,
+              ["<c-s>"] = actions.select_horizontal,
+              ["<c-v>"] = actions.select_vertical,
+              ["<c-u>"] = actions.results_scrolling_up,
+              ["<c-d>"] = actions.results_scrolling_down,
+              ["<PageUp>"] = actions.preview_scrolling_up,
+              ["<PageDown>"] = actions.preview_scrolling_down,
+              ["<esc>"] = actions.close,
+              ["<c-h>"] = actions.which_key,
             }
-          }
+          },
         },
         extensions = {
           cder = {
