@@ -103,6 +103,16 @@ return {
             }
           },
         },
+        pickers = {
+          buffers = {
+            mappings = {
+              i = {
+                -- TODO: It won't delete current buffer
+                ["<c-x>"] = actions.delete_buffer,
+              }
+            }
+          }
+        },
         extensions = {
           cder = {
             previewer_command = 'tree -L 1 -F --dirsfirst -h',
