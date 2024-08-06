@@ -84,6 +84,9 @@ return {
               preview_width = 0.7,
             },
           },
+          preview = {
+            hide_on_startup = true,
+          },
           mappings = {
             i = {
               ["<CR>"] = select_one_or_multi,
