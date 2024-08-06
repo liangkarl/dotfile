@@ -87,7 +87,9 @@ return {
           cder = {
             previewer_command = 'tree -L 1 -F --dirsfirst -h',
             pager_command = 'cat',
-            dir_command = { 'fd', '-I', '--type=d', '.', vim.fn.getcwd() },
+            dir_command = { 'fd', '-I', '--type=d', '.', function()
+              vim.fn.getcwd()
+            end},
           }
         }
       })
