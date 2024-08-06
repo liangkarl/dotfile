@@ -77,7 +77,7 @@ check_branch() {
 		return
 	fi
 
-	for branch in $(git branch --format='%(refname:short)'); do
+	for branch in $(git branch --format='%(refname:short)' | sed '/HEAD/d'); do
 		rev=$(git rev-parse $branch)
 		if [[ "$rev" == "$1" ]]; then
 			echo $branch
@@ -101,6 +101,8 @@ get_remote_branch() {
 
 	if [ -n "$remote" ]; then
 		echo $remote
+	else
+		return 2
 	fi
 }
 
@@ -389,16 +391,16 @@ save() {
 	# $(is_commit "${raw[0]}" || echo "un")committed
 	commit=$commit
 
-	# ${raw[1]:-<null>}: branch is $(check_branch ${raw[0]} ${raw[1]} || echo "in")correct
+	# ${raw[1]:-<null>}: branch is $(check_branch ${raw[0]} ${raw[1]} || echo "incorrect")
 	branch=$branch
 
-	# ${raw[2]:-<null>}: remote is $(get_remote_branch ${raw[2]} || echo "non-")existed
+	# ${raw[2]:-<null>}: remote is $(get_remote_branch ${raw[2]} || echo "non-existed")
 	remote=$remote
 
-	# ${raw[3]:-<null>}: tag is $(check_tag ${raw[0]} ${raw[3]} || echo "non-")existed
+	# ${raw[3]:-<null>}: tag is $(check_tag ${raw[0]} ${raw[3]} || echo "non-existed")
 	tag=$tag
 
-	# ${raw[4]:-<null>}: file is $([[ -e "${raw[4]}" ]] || echo "non-")existed
+	# ${raw[4]:-<null>}: file is $([[ -e "${raw[4]}" ]] || echo "non-existed")
 	file=$file
 	EOF
 }
