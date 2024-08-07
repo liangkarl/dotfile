@@ -17,11 +17,6 @@ local function load_position()
   end
 end
 
-local function check_ts_parser()
-  local ok, parser = pcall(vim.treesitter.get_parser)
-  return ok and parser ~= nil
-end
-
 local function edit(enable)
   local space = require("mini.trailspace")
 
@@ -37,9 +32,6 @@ local function edit(enable)
     vim.opt.sidescrolloff = 5
     vim.diagnostic.config({ virtual_text = false, virtual_lines = false, signs = false})
     space.highlight()
-    if check_ts_parser() then
-      vim.treesitter.stop()
-    end
   else
     vim.opt.list = false
     vim.opt.showbreak = ''
@@ -48,9 +40,6 @@ local function edit(enable)
     vim.opt.sidescrolloff = 10
     vim.diagnostic.config({ virtual_text = true, virtual_lines = true, signs = false})
     space.unhighlight()
-    if check_ts_parser() then
-      vim.treesitter.start()
-    end
   end
 end
 
