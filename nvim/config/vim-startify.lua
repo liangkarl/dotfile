@@ -10,5 +10,10 @@ local function show_startify()
   end
 end
 
--- FIXME: There is an error when open :help pages
--- vim.cmd([[autocmd! BufDelete * lua show_startify()]])
+return {
+  'mhinz/vim-startify',
+  config = function()
+    -- FIXME: There is an error when open :help pages
+    -- vim.cmd([[autocmd! BufDelete * lua show_startify()]])
+  end
+}

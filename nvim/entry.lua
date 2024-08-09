@@ -15,12 +15,9 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
   -- Integration Development Environment
-  { -- Start-up screen
-    'mhinz/vim-startify',
-    config = function()
-      require('config.vim-startify')
-    end
-  },
+
+  -- Start-up screen
+  require('config.vim-startify'),
 
   require('config.trouble'),
 
