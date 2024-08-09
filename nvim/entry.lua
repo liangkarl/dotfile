@@ -57,12 +57,7 @@ require("lazy").setup({
     config = true
   },
   require('config.hop'),
-  { -- switch boolean value easily,
-    'rmagatti/alternate-toggler',
-    config = function()
-      require('config.alternate-toggler')
-    end
-  },
+  require('config.alternate-toggler'),
 
   -- Formatter
   { -- format code with clang-format

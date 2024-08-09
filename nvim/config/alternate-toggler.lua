@@ -19,9 +19,14 @@
 -- ["==="] = "!=="
 -- }
 
-vim.g.at_custom_alternates = {
-    ["=="] = "!=",
-    ["y"] = "n",
-    ["yes"] = "no",
-    ["&&"] = "||",
+return { -- switch boolean value easily,
+    'rmagatti/alternate-toggler',
+    config = function()
+        vim.g.at_custom_alternates = {
+            ["=="] = "!=",
+            ["y"] = "n",
+            ["yes"] = "no",
+            ["&&"] = "||",
+        }
+    end
 }
