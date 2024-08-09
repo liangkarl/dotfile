@@ -9,14 +9,6 @@ local cmd = vim.cmd
 local fn = vim.fn
 local gid
 
-local function load_position()
-  -- if last visited position is available
-  if fn.line("'\"") > 1 and fn.line("'\"") <= fn.line("$") then
-    -- jump to the last position
-    cmd("normal! g'\"")
-  end
-end
-
 local function edit(enable)
   local space = require("mini.trailspace")
 
@@ -79,11 +71,6 @@ m.autocmd("InsertEnter", '*', function() edit(true) end, {
   group = gid
 })
 
--- A simple function to restore previous cursor position
-m.autocmd("BufReadPost", '*', load_position, {
-  desc = 'Restore Previous Cursor Position',
-  group = gid
-})
 -- Set no line number in terminal buffer
 m.autocmd("TermEnter", '*', function()
     vim.wo.number = false

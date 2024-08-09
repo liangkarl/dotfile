@@ -48,6 +48,7 @@ require("lazy").setup({
   require('config.stickybuf'),
   require('config.nvim-scrollbar'),
   require('config.guess-indent'),
+  require('config.nvim-lastplace'),
   require('config.mini'),
   -- FIXME: replace with new matchup plugin
   -- require('config.vim-matchup'),
