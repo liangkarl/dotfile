@@ -137,14 +137,7 @@ require("lazy").setup({
   -- Autocompletion
   require('config.nvim-cmp'),
 
-  {
-    'codota/tabnine-nvim',
-    build = "./dl_binaries.sh",
-    config = function()
-      require('config.tabnine-nvim')
-    end,
-    enabled = false,
-  },
+  require('config.tabnine-nvim'),
   require('config.lsp-status'),
   require('config.fold-preview'),
   require('config.editorconfig'),
