@@ -45,21 +45,7 @@ require("lazy").setup({
   },
 
   require('config.stickybuf'),
-
-  {
-    'petertriho/nvim-scrollbar',
-    config = function()
-      local mod = require("scrollbar")
-      mod.setup({
-        handlers = {
-          cursor = false,
-        },
-        handle = {
-          blend = 0,
-        }
-      })
-    end,
-  },
+  require('config.nvim-scrollbar'),
   require('config.guess-indent'),
   require('config.mini'),
   -- FIXME: replace with new matchup plugin
