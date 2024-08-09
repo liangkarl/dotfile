@@ -30,6 +30,7 @@ require("lazy").setup({
   require('config.lualine'),
 
   require('config.bufferline'),
+  require('config.vuffers'),
 
   require('config.symbol-list'),
 
