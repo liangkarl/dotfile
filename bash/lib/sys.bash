@@ -23,3 +23,9 @@ backtrace() {
 	echo "Backtrace of '$0'"
 	echo -en "$TRACE" | tac | grep -n ":" # using tac to "print in reverse" [3]
 }
+
+# pause [ret]
+pause() {
+	read -p "Press ENTER to continue."
+	return $1
+}
