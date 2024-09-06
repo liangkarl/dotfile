@@ -164,15 +164,13 @@ return { -- Display cheat sheet of vim shortcut
     -- Folded Keymap --
     -------------------
     wk.setup()
-    wk.register({
-      ["<leader>"] = {
-        ['f']  = { name = "File" },
-        ['/']  = { name = "Search / Edit" },
-        [';']  = { name = "Coding" },
-        ['\''] = { name = "Debug / Compile" },
-        ['w']  = { name = "Window / Plugin" },
-        ['s']  = { name = "Setup / Status" },
-      }
+    wk.add({
+      { "<leader>'", group = "Debug / Compile" },
+      { "<leader>/", group = "Search / Edit" },
+      { "<leader>;", group = "Coding" },
+      { "<leader>f", group = "File" },
+      { "<leader>s", group = "Setup / Status" },
+      { "<leader>w", group = "Window / Plugin" },
     })
 
     -- File (Open/Close/Save)
