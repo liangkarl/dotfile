@@ -103,9 +103,6 @@ return { -- LSP configuration
           threads = 0,
           onChange = true,
         },
-        clang = {
-          excludeArgs = { "-frounding-math" },
-        },
       },
     }
 
