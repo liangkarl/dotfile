@@ -92,7 +92,9 @@ return { -- LSP configuration
       init_options = {
         -- compilationDatabaseDirectory = "";
         cache = {
-          directory = ".ccls-cache",
+          directory = vim.env.XDG_DATA_HOME
+              and vim.env.XDG_DATA_HOME .. "/ccls/cache"
+              or ".ccls-cache",
         },
         client = {
           snippetSupport = true,
