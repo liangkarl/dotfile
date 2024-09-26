@@ -22,7 +22,6 @@ local function edit(enable)
     vim.opt.colorcolumn = '80'
     vim.opt.scrolloff = 5
     vim.opt.sidescrolloff = 5
-    vim.diagnostic.config({ virtual_text = false, virtual_lines = false, signs = false})
     space.highlight()
   else
     vim.opt.list = false
@@ -30,13 +29,17 @@ local function edit(enable)
     vim.opt.colorcolumn = ''
     vim.opt.scrolloff = 999
     vim.opt.sidescrolloff = 10
-    vim.diagnostic.config({ virtual_text = true, virtual_lines = true, signs = false})
     space.unhighlight()
   end
 end
 
 vim.g.editorconfig = false
 -- cmd.colorscheme('material-darker')
+
+-- https://stackoverflow.com/questions/69290794/
+vim.diagnostic.config({ virtual_text = false })
+vim.o.updatetime = 1000
+vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
 
 m.highlight("nCursor", { fg=nil, bg='SlateBlue', cterm=nil, ctermbg=1 })
 m.highlight("iCursor", { fg=nil, bg='#ffffff', cterm=nil, ctermbg=15 })
