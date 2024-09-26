@@ -84,7 +84,8 @@ return { -- LSP configuration
       opts = {
         ensure_installed = {
           "lua_ls", "bashls", "vimls",
-          "clangd", "jdtls",
+          -- "clangd", "jdtls",
+          "jdtls",
           "pyright", "html", "tsserver"
         },
       },
@@ -152,7 +153,10 @@ return { -- LSP configuration
         },
         index = {
           threads = 0,
-          onChange = true,
+          onChange = false,
+        },
+        diagnostics = {
+          onChange = -1,
         },
         compilationDatabaseDirectory = find_compile_commands_in_buffer()
       },
