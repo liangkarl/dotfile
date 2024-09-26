@@ -103,6 +103,7 @@ return { -- LSP configuration
     end
 
     -- customize configurations here
+    -- FIXME: The LSP setting would lose after changing from insert mode to insert mode
     conf_tbl['lua_ls'] = {
       settings = {
         Lua = {
@@ -111,18 +112,23 @@ return { -- LSP configuration
             version = 'LuaJIT',
           },
           diagnostics = {
-            -- Get the language server to recognize the `vim` global
-            globals = { 'vim' },
+            -- Disable certain diagnostics globally
+            disable = {"lowercase-global", "undefined-global"},
+            -- Every time a file is edited, created, deleted, etc. the workspace
+            -- will be re-diagnosed in the background after this delay. Setting
+            -- to a negative number will disable workspace diagnostics.
+            workspaceDelay = 1,
           },
           workspace = {
             checkThirdParty = false
           },
-          -- Do not send telemetry data containing a randomized but unique identifier
           telemetry = {
+            -- Do not send telemetry data containing a randomized but unique identifier
             enable = false,
           },
         },
       },
+      on_attach = lsp_status.on_attach,
     }
 
     -- initialize basic configurations for LSP servers installed by mason
