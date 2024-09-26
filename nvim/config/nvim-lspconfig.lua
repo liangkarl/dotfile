@@ -24,6 +24,51 @@
 
 local m = require('helpers.utils')
 
+-- FIXME: the setting would be lost if open the files within vim
+local function find_compile_commands_in_buffer()
+  -- Get the directory of the current file
+  local file_path = vim.fn.expand('%:p')
+  if file_path == "" then
+    file_path = vim.api.nvim_buf_get_name(0)
+  end
+
+  if file_path == "" then
+    -- print("No file found in the current buffer.")
+    return ""
+  end
+
+  -- Start searching from the current file's directory
+  local dir = vim.fn.fnamemodify(file_path, ":h")
+
+  -- Loop to move up in the directory hierarchy
+  while dir ~= "" do
+    local compile_commands_path = dir .. "/compile_commands.json"
+
+    -- Check if compile_commands.json exists in the current directory
+    if vim.fn.filereadable(compile_commands_path) == 1 then
+      -- print("Found compile_commands.json at: " .. compile_commands_path)
+      return compile_commands_path
+    end
+
+    -- Move up to the parent directory
+    local parent_dir = vim.fn.fnamemodify(dir, ":h")
+
+    -- If we have reached the root directory, stop the loop
+    if parent_dir == dir then
+      dir = ""
+      break
+    end
+
+    dir = parent_dir
+  end
+
+  -- print("compile_commands.json not found.")
+  return dir
+end
+-- To trigger the function, you can use something like this in command mode:
+-- :lua find_compile_commands_in_buffer()
+
+
 return { -- LSP configuration
   'neovim/nvim-lspconfig',
   dependencies = {
@@ -103,6 +148,7 @@ return { -- LSP configuration
           threads = 0,
           onChange = true,
         },
+        compilationDatabaseDirectory = find_compile_commands_in_buffer()
       },
     }
 
