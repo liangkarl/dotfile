@@ -57,6 +57,6 @@ opt.showmode = false
 opt.display = opt.display .. ",uhex"
 
 -- disable support mouse action in normal mode.
-opt.mouse = "vi"
+opt.mouse = ""
 
 opt.cursorline = true
