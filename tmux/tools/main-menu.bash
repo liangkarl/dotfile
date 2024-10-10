@@ -38,6 +38,18 @@ window() {
     menu.add_cancel
     menu.add_exit
     menu.run
+
+    case "$cb_ans" in
+        rename)
+            name="$(./input-box.bash 'Enter new window title')"
+            if tmux rename-window "$name"; then
+                cb_ans=exit
+            else
+                cb_ans=cancel
+            fi
+            ;;
+        *)
+    esac
 }
 
 pane() {
