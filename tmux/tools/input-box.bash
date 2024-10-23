@@ -13,7 +13,8 @@ end_sig=$(mktemp)
 trap "rm -rf $temp_file" 0
 
 # 在tmux的彈出窗口中讀取使用者輸入並儲存到臨時檔案
-tmux display-popup -h10% -E "sh -c 'echo \"$*:\"; read cmd; echo \$cmd > $temp_file'" || touch $temp_file
+# tmux display-popup -h10% -E "sh -c 'echo \"$*:\"; read cmd; echo \$cmd > $temp_file'" || touch $temp_file
+echo | fzf --print-query --prompt "$*: " | head -n 1 > $temp_file
 
 # 等待使用者輸入完成
 while [ ! -e "$temp_file" ]; do
