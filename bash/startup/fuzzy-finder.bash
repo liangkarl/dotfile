@@ -19,6 +19,7 @@ if type -t fzf; then
             --preview-window=':hidden,wrap'
             --preview='echo -- Full String --; echo {}; if [[ -f {} ]]; then echo; echo -- File Preview --; head {}; fi'
             --keep-right
+            --reverse
             --color='hl:1:underline,hl+:1:underline' --inline-info"
 
 elif type -t fzy; then
