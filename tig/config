@@ -160,6 +160,8 @@ bind generic l  enter
 bind generic q  view-close-no-quit
 bind generic J  next
 bind generic K  previous
+bind generic <Up> move-up
+bind generic <Down> move-down
 bind generic Q  quit
 bind generic <Ctrl-r> <tig
 bind diff    l  scroll-right
