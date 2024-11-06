@@ -8,10 +8,9 @@ return {
   config = function()
     local preview = require('fold-preview')
     preview.setup({
-      auto = 400,
-      default_keybindings = false
+      auto = false,
+      default_keybindings = true,
     })
-
     -- m.noremap('n', 'zp', function() preview.toggle_preview() end,
     --   "Toggle folding preview")
   end
