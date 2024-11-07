@@ -66,3 +66,6 @@ export -f path.dup
 export -f env.cmd
 
 __init_bash
+
+path.brew
+path.nvm
