@@ -128,6 +128,11 @@ return { -- Display cheat sheet of vim shortcut
 
     m.noremap('',  'f', '<cmd>HopChar1CurrentLineAC<cr>')
     m.noremap('',  'F', '<cmd>HopChar1CurrentLineBC<cr>')
+    m.noremap('',  'j', 'gj')
+    m.noremap('',  'k', 'gk')
+    m.noremap('',  '0', 'g0')
+    m.noremap('',  '$', 'g$')
+    m.noremap('',  '^', 'g^')
 
     -------------------
     -- Direct Keymap --
