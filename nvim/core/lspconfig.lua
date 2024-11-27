@@ -22,7 +22,7 @@
 -- Configure LSP server
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
 
-local m = require('helpers.utils')
+local m = require('core.utils')
 
 -- FIXME: the setting would be lost if open the files within vim
 local function find_compile_commands_in_buffer()

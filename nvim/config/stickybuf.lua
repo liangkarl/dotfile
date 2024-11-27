@@ -1,4 +1,4 @@
-local m = require('helpers.utils')
+local m = require('core.utils')
 local gid = m.augroup('StickybufCtrl')
 
 return {

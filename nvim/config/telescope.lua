@@ -1,7 +1,7 @@
 -- Plugin: telescope.nvim
 -- https://github.com/nvim-telescope/telescope.nvim
 
-local m = require('helpers.utils')
+local m = require('core.utils')
 local opts = { noremap=true, silent=true }
 
 -- WA for multi-selections

@@ -1,8 +1,8 @@
 -- https://alpha2phi.medium.com/neovim-for-beginners-lua-autocmd-and-keymap-functions-3bdfe0bebe42
 --
 -- Set other options
--- local colorscheme = require("helpers.colorscheme")
-local m = require('helpers.utils')
+-- local colorscheme = require("core.colorscheme")
+local m = require('core.utils')
 
 local vim = vim
 local cmd = vim.cmd

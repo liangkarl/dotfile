@@ -2,7 +2,7 @@ return {
   'nvim-lua/lsp-status.nvim',
   config = function()
     local lsp_status = require('lsp-status')
-    local m = require('helpers.utils')
+    local m = require('core.utils')
 
     lsp_status.config({
       -- Avoid using use emoji-like or full-width characters

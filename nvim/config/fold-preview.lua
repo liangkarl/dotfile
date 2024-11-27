@@ -1,4 +1,4 @@
-local m = require('helpers.utils')
+local m = require('core.utils')
 
 return {
   'anuvyklack/fold-preview.nvim',

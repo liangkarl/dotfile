@@ -13,6 +13,6 @@ vim.g.mapleader = ' '
 
 vim.cmd("source " .. nvim_dir .. "/config.vim")
 
-require('options')
-require('entry')
+require('core.options')
+require('core.lazy')
 require('profile')

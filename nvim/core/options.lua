@@ -14,6 +14,7 @@ opt.listchars = "tab:→ ,nbsp:␣,precedes:«,extends:»"
 opt.bomb = true              -- Set Byte Order Mask(BOM) dealing with UTF8 in window
 opt.equalalways = false      -- Close a split window in Vim without resizing other windows
 opt.mouse = ""               -- disable support mouse action in normal mode.
+opt.clipboard = 'unnamed'    -- Copy/paste to system clipboard (, the selected copy one)
 opt.diffopt = opt.diffopt .. ",algorithm:histogram"
 opt.display = opt.display .. ",uhex" -- Show unprintable characters hexadecimal as <xx> instead of using ^C and ~C.
 opt.scrolljump = 5

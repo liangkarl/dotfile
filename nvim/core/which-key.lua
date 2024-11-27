@@ -1,7 +1,7 @@
 local M = {}
 local vim = vim
 local fn = vim.fn
-local m = require("helpers.utils")
+local m = require("core.utils")
 
 -- Show information about the current file
 M.show_file_info = function()

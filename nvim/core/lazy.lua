@@ -1,17 +1,41 @@
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-local m = require('helpers.utils')
+-----------------------------------------------------------
+-- Plugin manager configuration file
+-----------------------------------------------------------
 
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
-    lazypath,
-  })
+-- Plugin manager: lazy.nvim
+-- URL: https://github.com/folke/lazy.nvim
+-- https://lazy.folke.io/
+
+--[[
+For information about installed plugins see the README:
+neovim-lua/README.md: Plugins
+https://github.com/brainfucksec/neovim-lua?tab=readme-ov-file#plugins
+--]]
+
+local m = require('core.utils')
+
+-- Bootstrap lazy.nvim
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  if vim.v.shell_error ~= 0 then
+    vim.api.nvim_echo({
+      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+      { out, "WarningMsg" },
+      { "\nPress any key to exit..." },
+    }, true, {})
+    vim.fn.getchar()
+    os.exit(1)
+  end
 end
 vim.opt.rtp:prepend(lazypath)
+
+-- Use a protected call so we don't error out on first use
+local status_ok, lazy = pcall(require, 'lazy')require('lazy')
+if not status_ok then
+  return
+end
 
 require("lazy").setup({
   -- Integration Development Environment
@@ -36,6 +60,7 @@ require("lazy").setup({
 
   -- Enhanced functions
   require('config.nvim-treesitter'),
+  require('config.vim-polyglot'),
 
   { -- share clipboard between tmux and vim
     'roxma/vim-tmux-clipboard',
@@ -115,8 +140,6 @@ require("lazy").setup({
     end,
   },
 
-  require('config.nvim-lspconfig'),
-
   -- Autocompletion
   require('config.nvim-cmp'),
 
@@ -125,5 +148,10 @@ require("lazy").setup({
   require('config.fold-preview'),
   require('config.editorconfig'),
   require('config.ChatGPT'),
-  require("config.keybind")
+
+  -- LSP
+  require('core.lspconfig'),
+
+  -- Keymaps
+  require("core.which-key")
 })
