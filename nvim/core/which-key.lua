@@ -106,6 +106,7 @@ local function config()
   --    1. Would not check abbreviations
   --    2. Would not trigger `InsertLeave` event of autocommand.
   m.noremap('i', '<C-c>', '<Esc>', "<ESC>")
+  m.noremap('i', '<C-s>', '<C-o>', "<C-o>")
   m.noremap('v', 'p', 'P', "Paste without yanking the deleted text")
 
   -- Retain the visual selection after indent lines
