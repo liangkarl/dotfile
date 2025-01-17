@@ -86,7 +86,7 @@ return { -- LSP configuration
           "lua_ls", "bashls", "vimls",
           -- "clangd", "jdtls",
           "jdtls",
-          "pyright", "html", "tsserver"
+          "pyright", "html", "eslint"
         },
       },
     },
