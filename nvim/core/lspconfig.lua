@@ -72,21 +72,19 @@ end
 return { -- LSP configuration
   'neovim/nvim-lspconfig',
   dependencies = {
+    { -- Following mason's requirements, install `mason.nvim`, `mason-lspconfig` and `nvim-lspconfig` by order
+      "williamboman/mason.nvim",
+      build = ":MasonUpdate", -- :MasonUpdate updates registry contents
+      config = true
+    },
     {
       "williamboman/mason-lspconfig.nvim",
-      dependencies = {
-        { -- Following mason's requirements, install `mason.nvim`, `mason-lspconfig` and `nvim-lspconfig` by order
-          "williamboman/mason.nvim",
-          build = ":MasonUpdate", -- :MasonUpdate updates registry contents
-          config = true
-        },
-      },
       opts = {
         ensure_installed = {
           "lua_ls", "bashls", "vimls",
-          -- "clangd", "jdtls",
           "jdtls",
           "pyright", "html", "eslint"
+          -- "clangd"
         },
       },
     },
