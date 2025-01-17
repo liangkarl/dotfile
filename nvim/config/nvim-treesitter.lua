@@ -27,7 +27,7 @@ return { -- Syntax highlight/lint with `treesitter`
       -- Syntax highlight
       highlight = {
         enable = false,
-        additional_vim_regex_highlighting = true,
+        additional_vim_regex_highlighting = false,
       },
 
       -- Smart selection or text object selection

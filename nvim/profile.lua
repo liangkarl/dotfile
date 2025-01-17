@@ -109,6 +109,23 @@ m.autocmd("TextYankPost", '*', function() vim.highlight.on_yank() end, {
   group = gid,
 })
 
+function check_treesitter_and_set_highlight()
+    local ft = vim.bo.filetype
+
+    if require("nvim-treesitter.parsers").has_parser(ft) then
+        cmd("syntax off")
+        cmd("TSBufEnable highlight")
+    else
+        cmd("TSBufDisable highlight")
+        cmd("syntax on")
+    end
+end
+
+m.autocmd({"VimEnter", "BufEnter"}, '*', check_treesitter_and_set_highlight, {
+  desc = "Enable Treesitter highlight if parser exists, otherwise fallback to syntax highlight",
+  group = gid
+})
+
 -- show cursor line only in active window
 m.autocmd( { "InsertLeave", "WinEnter" }, "*", "set cursorline", { group = gid })
 m.autocmd( { "InsertEnter", "WinLeave" }, "*", "set nocursorline", { group = gid })
@@ -129,3 +146,5 @@ cmd([[
   cab W w
   cab Q q
 ]])
+
+cmd("syntax off")
