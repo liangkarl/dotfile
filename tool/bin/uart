@@ -106,7 +106,7 @@ config.tio() {
 	echo -n "$port "
 	echo -n "-b $baudrate -d $data_bits "
 	echo -n "-s $stop_bits -p $parity "
-	echo -n "-t --log-file $log"
+	echo -n "-t -L --log-file $log --log-strip"
 }
 
 update_cb() {
