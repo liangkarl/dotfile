@@ -21,6 +21,12 @@ local select_one_or_multi = function(prompt_bufnr)
   end
 end
 
+local function trouble_func()
+  local open_with_trouble = require("trouble.sources.telescope").open
+  if open_with_trouble then
+    return open_with_trouble
+  end
+end
 
 return {
   { -- provides superior project management
@@ -100,6 +106,21 @@ return {
               ["<PageDown>"] = actions.preview_scrolling_down,
               ["<esc>"] = actions.close,
               ["<c-h>"] = actions.which_key,
+              ["<c-t>"] = trouble_func(),
+            },
+            n = {
+              ["<CR>"] = select_one_or_multi,
+              ["<c-p>"] = action_layout.toggle_preview,
+              ["<c-o>"] = action_layout.toggle_mirror,
+              ["<c-s>"] = actions.select_horizontal,
+              ["<c-v>"] = actions.select_vertical,
+              ["<c-u>"] = actions.results_scrolling_up,
+              ["<c-d>"] = actions.results_scrolling_down,
+              ["<PageUp>"] = actions.preview_scrolling_up,
+              ["<PageDown>"] = actions.preview_scrolling_down,
+              ["<esc>"] = actions.close,
+              ["<c-h>"] = actions.which_key,
+              ["<c-t>"] = trouble_func(),
             }
           },
         },
