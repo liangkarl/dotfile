@@ -48,7 +48,7 @@ list_comport() {
 			powershell.exe -Command $ls
 		fi
 	else
-		ls="/dev/serial/by-id/"
+		ls="/dev/serial/by-path/"
 		for d in $(ls $ls); do
 			echo "$(realpath -e $ls/$d): $d"
 		done
@@ -145,12 +145,11 @@ while :; do
 			list_port=y
 			;;
 		-+([0-9]))
-			if [[ -z "$WSL_DISTRO_NAME" ]]; then
-				exit_msg 3 "Not in WSL. Invalid serial port"
+			if [[ -n "$WSL_DISTRO_NAME" ]]; then
+				port=COM$1
+			else
+				port=/dev/ttyUSB${1#-}
 			fi
-
-			port=COM$1
-			select_port=y
 			;;
 		-p)
 			select_port=y
