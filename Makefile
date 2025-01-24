@@ -5,8 +5,9 @@ XDG_DATA_HOME?=${HOME}/.local/share
 XDG_CACHE_HOME?=${HOME}/.cache
 TOP:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 CONF_HOME:=${XDG_CONFIG_HOME}
+SHELL?=bash
 
-H=@
+H?=@
 
 -include $(TOP)/package.mk
 -include $(TOP)/dotfile.mk
