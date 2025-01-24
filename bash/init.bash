@@ -54,7 +54,7 @@ __init_bash() {
     # set up XDG_xxx
     source ${core}/xdg.bash
 
-    grep -q -w "${HOME}/bin" <<< "$PATH" || PATH="${HOME}/bin:${PATH}"
+    grep -q -w "${HOME}/.local/bin" <<< "$PATH" || PATH="${HOME}/.local/bin:${PATH}"
 
     source ${core}/ps1.bash
 
