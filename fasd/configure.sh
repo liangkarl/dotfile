@@ -14,7 +14,7 @@ git clone -n --depth=1 https://github.com/clvv/fasd.git $tmp
 cp -rf ${tmp}/.git $dir
 git -C $dir reset --hard HEAD
 
-ln -sf $dir/fasd ~/bin/fasd
+ln -sf $dir/fasd ~/.local/bin/fasd
 ln -sf $dir/fasdrc ~/.fasdrc
 grep -q -w "$line" ~/.bashrc ||
         printf -- "\n$line\n" >> ~/.bashrc
