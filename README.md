@@ -1,4 +1,6 @@
-# Introduction
+# DotFile
+
+## Introduction
 
 A light weight dotfile for Linux BASH shell environment.
 
@@ -10,31 +12,31 @@ working efficiently.
 To make the environment more simple, easy and efficient, I would
 follow the KISS principle as possible as I can.
 
-# Minimal Requirements
+## Minimal Requirements
 - `bash` >= 4.x
 
-# Integration
+## Integration
 
-## Terminal/ Shell
+### Terminal/ Shell
 - bash
 - tmux
 - enhanced
 - kitty
 - fasd
 
-## VCS/ Patch
+### VCS/ Patch
 - git
 - tig
 - quilt
 
-## Editor
+### Editor
 - nvim
 
-## System
+### System
 - top
 - htop
 
-# Directory Stucture
+## Directory Stucture
 - `misc`
     - for those dotfiles with only one configuration
 - `profile`
