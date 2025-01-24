@@ -5,8 +5,13 @@
 -- which is an really old plugin.
 -- command! -bang -nargs=1 -complete=buffer Bclose bdelete! <f-args>
 
-local command = vim.api.nvim_create_user_command
-
-command("Bclose", function ()
-      vim.cmd("lua MiniBufremove.delete(0)")
-    end, { bang = true })
+return { --   " git blame whole file
+    'liangkarl/tig-explorer.vim',
+    init = function()
+        local command = vim.api.nvim_create_user_command
+        command("Bclose", function ()
+                vim.cmd("lua MiniBufremove.delete(0)")
+            end,
+            { bang = true })
+    end
+}

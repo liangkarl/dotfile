@@ -44,11 +44,7 @@ require("lazy").setup({
   require('config.vim-startify'),
 
   require('config.trouble'),
-
-  {
-    'kevinhwang91/nvim-bqf',
-    config = true
-  },
+  require('config.nvim-bqf'),
 
   -- Status line (button)
   require('config.lualine'),
@@ -62,13 +58,8 @@ require("lazy").setup({
   require('config.nvim-treesitter'),
   require('config.vim-polyglot'),
 
-  { -- share clipboard between tmux and vim
-    'roxma/vim-tmux-clipboard',
-  },
-  { -- delete buffers
-    'kazhala/close-buffers.nvim',
-    config = true
-  },
+  require('config.vim-tmux-clipboard'),
+  require('config.close-buffers'),
 
   require('config.stickybuf'),
   require('config.nvim-scrollbar'),
@@ -77,48 +68,24 @@ require("lazy").setup({
   require('config.mini'),
   -- FIXME: replace with new matchup plugin
   -- require('config.vim-matchup'),
-  {
-    'nvimdev/hlsearch.nvim',
-    config = true
-  },
+  require('config.hlsearch'),
   require('config.hop'),
   require('config.alternate-toggler'),
 
   -- Formatter
-  { -- format code with clang-format
-    'rhysd/vim-clang-format',
-    config = function()
-      -- require('config.vim-clang-format')
-    end
-  },
+  require('config.vim-clang-format'),
 
   -- LSP plugin
-  { -- provide unique ccls function
-    'ranjithshegde/ccls.nvim',
-  },
+  require('config.ccls'),
 
   -- Debug Tools
   require('config.nvim-dap'),
 
   -- Git
-  { --   " git blame whole file
-    'liangkarl/tig-explorer.vim',
-    config = function()
-      require('config.tig-explorer')
-    end
-  },
-  { -- show diff symbols aside via git diff
-    'lewis6991/gitsigns.nvim',
-    config = true,
-    event = "VeryLazy",
-  },
+  require('config.tig-explorer'),
+  require('config.gitsigns'),
   require('config.neogit'),
-  { -- git diff
-    'sindrets/diffview.nvim',
-    config = function()
-      -- require('config.diffview')
-    end
-  },
+  require('config.diffview'),
 
   -- Theme
   require('config.theme'),
@@ -130,15 +97,7 @@ require("lazy").setup({
   -- NOTE: Remove it as change to tmux console
 
   -- Integration Development Environment
-  { -- view startup event timing with `--startuptime`
-    "dstein64/vim-startuptime",
-    -- lazy-load on a command
-    cmd = "StartupTime",
-    -- init is called during startup. Configuration for vim plugins typically should be set in an init function
-    init = function()
-      vim.g.startuptime_tries = 10
-    end,
-  },
+  require('config.vim-startuptime'),
 
   -- Autocompletion
   require('config.nvim-cmp'),
