@@ -19,7 +19,6 @@ local_bin="${HOME}/.local/bin"
 toolkit="${XDG_CONFIG_HOME}/toolkit"
 toolkit_script="$toolkit/script"
 
-cp -rf $mydir/{bin,script} $toolkit
 if [[ -n "$SHELL_DIR" ]]; then
     grep -q "SCRIPT_DIR" $SHELL_DIR/config \
             || echo "export SCRIPT_DIR=${toolkit_script}" >> $SHELL_DIR/config
@@ -38,12 +37,14 @@ for file in $(ls $mydir/bin); do
     cp -f $mydir/bin/$file $local_bin/$file || true
 done
 
+# TODO: copy and link the scripts to proper place
+
 # create special files in $HOME/bin
-fake="$(readlink -e ${toolkit_script}/fake)"
+fake="${toolkit_script}/fake"
 while IFS= read -r file
 do
     # don't force override as this is a 'fake' file
-    ln -s $fake $local_bin/$(basename $file) || true
+    ln -sf $fake $local_bin/$(basename $file) || true
 done < $mydir/fake.list
 
 echo "-- Clean $toolkit --"
