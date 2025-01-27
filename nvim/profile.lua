@@ -134,6 +134,7 @@ m.highlight("MiniCursorword", { fg = 'tomato', ctermfg = 'Red' })
 m.highlight("MiniCursorwordCurrent", { fg = 'tomato', ctermfg = 'Red' })
 
 m.autocmd("BufReadPost", "*", 'GuessIndent', { group = gid })
+m.autocmd("VimEnter", "*", 'clearjumps', { group = gid })
 
 cmd([[
   " no one is really happy until you have this shortcuts
