@@ -1,6 +1,6 @@
 PKG_NAME=enhancd
 CONFIG_DIR=${XDG_CONFIG_HOME}/$(PKG_NAME)
-TMP=$(shell mktemp -d)
+TMP:=$(shell mktemp -d)
 CMD=source $(CONFIG_DIR)/bootstrap.sh
 INIT=source $(CONFIG_DIR)/init.sh
 
