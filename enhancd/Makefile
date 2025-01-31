@@ -13,14 +13,11 @@ config.$(PKG_NAME): install.$(PKG_NAME)
 
 install.$(PKG_NAME):
 	$(H)echo "-- $(PKG_NAME): install package --"
-	$(H)if [[ ! -d $(CONFIG_DIR)/.git ]]; then
-		git clone -n --depth=1 https://github.com/b4b4r07/enhancd.git $(TMP)
-		mv $(TMP)/.git $(CONFIG_DIR)
-		rm -rf $(TMP)
-		git -C $(CONFIG_DIR) reset --hard
-	else
-		git -C $(CONFIG_DIR) pull
-	fi
+	rm -rf $(CONFIG_DIR)/.git
+	git clone -n --depth=1 https://github.com/b4b4r07/enhancd.git $(TMP)
+	cp -rf $(TMP)/.git $(CONFIG_DIR)
+	rm -rf $(TMP)
+	git -C $(CONFIG_DIR) reset --hard
 
 remove.$(PKG_NAME):
 	$(H)echo "-- $(PKG_NAME): remove package --"
