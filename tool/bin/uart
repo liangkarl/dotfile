@@ -28,8 +28,8 @@ usage() {
 	options:
 	    -l: list available COM port
 	    -o: setup serial config
+	        select supported serial console .exe
 	        eg, -o "br=115200;fc=N;db=8;sb=1;pa=n"
-	    -b: select supported serial console .exe
 	    -p: serial port path in Linux, such as '-p /dev/ttyUSB0',
 	    -n: n is COM port number in WSL, such as '-1'.
 	EOF
@@ -127,7 +127,7 @@ stop_bits=1
 log=uart.$PPID.log
 conf=~/.uart.conf
 
-args=$(getopt lop0123456789 $*)
+args=$(getopt ":lop0123456789" $*)
 if [[ $? -ne 0 ]]; then
 	usage 1
 fi
