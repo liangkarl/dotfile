@@ -33,7 +33,7 @@ config_load() {
 }
 
 config_save() {
-    local list var val tmp
+    local list var tmp
 
     tmp="$(mktemp)"
     list=($(env | awk -F'=' '/^__CONFIG_BASH_/{print $1}'))
@@ -46,10 +46,12 @@ config_save() {
 
     cat $tmp > $__config
     rm -f $tmp
+
+    config_reset
 }
 
 config_reset() {
-    local list var val
+    local list var
 
     list=($(env | awk -F'=' '/^__CONFIG_BASH_/{print $1}'))
     for var in "${list[@]}"; do
