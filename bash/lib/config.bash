@@ -1,4 +1,4 @@
-# config_set name val
+# config_set [name] [val]
 config_set() {
     local var val
     var=$1; shift
@@ -6,7 +6,7 @@ config_set() {
     eval "export __CONFIG_BASH_${var}='${val}'"
 }
 
-# config_get o_var name def
+# config_get [o_var] [name] [def]
 config_get() {
     local out var def
     out=$1; shift
@@ -15,7 +15,14 @@ config_get() {
     eval "$out=\"\${__CONFIG_BASH_${var}:-$def}\""
 }
 
-# config_load conf
+# config_del [name]
+config_del() {
+    local var
+    var=$1; shift
+    eval "unset __CONFIG_BASH_${var}"
+}
+
+# config_load [config]
 config_load() {
     local tmp
 
@@ -32,6 +39,7 @@ config_load() {
     rm -f $tmp
 }
 
+# config_save
 config_save() {
     local list var tmp
 
@@ -50,6 +58,7 @@ config_save() {
     config_reset
 }
 
+# config_reset
 config_reset() {
     local list var
 
@@ -60,6 +69,7 @@ config_reset() {
     unset __config
 }
 
+# config_sort
 config_sort() {
     local tmp
 
