@@ -39,22 +39,21 @@ config_load() {
     rm -f $tmp
 }
 
-# config_save
-config_save() {
-    local list var tmp
+config_dump() {
+    local list var
 
-    tmp="$(mktemp)"
     list=($(env | awk -F'=' '/^__CONFIG_BASH_/{print $1}'))
     for var in "${list[@]}"; do
         if [[ -z "${!var}" ]]; then
             continue
         fi
-        echo "${var#__CONFIG_BASH_}='${!var}'" >> $tmp
+        echo "${var#__CONFIG_BASH_}='${!var}'"
     done
+}
 
-    cat $tmp > $__config
-    rm -f $tmp
-
+# config_save
+config_save() {
+    config_dump > $__config
     config_reset
 }
 
