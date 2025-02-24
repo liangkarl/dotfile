@@ -26,6 +26,8 @@ config_del() {
 config_load() {
     local tmp
 
+    [[ "$#" -eq 0 ]] && return 1
+
     if [[ ! -e "$1" ]]; then
         __config="$*"
         touch $__config
@@ -42,7 +44,7 @@ config_load() {
 config_dump() {
     local list var
 
-    list=($(env | awk -F'=' '/^__CONFIG_BASH_/{print $1}'))
+    list=($(set | awk -F'=' '/^__CONFIG_BASH_/{print $1}'))
     for var in "${list[@]}"; do
         if [[ -z "${!var}" ]]; then
             continue
@@ -61,8 +63,11 @@ config_save() {
 config_reset() {
     local list var
 
-    list=($(env | awk -F'=' '/^__CONFIG_BASH_/{print $1}'))
+    list=($(set | awk -F'=' '/^__CONFIG_BASH_/{print $1}'))
     for var in "${list[@]}"; do
+        if [[ -z "${!var}" ]]; then
+            continue
+        fi
         unset ${var}
     done
     unset __config
