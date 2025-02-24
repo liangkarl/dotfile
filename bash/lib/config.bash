@@ -3,7 +3,7 @@ config_set() {
     local var val
     var=$1; shift
     val="$*"; shift
-    eval "export __CONFIG_BASH_${var}='${val}'"
+    eval "__CONFIG_BASH_${var}='${val}'"
 }
 
 # config_get [o_var] [name] [def]
@@ -34,7 +34,7 @@ config_load() {
 
     tmp=$(mktemp)
     __config="$*"
-    sed -e '/^[^#[:space:]]/s/^/export __CONFIG_BASH_/' $__config > $tmp
+    sed -e '/^[^#[:space:]]/s/^/__CONFIG_BASH_/' $__config > $tmp
     source $tmp
     rm -f $tmp
 }
@@ -77,3 +77,6 @@ config_sort() {
     cat $tmp | sort > $__config
     rm -f $tmp
 }
+
+# TODO:
+# config_export
