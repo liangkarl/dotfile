@@ -4,6 +4,7 @@
 [[ -z $XDG_DATA_HOME ]] && export XDG_DATA_HOME=${HOME}/.local/share
 [[ -z $XDG_CACHE_HOME ]] && export XDG_CACHE_HOME=${HOME}/.cache
 
+# set -v
 set -eE
 [[ "${DEBUG}" == y ]] && set -xv
 shopt -s extglob
@@ -15,37 +16,25 @@ mydir="$(dirname $0)"
 pfx="$(uname -s)-$(uname -m)"
 pfx="${pfx//aarch64/arm64}"
 
-local_bin="${HOME}/.local/bin"
-toolkit="${XDG_CONFIG_HOME}/toolkit"
-toolkit_script="$toolkit/script"
-
-if [[ -n "$SHELL_DIR" ]]; then
-    grep -q "SCRIPT_DIR" $SHELL_DIR/config \
-            || echo "export SCRIPT_DIR=${toolkit_script}" >> $SHELL_DIR/config
-else
-    echo "\$SHELL_DIR does not exist"
-fi
+l_bin="${HOME}/.local/bin"
 
 # copy bin/ script/ to toolkit
-[[ ! -d "$local_bin" ]] && mkdir $local_bin
+[[ ! -d "$l_bin" ]] && mkdir $l_bin
 
 for file in $(ls $mydir/prebuild); do
-    cp -f $mydir/prebuild/$file/$file-${pfx,,} $local_bin/$file || true
+    cp -f $mydir/prebuild/$file/$file-${pfx,,} $l_bin/$file || true
 done
 
 for file in $(ls $mydir/bin); do
-    cp -f $mydir/bin/$file $local_bin/$file || true
+    cp -f $mydir/bin/$file $l_bin/$file || true
 done
 
 # TODO: copy and link the scripts to proper place
 
 # create special files in $HOME/bin
-fake="${toolkit_script}/fake"
+fake="${mydir}/script/fake"
 while IFS= read -r file
 do
     # don't force override as this is a 'fake' file
-    ln -sf $fake $local_bin/$(basename $file) || true
+    ln -sf $fake $l_bin/$(basename $file) || true
 done < $mydir/fake.list
-
-echo "-- Clean $toolkit --"
-rm -rf $toolkit
