@@ -1,7 +1,16 @@
 #!/usr/bin/env bash
+# Name:
+#     uart - A simple CLI serial console that supports tio, ss, plink and
+#             putty.
 #
-# This tool based on plink.exe, a CLI version of putty
+# Synopsis:
+#     uart [-ls] [-[1-9]]
 #
+# Description:
+#     -l: list available COM port
+#     -s: setup serial port configurations
+#         select supported serial console
+#     -+([0-9]): serial port number, eg, -1, -2, etc.
 
 lib.add io
 lib.add menu
@@ -15,29 +24,16 @@ plink="$(which plink || which plink.exe)"
 putty="$(which putty || which putty.exe)"
 
 usage() {
-	local name="$(basename $0)"
-
-	cat <<-EOF
-	name:
-	    $name - A simple CLI serial console that support tio, ss, plink and
-	            putty.
-
-	usage:
-	    $name [-lob] [-p port]
-
-	options:
-	    -l: list available COM port
-	    -o: setup serial config
-	        select supported serial console .exe
-	        eg, -o "br=115200;fc=N;db=8;sb=1;pa=n"
-	    -p: serial port path in Linux, such as '-p /dev/ttyUSB0',
-	    -n: n is COM port number in WSL, such as '-1'.
-	EOF
-
-	exit $1
+	sed -ne '/^#/!q;s/.\{1,2\}//;1d;p' < "$0"
+	exit 1
 }
 
-list_comport() {
+leave() {
+	config_set port "$port"
+	config_save
+}
+
+list_port() {
 	local ls d
 	pr_info "Ports List:"
 	if [[ -n "$WSL_DISTRO_NAME" ]]; then
@@ -53,6 +49,70 @@ list_comport() {
 			echo "$(realpath -e $ls/$d): $d"
 		done
 	fi
+}
+
+menu_cb() {
+	opt="$2"
+}
+
+setup_uart() {
+	menu.backend 'fzf'
+	menu.callback menu_cb
+
+	menu.title "Select a command as backend"
+	menu.opts "${cmds[@]}"
+	menu.add_exit
+	menu.run
+	cmd=$opt
+	echo "backend: $(basename $cmd)"
+
+	# baudrate
+	menu.title 'baudrate setup'
+	menu.defopt 2
+	menu.opts 'b9600' 'b921600' 'b115200'
+	menu.run
+	baudrate=${opt#b}
+	echo "baudrate: $opt"
+
+	# flow control
+	menu.title 'flow control setup'
+	menu.defopt 0
+	menu.opts 'none' 'XON_OFF' 'RST_CTS' 'DSR_STR'
+	menu.run
+	flow_control=${opt}
+	echo "flow control: $opt"
+
+	# parity
+	menu.title 'parity setup'
+	menu.defopt 0
+	menu.opts 'none' 'odd' 'even' 'mark' 'space'
+	menu.run
+	parity=${opt}
+	echo "parity: $opt"
+
+	# data bit
+	menu.title 'data bit setup'
+	menu.defopt 3
+	menu.opts '5' '6' '7' '8' '9'
+	menu.run
+	data_bits=${opt}
+	echo "data bits: $opt"
+
+	# stop bit
+	menu.title 'stop bit setup'
+	menu.defopt 0
+	menu.opts '1' '1.5' '2'
+	menu.run
+	stop_bits=${opt}
+	echo "stop bits: $opt"
+
+	config_set cmd "$cmd"
+	config_set baudrate "$baudrate"
+	config_set flow_control "$flow_control"
+	config_set parity "$parity"
+	config_set data_bits "$data_bits"
+	config_set stop_bits "$stop_bits"
+	config_save
 }
 
 config.ss() {
@@ -109,14 +169,12 @@ config.tio() {
 	echo -n "-t -L --log-file $log --log-strip"
 }
 
-update_cb() {
-	opt="$2"
-}
-
-# plink and putty are from https://www.putty.org/
-# ss is from https://github.com/fasteddy516/SimplySerial
-# tio is from https://github.com/tio/tio
+# plink, putty: https://www.putty.org/
+# ss: https://github.com/fasteddy516/SimplySerial
+# tio: https://github.com/tio/tio
 cmds=(${tio} ${ss} ${plink} ${putty})
+
+# set -v
 
 # default config:
 baudrate=921600
@@ -127,127 +185,58 @@ stop_bits=1
 log=uart.$PPID.log
 conf=~/.uart.conf
 
+# internal args
+cmd=${cmds[0]}
+
 args=$(getopt ":lop0123456789" $*)
 if [[ $? -ne 0 ]]; then
 	usage 1
 fi
 set -- $args
 
-# TODO: source project.conf to get project specific setup
-[[ -e $conf ]] && source $conf
-
-while :; do
+while [[ $# -gt 0 ]]; do
 	case $1 in
-		-o)
-			config_uart=y
-			;;
-		-l)
-			list_port=y
-			;;
-		-+([0-9]))
-			if [[ -n "$WSL_DISTRO_NAME" ]]; then
-				port=COM$1
-			else
-				port=/dev/ttyUSB${1#-}
-			fi
-			;;
-		-p)
-			select_port=y
-			;;
-		--)
-			shift; break
-			;;
+		-s) setup_uart=y;;
+		-l) list_port=y;;
+		# TODO: implement these two options
+		-g) show_log=y;;
+		-o) show_opts=y;;
+		-+([0-9])) pnum=${1#-};;
 	esac
 	shift
 done
 
-# FIXME: WA for getopt
-[[ -n "$1" ]] && port=$1
-
-if [[ -z "$cmd" ]]; then
-	cmd=${cmds[0]}
-	if [[ -z "$cmd" ]]; then
-		exit_msg 4 "No supported commands for serial console."
-	fi
-fi
-
 if [[ "$list_port" == y ]]; then
-	list_comport
+	list_port
 	exit
 fi
 
+config_reset
 config_load $conf
+config_get port port
 
-menu.backend 'fzf'
-menu.callback update_cb
-
-if [[ "$config_uart" == y ]]; then
-	menu.title "Select a command as backend"
-	menu.opts "${cmds[@]}"
-	menu.add_exit
-	menu.run
-	cmd=$opt
-	echo "backend: $(basename $cmd)"
-
-	# baudrate
-	menu.title 'baudrate setup'
-	menu.defopt 2
-	menu.opts 'b9600' 'b921600' 'b115200'
-	menu.run
-	baudrate=${opt#b}
-	echo "baudrate: $opt"
-
-	# flow control
-	menu.title 'flow control setup'
-	menu.defopt 0
-	menu.opts 'none' 'XON_OFF' 'RST_CTS' 'DSR_STR'
-	menu.run
-	flow_control=${opt}
-	echo "flow control: $opt"
-
-	# parity
-	menu.title 'parity setup'
-	menu.defopt 0
-	menu.opts 'none' 'odd' 'even' 'mark' 'space'
-	menu.run
-	parity=${opt}
-	echo "parity: $opt"
-
-	# data bit
-	menu.title 'data bit setup'
-	menu.defopt 3
-	menu.opts '5' '6' '7' '8' '9'
-	menu.run
-	data_bits=${opt}
-	echo "data bits: $opt"
-
-	# stop bit
-	menu.title 'stop bit setup'
-	menu.defopt 0
-	menu.opts '1' '1.5' '2'
-	menu.run
-	stop_bits=${opt}
-	echo "stop bits: $opt"
-
-	config_set cmd "$cmd"
-	config_set baudrate "$baudrate"
-	config_set flow_control "$flow_control"
-	config_set parity "$parity"
-	config_set data_bits "$data_bits"
-	config_set stop_bits "$stop_bits"
-	config_save
+if [[ "$setup_uart" == y ]]; then
+	setup_uart
 fi
 
-[[ -z "$port" ]] && exit_msg 1 "No assigned UART port."
+if [[ -n "$pnum" ]]; then
+	if [[ -n "$WSL_DISTRO_NAME" ]]; then
+		port=COM${pnum}
+	else
+		port=/dev/ttyUSB${pnum}
+	fi
+fi
 
-config_set port "$port"
+if [[ -z "$port" ]]; then
+	exit_msg 1 "No assigned UART port."
+fi
 
+cmd="$cmd $(config.$(basename ${cmd#.exe}))"
+if [[ -z "$WSL_DISTRO_NAME" ]]; then
+	cmd="sudo $cmd"
+fi
+
+trap leave EXIT
+echo "Port: $port"
 touch $log
-if [[ -n "$WSL_DISTRO_NAME" ]]; then
-	# There must be an existed log file for ss.exe
-	eval $cmd $(config.$(basename ${cmd#.exe}))
-else
-	eval sudo $cmd $(config.$(basename ${cmd#.exe}))
-fi
-
-config_save
+eval $cmd
