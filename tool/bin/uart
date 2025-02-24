@@ -188,7 +188,7 @@ conf=~/.uart.conf
 # internal args
 cmd=${cmds[0]}
 
-args=$(getopt ":lop0123456789" $*)
+args=$(getopt ":slgo0123456789" $*)
 if [[ $? -ne 0 ]]; then
 	usage 1
 fi
