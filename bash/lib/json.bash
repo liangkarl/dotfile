@@ -1,5 +1,8 @@
 # Guide:
 # https://openwrt.org/docs/guide-developer/jshn
+#
+# This script depends on jshn
+# https://github.com/stokito/jshn-jsonc
 
 # functions for parsing and generating json
 
