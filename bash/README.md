@@ -16,3 +16,8 @@ Collection of excluded completion files in `bash-completion`
 
 An library that includes some frequently-used functions. It's pretty old
 that need to be rewritten
+
+### TODO:
+1. move bash completion files to other proper places
+	https://serverfault.com/questions/506612/standard-place-for-user-defined-bash-completion-d-scripts
+
