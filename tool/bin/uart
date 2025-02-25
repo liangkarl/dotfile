@@ -163,10 +163,18 @@ config.plink() {
 }
 
 config.tio() {
-	echo -n "$port "
+	declare -A fc_map
+	fc_map=(
+		[none]='none'
+		[XON_OFF]='soft'
+		[RST_CTS]='hard'
+		[DSR_STR]='hard'
+	)
 	echo -n "-b $baudrate -d $data_bits "
 	echo -n "-s $stop_bits -p $parity "
-	echo -n "-t -L --log-file $log --log-strip"
+	echo -n "-f ${fc_map[$flow_control]} "
+	echo -n "-t -L --log-file $log --log-strip "
+	echo -n "$port"
 }
 
 # plink, putty: https://www.putty.org/
