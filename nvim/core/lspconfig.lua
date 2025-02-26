@@ -83,8 +83,8 @@ return { -- LSP configuration
         ensure_installed = {
           "lua_ls", "bashls", "vimls",
           "jdtls",
-          "pyright", "html", "eslint"
-          -- "clangd"
+          "pyright", "html", "eslint",
+          "clangd"
         },
       },
     },
@@ -138,27 +138,27 @@ return { -- LSP configuration
     -- configurations for external installation of LSP
     -- C/C++/Obj-C (ccls)
     -- https://github.com/MaskRay/ccls
-    lspconfig['ccls'].setup {
-      init_options = {
-        -- compilationDatabaseDirectory = "";
-        cache = {
-          directory = vim.env.XDG_DATA_HOME
-              and vim.env.XDG_DATA_HOME .. "/ccls/cache"
-              or ".ccls-cache",
-        },
-        client = {
-          snippetSupport = true,
-        },
-        index = {
-          threads = 0,
-          onChange = false,
-        },
-        diagnostics = {
-          onChange = -1,
-        },
-        compilationDatabaseDirectory = find_compile_commands_in_buffer()
-      },
-    }
+    -- lspconfig['ccls'].setup {
+    --   init_options = {
+    --     -- compilationDatabaseDirectory = "";
+    --     cache = {
+    --       directory = vim.env.XDG_DATA_HOME
+    --           and vim.env.XDG_DATA_HOME .. "/ccls/cache"
+    --           or ".ccls-cache",
+    --     },
+    --     client = {
+    --       snippetSupport = true,
+    --     },
+    --     index = {
+    --       threads = 0,
+    --       onChange = false,
+    --     },
+    --     diagnostics = {
+    --       onChange = -1,
+    --     },
+    --     compilationDatabaseDirectory = find_compile_commands_in_buffer()
+    --   },
+    -- }
 
     -- Use LspAttach autocommand to only map the following keys
     -- after the language server attaches to the current buffer
