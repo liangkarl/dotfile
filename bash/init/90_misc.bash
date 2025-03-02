@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # process
 alias psa='ps -elf'
 
