@@ -1,5 +1,6 @@
 PKG_NAME   := bash
 CONFIG_DIR := ${XDG_CONFIG_HOME}/$(PKG_NAME)
+COMPL_DIR  := ${XDG_DATA_HOME}/bash-completion
 MK_PATH    := $(abspath $(lastword $(MAKEFILE_LIST)))
 MK_DIR     := $(shell dirname $(MK_PATH))
 
@@ -36,6 +37,12 @@ config.$(PKG_NAME): # Run in $(CONFIG_DIR)
 		$(shell echo "")
 		EOF
 	fi
+
+	$(H)if [[ ! -e "${COMPL_DIR}" ]]; then
+		mkdir ${COMPL_DIR}
+	fi
+	$(H)cp -rvf ${MK_DIR}/completion/* ${COMPL_DIR}
+	$(H)echo "-- add bash-completion completed --"
 
 	# $SHELL is from environment
 	$(H)if [[ "${SHELL}" == 'dash' ]]; then
