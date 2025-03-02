@@ -10,7 +10,7 @@
 # source bash/env/99_post-env.bash;
 eval $(find ${SHELL_DIR}/init -type f -exec 'echo' 'source' '{};' ';' | sort)
 
-grep -q -w "${HOME}/.local/bin" <<< "$PATH" || PATH="${HOME}/.local/bin:${PATH}"
-
 path.brew
 path.nvm
+
+grep -q -w "${HOME}/.local/bin" <<< "$PATH" || PATH="${HOME}/.local/bin:${PATH}"
