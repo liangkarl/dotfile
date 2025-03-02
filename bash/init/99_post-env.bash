@@ -31,8 +31,14 @@ path.dup() {
 }
 
 path.brew() {
-	eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-}
+    local cmd
+
+    [[ -n "$HOMEBREW_PREFIX" ]] && return
+
+    for cmd in "/home/linuxbrew/.linuxbrew/bin/brew" "/opt/homebrew/bin/brew"; do
+        [[ -e "$cmd" ]] && eval $($cmd shellenv)
+    done
+} 2>&-
 
 path.nvm() {
 	export NVM_DIR="$HOME/.config/nvm"
