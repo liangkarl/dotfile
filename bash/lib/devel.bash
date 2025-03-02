@@ -42,11 +42,22 @@ source.load() {
     source $(path.load $* || echo "$*")
 }
 
+msg.err() {
+    echo "$*" >&2
+    false
+}
+
 msg.exit() {
-    local r
+    local r stderr
     r=$1; shift
-    echo "$*"
+    [[ "$r" -ne 0 ]] && stderr=">&2"
+    eval "echo "$*" ${stderr}"
     exit $r
+}
+
+msg.dbg() {
+    echo "$*" 2>/dev/null >&87
+    echo "$*" 2>/dev/null >&88
 }
 
 # Load the help information on the top of the file
@@ -55,6 +66,30 @@ msg.exit() {
 msg.help() {
     sed -ne '/^#/!q;s/.\{1,2\}//;1d;p' < "$0"
     local $1
+}
+
+dbg.file() {
+    [[ -z "$1" ]] && return 1
+    __DBG_FILE="$1"
+    exec 87> $__DBG_FILE
+    exec 2> $__DBG_FILE
+    exec > $__DBG_FILE
+}
+
+dbg.on() {
+    exec 88>&1
+}
+
+dbg.off() {
+    exec 88>&-
+    [[ -z "$__DBG_FILE" ]] && return
+    exec 87>&-
+    exec 2>&0
+    exec >&0
+}
+
+sys.has_cmd() {
+    type -t "$1" &> /dev/null
 }
 
 # Check

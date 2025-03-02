@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-env.cmd() { type -t "$1"; } &> /dev/null
 
 env.wsl() { [[ -n "$WSL_DISTRO_NAME" ]]; }
 
