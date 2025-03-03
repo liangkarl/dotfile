@@ -14,7 +14,6 @@
 
 lib.add io
 lib.add menu
-lib.add sys
 lib.add config
 lib.add devel
 

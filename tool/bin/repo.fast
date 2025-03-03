@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-lib.add sys
 lib.add io
 lib.add devel
 

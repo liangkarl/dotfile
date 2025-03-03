@@ -8,7 +8,7 @@ TARGET_NAME="$1"
 lib.add file
 lib.add io
 lib.add menu
-lib.add sys
+lib.add devel
 
 usage() {
 	local n
