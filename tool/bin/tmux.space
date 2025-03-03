@@ -1,7 +1,20 @@
 #!/usr/bin/env bash
+# NAME:
+# $0
+#
+# DESCRIPTION:
+# $0 is used for attaching specific tmux session, configed by ts.conf
+#
+# SYNOPSIS:
+# $0 [OPTIONS]
+#
+# OPTIONS:
+#   '': enter session
+#   -d: delete sessions
+#   -e: edit session configuration
+#   -h: help
 
 # this is for setting up a workspace in tmux
-
 # TARGET_DIR=$(fasd -d $@)
 TARGET_NAME="$1"
 
@@ -9,27 +22,6 @@ lib.add file
 lib.add io
 lib.add menu
 lib.add devel
-
-usage() {
-	local n
-
-	n=$(basename $0)
-	cat <<-EOF
-	DESCRIPTION:
-	$n is used for attaching specific tmux session, configed by ts.conf
-
-	SYNOPSIS:
-	$n [OPTIONS]
-
-	OPTIONS:
-	  '': enter session
-	  -d: delete sessions
-	  -e: edit session configuration
-	  -h: help
-	EOF
-
-	exit $1
-}
 
 edit_conf() {
 	[[ ! -d "$CONFDIR" ]] && mkdir $CONFDIR
@@ -72,7 +64,7 @@ while [[ $# -ne 0 ]]; do
 	case $1 in
 		-d) REMOVE=y;;
 		-e) EDIT_CONF=y;;
-		-h) usage 0;;
+		-h) cmd.help 0;;
 		--)
 			[[ "$EMPTY" == y ]] && ENTER=y
 			break

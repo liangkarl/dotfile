@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Name:
-#     uart - A simple CLI serial console that supports tio, ss, plink and
-#             putty.
+# $0 - A simple CLI serial console that supports tio, ss, plink and
+#      putty.
 #
 # Synopsis:
-#     uart [-ls] [-[1-9]]
+# $0 [-ls] [-[1-9]]
 #
 # Description:
 #     -l: list available COM port
@@ -24,11 +24,6 @@ tio="$(which tio || which tio.exe)"
 ss="$(which ss || which ss.exe)"
 plink="$(which plink || which plink.exe)"
 putty="$(which putty || which putty.exe)"
-
-usage() {
-	sed -ne '/^#/!q;s/.\{1,2\}//;1d;p' < "$0"
-	exit 1
-}
 
 leave() {
 	config_set port "$port"
@@ -202,7 +197,7 @@ cmd=${cmds[0]}
 
 args=$(getopt ":slgo0123456789" $*)
 if [[ $? -ne 0 ]]; then
-	usage 1
+	cmd.help 1
 fi
 set -- $args
 

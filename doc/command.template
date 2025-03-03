@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Name:
+#     Introduction
+#
+# Synopsis:
+#     $0 [-ls] [-[1-9]]
+#
+# Description:
+#     -l: list available COM port
+#     -s: setup serial port configurations
+#         select supported serial console
+#     -+([0-9]): serial port number, eg, -1, -2, etc.
+
+lib.add io
+lib.add menu
+lib.add config
+lib.add devel
+
+dbg.on
+
+args=$(getopt ":slgo0123456789" $*)
+if [[ $? -ne 0 ]]; then
+	cmd.help $0 1
+fi
+set -- $args
+
+msg.dbg "$0"
+while [[ $# -gt 0 ]]; do
+	msg.dbg "$1"
+	case $1 in
+		-s) setup_uart=y;;
+		-l) list_port=y;;
+		-h) msg.help $0 0
+	esac
+	shift
+done

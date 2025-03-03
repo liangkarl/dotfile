@@ -19,6 +19,21 @@ cmd.try() {
     return $#
 }
 
+# Load the help information on the top of the file
+# These information is written in normal bash comments format
+# and stop with single empty line.
+# - The keyword $0 would be replaced with file name
+cmd.help() {
+    sed -ne "/^#/!q; s/\$0/$(basename $0)/g; s/.\{1,2\}//; 1d; p" < "$0"
+    exit $1
+}
+
+# cmd.chkver CUR_VER MIN_VER
+# return 0 if current ver >= min ver.
+cmd.chkver() {
+    [  "$1" = "$(printf -- "$1\n$2\n" | sort -V | head -n1)" ]
+}
+
 path.uniq() {
     path.abs "$*"
 }
@@ -89,14 +104,6 @@ msg.dbg() {
     echo "$*" 2>/dev/null >&87
 }
 
-# Load the help information on the top of the file
-# These information is written in normal bash comments format
-# and stop with single empty line.
-msg.help() {
-    sed -ne '/^#/!q;s/.\{1,2\}//;1d;p' < "$0"
-    local $1
-}
-
 dbg.file() {
     [[ -z "$1" ]] && return 1
     __DBG_FD="$1"
@@ -118,20 +125,7 @@ dbg.off() {
     exec 87>&-
 }
 
-# Check
-is_uint() { case $1        in '' | *[!0-9]*              ) return 1;; esac ;}
-is_int()  { case ${1#[-+]} in '' | *[!0-9]*              ) return 1;; esac ;}
-is_unum() { case $1        in '' | . | *[!0-9.]* | *.*.* ) return 1;; esac ;}
-is_num()  { case ${1#[-+]} in '' | . | *[!0-9.]* | *.*.* ) return 1;; esac ;}
-is_hex()  { ((16#$1)) &> /dev/null || return 1; }
-
-# cmd.chkver CUR_VER MIN_VER
-# return 0 if current ver >= min ver.
-cmd.chkver() {
-    [  "$1" = "$(printf -- "$1\n$2\n" | sort -V | head -n1)" ]
-}
-
-dump_stack() {
+dbg.dumpstack() {
     local TRACE=""
     local CP=${1:-$$} # PID of the script itself [1]
 
@@ -148,6 +142,13 @@ dump_stack() {
     echo "Backtrace of '$0'"
     echo -en "$TRACE" | tac | grep -n ":" # using tac to "print in reverse" [3]
 }
+
+# Check
+is_uint() { case $1        in '' | *[!0-9]*              ) return 1;; esac ;}
+is_int()  { case ${1#[-+]} in '' | *[!0-9]*              ) return 1;; esac ;}
+is_unum() { case $1        in '' | . | *[!0-9.]* | *.*.* ) return 1;; esac ;}
+is_num()  { case ${1#[-+]} in '' | . | *[!0-9.]* | *.*.* ) return 1;; esac ;}
+is_hex()  { ((16#$1)) &> /dev/null || return 1; }
 
 # pause [ret]
 pause() {
