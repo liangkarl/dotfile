@@ -16,6 +16,9 @@ lib.add io
 lib.add menu
 lib.add sys
 lib.add config
+lib.add devel
+
+#dbg.on
 
 shopt -s extglob
 tio="$(which tio || which tio.exe)"
@@ -31,6 +34,8 @@ usage() {
 leave() {
 	config_set port "$port"
 	config_save
+	msg.dbg "$conf:"
+	msg.dbg "$(cat $conf)"
 }
 
 list_port() {
@@ -236,7 +241,7 @@ if [[ -n "$pnum" ]]; then
 fi
 
 if [[ -z "$port" ]]; then
-	exit_msg 1 "No assigned UART port."
+	msg.exit 1 "No assigned UART port."
 fi
 
 cmd="$cmd $(config.$(basename ${cmd#.exe}))"
@@ -244,7 +249,9 @@ if [[ -z "$WSL_DISTRO_NAME" ]]; then
 	cmd="sudo $cmd"
 fi
 
+msg.dbg "cmd: $cmd"
+
 trap leave EXIT
-echo "Port: $port"
+echo "port: $port"
 touch $log
 eval $cmd
