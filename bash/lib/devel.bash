@@ -57,7 +57,6 @@ msg.exit() {
 
 msg.dbg() {
     echo "$*" 2>/dev/null >&87
-    echo "$*" 2>/dev/null >&88
 }
 
 # Load the help information on the top of the file
@@ -70,22 +69,23 @@ msg.help() {
 
 dbg.file() {
     [[ -z "$1" ]] && return 1
-    __DBG_FILE="$1"
-    exec 87> $__DBG_FILE
-    exec 2> $__DBG_FILE
-    exec > $__DBG_FILE
+    __DBG_FD="$1"
 }
 
 dbg.on() {
-    exec 88>&1
+    [[ -n "$__DBG_FD" ]] && exec &> >(tee $__DBG_FD)
+    exec 87>&1
 }
 
+# XXX:
+# should place dbg.off in the end of the file
+# side effect:
+# 1. the debug file could not be disabled
 dbg.off() {
-    exec 88>&-
-    [[ -z "$__DBG_FILE" ]] && return
+    if [[ -n "$__DBG_FD" ]]; then
+        unset __DBG_FD
+    fi
     exec 87>&-
-    exec 2>&0
-    exec >&0
 }
 
 sys.has_cmd() {
@@ -128,6 +128,3 @@ pause() {
     read -p "Press ENTER to continue."
     return $1
 }
-
-#msg.err()
-#msg.good()

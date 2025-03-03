@@ -2,11 +2,15 @@
 
 export SYS_INFO="${SHELL_DIR}/info"
 
+# Load LIB into current shell environment
+# lib.add LIB
 lib.add() {
     [[ ! -e "$SHELL_DIR" ]] && lib.devel msg.err "invalid \$SHELL_DIR"
     source "$SHELL_DIR/lib/${1}.bash"
 }
 
+# Load all or specific LIB without sourcing them in current shell environment
+# lib.space [LIB]
 lib.space() {
     local f l
     list=${1:-$(ls $SHELL_DIR/lib)}
@@ -35,6 +39,7 @@ sys.__init() {(
     config_save
 );}
 
+# Read/Write system info database
 # sys.info var [VAL]
 sys.info() {(
     if [[ -e "${SYS_INFO}" ]]; then
