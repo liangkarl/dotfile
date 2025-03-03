@@ -190,6 +190,8 @@ stop_bits=1
 log=uart.$PPID.log
 conf=~/.uart.conf
 
+source $conf
+
 # internal args
 cmd=${cmds[0]}
 
