@@ -1,3 +1,5 @@
+msg.dbg "load: $(source.name)"
+
 if type -t fzf; then
     # Default options
     # export FZF_DEFAULT_OPTS="--layout=reverse --inline-info"

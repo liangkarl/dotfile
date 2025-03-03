@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+msg.dbg "load: $(source.name)"
+
 # In ANSI code, for example, '\e[0m' was used for reseting
 # '\e' means 'escape string'.
 # '[0' is 'function parameters'.

@@ -1,24 +1,37 @@
 #!/usr/bin/env bash
 
+__DEVEL_BASH_FUNCS_BEFORE=$(declare -F | awk '{print $3}')
+
+# check cmd
+cmd.has() {
+    type -t "$1" &> /dev/null
+}
+
+# it would run the CMDx and return it once CMDx successfully executed
+# cmd.get_result [CMD1] [CMD2] [...]
+cmd.try() {
+    local cmd
+
+    for cmd in "$@"; do
+        eval "$cmd" && return
+    done 2> /dev/null
+
+    return $#
+}
+
 path.uniq() {
     path.abs "$*"
 }
 
 path.abs() {
-    realpath -m -s "$@" || \
-        grealpath -m -s "$@"
-} 2>&-
+    cmd.try "realpath -m -s '$*'" \
+            "grealpath -m -s '$*'"
+}
 
 path.rel() {
-    realpath -m -s --relative-to=$(pwd) "$@" || \
-        grealpath -m -s --relative-to=$(pwd) "$@"
-} 2>&-
-
-# call the func to get the file path inside the sourced script
-path.in_source() {
-    readlink -e "$(dirname ${BASH_SOURCE[0]})" || \
-        greadlink -e "$(dirname ${BASH_SOURCE[0]})"
-} 2>&-
+    cmd.try "realpath -m -s --relative-to=$(pwd) '$*'" \
+            "grealpath -m -s --relative-to=$(pwd) '$*'"
+}
 
 # usage:
 # path.load FILE
@@ -41,6 +54,23 @@ path.load() {
 source.load() {
     source $(path.load $* || echo "$*")
 }
+
+source.dir() {
+    eval "$(find $1 -type f -exec 'echo' 'source' '{};' ';' | sort)"
+}
+
+# call the func to get the file path inside the sourced script
+source.path() {
+    path.abs "${BASH_SOURCE[1]}"
+}
+
+source.dirname() {
+    source.path | xargs dirname
+} 2> /dev/null
+
+source.name() {
+    basename "${BASH_SOURCE[1]}"
+} 2> /dev/null
 
 msg.err() {
     echo "$*" >&2
@@ -88,10 +118,6 @@ dbg.off() {
     exec 87>&-
 }
 
-sys.has_cmd() {
-    type -t "$1" &> /dev/null
-}
-
 # Check
 is_uint() { case $1        in '' | *[!0-9]*              ) return 1;; esac ;}
 is_int()  { case ${1#[-+]} in '' | *[!0-9]*              ) return 1;; esac ;}
@@ -99,9 +125,9 @@ is_unum() { case $1        in '' | . | *[!0-9.]* | *.*.* ) return 1;; esac ;}
 is_num()  { case ${1#[-+]} in '' | . | *[!0-9.]* | *.*.* ) return 1;; esac ;}
 is_hex()  { ((16#$1)) &> /dev/null || return 1; }
 
-# chk_ver [min-ver] [cur-ver]
+# cmd.chkver CUR_VER MIN_VER
 # return 0 if current ver >= min ver.
-vercmp() {
+cmd.chkver() {
     [  "$1" = "$(printf -- "$1\n$2\n" | sort -V | head -n1)" ]
 }
 
@@ -128,3 +154,29 @@ pause() {
     read -p "Press ENTER to continue."
     return $1
 }
+
+devel.clean() {
+    local f
+    for f in $__DEVEL_BASH_FUNCS_DIFF; do
+        unset -f "$f"
+    done
+    unset __DEVEL_BASH_FUNCS_DIFF
+}
+
+devel.export() {
+    local f
+    for f in $__DEVEL_BASH_FUNCS_DIFF; do
+        export -f $f
+    done
+}
+
+__DEVEL_BASH_FUNCS_AFTER=$(declare -F | awk '{print $3}')
+
+if [[ -n "$__DEVEL_BASH_FUNCS_DIFF" ]]; then
+    msg.dbg "$(source.name): use old diff table"
+else
+    # time __DEVEL_BASH_FUNCS_DIFF=$(comm -23 <(printf "%s\n" $' '"$__DEVEL_BASH_FUNCS_AFTER" | sort) <(printf "%s\n" $' '"$__DEVEL_BASH_FUNCS_BEFORE" | sort))
+    # time __DEVEL_BASH_FUNCS_DIFF=$(printf "%s\n" $__DEVEL_BASH_FUNCS_AFTER | grep -Fvx -f <(printf "%s\n" $__DEVEL_BASH_FUNCS_BEFORE))
+    __DEVEL_BASH_FUNCS_DIFF=$(awk 'NR==FNR {a[$0]=1; next} !($0 in a)' <(printf "%s\n" $__DEVEL_BASH_FUNCS_BEFORE) <(printf "%s\n" $__DEVEL_BASH_FUNCS_AFTER))
+fi
+unset __DEVEL_BASH_FUNCS_AFTER __DEVEL_BASH_FUNCS_BEFORE

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+msg.dbg "load: $(source.name)"
+
 configure_apps() {
     local cmd
 
@@ -14,6 +16,8 @@ configure_apps() {
         [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
         [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
     fi
+
+    msg.dbg "path change: $PATH"
 }
 
 configure_apps

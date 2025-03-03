@@ -1,43 +1,9 @@
 #!/usr/bin/env bash
 
+msg.dbg "load: $(source.name)"
+
 export SYS_INFO="${SHELL_DIR}/info"
-
-# Load LIB into current shell environment
-# lib.add LIB
-lib.add() {
-    [[ ! -e "$SHELL_DIR" ]] && lib.devel msg.err "invalid \$SHELL_DIR"
-    source "$SHELL_DIR/lib/${1}.bash"
-}
-
-# Load all or specific LIB without sourcing them in current shell environment
-# lib.space [LIB]
-lib.space() {
-    local f l
-    list=${1:-$(ls $SHELL_DIR/lib)}
-    for f in $list; do
-        eval "lib.${f%.bash}() { (lib.add ${f%.bash}; eval \"\$*\"); }"
-    done
-}
-
-export -f lib.add lib.space
-
-sys.__init() {(
-    get_sys_name() {
-        sw_vers -productName || \
-            lsb_release -i -s
-    }
-
-    lib.add config
-
-    [[ -e "${SYS_INFO}" ]] && return
-
-    system=$(get_sys_name)
-    system=${system,,}
-    config_load ${SYS_INFO}
-    config_set system "${system}$([[ -n "$WSL_DISTRO_NAME" ]] && echo ':wsl')"
-    config_set my_bin "${HOME}/.local/bin"
-    config_save
-);}
+msg.dbg "SYS_INFO: $SYS_INFO"
 
 # Read/Write system info database
 # sys.info var [VAL]
@@ -64,4 +30,20 @@ sys.reload_path() {
     PATH=${PATH%:}
 }
 
-sys.__init
+bash_init() {
+    if [[ ! -e "${SYS_INFO}" ]]; then (
+        lib.add config
+        system=$(cmd.try "sw_vers -productName" "lsb_release -i -s")
+        system=${system,,}
+        config_load ${SYS_INFO}
+        config_set system "${system}$([[ -n "$WSL_DISTRO_NAME" ]] && echo ':wsl')"
+        config_set my_bin "${HOME}/.local/bin"
+        config_save
+        msg.dbg "$SYS_INFO:"
+        msg.dbg "$(cat $SYS_INFO)"
+    ) fi
+
+    unset -f bash_init
+}
+
+bash_init

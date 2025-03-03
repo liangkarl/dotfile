@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+msg.dbg "load: $(source.name)"
+
 __xdg_config() {
     # XDG Base Directory Specification
     # https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html

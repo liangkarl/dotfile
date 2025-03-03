@@ -1,3 +1,5 @@
+msg.dbg "load: $(source.name)"
+
 # Generate compile_commands.json
 export SOONG_GEN_COMPDB=1
 export SOONG_GEN_COMPDB_DEBUG=1

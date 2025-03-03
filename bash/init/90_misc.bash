@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+msg.dbg "load: $(source.name)"
+
 # process
 alias psa='ps -elf'
 
