@@ -17,8 +17,6 @@ lib.add menu
 lib.add config
 lib.add devel
 
-#dbg.on
-
 shopt -s extglob
 tio="$(which tio || which tio.exe)"
 ss="$(which ss || which ss.exe)"
@@ -195,7 +193,7 @@ conf=~/.uart.conf
 # internal args
 cmd=${cmds[0]}
 
-args=$(getopt ":slgo0123456789" $*)
+args=$(getopt ":sld0123456789" $*)
 if [[ $? -ne 0 ]]; then
 	cmd.help 1
 fi
@@ -206,12 +204,13 @@ while [[ $# -gt 0 ]]; do
 		-s) setup_uart=y;;
 		-l) list_port=y;;
 		# TODO: implement these two options
-		-g) show_log=y;;
-		-o) show_opts=y;;
+		-d) debug=y;;
 		-+([0-9])) pnum=${1#-};;
 	esac
 	shift
 done
+
+[[ -n "$debug" ]] && dbg.on
 
 if [[ "$list_port" == y ]]; then
 	list_port
