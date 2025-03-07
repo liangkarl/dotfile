@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 
-__DEVEL_BASH_FUNCS_BEFORE=$(declare -F | awk '{print $3}')
+__DEVEL_BASH_FUNCS_BEFORE="$(compgen -A function) $(compgen -v)"
+
+__N=/dev/null
+__DBG_ALL='__global__'
 
 # check cmd
 cmd.has() {
-    type -t "$1" &> /dev/null
+    type -t "$1" &> $__N
 }
 
 # it would run the CMDx and return it once CMDx successfully executed
@@ -14,7 +17,7 @@ cmd.try() {
 
     for cmd in "$@"; do
         eval "$cmd" && return
-    done 2> /dev/null
+    done 2> $__N
 
     return $#
 }
@@ -81,11 +84,11 @@ source.path() {
 
 source.dirname() {
     source.path | xargs dirname
-} 2> /dev/null
+} 2> $__N
 
 source.name() {
     basename "${BASH_SOURCE[1]}"
-} 2> /dev/null
+} 2> $__N
 
 msg.err() {
     echo "$*" >&2
@@ -159,7 +162,7 @@ is_uint() { case $1        in '' | *[!0-9]*              ) return 1;; esac ;}
 is_int()  { case ${1#[-+]} in '' | *[!0-9]*              ) return 1;; esac ;}
 is_unum() { case $1        in '' | . | *[!0-9.]* | *.*.* ) return 1;; esac ;}
 is_num()  { case ${1#[-+]} in '' | . | *[!0-9.]* | *.*.* ) return 1;; esac ;}
-is_hex()  { ((16#$1)) &> /dev/null || return 1; }
+is_hex()  { ((16#$1)) &> $__N || return 1; }
 
 # pause [ret]
 pause() {
@@ -170,8 +173,8 @@ pause() {
 devel.clean() {
     local f
     for f in $__DEVEL_BASH_FUNCS_DIFF; do
-        unset -f "$f"
-    done
+        unset $f || unset -f $f
+    done 2> /dev/null
     unset __DEVEL_BASH_FUNCS_DIFF
 }
 
@@ -182,7 +185,7 @@ devel.export() {
     done
 }
 
-__DEVEL_BASH_FUNCS_AFTER=$(declare -F | awk '{print $3}')
+__DEVEL_BASH_FUNCS_AFTER="$(compgen -A function) $(compgen -v)"
 
 if [[ -n "$__DEVEL_BASH_FUNCS_DIFF" ]]; then
     msg.dbg "$(source.name): use old diff table"
