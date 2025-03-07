@@ -125,6 +125,17 @@ dbg.off() {
     exec 87>&-
 }
 
+# dbg.cmd CMD
+dbg.cmd() {
+    msg.dbg $*
+    eval "$*"
+}
+
+dbg.cmd_stop() {
+    msg.dbg $*
+    eval "$*" || exit $?
+}
+
 dbg.dumpstack() {
     local TRACE=""
     local CP=${1:-$$} # PID of the script itself [1]
