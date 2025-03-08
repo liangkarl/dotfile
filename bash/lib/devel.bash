@@ -5,6 +5,10 @@ __DEVEL_BASH_FUNCS_BEFORE="$(compgen -A function) $(compgen -v)"
 __N=/dev/null
 __DBG_ALL='__global__'
 
+__dbg_fd() {
+    echo $((87 + $1))
+}
+
 # check cmd
 cmd.has() {
     type -t "$1" &> $__N
@@ -91,20 +95,19 @@ source.name() {
 } 2> $__N
 
 msg.err() {
-    echo "$*" >&2
-    false
+    msg "ERROR: $*" >&2
 }
 
-msg.exit() {
-    local r stderr
-    r=$1; shift
-    [[ "$r" -ne 0 ]] && stderr=">&2"
-    eval "echo "$*" ${stderr}"
-    exit $r
+msg.warn() {
+    msg " WARN: $*" >&2
 }
 
-__dbg_fd() {
-    echo $((87 + $1))
+msg.info() {
+    msg " INFO: $*"
+}
+
+msg() {
+    printf -- "$@\n"
 }
 
 # only support file-based space since bash could not tell who call msg.dbg
@@ -114,7 +117,9 @@ msg.dbg() {
 
     # don't use source.name since it would return devel.sh while using this
     # function in other scripts
-    idx=$(basename ${BASH_SOURCE[1]})
+    eval "idx=\$(basename \${BASH_SOURCE[${__DBG_IDX:-1}]})"
+    # echo "${BASH_SOURCE[@]}"
+    # echo "ID: $idx"
     offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST $idx)
     if [[ -z "$offset" ]]; then
         offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST ${__DBG_ALL})
@@ -124,7 +129,19 @@ msg.dbg() {
     idx=$(list.index_of __DEVEL_BASH_CUR_SPACE_LIST $offset)
     [[ -z "$idx" ]] && return
 
-    echo "$*" 2>${__N} >&$(__dbg_fd $offset)
+    msg "DEBUG: $(basename ${BASH_SOURCE[1]}): $*" 2>${__N} >&$(__dbg_fd $offset)
+}
+
+msg.exit() {
+    local r
+
+    r=$1; shift
+    if [[ "$r" -ne 0 ]]; then
+        msg.err "$*"
+    else
+        msg.info "$*"
+    fi
+    exit $r
 }
 
 # list.index_of LIST VALUE
@@ -175,6 +192,7 @@ dbg.mark() {
     list.insert __DEVEL_BASH_DBG_SPACE_LIST "$id"
     echo "$id"
 }
+
 dbg.mark ${__DBG_ALL} > $__N
 
 dbg.file() {
@@ -236,12 +254,15 @@ dbg.off() {
 
 # dbg.cmd CMD
 dbg.cmd() {
-    msg.dbg $*
+    __DBG_IDX=2 msg.dbg "$*"
+    # echo ${BASH_SOURCE[@]}
+    # msg.dbg "$*"
     eval "$*"
 }
 
 dbg.cmd_stop() {
-    msg.dbg $*
+    __DBG_IDX=2 msg.dbg "$*"
+    # msg.dbg "$*"
     eval "$*" || exit $?
 }
 
@@ -276,20 +297,20 @@ pause() {
     return $1
 }
 
-devel.clean() {
-    local f
-    for f in $__DEVEL_BASH_FUNCS_DIFF; do
-        unset $f || unset -f $f
-    done 2> /dev/null
-    unset __DEVEL_BASH_FUNCS_DIFF
-}
+# devel.clean() {
+#     local f
+#     for f in $__DEVEL_BASH_FUNCS_DIFF; do
+#         unset $f || unset -f $f
+#     done 2> /dev/null
+#     unset __DEVEL_BASH_FUNCS_DIFF
+# }
 
-devel.export() {
-    local f
-    for f in $__DEVEL_BASH_FUNCS_DIFF; do
-        export -f $f
-    done
-}
+# devel.export() {
+#     local f
+#     for f in $__DEVEL_BASH_FUNCS_DIFF; do
+#         export -f $f
+#     done
+# }
 
 __DEVEL_BASH_FUNCS_AFTER="$(compgen -A function) $(compgen -v)"
 

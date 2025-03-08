@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+lib.add devel
+
 dir='/tmp/tig'
 t=${dir}/tig.tag
 b=${dir}/tig.branch

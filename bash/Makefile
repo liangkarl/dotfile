@@ -33,7 +33,6 @@ config.$(PKG_NAME): # Run in $(CONFIG_DIR)
 		$(shell echo ${cmd})
 		$(shell echo "")
 		# Keep this command in the last line
-		path.dup
 		$(shell echo "")
 		EOF
 	fi

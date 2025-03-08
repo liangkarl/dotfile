@@ -1,4 +1,4 @@
-msg.dbg "load: $(source.name)"
+#!/usr/bin/env bash
 
 # Generate compile_commands.json
 export SOONG_GEN_COMPDB=1

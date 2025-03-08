@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-msg.dbg "load: $(source.name)"
-
 configure_apps() {
     local cmd
 

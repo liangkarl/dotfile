@@ -1,4 +1,4 @@
-msg.dbg "load: $(source.name)"
+#!/usr/bin/env bash
 
 if type -t fzf; then
     # Default options

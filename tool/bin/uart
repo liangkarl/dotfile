@@ -12,7 +12,6 @@
 #         select supported serial console
 #     -+([0-9]): serial port number, eg, -1, -2, etc.
 
-lib.add io
 lib.add menu
 lib.add config
 lib.add devel
@@ -24,15 +23,16 @@ plink="$(which plink || which plink.exe)"
 putty="$(which putty || which putty.exe)"
 
 leave() {
-	config_set port "$port"
-	config_save
+	config.load $conf
+	config.set port "$port"
+	config.save
 	msg.dbg "$conf:"
-	msg.dbg "$(cat $conf)"
+	msg.dbg "\n$(cat $conf)"
 }
 
 list_port() {
 	local ls d
-	pr_info "Ports List:"
+	msg.info "port List:"
 	if [[ -n "$WSL_DISTRO_NAME" ]]; then
 		if [[ "$cmd" == 'ss' ]]; then
 			eval $cmd -list
@@ -61,7 +61,7 @@ setup_uart() {
 	menu.add_exit
 	menu.run
 	cmd=$opt
-	echo "backend: $(basename $cmd)"
+	msg.info "backend: $(basename $cmd)"
 
 	# baudrate
 	menu.title 'baudrate setup'
@@ -69,7 +69,7 @@ setup_uart() {
 	menu.opts 'b9600' 'b921600' 'b115200'
 	menu.run
 	baudrate=${opt#b}
-	echo "baudrate: $opt"
+	msg.info "baudrate: $opt"
 
 	# flow control
 	menu.title 'flow control setup'
@@ -77,7 +77,7 @@ setup_uart() {
 	menu.opts 'none' 'XON_OFF' 'RST_CTS' 'DSR_STR'
 	menu.run
 	flow_control=${opt}
-	echo "flow control: $opt"
+	msg.info "flow control: $opt"
 
 	# parity
 	menu.title 'parity setup'
@@ -85,7 +85,7 @@ setup_uart() {
 	menu.opts 'none' 'odd' 'even' 'mark' 'space'
 	menu.run
 	parity=${opt}
-	echo "parity: $opt"
+	msg.info "parity: $opt"
 
 	# data bit
 	menu.title 'data bit setup'
@@ -93,7 +93,7 @@ setup_uart() {
 	menu.opts '5' '6' '7' '8' '9'
 	menu.run
 	data_bits=${opt}
-	echo "data bits: $opt"
+	msg.info "data bits: $opt"
 
 	# stop bit
 	menu.title 'stop bit setup'
@@ -101,15 +101,15 @@ setup_uart() {
 	menu.opts '1' '1.5' '2'
 	menu.run
 	stop_bits=${opt}
-	echo "stop bits: $opt"
+	msg.info "stop bits: $opt"
 
-	config_set cmd "$cmd"
-	config_set baudrate "$baudrate"
-	config_set flow_control "$flow_control"
-	config_set parity "$parity"
-	config_set data_bits "$data_bits"
-	config_set stop_bits "$stop_bits"
-	config_save
+	config.set cmd "$cmd"
+	config.set baudrate "$baudrate"
+	config.set flow_control "$flow_control"
+	config.set parity "$parity"
+	config.set data_bits "$data_bits"
+	config.set stop_bits "$stop_bits"
+	config.save
 }
 
 config.ss() {
@@ -212,16 +212,17 @@ while [[ $# -gt 0 ]]; do
 	shift
 done
 
-[[ -n "$debug" ]] && dbg.on
+D="$(dbg.mark)"
+[[ -n "$debug" ]] && dbg.on $D
 
 if [[ "$list_port" == y ]]; then
 	list_port
 	exit
 fi
 
-config_reset
-config_load $conf
-config_get port port
+config.reset
+config.load $conf
+config.get port port
 
 if [[ "$setup_uart" == y ]]; then
 	setup_uart
@@ -236,7 +237,7 @@ if [[ -n "$pnum" ]]; then
 fi
 
 if [[ -z "$port" ]]; then
-	msg.exit 1 "No assigned UART port."
+	msg.exit 1 "invalid port: '$port'"
 fi
 
 cmd="$cmd $(config.$(basename ${cmd#.exe}))"
@@ -244,9 +245,7 @@ if [[ -z "$WSL_DISTRO_NAME" ]]; then
 	cmd="sudo $cmd"
 fi
 
-msg.dbg "cmd: $cmd"
-
-trap leave EXIT
-echo "port: $port"
+msg.info "port: $port"
 touch $log
-eval $cmd
+dbg.cmd "$cmd"
+leave

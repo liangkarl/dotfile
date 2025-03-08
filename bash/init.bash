@@ -3,8 +3,29 @@
 # Load LIB into current shell environment
 # lib.add LIB
 lib.add() {
-    [[ ! -e "$SHELL_DIR" ]] && lib.devel msg.err "invalid \$SHELL_DIR"
+    [[ ! -e "$SHELL_DIR" ]] && echo 'invalid $SHELL_DIR' >&2
     source "$SHELL_DIR/lib/${1}.bash"
+}
+
+# lib.off LIB
+lib.off() {
+    local f list
+
+    eval "list=\"\${__${1^^}_BASH_FUNCS_DIFF}\""
+    for f in $list; do
+        unset $f || unset -f $f
+    done 2> /dev/null
+
+    unset __${id}_FUNCS_DIFF
+}
+
+lib.export() {
+    local f list
+
+    eval "list=\"\${__${1^^}_BASH_FUNCS_DIFF}\""
+    for f in $list; do
+        export -f $f
+    done
 }
 
 # Load all or specific LIB without sourcing them in current shell environment
@@ -21,9 +42,7 @@ export -f lib.add lib.space
 
 # for debug
 lib.add devel
-#dbg.on
-
-msg.dbg "load: $(source.name)"
+# dbg.on
 
 # Order:
 # source bash/env/00_pre-env.bash;
@@ -33,7 +52,7 @@ msg.dbg "load: $(source.name)"
 eval $(find ${SHELL_DIR}/init -type f -exec 'echo' 'source' '{};' ';' | sort)
 
 msg.dbg "path: $PATH"
-msg.dbg "$(source.name): completed"
+msg.dbg "completed"
 dbg.off
 
-devel.clean
+lib.off devel

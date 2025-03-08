@@ -32,9 +32,9 @@ done
 # TODO: copy and link the scripts to proper place
 
 # create special files in $HOME/bin
-fake="${mydir}/script/fake"
-while IFS= read -r file
-do
-    # don't force override as this is a 'fake' file
-    ln -sf $fake $l_bin/$(basename $file) || true
-done < $mydir/fake.list
+# fake="${mydir}/script/fake"
+# while IFS= read -r file
+# do
+#     # don't force override as this is a 'fake' file
+#     ln -sf $fake $l_bin/$(basename $file) || true
+# done < $mydir/fake.list

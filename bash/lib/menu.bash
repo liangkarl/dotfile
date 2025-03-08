@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+__MENU_BASH_FUNCS_BEFORE="$(compgen -A function) $(compgen -v)"
+
 vars=(
 	"__m_title"
 	"__m_prompt"
@@ -316,4 +318,13 @@ menu_select() {
 	menu_${__menu_style} "$@"
 }
 
-menu.reset
+__MENU_BASH_FUNCS_AFTER="$(compgen -A function) $(compgen -v)"
+
+if [[ -n "$__MENU_BASH_FUNCS_DIFF" ]]; then
+    msg.dbg "${BASH_SOURCE[1]}: use old diff table"
+else
+    # time __DEVEL_BASH_FUNCS_DIFF=$(comm -23 <(printf "%s\n" $' '"$__DEVEL_BASH_FUNCS_AFTER" | sort) <(printf "%s\n" $' '"$__DEVEL_BASH_FUNCS_BEFORE" | sort))
+    # time __DEVEL_BASH_FUNCS_DIFF=$(printf "%s\n" $__DEVEL_BASH_FUNCS_AFTER | grep -Fvx -f <(printf "%s\n" $__DEVEL_BASH_FUNCS_BEFORE))
+    __MENU_BASH_FUNCS_DIFF=$(awk 'NR==FNR {a[$0]=1; next} !($0 in a)' <(printf "%s\n" $__MENU_BASH_FUNCS_BEFORE) <(printf "%s\n" $__MENU_BASH_FUNCS_AFTER))
+fi
+unset __MENU_BASH_FUNCS_AFTER __MENU_BASH_FUNCS_BEFORE
