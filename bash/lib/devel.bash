@@ -103,8 +103,27 @@ msg.exit() {
     exit $r
 }
 
+__dbg_fd() {
+    echo $((87 + $1))
+}
+
+# only support file-based space since bash could not tell who call msg.dbg
+# until the file name was given
 msg.dbg() {
-    echo "$*" 2>/dev/null >&87
+    local p
+
+    p=$(basename $0)
+    # p=$(basename ${BASH_SOURCE[0]})
+    p=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST $p)
+    if [[ -z "$p" ]]; then
+        p="${__DBG_ALL}"
+        p=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST $p)
+        [[ -z "$p" ]] && return
+    fi
+    p=$(list.index_of __DEVEL_BASH_CUR_SPACE_LIST $p)
+    [[ -z "$p" ]] && return
+
+    echo "$*" 2>${__N} >&$(__dbg_fd $p)
 }
 
 # list.index_of LIST VALUE
@@ -134,14 +153,55 @@ list.has() {
     [[ -z "$(list.index_of \"$1\" \"$2\")" ]] &> $__N
 }
 
+# declare -a __DEVEL_BASH_DBG_SPACE
+__DEVEL_BASH_CUR_SPACE_LIST=(${__DEVEL_BASH_CUR_SPACE_LIST[@]})
+__DEVEL_BASH_DBG_SPACE_LIST=(${__DEVEL_BASH_DBG_SPACE_LIST[@]})
+
+# dbg.space [SPACE]
+# 1. global
+# 2. file: no param
+dbg.space() {
+    local id p
+
+    eval "id=\${1:-$(source.name)}"
+
+    p=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST "$id")
+    [[ -n "$p" ]] && return 1
+
+    list.insert __DEVEL_BASH_DBG_SPACE_LIST "$id"
+}
+dbg.space ${__DBG_ALL}
+
 dbg.file() {
     [[ -z "$1" ]] && return 1
     __DBG_FD="$1"
 }
 
+# dbg.on [SPACE]
+# 1. turn on global space => no param
+# 2. turn on specific space => others
 dbg.on() {
+    local s p
+
     [[ -n "$__DBG_FD" ]] && exec &> >(tee $__DBG_FD)
-    exec 87>&1
+
+    if [[ -z "$1" ]]; then
+        dbg.on "${__DBG_ALL}"
+        return
+    fi
+
+    p=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST "$1")
+    if [[ -z "$p" ]]; then
+        dbg.space "$1"
+        p=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST "$1")
+    fi
+
+    s=$p
+    p=$(list.index_of __DEVEL_BASH_CUR_SPACE_LIST "$p")
+    [[ -n "$p" ]] && return
+
+    list.insert __DEVEL_BASH_CUR_SPACE_LIST $s
+    eval "exec $(__dbg_fd $s)>&1"
 }
 
 # XXX:
@@ -149,10 +209,25 @@ dbg.on() {
 # side effect:
 # 1. the debug file could not be disabled
 dbg.off() {
+    local p
+
     if [[ -n "$__DBG_FD" ]]; then
         unset __DBG_FD
     fi
-    exec 87>&-
+
+    if [[ -z "$1" ]]; then
+        dbg.off "${__DBG_ALL}"
+        return
+    fi
+
+    p=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST "$1")
+    [[ -z "$p" ]] && return 1
+
+    p=$(list.index_of __DEVEL_BASH_CUR_SPACE_LIST "$p")
+    [[ -z "$p" ]] && return 1
+
+    list.remove __DEVEL_BASH_CUR_SPACE_LIST $p
+    eval "exec $(__dbg_fd $p)>&-"
 }
 
 # dbg.cmd CMD
