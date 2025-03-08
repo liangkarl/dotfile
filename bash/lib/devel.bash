@@ -107,6 +107,33 @@ msg.dbg() {
     echo "$*" 2>/dev/null >&87
 }
 
+# list.index_of LIST VALUE
+list.index_of() {
+    [[ $# -lt 2 ]] && return
+    eval "echo \"\$(printf \"%s\\n\" \"\${$1[@]}\" | awk -v val=\"$2\" '{if (\$0 == val) print NR-1}')\""
+}
+
+# list.insert LIST VALUE [KEY]
+list.insert() {
+    [[ $# -lt 2 ]] && return
+    eval "local k=\${3:-\${#$1[@]}}"
+    eval "$1=(\"\${$1[@]:0:$k}\" \"$2\" \"\${$1[@]:$k}\")"
+}
+
+# list.remove LIST [KEY]
+list.remove() {
+    [[ $# -lt 1 ]] && return
+    eval "local k=\${2:-\$((\${#$1[@]}-1))}"
+    eval "unset '$1[$k]'"
+    eval "$1=(\"\${$1[@]}\")"
+}
+
+# list.has LIST VALUE
+list.has() {
+    [[ $# -lt 2 ]] && return 1
+    [[ -z "$(list.index_of \"$1\" \"$2\")" ]] &> $__N
+}
+
 dbg.file() {
     [[ -z "$1" ]] && return 1
     __DBG_FD="$1"
