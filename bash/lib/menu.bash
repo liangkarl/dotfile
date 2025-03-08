@@ -36,6 +36,10 @@ menu.opts() {
 	__m_opts=("$@")
 }
 
+menu.add_opt() {
+	__m_opts+=("$1")
+}
+
 menu.reset() {
 	unset __m_defopt
 	unset __m_title
