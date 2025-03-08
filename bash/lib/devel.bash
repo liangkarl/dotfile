@@ -110,20 +110,21 @@ __dbg_fd() {
 # only support file-based space since bash could not tell who call msg.dbg
 # until the file name was given
 msg.dbg() {
-    local p
+    local offset idx
 
-    p=$(basename $0)
-    # p=$(basename ${BASH_SOURCE[0]})
-    p=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST $p)
-    if [[ -z "$p" ]]; then
-        p="${__DBG_ALL}"
-        p=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST $p)
-        [[ -z "$p" ]] && return
+    # don't use source.name since it would return devel.sh while using this
+    # function in other scripts
+    idx=$(basename ${BASH_SOURCE[1]})
+    offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST $idx)
+    if [[ -z "$offset" ]]; then
+        offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST ${__DBG_ALL})
+        [[ -z "$offset" ]] && return
     fi
-    p=$(list.index_of __DEVEL_BASH_CUR_SPACE_LIST $p)
-    [[ -z "$p" ]] && return
 
-    echo "$*" 2>${__N} >&$(__dbg_fd $p)
+    idx=$(list.index_of __DEVEL_BASH_CUR_SPACE_LIST $offset)
+    [[ -z "$idx" ]] && return
+
+    echo "$*" 2>${__N} >&$(__dbg_fd $offset)
 }
 
 # list.index_of LIST VALUE
@@ -160,17 +161,21 @@ __DEVEL_BASH_DBG_SPACE_LIST=(${__DEVEL_BASH_DBG_SPACE_LIST[@]})
 # dbg.space [SPACE]
 # 1. global
 # 2. file: no param
-dbg.space() {
-    local id p
+dbg.mark() {
+    local id offset
 
-    eval "id=\${1:-$(source.name)}"
+    # don't use source.name since it would return devel.sh while using this
+    # function in other scripts
+    id=$(basename ${BASH_SOURCE[1]})
+    id="${1:-$id}"
 
-    p=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST "$id")
-    [[ -n "$p" ]] && return 1
+    offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST "$id")
+    [[ -n "$offset" ]] && return 1
 
     list.insert __DEVEL_BASH_DBG_SPACE_LIST "$id"
+    echo "$id"
 }
-dbg.space ${__DBG_ALL}
+dbg.mark ${__DBG_ALL} > $__N
 
 dbg.file() {
     [[ -z "$1" ]] && return 1
@@ -181,7 +186,7 @@ dbg.file() {
 # 1. turn on global space => no param
 # 2. turn on specific space => others
 dbg.on() {
-    local s p
+    local offset idx
 
     [[ -n "$__DBG_FD" ]] && exec &> >(tee $__DBG_FD)
 
@@ -190,18 +195,17 @@ dbg.on() {
         return
     fi
 
-    p=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST "$1")
-    if [[ -z "$p" ]]; then
-        dbg.space "$1"
-        p=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST "$1")
+    offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST "$1")
+    if [[ -z "$offset" ]]; then
+        dbg.mark "$1"
+        offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST "$1")
     fi
 
-    s=$p
-    p=$(list.index_of __DEVEL_BASH_CUR_SPACE_LIST "$p")
-    [[ -n "$p" ]] && return
+    idx=$(list.index_of __DEVEL_BASH_CUR_SPACE_LIST "$offset")
+    [[ -n "$idx" ]] && return
 
-    list.insert __DEVEL_BASH_CUR_SPACE_LIST $s
-    eval "exec $(__dbg_fd $s)>&1"
+    eval "exec $(__dbg_fd $offset)>&1"
+    list.insert __DEVEL_BASH_CUR_SPACE_LIST $offset
 }
 
 # XXX:
@@ -209,7 +213,7 @@ dbg.on() {
 # side effect:
 # 1. the debug file could not be disabled
 dbg.off() {
-    local p
+    local offset idx
 
     if [[ -n "$__DBG_FD" ]]; then
         unset __DBG_FD
@@ -220,14 +224,14 @@ dbg.off() {
         return
     fi
 
-    p=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST "$1")
-    [[ -z "$p" ]] && return 1
+    offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST "$1")
+    [[ -z "$offset" ]] && return 1
 
-    p=$(list.index_of __DEVEL_BASH_CUR_SPACE_LIST "$p")
-    [[ -z "$p" ]] && return 1
+    idx=$(list.index_of __DEVEL_BASH_CUR_SPACE_LIST "$offset")
+    [[ -z "$idx" ]] && return 1
 
-    list.remove __DEVEL_BASH_CUR_SPACE_LIST $p
-    eval "exec $(__dbg_fd $p)>&-"
+    eval "exec $(__dbg_fd $offset)>&-"
+    list.remove __DEVEL_BASH_CUR_SPACE_LIST $idx
 }
 
 # dbg.cmd CMD
