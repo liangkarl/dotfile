@@ -2,19 +2,21 @@
 
 __MENU_BASH_FUNCS_BEFORE="$(compgen -A function) $(compgen -v)"
 
+__m_height=${__m_height:-10}
+__m_opts=("${__m_opts[@]}")
+__m_backend=${__m_backend:-fzf}
+
 vars=(
 	"__m_title"
 	"__m_prompt"
 	"__m_defopt"
 	"__m_backend"
 	"__m_callback"
-	"__m_cancel"
-	"__m_exit"
 	"__m_view"
 	"__m_width"
 	"__m_height"
-	"__m_sel_idx"
-	"__m_sel_opt"
+	"__m_ans_idx"
+	"__m_ans_opt"
 )
 
 for f in ${vars[@]}; do
@@ -27,7 +29,11 @@ for f in ${vars[@]}; do
 		$f="\$1"
 	}"
 done
-unset vars
+unset vars f
+
+# TODO:
+# 1. Add multiple name space, making reinit menu unnecessary.
+# 2. Use eval to dynamically create the vars of multiple name space.
 
 menu.opts() {
 	if [[ $# -eq 0 ]]; then
@@ -48,25 +54,10 @@ menu.reset() {
 	unset __m_prompt
 	unset __m_input
 	unset __m_callback
-	unset __m_cancel
-	unset __m_exit
 	unset __m_view
 	unset __m_width
-	unset __m_sel_idx
-	unset __m_sel_opt
-	__m_height=10
-	__m_opts=()
-	__m_backend='fzf'
-}
-
-menu.add_cancel() {
-	__m_cancel=y
-	__m_opts+=("cancel")
-}
-
-menu.add_exit() {
-	__m_exit=y
-	__m_opts+=("exit")
+	unset __m_ans_idx
+	unset __m_ans_opt
 }
 
 menu.view_only() {
@@ -75,33 +66,29 @@ menu.view_only() {
 }
 
 menu.run() {
-	local index input sel
+	local index input idx
 
-	if [[ -z "$__m_opts" ]]; then
+	if [[ -z "$(menu.opts)" ]]; then
 		echo "No opts exist." >&2
 		return 1
 	fi
 
-	if [[ -n "$__m_view" ]]; then
-		eval menu.view
+	if [[ -n "$(menu.view)" ]]; then
+		menu.view
 		return
 	fi
 
-	sel="$(menu.${__m_backend})"
+	idx="$(menu.$(menu.backend))"
+	menu.ans_idx "$idx"
+	menu.ans_opt "${__m_opts[$idx]}"
 
-	__m_sel_idx="$sel"
-	__m_sel_opt="${__m_opts[$sel]}"
-	if [[ -n "$__m_callback" ]]; then
-		eval $__m_callback $__m_sel_idx $__m_sel_opt
-	fi
-
-	if [[ "${__m_opts[$sel]}" == "exit" ]]; then
-		exit
+	if [[ -n "$(menu.callback)" ]]; then
+		eval "$(menu.callback) $(menu.ans_idx) $(menu.ans_opt)"
 	fi
 }
 
 menu.fzf() {
-	local fzf sel i
+	local fzf opt i
 
 	fzf=("$(which fzf)" "--height=~${__m_height}" "--cycle")
 
@@ -117,10 +104,10 @@ menu.fzf() {
 		fzf+=("--prompt='${__m_prompt}: '")
 	fi
 
-	sel=$(eval "echo ${__m_opts[@]// /%} | sed -e 's/ /\n/g' -e 's/%/ /g' | ${fzf[*]}")
+	opt=$(eval "echo ${__m_opts[@]// /%} | sed -e 's/ /\n/g' -e 's/%/ /g' | ${fzf[*]}")
 
 	for i in "${!__m_opts[@]}"; do
-		if [[ "${__m_opts[$i]}" == "$sel" ]]; then
+		if [[ "${__m_opts[$i]}" == "$opt" ]]; then
 			echo "$i"
 			return
 		fi
@@ -128,7 +115,7 @@ menu.fzf() {
 }
 
 menu.fzf-tmux() {
-	local fzf sel i
+	local fzf opt i
 
 	fzf=("$(which fzf-tmux)" "-p" "-h ${__m_height}" "--")
 
@@ -144,10 +131,10 @@ menu.fzf-tmux() {
 		fzf+=("--prompt=${__m_prompt}: ")
 	fi
 
-	sel=$(eval "echo ${__m_opts[@]// /%} | sed -e 's/ /\n/g' -e 's/%/ /g' | ${fzf[*]}")
+	opt=$(eval "echo ${__m_opts[@]// /%} | sed -e 's/ /\n/g' -e 's/%/ /g' | ${fzf[*]}")
 
 	for i in "${!__m_opts[@]}"; do
-		if [[ "${__m_opts[$i]}" == "$sel" ]]; then
+		if [[ "${__m_opts[$i]}" == "$opt" ]]; then
 			echo "$i"
 			return
 		fi
@@ -155,7 +142,7 @@ menu.fzf-tmux() {
 }
 
 menu.fzy() {
-	local fzy
+	local fzy opt
 
 	fzy=("fzy" "--lines=${__m_height}")
 
@@ -166,10 +153,10 @@ menu.fzy() {
 	# output nothing is no title available
 	printf "$__m_title"
 
-	sel=$(eval "echo ${__m_opts[@]// /%} | sed -e 's/ /\n/g' -e 's/%/ /g' | ${fzy[*]}")
+	opt=$(eval "echo ${__m_opts[@]// /%} | sed -e 's/ /\n/g' -e 's/%/ /g' | ${fzy[*]}")
 
 	for i in "${!__m_opts[@]}"; do
-		if [[ "${__m_opts[$i]}" == "$sel" ]]; then
+		if [[ "${__m_opts[$i]}" == "$opt" ]]; then
 			echo "$i"
 			return
 		fi
@@ -207,116 +194,7 @@ menu.legacy() {
 
 	echo "$ans"
 }
-
-menu_style() {
-	local styles
-
-	styles=('fzf-tmux' 'fzf' 'fzy' 'legacy')
-
-	if grep -q "$1" <<< "${style[@]}"; then
-		__menu_style="$1"
-	elif [[ "$1" == "auto" ]]; then
-		if type -p fzy; then
-			__menu_style="fzy"
-		elif type -p fzf; then
-			__menu_style="fzf"
-		else
-			__menu_style="legacy"
-		fi &> /dev/null
-	else
-		__menu_style="legacy"
-		echo "Found invalid menu style, $1. Set to '$__menu_style'"
-	fi
-}
-
-menu_choice() {
-	echo $__menu_choice
-}
-
-menu_default() {
-	__menu_default="$1"
-	__menu_default_text="($__menu_default) "
-}
-
-menu_title() {
-	__menu_title="$*\n"
-}
-
-menu_prompt() {
-	__menu_prompt="$*"
-}
-
-menu_show() {
-	local i item
-
-	# output nothing is no title available
-	printf "$__menu_title"
-
-	for item in "$@"; do
-		echo "$((++i))) $item"
-	done
-}
-
-menu_legacy() {
-	local item opts ans
-
-	menu_show "$@"
-
-	while :; do
-		read -p "$__menu_prompt $__menu_default_text" ans
-		ans=${ans:-$__menu_default}
-
-		if [[ -z "$ans" ]]; then
-			echo "empty input"
-		elif [[ ! $ans =~ ^[0-9]+$ ]]; then
-			echo "not a number. ($ans)"
-		elif (( ans <= 0 || ans > $# )); then
-			echo "an illegal value. ($ans)"
-		else
-			break
-		fi
-	done
-
-	opts=("$@")
-	__menu_choice="${opts[$((ans-1))]}"
-}
-
-menu_fzf() {
-	local fzf
-
-	fzf=("fzf" "--height=~10" "--cycle")
-	if [[ -n "$__menu_default" ]]; then
-		fzf+=("-q ${!__menu_default}")
-	fi
-
-	# output nothing is no title available
-	printf "$__menu_title"
-	__menu_choice="$(echo ${@// /%} \
-			| sed -e 's/ /\n/g' -e 's/%/ /g' \
-			| ${fzf[*]})"
-}
-
-menu_fzy() {
-	local fzy
-
-	fzy=("fzy" "--lines=10")
-	if [[ -n "$__menu_default" ]]; then
-		fzy+=("-q ${!__menu_default}")
-	fi
-
-	# output nothing is no title available
-	printf "$__menu_title"
-	__menu_choice="$(echo ${@// /%} \
-			| sed -e 's/ /\n/g' -e 's/%/ /g' \
-			| ${fzy[*]})"
-}
-
-menu_select() {
-	if [[ -z "$__menu_style" ]]; then
-		menu_style auto
-	fi
-	menu_${__menu_style} "$@"
-}
+menu.reset
 
 __MENU_BASH_FUNCS_AFTER="$(compgen -A function) $(compgen -v)"
 

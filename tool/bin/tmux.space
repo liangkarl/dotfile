@@ -34,10 +34,10 @@ edit_conf() {
 }
 
 parse_conf() {
-	menu_style "auto"
-	menu_title "choose a config:"
-	menu_select $(smug list)
-	session=$(menu_choice)
+	menu.title "choose a config:"
+	menu.opts $(smug list)
+	menu.run
+	session=$(menu.ans_opt)
 }
 
 enter() {

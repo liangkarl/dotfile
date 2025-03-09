@@ -58,7 +58,6 @@ setup_uart() {
 
 	menu.title "Select a command as backend"
 	menu.opts "${cmds[@]}"
-	menu.add_exit
 	menu.run
 	cmd=$opt
 	msg.info "backend: $(basename $cmd)"
