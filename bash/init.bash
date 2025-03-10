@@ -1,10 +1,19 @@
 #!/usr/bin/env bash
 
+export BASH_CFG="$(dirname ${BASH_SOURCE[0]})"
+
 # Load LIB into current shell environment
 # lib.add LIB
 lib.add() {
-    [[ ! -e "$SHELL_DIR" ]] && echo 'invalid $SHELL_DIR' >&2
-    source "$SHELL_DIR/lib/${1}.bash"
+    local lib
+
+    lib="${BASH_CFG}/lib/${1}.bash"
+    if [[ ! -e "$lib" ]]; then
+        echo "$FUNCNAME: library not found: $lib" >&2
+        return 1
+    fi
+
+    source $lib
 }
 
 # lib.off LIB
@@ -31,8 +40,8 @@ lib.export() {
 # Load all or specific LIB without sourcing them in current shell environment
 # lib.space [LIB]
 lib.space() {
-    local f l
-    list=${1:-$(ls $SHELL_DIR/lib)}
+    local f
+    list=${1:-$(ls ${BASH_CFG}/lib)}
     for f in $list; do
         eval "lib.${f%.bash}() { (lib.add ${f%.bash}; eval \"\$*\"); }"
     done
@@ -49,7 +58,7 @@ lib.add devel
 # source bash/env/11_xdg.bash;
 # source bash/env/12_ps1.bash;
 # ...
-source.dir "${SHELL_DIR}/init"
+source.dir "${BASH_CFG}/init"
 
 msg.dbg "path: $PATH"
 msg.dbg "completed"

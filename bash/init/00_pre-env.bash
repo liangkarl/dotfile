@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-export SYS_INFO="${SHELL_DIR}/info"
-msg.dbg "SYS_INFO: $SYS_INFO"
+dbg.cmd "export SYS_INFO=\"${BASH_CFG}/info\""
 
 # Read/Write system info database
 # sys.info var [VAL]
@@ -21,6 +20,7 @@ sys.info() {(
         msg.err "failed to load system info (${SYS_INFO})"
     fi
 );}
+export -f sys.info
 
 # Remove duplicated path. The duplicated words in the end would be removed
 sys.reload_path() {

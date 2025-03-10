@@ -18,12 +18,6 @@ config.$(PKG_NAME): # Run in $(CONFIG_DIR)
 	fi
 
 	$(H)$(eval f=${HOME}/.bashrc)
-	$(H)$(eval cmd="export SHELL_DIR="$(MK_DIR)"")
-	$(H)if ! grep -q ${cmd} $f; then
-		printf "%s\\n" ${cmd} >> $f
-	fi
-
-	# The sequence has to be fixed as init.bash depends on $SHELL_DIR
 	$(H)$(eval init=${MK_DIR}/init.bash)
 	$(H)$(eval cmd="source ${init}")
 	$(H)if ! grep -q ${cmd} $f; then
@@ -31,8 +25,6 @@ config.$(PKG_NAME): # Run in $(CONFIG_DIR)
 		cat >> $f <<-EOF
 		# Load dotfile bash config
 		$(shell echo ${cmd})
-		$(shell echo "")
-		# Keep this command in the last line
 		$(shell echo "")
 		EOF
 	fi
