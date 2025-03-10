@@ -48,6 +48,11 @@ menu.add_opt() {
 	__m_opts+=("$1")
 }
 
+menu.result() {
+	menu.ans_idx
+	menu.ans_opt
+}
+
 menu.reset() {
 	unset __m_defopt
 	unset __m_title
@@ -79,6 +84,12 @@ menu.run() {
 	fi
 
 	idx="$(menu.$(menu.backend))"
+	if [[ -z "$idx" ]]; then
+		menu.ans_idx "-1"
+		menu.ans_opt ""
+		return 1
+	fi
+
 	menu.ans_idx "$idx"
 	menu.ans_opt "${__m_opts[$idx]}"
 
