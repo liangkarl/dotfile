@@ -20,7 +20,7 @@ config.$(PKG_NAME): # Run in $(CONFIG_DIR)
 	$(eval f=${HOME}/.bashrc)
 	$(eval init=${MK_DIR}/init.bash)
 	$(eval cmd="source ${init}")
-	$(H)if [ -e "$f" ]; then
+	$(H)if [ ! -e "$f" ]; then
 		echo "Error: Cannot found .bashrc. Please add the command manually."
 		echo "Error:"
 		echo "Error: ${cmd}"
