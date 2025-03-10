@@ -151,6 +151,7 @@ list.index_of() {
 }
 
 # list.insert LIST VALUE [KEY]
+# default append to the last element
 list.insert() {
     [[ $# -lt 2 ]] && return
     eval "local k=\${3:-\${#$1[@]}}"
@@ -158,6 +159,7 @@ list.insert() {
 }
 
 # list.remove LIST [KEY]
+# default remove the last element
 list.remove() {
     [[ $# -lt 1 ]] && return
     eval "local k=\${2:-\$((\${#$1[@]}-1))}"
