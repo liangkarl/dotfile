@@ -43,7 +43,9 @@ lib.space() {
     local f
     list=${1:-$(ls ${BASH_CFG}/lib)}
     for f in $list; do
-        eval "lib.${f%.bash}() { (lib.add ${f%.bash}; eval \"\$*\"); }"
+        f=${f%.bash}
+        eval "${f}.cmd() { (lib.load ${f}; eval \"\$*\"); }"
+        eval "${f}.unload() { unset -f '${f}.cmd' '${f}.unload'; }"
     done
 }
 
