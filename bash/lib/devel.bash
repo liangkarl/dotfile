@@ -113,14 +113,14 @@ msg() {
 # only support file-based space since bash could not tell who call msg.dbg
 # until the file name was given
 msg.dbg() {
-    local offset idx
+    local offset idx id
 
     # don't use source.name since it would return devel.sh while using this
     # function in other scripts
-    eval "idx=\$(basename \${BASH_SOURCE[${__DBG_IDX:-1}]})"
-    # echo "${BASH_SOURCE[@]}"
-    # echo "ID: $idx"
-    offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST $idx)
+    eval "id=\$(basename \${BASH_SOURCE[${__DBG_IDX:-1}]})"
+    # echo "stack=${BASH_SOURCE[@]}"
+    # echo "id: $id"
+    offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST $id)
     if [[ -z "$offset" ]]; then
         offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST ${__DBG_ALL})
         [[ -z "$offset" ]] && return
@@ -129,7 +129,7 @@ msg.dbg() {
     idx=$(list.index_of __DEVEL_BASH_CUR_SPACE_LIST $offset)
     [[ -z "$idx" ]] && return
 
-    msg "DEBUG: $(basename ${BASH_SOURCE[1]}): $*" 2>${__N} >&$(__dbg_fd $offset)
+    msg "DEBUG: ${id}: $*" 2>${__N} >&$(__dbg_fd $offset)
 }
 
 msg.exit() {
