@@ -17,16 +17,23 @@ config.$(PKG_NAME): # Run in $(CONFIG_DIR)
 		EOF
 	fi
 
-	$(H)$(eval f=${HOME}/.bashrc)
-	$(H)$(eval init=${MK_DIR}/init.bash)
-	$(H)$(eval cmd="source ${init}")
-	$(H)if ! grep -q ${cmd} $f; then
-		echo "-- configure $f --"
-		cat >> $f <<-EOF
-		# Load dotfile bash config
-		$(shell echo ${cmd})
-		$(shell echo "")
-		EOF
+	$(eval f=${HOME}/.bashrc)
+	$(eval init=${MK_DIR}/init.bash)
+	$(eval cmd="source ${init}")
+	$(H)if [ -e "$f" ]; then
+		echo "Error: Cannot found .bashrc. Please add the command manually."
+		echo "Error:"
+		echo "Error: ${cmd}"
+		echo "Error:"
+	else
+		if ! grep -q ${cmd} $f; then
+			echo "-- configure $f --"
+			cat >> $f <<-EOF
+			# Load dotfile bash config
+			$(shell echo ${cmd})
+			$(shell echo "")
+			EOF
+		fi
 	fi
 
 	$(H)if [[ ! -e "${COMPL_DIR}" ]]; then
@@ -39,6 +46,8 @@ config.$(PKG_NAME): # Run in $(CONFIG_DIR)
 	$(H)if [[ "${SHELL}" == 'dash' ]]; then
 		sudo dpkg-reconfigure dash
 	fi
+
+	$(H)echo "** Please restart console to apply new bash configuration **"
 
 install.$(PKG_NAME):
 	$(H)echo "-- $(PKG_NAME): install package --"
