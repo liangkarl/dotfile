@@ -3,15 +3,15 @@
 # $0
 #
 # DESCRIPTION:
-# $0 is used for attaching specific tmux session, configed by ts.conf
+# $0 is used for attaching specific tmux entry, configed by ts.conf
 #
 # SYNOPSIS:
 # $0 [OPTIONS]
 #
 # OPTIONS:
-#   '': enter session
-#   -d: delete sessions
-#   -e: edit session configuration
+#   '': enter entry
+#   -d: delete entrys
+#   -e: edit entry configuration
 #   -h: help
 
 # this is for setting up a workspace in tmux
@@ -21,7 +21,7 @@ TARGET_NAME="$1"
 lib.add menu
 lib.add devel
 
-edit_conf() {
+edit() {
 	[[ ! -d "$CONFDIR" ]] && mkdir $CONFDIR
 
 	if [[ ! -e "$CONFDIR/${1}.yml" ]]; then
@@ -33,51 +33,55 @@ edit_conf() {
 	smug edit $1
 }
 
-parse_conf() {
-	menu.title "choose a config:"
+get_entry() {
+	menu.title "$title"
 	menu.opts $(smug list)
 	menu.run
-	session=$(menu.ans_opt)
+
+	msg.dbg "idx: $(menu.ans_idx)"
+	msg.dbg "opt: $(menu.ans_opt)"
 }
 
 enter() {
 	smug start $1 -a
 }
 
-# delete session
+# delete entry
 remove() {
 	smug stop $1
+	exit
 }
 
 # set -xv
 set -eE
 
-declare -A stat dir space
 CONFDIR="$XDG_CONFIG_HOME/smug"
+title="select a profile:"
 
-set -- $(getopt deh $*)
+set -- $(getopt ":deh" $*)
 
-EMPTY=y
 while [[ $# -ne 0 ]]; do
 	case $1 in
-		-d) REMOVE=y;;
-		-e) EDIT_CONF=y;;
+		-d) remove=y;
+			title="remove a profile:";;
+		-e) edit=y;
+			title="edit or add a profile:";;
 		-h) cmd.help 0;;
-		--)
-			[[ "$EMPTY" == y ]] && ENTER=y
-			break
-			;;
+		--) enter=y;;
+		*) cmd.help 1;;
 	esac
-	EMPTY=n
 	shift
 done
 
-parse_conf
+get_entry
+if [[ $(menu.ans_idx) -lt 0 ]]; then
+	msg.err "no configuration selected"
+	exit 1
+fi
+entry="$(menu.ans_opt)"
 
-[[ -z "$session" ]] && exit 1
+[[ "$edit" == y ]] && edit "$entry"
 
-[[ "$EDIT_CONF" == y ]] && edit_conf "$session"
+[[ "$remove" == y ]] && remove "$entry"
 
-[[ "$ENTER" == y ]] && enter "$session"
-
-[[ "$REMOVE" == y ]] && remove "$session"
+[[ "$enter" == y ]] && enter "$entry"
