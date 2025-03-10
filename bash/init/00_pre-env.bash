@@ -29,19 +29,29 @@ sys.reload_path() {
 }
 
 bash_init() {
-    if [[ ! -e "${SYS_INFO}" ]]; then (
+    if ! cmp -s ${SYS_INFO} ${SYS_INFO}.last; then (
         lib.add config
-        system=$(cmd.try "sw_vers -productName" "lsb_release -i -s")
-        system=${system,,}
+
         config.load ${SYS_INFO}
-        config.set system "${system}$([[ -n "$WSL_DISTRO_NAME" ]] && echo ':wsl')"
-        config.set my_bin "${HOME}/.local/bin"
+        config.get system system
+        if [[ -z "$system" ]]; then
+            system=$(cmd.try "sw_vers -productName" "lsb_release -i -s")
+            system=${system,,}
+            config.set system "${system}$([[ -n "$WSL_DISTRO_NAME" ]] && echo ':wsl')"
+        fi
+
+        config.get bin bin
+        if [[ -z "$bin" ]]; then
+            config.set bin "${HOME}/.local/bin"
+        fi
+
         config.save
+        cp $SYS_INFO ${SYS_INFO}.last
+
         msg.dbg "$SYS_INFO:"
         msg.dbg "$(cat $SYS_INFO)"
     ) fi
-
-    unset -f bash_init
+    unset -f $FUNCNAME
 }
 
 bash_init
