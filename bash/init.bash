@@ -3,8 +3,8 @@
 export BASH_CFG="$(dirname ${BASH_SOURCE[0]})"
 
 # Load LIB into current shell environment
-# lib.add LIB
-lib.add() {
+# lib.load LIB
+lib.load() {
     local lib
 
     lib="${BASH_CFG}/lib/${1}.bash"
@@ -16,8 +16,8 @@ lib.add() {
     source $lib
 }
 
-# lib.off LIB
-lib.off() {
+# lib.unload LIB
+lib.unload() {
     local f list
 
     eval "list=\"\${__${1^^}_BASH_FUNCS_DIFF}\""
@@ -47,10 +47,10 @@ lib.space() {
     done
 }
 
-export -f lib.add lib.space
+export -f lib.load lib.space
 
 # for debug
-lib.add devel
+lib.load devel
 # dbg.on
 
 # Order:
@@ -64,4 +64,4 @@ msg.dbg "path: $PATH"
 msg.dbg "completed"
 dbg.off
 
-lib.off devel
+lib.unload devel

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-lib.add file
+lib.load file
 __build_json='build.json'
 __gen_cmddb="$(myscript gen_compile_commands.py)"
 __command_db='compile_commands.json'

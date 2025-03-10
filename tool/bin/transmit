@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-lib.add file
-lib.add io
-lib.add menu
+lib.load file
+lib.load io
+lib.load menu
 
 set -eE
 

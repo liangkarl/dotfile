@@ -24,9 +24,9 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-lib.add io
-lib.add file
-lib.add menu
+lib.load io
+lib.load file
+lib.load menu
 source $(myscript helper.aosp)
 
 # don't move to botton since 'extglob' needs to be called at first

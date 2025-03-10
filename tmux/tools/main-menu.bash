@@ -8,7 +8,7 @@ pane="$(tmux display-message -p '#{pane_id}')"
 
 # finder='fzf-tmux -p 40%,40% -- --reverse'
 
-lib.add menu
+lib.load menu
 
 main_menu=("clipboard" "keys" "tools" "plugin" "session" "window" "pane")
 session_menu=("new" "kill" "switch" "detach" "rename" "info")

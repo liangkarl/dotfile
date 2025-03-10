@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # tmux installer script
-lib.add io
+lib.load io
 
 usage() {
     n=$(basename $0)

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-lib.add devel
+lib.load devel
 
 __CONFIG_BASH_FUNCS_BEFORE="$(compgen -A function) $(compgen -v)"
 

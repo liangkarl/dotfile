@@ -18,8 +18,8 @@
 # TARGET_DIR=$(fasd -d $@)
 TARGET_NAME="$1"
 
-lib.add menu
-lib.add devel
+lib.load menu
+lib.load devel
 
 edit() {
 	[[ ! -d "$CONFDIR" ]] && mkdir $CONFDIR

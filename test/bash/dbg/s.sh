@@ -2,14 +2,14 @@
 echo "s.sh: src0:${BASH_SOURCE[0]}"
 echo "s.sh: src1:${BASH_SOURCE[1]}"
 
-lib.add config
-msg.info "lib.add config"
+lib.load config
+msg.info "lib.load config"
 msg.dbg config!!!
 
-msg.info "======= lib.add devel"
-lib.add devel
+msg.info "======= lib.load devel"
+lib.load devel
 a=$(dbg.mark)
-msg.info "lib.add devel"
+msg.info "lib.load devel"
 
 dbg.on
 # dbg.on $a
@@ -24,8 +24,8 @@ msg.info "======= . t.sh"
 t
 dbg.off
 
-lib.add menu
-msg.info "lib.add menu"
+lib.load menu
+msg.info "lib.load menu"
 msg.dbg menu!!!
 
 msg.info "======= bash t.sh"

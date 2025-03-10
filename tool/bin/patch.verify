@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-lib.add io
+lib.load io
 
 set -eE
 

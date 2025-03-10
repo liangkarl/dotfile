@@ -12,9 +12,9 @@
 #         select supported serial console
 #     -+([0-9]): serial port number, eg, -1, -2, etc.
 
-lib.add menu
-lib.add config
-lib.add devel
+lib.load menu
+lib.load config
+lib.load devel
 
 shopt -s extglob
 tio="$(which tio || which tio.exe)"

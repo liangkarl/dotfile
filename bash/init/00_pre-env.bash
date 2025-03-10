@@ -10,7 +10,7 @@ sys.info() {(
             source ${SYS_INFO}
             echo "${!1}"
         else
-            lib.add config
+            lib.load config
             config.reset
             config.load ${SYS_INFO}
             config.set "$1" "$2"
@@ -30,7 +30,7 @@ sys.reload_path() {
 
 bash_init() {
     if ! cmp -s ${SYS_INFO} ${SYS_INFO}.last; then (
-        lib.add config
+        lib.load config
 
         config.load ${SYS_INFO}
         config.get system system

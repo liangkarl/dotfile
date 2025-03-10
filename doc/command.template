@@ -11,10 +11,10 @@
 #         select supported serial console
 #     -+([0-9]): serial port number, eg, -1, -2, etc.
 
-lib.add io
-lib.add menu
-lib.add config
-lib.add devel
+lib.load io
+lib.load menu
+lib.load config
+lib.load devel
 
 dbg.on
 

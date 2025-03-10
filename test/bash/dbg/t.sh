@@ -8,7 +8,7 @@ t() {
 	msg.dbg "t(): dbg.msg!!!"
 }
 
-lib.add devel
+lib.load devel
 b=$(dbg.mark)
 # dbg.on $b
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-lib.add io
-lib.add devel
+lib.load io
+lib.load devel
 
 help() {
 	local name="$(basename $0)"
