@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-PATH="$(sys.info my_bin):$PATH"
+PATH="$(sys.info bin):$PATH"
 sys.reload_path
 msg.dbg "path reloaded"
