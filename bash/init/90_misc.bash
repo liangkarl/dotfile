@@ -14,6 +14,7 @@ alias l='ll'
 alias cls='clear'
 alias rsync='rsync -av -h --progress'
 alias less='less -R'
+alias update-alternatives='update-alternatives --altdir ~/.local/etc/alternatives --admindir ~/.local/etc/alternatives-admin'
 
 # compression
 if [[ -n "$(type -p pxz)" ]]; then

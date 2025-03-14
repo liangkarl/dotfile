@@ -59,8 +59,22 @@ configure_fuzzy_finder() {
         bind -m vi-command -x '"\C-r": __fzy_history__'
         bind -m vi-insert -x '"\C-r": __fzy_history__'
     fi
-
-    unset $FUNCNAME
 }
 
-configure_fuzzy_finder
+configure_glib() {
+    export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu"
+    export LD_LIBRARY_PATH="$(brew --prefix glibc)/lib:${LD_LIBRARY_PATH}"
+}
+
+configure_enhancd() {
+    local enhancd
+
+    enhancd=${XDG_CONFIG_HOME}/enhancd
+    if [[ -e "$enhancd" ]]; then
+        source ${enhancd}/init.sh
+    fi
+}
+
+# oneshot configure_glib
+oneshot configure_fuzzy_finder
+oneshot configure_enhancd

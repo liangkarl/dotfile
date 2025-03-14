@@ -1,0 +1,34 @@
+# Basic
+sudo apt install -y git curl gawk
+sudo apt install -y build-essential
+
+# Applications
+sudo apt install -y flameshot copyq kitty gparted aptitude ibus-chewing tio bear wireshark gnome-tweaks sublime-text
+sudo apt install -y gparted apt-transport-https xclip net-tools dconf-editor sshpass
+sudo apt install -y tweak		# CLI Hex editor
+
+# Brew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+brew install neovim tmux fzf libtmux bash ripgrep fd git
+
+# install brew:
+# add init brew commands
+# 	(echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> /home/karl/.bashrc
+# 	eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+#
+# brew install:
+# nvim (override)
+# 	- npm
+# 	- nvm
+# tmux
+# 	- libtmux
+# 	- xclip
+#
+# openwrt:
+# sudo apt install -y sharutils sshpass device-tree-compiler openjdk-8-jdk
+#
+# Microhard:
+# # self sign cert
+# git config --global http.sslCAInfo /path/to/ca.pem
+# npm set strict-ssl false
+# xinetd tftpd tftp

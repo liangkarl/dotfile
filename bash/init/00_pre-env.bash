@@ -2,30 +2,9 @@
 
 dbg.cmd "export SYS_INFO=\"${BASH_CFG}/info\""
 
-# Read/Write system info database
-# sys.info var [VAL]
-sys.info() {(
-    if [[ -e "${SYS_INFO}" ]]; then
-        if [[ -z "$2" ]]; then
-            source ${SYS_INFO}
-            echo "${!1}"
-        else
-            lib.load config
-            config.reset
-            config.load ${SYS_INFO}
-            config.set "$1" "$2"
-            config.save
-        fi
-    else
-        msg.err "failed to load system info (${SYS_INFO})"
-    fi
-);}
-export -f sys.info
-
-# Remove duplicated path. The duplicated words in the end would be removed
-sys.reload_path() {
-    PATH=$(echo -n $PATH | awk 'BEGIN {RS=":"; ORS=":"} !a[$0]++')
-    PATH=${PATH%:}
+oneshot() {
+    eval "$*"
+    unset -f "$1"
 }
 
 bash_init() {
@@ -45,13 +24,22 @@ bash_init() {
             config.set bin "${HOME}/.local/bin"
         fi
 
+        config.get altdir ua_altdir
+        if [[ -z "$altdir" ]]; then
+            config.set ua_altdir "${HOME}/.local/etc/alternatives"
+        fi
+
+        config.get admdir ua_admdir
+        if [[ -z "$admdir" ]]; then
+            config.set ua_admdir "${HOME}/.local/etc/alternatives-admin"
+        fi
+
         config.save
         cp $SYS_INFO ${SYS_INFO}.last
 
         msg.dbg "$SYS_INFO:"
         msg.dbg "$(cat $SYS_INFO)"
     ) fi
-    unset -f $FUNCNAME
 }
 
-bash_init
+oneshot bash_init

@@ -12,4 +12,4 @@ __xdg_config() {
     export XDG_CONFIG_DIRS="${XDG_CONFIG_DIRS:-/etc/xdg}"
 }
 
-__xdg_config
+oneshot __xdg_config
