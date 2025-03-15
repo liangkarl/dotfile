@@ -2,31 +2,6 @@
 
 dbg.cmd "export SYS_INFO=\"${BASH_CFG}/info\""
 
-# Read/Write system info database
-# sys.info var [VAL]
-sys.info() {(
-    if [[ -e "${SYS_INFO}" ]]; then
-        if [[ -z "$2" ]]; then
-            source ${SYS_INFO}
-            echo "${!1}"
-        else
-            lib.load config
-            config.reset
-            config.load ${SYS_INFO}
-            config.set "$1" "$2"
-            config.save
-        fi
-    else
-        msg.err "failed to load system info (${SYS_INFO})"
-    fi
-);}
-export -f sys.info
-
-# Remove duplicated path. The duplicated words in the end would be removed
-sys.reload_path() {
-    PATH=$(echo -n $PATH | awk 'BEGIN {RS=":"; ORS=":"} !a[$0]++')
-    PATH=${PATH%:}
-}
 
 bash_init() {
     if ! cmp -s ${SYS_INFO} ${SYS_INFO}.last; then (
