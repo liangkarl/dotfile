@@ -60,7 +60,6 @@ configure_fuzzy_finder() {
         bind -m vi-insert -x '"\C-r": __fzy_history__'
     fi
 
-    unset $FUNCNAME
 }
 
-configure_fuzzy_finder
+oneshot configure_fuzzy_finder

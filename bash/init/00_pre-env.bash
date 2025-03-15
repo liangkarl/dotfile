@@ -2,6 +2,10 @@
 
 dbg.cmd "export SYS_INFO=\"${BASH_CFG}/info\""
 
+oneshot() {
+    eval "$*"
+    unset -f "$1"
+}
 
 bash_init() {
     if ! cmp -s ${SYS_INFO} ${SYS_INFO}.last; then (
@@ -26,7 +30,6 @@ bash_init() {
         msg.dbg "$SYS_INFO:"
         msg.dbg "$(cat $SYS_INFO)"
     ) fi
-    unset -f $FUNCNAME
 }
 
-bash_init
+oneshot bash_init

@@ -21,7 +21,6 @@ configure_package_management() {
 
     msg.dbg "path change: $PATH"
 
-    unset $FUNCNAME
 }
 
-configure_package_management
+oneshot configure_package_management
