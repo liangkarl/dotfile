@@ -103,21 +103,6 @@ config.sort() {
     rm -f $tmp
 }
 
-# config.clean() {
-#     local f
-#     for f in $__CONFIG_BASH_FUNCS_DIFF; do
-#         unset $f || unset -f $f
-#     done 2> /dev/null
-#     unset __CONFIG_BASH_FUNCS_DIFF
-# }
-
-# config.export() {
-#     local f
-#     for f in $__CONFIG_BASH_FUNCS_DIFF; do
-#         export -f $f
-#     done
-# }
-
 __CONFIG_BASH_FUNCS_AFTER="$(compgen -A function) $(compgen -v)"
 
 if [[ -n "$__CONFIG_BASH_FUNCS_DIFF" ]]; then

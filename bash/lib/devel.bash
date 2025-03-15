@@ -299,21 +299,6 @@ pause() {
     return $1
 }
 
-# devel.clean() {
-#     local f
-#     for f in $__DEVEL_BASH_FUNCS_DIFF; do
-#         unset $f || unset -f $f
-#     done 2> /dev/null
-#     unset __DEVEL_BASH_FUNCS_DIFF
-# }
-
-# devel.export() {
-#     local f
-#     for f in $__DEVEL_BASH_FUNCS_DIFF; do
-#         export -f $f
-#     done
-# }
-
 __DEVEL_BASH_FUNCS_AFTER="$(compgen -A function) $(compgen -v)"
 
 if [[ -n "$__DEVEL_BASH_FUNCS_DIFF" ]]; then
