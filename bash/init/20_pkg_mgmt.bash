@@ -20,7 +20,17 @@ configure_package_management() {
     fi
 
     msg.dbg "path change: $PATH"
-
 }
 
+configure_alternatives() {
+    local admdir altdir
+
+    admdir=$(sys.info ua_admdir)
+    [[ -e "$admdir" ]] || mkdir -p $admdir
+
+    altdir=$(sys.info ua_altdir)
+    [[ -e "$altdir" ]] || mkdir -p $altdir
+}
+
+oneshot configure_alternatives
 oneshot configure_package_management

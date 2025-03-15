@@ -14,6 +14,7 @@ alias l='ll'
 alias cls='clear'
 alias rsync='rsync -av -h --progress'
 alias less='less -R'
+alias update-alternatives="update-alternatives --altdir $(sys.info ua_altdir) --admindir $(sys.info ua_admdir)"
 
 # compression
 if [[ -n "$(type -p pxz)" ]]; then

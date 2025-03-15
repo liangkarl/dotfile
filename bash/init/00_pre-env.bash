@@ -24,6 +24,16 @@ bash_init() {
             config.set bin "${HOME}/.local/bin"
         fi
 
+        config.get altdir ua_altdir
+        if [[ -z "$altdir" ]]; then
+            config.set ua_altdir "${HOME}/.local/etc/alternatives"
+        fi
+
+        config.get admdir ua_admdir
+        if [[ -z "$admdir" ]]; then
+            config.set ua_admdir "${HOME}/.local/etc/alternatives-admin"
+        fi
+
         config.save
         cp $SYS_INFO ${SYS_INFO}.last
 
