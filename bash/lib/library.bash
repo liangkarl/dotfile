@@ -26,7 +26,7 @@ lib.unload() {
         unset $f || unset -f $f
     done 2> /dev/null
 
-    unset __${id}_INCLUDED
+    unset __${1^^}_BASH_INCLUDED
 }
 
 lib.export() {
