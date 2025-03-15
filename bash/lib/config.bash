@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
+[[ -v __CONFIG_BASH_INCLUDED ]] && return
+
 lib.load devel
 
-__CONFIG_BASH_FUNCS_BEFORE="$(compgen -A function) $(compgen -v)"
+__CONFIG_BASH_BEFORE="$(compgen -A function) $(compgen -v)"
 
 __CONFIG_BASH_DBG=$(dbg.mark)
 # dbg.on $__CONFIG_BASH_DBG
@@ -103,13 +105,10 @@ config.sort() {
     rm -f $tmp
 }
 
-__CONFIG_BASH_FUNCS_AFTER="$(compgen -A function) $(compgen -v)"
+__CONFIG_BASH_AFTER="$(compgen -A function) $(compgen -v)"
 
-if [[ -n "$__CONFIG_BASH_FUNCS_DIFF" ]]; then
-    msg.dbg "${BASH_SOURCE[1]}: use old diff table"
-else
-    # time __DEVEL_BASH_FUNCS_DIFF=$(comm -23 <(printf "%s\n" $' '"$__DEVEL_BASH_FUNCS_AFTER" | sort) <(printf "%s\n" $' '"$__DEVEL_BASH_FUNCS_BEFORE" | sort))
-    # time __DEVEL_BASH_FUNCS_DIFF=$(printf "%s\n" $__DEVEL_BASH_FUNCS_AFTER | grep -Fvx -f <(printf "%s\n" $__DEVEL_BASH_FUNCS_BEFORE))
-    __CONFIG_BASH_FUNCS_DIFF=$(awk 'NR==FNR {a[$0]=1; next} !($0 in a)' <(printf "%s\n" $__CONFIG_BASH_FUNCS_BEFORE) <(printf "%s\n" $__CONFIG_BASH_FUNCS_AFTER))
-fi
-unset __CONFIG_BASH_FUNCS_AFTER __CONFIG_BASH_FUNCS_BEFORE
+# time __CONFIG_BASH_INCLUDED=$(comm -23 <(printf "%s\n" $' '"$__CONFIG_BASH_AFTER" | sort) <(printf "%s\n" $' '"$__CONFIG_BASH_BEFORE" | sort))
+# time __CONFIG_BASH_INCLUDED=$(printf "%s\n" $__CONFIG_BASH_AFTER | grep -Fvx -f <(printf "%s\n" $__CONFIG_BASH_BEFORE))
+__CONFIG_BASH_INCLUDED=$(awk 'NR==FNR {a[$0]=1; next} !($0 in a)' <(printf "%s\n" $__CONFIG_BASH_BEFORE) <(printf "%s\n" $__CONFIG_BASH_AFTER))
+
+unset __CONFIG_BASH_AFTER __CONFIG_BASH_BEFORE

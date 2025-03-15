@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-__DEVEL_BASH_FUNCS_BEFORE="$(compgen -A function) $(compgen -v)"
+[[ -v __DEVEL_BASH_INCLUDED ]] && return
+
+__DEVEL_BASH_BEFORE="$(compgen -A function) $(compgen -v)"
 
 __N=/dev/null
 __DBG_ALL='__global__'
@@ -299,13 +301,10 @@ pause() {
     return $1
 }
 
-__DEVEL_BASH_FUNCS_AFTER="$(compgen -A function) $(compgen -v)"
+__DEVEL_BASH_AFTER="$(compgen -A function) $(compgen -v)"
 
-if [[ -n "$__DEVEL_BASH_FUNCS_DIFF" ]]; then
-    msg.dbg "$(source.name): use old diff table"
-else
-    # time __DEVEL_BASH_FUNCS_DIFF=$(comm -23 <(printf "%s\n" $' '"$__DEVEL_BASH_FUNCS_AFTER" | sort) <(printf "%s\n" $' '"$__DEVEL_BASH_FUNCS_BEFORE" | sort))
-    # time __DEVEL_BASH_FUNCS_DIFF=$(printf "%s\n" $__DEVEL_BASH_FUNCS_AFTER | grep -Fvx -f <(printf "%s\n" $__DEVEL_BASH_FUNCS_BEFORE))
-    __DEVEL_BASH_FUNCS_DIFF=$(awk 'NR==FNR {a[$0]=1; next} !($0 in a)' <(printf "%s\n" $__DEVEL_BASH_FUNCS_BEFORE) <(printf "%s\n" $__DEVEL_BASH_FUNCS_AFTER))
-fi
-unset __DEVEL_BASH_FUNCS_AFTER __DEVEL_BASH_FUNCS_BEFORE
+# time __DEVEL_BASH_INCLUDED=$(comm -23 <(printf "%s\n" $' '"$__DEVEL_BASH_AFTER" | sort) <(printf "%s\n" $' '"$__DEVEL_BASH_BEFORE" | sort))
+# time __DEVEL_BASH_INCLUDED=$(printf "%s\n" $__DEVEL_BASH_AFTER | grep -Fvx -f <(printf "%s\n" $__DEVEL_BASH_BEFORE))
+__DEVEL_BASH_INCLUDED=$(awk 'NR==FNR {a[$0]=1; next} !($0 in a)' <(printf "%s\n" $__DEVEL_BASH_BEFORE) <(printf "%s\n" $__DEVEL_BASH_AFTER))
+
+unset __DEVEL_BASH_AFTER __DEVEL_BASH_BEFORE

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-__LIBRARY_BASH_FUNCS_BEFORE="$(compgen -A function) $(compgen -v)"
+[[ -v __LIBRARY_BASH_INCLUDED ]] && return
+
+__LIBRARY_BASH_BEFORE="$(compgen -A function) $(compgen -v)"
 
 # lib.load LIB
 lib.load() {
@@ -19,18 +21,18 @@ lib.load() {
 lib.unload() {
     local f list
 
-    eval "list=\"\${__${1^^}_BASH_FUNCS_DIFF}\""
+    eval "list=\"\${__${1^^}_BASH_INCLUDED}\""
     for f in $list; do
         unset $f || unset -f $f
     done 2> /dev/null
 
-    unset __${id}_FUNCS_DIFF
+    unset __${id}_INCLUDED
 }
 
 lib.export() {
     local f list
 
-    eval "list=\"\${__${1^^}_BASH_FUNCS_DIFF}\""
+    eval "list=\"\${__${1^^}_BASH_INCLUDED}\""
     for f in $list; do
         export -f $f
     done
@@ -51,11 +53,8 @@ lib.space() {
 # Load LIB into current shell environment
 export -f lib.load lib.space
 
-if [[ -n "$__LIBRARY_BASH_FUNCS_DIFF" ]]; then
-    msg.dbg "$(source.name): use old diff table"
-else
-    # time __LIBRARY_BASH_FUNCS_DIFF=$(comm -23 <(printf "%s\n" $' '"$__LIBRARY_BASH_FUNCS_AFTER" | sort) <(printf "%s\n" $' '"$__LIBRARY_BASH_FUNCS_BEFORE" | sort))
-    # time __LIBRARY_BASH_FUNCS_DIFF=$(printf "%s\n" $__LIBRARY_BASH_FUNCS_AFTER | grep -Fvx -f <(printf "%s\n" $__LIBRARY_BASH_FUNCS_BEFORE))
-    __LIBRARY_BASH_FUNCS_DIFF=$(awk 'NR==FNR {a[$0]=1; next} !($0 in a)' <(printf "%s\n" $__LIBRARY_BASH_FUNCS_BEFORE) <(printf "%s\n" $__LIBRARY_BASH_FUNCS_AFTER))
-fi
-unset __LIBRARY_BASH_FUNCS_AFTER __LIBRARY_BASH_FUNCS_BEFORE
+# time __LIBRARY_BASH_INCLUDED=$(comm -23 <(printf "%s\n" $' '"$__LIBRARY_BASH_AFTER" | sort) <(printf "%s\n" $' '"$__LIBRARY_BASH_BEFORE" | sort))
+# time __LIBRARY_BASH_INCLUDED=$(printf "%s\n" $__LIBRARY_BASH_AFTER | grep -Fvx -f <(printf "%s\n" $__LIBRARY_BASH_BEFORE))
+__LIBRARY_BASH_INCLUDED=$(awk 'NR==FNR {a[$0]=1; next} !($0 in a)' <(printf "%s\n" $__LIBRARY_BASH_BEFORE) <(printf "%s\n" $__LIBRARY_BASH_AFTER))
+
+unset __LIBRARY_BASH_AFTER __LIBRARY_BASH_BEFORE
