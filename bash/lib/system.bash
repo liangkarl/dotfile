@@ -6,15 +6,15 @@ __SYSTEM_BASH_BEFORE="$(compgen -A function) $(compgen -v)"
 
 lib.load devel
 
-# sys.auto_setup_cmd CMD
+# sys.auto_setup_cmd CMD [PRIORITY]
 sys.auto_alter_cmd() {
     local p n bin
 
     bin=$(sys.info bin)/$1
-    n=300
+    n=${2:-300}
     for p in $(which -a $1); do
         [[ "$p" == "$bin" ]] && continue
-        msg.info "add: $p $n"
+        msg.info "add: $p (pr:$n)"
         sys.alter_cmd $1 "$p" $n || msg.err "failed"
         n=$((n - 10))
     done
