@@ -39,8 +39,6 @@ sys.config_cmd() {
     update-alternatives --config $1
 }
 
-__SYSTEM_BASH_AFTER="$(compgen -A function) $(compgen -v)"
-
 # Remove duplicated path. The duplicated words in the end would be removed
 sys.reload_path() {
     PATH=$(echo -n $PATH | awk 'BEGIN {RS=":"; ORS=":"} !a[$0]++')
@@ -65,6 +63,8 @@ sys.info() {(
         msg.err "failed to load system info (${SYS_INFO})"
     fi
 );}
+
+__SYSTEM_BASH_AFTER="$(compgen -A function) $(compgen -v)"
 
 # time __SYSTEM_BASH_INCLUDED=$(comm -23 <(printf "%s\n" $' '"$__SYSTEM_BASH_AFTER" | sort) <(printf "%s\n" $' '"$__SYSTEM_BASH_BEFORE" | sort))
 # time __SYSTEM_BASH_INCLUDED=$(printf "%s\n" $__SYSTEM_BASH_AFTER | grep -Fvx -f <(printf "%s\n" $__SYSTEM_BASH_BEFORE))
