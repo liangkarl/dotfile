@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 [[ -v __SYSTEM_BASH_INCLUDED ]] && return
+__SYSTEM_BASH_INCLUDED='none'
 
 __SYSTEM_BASH_BEFORE="$(compgen -A function) $(compgen -v)"
 
@@ -63,6 +64,40 @@ sys.info() {(
         msg.err "failed to load system info (${SYS_INFO})"
     fi
 );}
+
+sys.stage_start() {
+    local id
+    # source.name
+    id=${BASH_SOURCE[1]:-root.environment}
+    id=$(basename ${id^^})
+    id=${id/./_}
+    eval "__${id}_BEFORE=\"\$(compgen -A function) \$(compgen -v)\""
+}
+
+sys.stage_stop() {
+    local id
+    # source.name
+    id=${BASH_SOURCE[1]:-root.environment}
+    id=$(basename ${id^^})
+    id=${id/./_}
+    eval "__${id}_AFTER=\"\$(compgen -A function) \$(compgen -v)\""
+    eval "__${id}_INCLUDED=\$(awk 'NR==FNR {a[\$0]=1; next} !(\$0 in a)' <(printf \"%s\n\" \$__${id}_BEFORE) <(printf \"%s\n\" \$__${id}_AFTER))"
+    eval "unset __${id}_AFTER __${id}_BEFORE"
+}
+
+sys.stage_reset() {
+    local f list id
+
+    id=${1:-root.environment}
+    id=$(basename ${id^^})
+    id=${id/./_}
+    eval "list=\"\${__${id}_INCLUDED}\""
+    for f in $list; do
+        unset $f || unset -f $f
+    done 2> /dev/null
+
+    unset __${id}_INCLUDED
+}
 
 __SYSTEM_BASH_AFTER="$(compgen -A function) $(compgen -v)"
 

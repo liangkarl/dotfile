@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 [[ -v __DEVEL_BASH_INCLUDED ]] && return
+__DEVEL_BASH_INCLUDED='none'
 
-__DEVEL_BASH_BEFORE="$(compgen -A function) $(compgen -v)"
+sys.stage_start
 
 __N=/dev/null
 __DBG_ALL='__global__'
@@ -85,7 +86,7 @@ source.dir() {
 
 # call the func to get the file path inside the sourced script
 source.path() {
-    path.abs "${BASH_SOURCE[1]}"
+    eval "path.abs \"\${BASH_SOURCE[1]}\""
 }
 
 source.dirname() {
@@ -93,7 +94,7 @@ source.dirname() {
 } 2> $__N
 
 source.name() {
-    basename "${BASH_SOURCE[1]}"
+    eval "basename \"\${BASH_SOURCE[1]}\""
 } 2> $__N
 
 msg.err() {
@@ -301,10 +302,4 @@ pause() {
     return $1
 }
 
-__DEVEL_BASH_AFTER="$(compgen -A function) $(compgen -v)"
-
-# time __DEVEL_BASH_INCLUDED=$(comm -23 <(printf "%s\n" $' '"$__DEVEL_BASH_AFTER" | sort) <(printf "%s\n" $' '"$__DEVEL_BASH_BEFORE" | sort))
-# time __DEVEL_BASH_INCLUDED=$(printf "%s\n" $__DEVEL_BASH_AFTER | grep -Fvx -f <(printf "%s\n" $__DEVEL_BASH_BEFORE))
-__DEVEL_BASH_INCLUDED=$(awk 'NR==FNR {a[$0]=1; next} !($0 in a)' <(printf "%s\n" $__DEVEL_BASH_BEFORE) <(printf "%s\n" $__DEVEL_BASH_AFTER))
-
-unset __DEVEL_BASH_AFTER __DEVEL_BASH_BEFORE
+sys.stage_stop

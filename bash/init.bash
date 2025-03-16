@@ -3,11 +3,11 @@
 export BASH_CFG="$(dirname ${BASH_SOURCE[0]})"
 
 # This first call of library should be source
+source ${BASH_CFG}/lib/system.bash
 source ${BASH_CFG}/lib/library.bash
 
 # for debug
 lib.load devel
-lib.load system
 # dbg.on
 
 # Order:
@@ -22,4 +22,3 @@ msg.dbg "completed"
 dbg.off
 
 lib.unload devel
-lib.unload system

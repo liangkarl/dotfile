@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 [[ -v __LIBRARY_BASH_INCLUDED ]] && return
+__LIBRARY_BASH_INCLUDED='none'
 
-__LIBRARY_BASH_BEFORE="$(compgen -A function) $(compgen -v)"
+sys.stage_start
 
 # lib.load LIB
 lib.load() {
@@ -19,14 +20,7 @@ lib.load() {
 
 # lib.unload LIB
 lib.unload() {
-    local f list
-
-    eval "list=\"\${__${1^^}_BASH_INCLUDED}\""
-    for f in $list; do
-        unset $f || unset -f $f
-    done 2> /dev/null
-
-    unset __${1^^}_BASH_INCLUDED
+    sys.stage_reset ${1}.bash
 }
 
 lib.export() {
@@ -50,11 +44,4 @@ lib.space() {
     done
 }
 
-# Load LIB into current shell environment
-export -f lib.load lib.space
-
-# time __LIBRARY_BASH_INCLUDED=$(comm -23 <(printf "%s\n" $' '"$__LIBRARY_BASH_AFTER" | sort) <(printf "%s\n" $' '"$__LIBRARY_BASH_BEFORE" | sort))
-# time __LIBRARY_BASH_INCLUDED=$(printf "%s\n" $__LIBRARY_BASH_AFTER | grep -Fvx -f <(printf "%s\n" $__LIBRARY_BASH_BEFORE))
-__LIBRARY_BASH_INCLUDED=$(awk 'NR==FNR {a[$0]=1; next} !($0 in a)' <(printf "%s\n" $__LIBRARY_BASH_BEFORE) <(printf "%s\n" $__LIBRARY_BASH_AFTER))
-
-unset __LIBRARY_BASH_AFTER __LIBRARY_BASH_BEFORE
+sys.stage_stop
