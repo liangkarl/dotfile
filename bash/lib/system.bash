@@ -5,12 +5,11 @@ __SYSTEM_BASH_INCLUDED='none'
 
 __SYSTEM_BASH_BEFORE="$(compgen -A function) $(compgen -v)"
 
-lib.load devel
-
 # sys.auto_setup_cmd CMD [PRIORITY]
-sys.auto_alter_cmd() {
+sys.auto_alter_cmd() {(
     local p n bin
 
+    lib.load devel
     bin=$(sys.info bin)/$1
     n=${2:-300}
     for p in $(which -a $1); do
@@ -19,12 +18,13 @@ sys.auto_alter_cmd() {
         sys.alter_cmd $1 "$p" $n || msg.err "failed"
         n=$((n - 10))
     done
-}
+)}
 
 # sys.alter_cmd CMD LOCATION [PRIORITY]
-sys.alter_cmd() {
+sys.alter_cmd() {(
     local pr path
 
+    lib.load devel
     path=$(path.abs $2)
     pr=${3:-300}
     if [[ ! -e "$path" ]]; then
@@ -33,7 +33,7 @@ sys.alter_cmd() {
     fi
 
     update-alternatives --install $(sys.info bin)/$1 $1 $2 $pr
-}
+)}
 
 # sys.config_cmd CMD
 sys.config_cmd() {
@@ -61,6 +61,7 @@ sys.info() {(
             config.save
         fi
     else
+        lib.load devel
         msg.err "failed to load system info (${SYS_INFO})"
     fi
 );}
