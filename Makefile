@@ -3,20 +3,31 @@
 XDG_CONFIG_HOME?=${HOME}/.config
 XDG_DATA_HOME?=${HOME}/.local/share
 XDG_CACHE_HOME?=${HOME}/.cache
-TOP:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+MK_PATH    := $(abspath $(lastword $(MAKEFILE_LIST)))
+TOP     := $(shell dirname $(MK_PATH))
+# TOP:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 CONF_HOME:=${XDG_CONFIG_HOME}
 SHELL?=bash
 
 H?=@
 
-LIST:=$(shell ls -d -- */ | sed 's:/::' | grep -v '^misc\|^dotfile')
-DOTFILE:=$(shell ls -p dotfile/ | grep -v -E '/$|^\.|^Makefile' | sed 's/\.[^.]*$$//')
-
+#DOTFILE:=$(shell ls -p $(TOP)/dotfile | grep -v -E '/$|^\.|^Makefile' | sed 's/\.[^.]*$$//')
+DOTFILE:=$(shell ls -p $(TOP)/dotfile | grep -v -E '/$|^\.|^Makefile')
+LIST:=$(shell ls -d -- */ | sed 's:/::' | grep -v '^misc\|^setup\|^dotfile')
 ALIAS:=top curl
+
+# -include $(TOP)/dotfile/Makefile
 
 .ONESHELL:
 
-$(DOTFILE) dotfile:
+$(DOTFILE):
+	$(H)$(eval SRC_DIR:=$(TOP)/dotfile)
+	$(H)$(eval DST_DIR:=$(CONF_HOME)/dotfile)
+
+	$(H)printf -- "-- $@: copy files --\n"
+	$(H)cp -rvf $(SRC_DIR) $(CONF_HOME)/
+	$(H)H=$(H) make -C $(DST_DIR) $@
+	$(H)printf -- "-- $@: completed --\n\n"
 
 $(LIST):
 	$(H)$(eval SRC_DIR:=$(TOP)/$@)
