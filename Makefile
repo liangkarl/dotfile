@@ -12,7 +12,7 @@ H?=@
 #DOTFILE:=$(shell ls -p $(ROOT)/dotfile | grep -v -E '/$|^\.|^Makefile' | sed 's/\.[^.]*$$//')
 DOTFILE:=$(shell ls -p $(ROOT)/dotfile | grep -v -E '/$|^\.|^Makefile')
 LIST:=$(shell ls -d -- */ | sed 's:/::' | grep -v '^misc\|^setup\|^dotfile')
-ALIAS:=top curl
+ALIAS:=top
 
 -include $(ROOT)/dotfile/Makefile
 
@@ -35,8 +35,6 @@ $(LIST):
 	$(H)printf -- "-- completed: $@ --\n\n"
 
 top: procps
-
-curl: curlrc
 
 %.remove:
 	$(H)$(eval NAME:=$(strip $(subst .remove,,$@)))
