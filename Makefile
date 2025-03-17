@@ -16,31 +16,23 @@ DOTFILE:=$(shell ls -p $(TOP)/dotfile | grep -v -E '/$|^\.|^Makefile')
 LIST:=$(shell ls -d -- */ | sed 's:/::' | grep -v '^misc\|^setup\|^dotfile')
 ALIAS:=top curl
 
-# -include $(TOP)/dotfile/Makefile
+-include $(TOP)/dotfile/Makefile
 
 .ONESHELL:
 
-$(DOTFILE):
-	$(H)$(eval SRC_DIR:=$(TOP)/dotfile)
-	$(H)$(eval DST_DIR:=$(CONF_HOME)/dotfile)
-
-	$(H)printf -- "-- $@: copy files --\n"
-	$(H)cp -rvf $(SRC_DIR) $(CONF_HOME)/
-	$(H)H=$(H) make -C $(DST_DIR) $@
-	$(H)printf -- "-- $@: completed --\n\n"
+# dotfile: $(DOTFILE)
 
 $(LIST):
 	$(H)$(eval SRC_DIR:=$(TOP)/$@)
 	$(H)$(eval DST_DIR:=$(CONF_HOME)/$@)
 
-	$(H)printf -- "-- $@: copy files --\n"
 	$(H)cp -rvf $(SRC_DIR) $(CONF_HOME)/
 	$(H)if [[ -e $(DST_DIR)/Makefile ]]; then
 		H=$(H) make -C $(DST_DIR)
 	elif [[ -e $(DST_DIR)/configure.sh ]]; then
 		eval $(DST_DIR)/configure.sh
 	fi
-	$(H)printf -- "-- $@: completed --\n\n"
+	$(H)printf -- "-- completed: $@ --\n\n"
 
 top: procps
 
