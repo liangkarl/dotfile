@@ -37,9 +37,9 @@ config.$(PKG_NAME): # Run in $(CONFIG_DIR)
 	fi
 
 	$(H)if [ ! -e "${COMPL_DIR}" ]; then
-		mkdir ${COMPL_DIR}
+		mkdir -p ${COMPL_DIR}
 	fi
-	$(H)cp -rvf ${MK_DIR}/completion/* ${COMPL_DIR}
+	$(H)cp -rvf ${MK_DIR}/completions/ ${COMPL_DIR}
 	$(H)echo "-- add bash-completion completed --"
 
 	# $SHELL is from environment
