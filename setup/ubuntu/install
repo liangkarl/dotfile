@@ -3,7 +3,7 @@ sudo apt install -y git curl gawk
 sudo apt install -y build-essential
 
 # Applications
-sudo apt install -y flameshot copyq kitty gparted aptitude ibus-chewing tio bear wireshark gnome-tweaks sublime-text
+sudo apt install -y flameshot copyq kitty gparted aptitude ibus-chewing tio bear wireshark gnome-tweaks sublime-text krita inkscape
 sudo apt install -y gparted apt-transport-https xclip net-tools dconf-editor sshpass
 sudo apt install -y tweak		# CLI Hex editor
 

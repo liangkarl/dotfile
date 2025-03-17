@@ -9,6 +9,7 @@ found_err=n
 # APT
 sudo add-apt-repository -y ppa:mozillateam/ppa
 sudo add-apt-repository -y ppa:hluk/copyq
+sudo add-apt-repository -y ppa:pinta-maintainers/pinta-stable
 sudo apt update
 
 if cmd.has apt; then
