@@ -28,8 +28,8 @@ lib.export() {
 
     eval "list=\"\${__${1^^}_BASH_INCLUDED}\""
     for f in $list; do
-        export -f $f
-    done
+        export -f $f || true
+    done 2> /dev/null
 }
 
 # Load all or specific LIB without sourcing them in current shell environment
