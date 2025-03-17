@@ -75,6 +75,11 @@ configure_enhancd() {
     fi
 }
 
+configure_update_alternative() {
+    export DPKG_ADMINDIR="$(sys.info ua_altdir)"
+}
+
 # oneshot configure_glib
+oneshot configure_update_alternative
 oneshot configure_fuzzy_finder
 oneshot configure_enhancd
