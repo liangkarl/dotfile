@@ -36,14 +36,14 @@ config.$(PKG_NAME): # Run in $(CONFIG_DIR)
 		fi
 	fi
 
-	$(H)if [[ ! -e "${COMPL_DIR}" ]]; then
+	$(H)if [ ! -e "${COMPL_DIR}" ]; then
 		mkdir ${COMPL_DIR}
 	fi
 	$(H)cp -rvf ${MK_DIR}/completion/* ${COMPL_DIR}
 	$(H)echo "-- add bash-completion completed --"
 
 	# $SHELL is from environment
-	$(H)if [[ "${SHELL}" == 'dash' ]]; then
+	$(H)if realpath ${SHELL} | grep -q 'dash'; then
 		sudo dpkg-reconfigure dash
 	fi
 
