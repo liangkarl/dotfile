@@ -10,36 +10,44 @@
 # if there is no esecape section, PS1 would become buggy
 
 __ps1_switch_form() {
-    local white='\[\e[01;38m\]'
-    local blue='\[\e[01;34m\]'
-    local yellow='\[\e[38;5;11m\]'
-    local green='\[\e[01;32m\]'
+    lib.load ansi
+
+    local w='\['$(ansi 111)'\]'
+    local b='\['$(ansi 001)'\]'
+    local y='\['$(ansi 110)'\]'
+    local g='\['$(ansi 010)'\]'
     local purple='\[\e[38;5;63m\]'
     local orange='\[\e[38;5;202m\]'
     local sed_purple='\\\[\\\e[38;5;63m\\\]'
     local sed_orange='\\\[\\\e[38;5;202m\\\]'
-    local reset='\[\e[0m\]'
-    local var
+
+    __ps1_git_branch() {
+        git branch 2> /dev/null | sed -n "/\* /s/^\* \(.*\)$/\1 /p"
+    }
 
     ps1_short() {
-        var+=${purple}'$? '
-        var+=${green}'\u@\h '
-        var+=${blue}'\W'
-        var+=${purple}'${debian_chroot:+(:$debian_chroot)}'
-        var+='$(git branch 2>&- | sed -n "/\* /s/^\* \(.*\)$/'${sed_purple}':'${sed_orange}'\1/p")'
-        var+=${yellow}' \$'${reset}' '
+        local var
+        var+=${_RS}${purple}'\!:\j:$? '
+        var+=${g}'\u@\h '
+        var+=${b}'\W'
+        var+=${purple}'${debian_chroot:+(:$debian_chroot)} '
+        # var+='$(git branch 2>&- | sed -n "/\* /s/^\* \(.*\)$/'${sed_purple}':'${sed_orange}'\1/p")'
+        var+=${orange}'$(__ps1_git_branch)'
+        var+=${y}'\$'${_RS}' '
         echo "$var"
     }
 
     ps1_long() {
-        var=${white}'[\t] ' # Current time
-        var+=${purple}'$? '
-        var+=${green}'\u@\h '
-        var+=${blue}'\w '
+        local var
+        var=${_RS}${w}'[\t] ' # Current time
+        var+=${purple}'\!:\j:$? '
+        var+=${g}'\u@\h '
+        var+=${b}'\w '
         var+=${purple}'${debian_chroot:+($debian_chroot) }'
-        var+='$(git branch 2>&- | sed -n "/\* /s/^\* \(.*\)$/'${sed_purple}'-> '${sed_orange}'\1/p") '
-        var+=${reset}'\n└─ '
-        var+=${yellow}'\$'${reset}' '
+        # var+='$(git branch 2>&- | sed -n "/\* /s/^\* \(.*\)$/'${sed_purple}'-> '${sed_orange}'\1/p") '
+        var+=${orange}'$(__ps1_git_branch)'
+        var+=${_RS}'\n└─ '
+        var+=${y}'\$'${_RS}' '
 
         echo "$var"
     }
@@ -55,6 +63,8 @@ __ps1_switch_form() {
     fi
 
     __ps1_form=$((__ps1_form ^ 0x1))
+
+    lib.unload ansi
 }
 
 __ps1_form=1
