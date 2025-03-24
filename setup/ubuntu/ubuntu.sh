@@ -2,7 +2,7 @@
 
 lib.load devel
 
-list=(curl vim make gawk sharutils build-essential gcc python2 python3 libncurses-dev openjdk-8-jdk xclip)
+list=(curl vim make gawk sharutils build-essential gcc python2 python3 libncurses-dev openjdk-8-jdk xclip quilt)
 tmp=/tmp/install.log
 found_err=n
 
