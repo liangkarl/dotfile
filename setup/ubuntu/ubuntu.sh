@@ -2,7 +2,7 @@
 
 lib.load devel
 
-list=(curl vim make gawk sharutils build-essential gcc python2 python3 libncurses-dev openjdk-8-jdk xclip quilt)
+list=(curl vim make gawk sharutils build-essential gcc python2 python3 libncurses-dev openjdk-8-jdk xclip quilt wireshark)
 tmp=/tmp/install.log
 found_err=n
 
@@ -10,6 +10,7 @@ found_err=n
 sudo add-apt-repository -y ppa:mozillateam/ppa
 sudo add-apt-repository -y ppa:hluk/copyq
 sudo add-apt-repository -y ppa:pinta-maintainers/pinta-stable
+sudo add-apt-repository -y ppa:wireshark-dev/stable
 sudo apt update
 
 if cmd.has apt; then
