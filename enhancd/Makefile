@@ -8,8 +8,8 @@ INIT=source $(CONFIG_DIR)/init.sh
 config.$(PKG_NAME): install.$(PKG_NAME)
 	$(H)echo "-- $(PKG_NAME): setup config --"
 	$(H)echo "$(INIT)" >> $(CONFIG_DIR)/bootstrap.sh
-	$(H)grep -q -w "$(CMD)" ~/.bashrc ||
-			printf -- "$(CMD)\n" >> ~/.bashrc
+#	$(H)grep -q -w "$(CMD)" ~/.bashrc ||
+#			printf -- "$(CMD)\n" >> ~/.bashrc
 
 install.$(PKG_NAME):
 	$(H)echo "-- $(PKG_NAME): install package --"

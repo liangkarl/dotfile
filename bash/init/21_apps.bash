@@ -71,7 +71,11 @@ configure_enhancd() {
 
     enhancd=${XDG_CONFIG_HOME}/enhancd
     if [[ -e "$enhancd" ]]; then
-        source ${enhancd}/init.sh
+        if [[ -e "$enhancd/bootstrap.sh" ]]; then
+            source ${enhancd}/bootstrap.sh
+        else
+            source ${enhancd}/init.sh
+        fi
     fi
 }
 

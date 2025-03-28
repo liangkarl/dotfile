@@ -19,5 +19,4 @@ __enhancd_bootstrap() {
     export ENHANCD_DIR="$XDG_CONFIG_HOME/enhancd"
 }
 
-__enhancd_bootstrap
-
+oneshot __enhancd_bootstrap
