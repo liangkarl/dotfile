@@ -75,6 +75,15 @@ configure_enhancd() {
     fi
 }
 
+configure_starship() {
+    local starship
+
+    starship=${XDG_CONFIG_HOME}/starship
+    if cmd.has starship; then
+        source ${starship}/bootstrap.sh
+    fi
+}
+
 configure_update_alternative() {
     export DPKG_ADMINDIR="$(sys.info ua_altdir)"
 }
@@ -83,3 +92,4 @@ configure_update_alternative() {
 oneshot configure_update_alternative
 oneshot configure_fuzzy_finder
 oneshot configure_enhancd
+oneshot configure_starship

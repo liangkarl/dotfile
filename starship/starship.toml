@@ -1,0 +1,78 @@
+format = """
+$username\
+$hostname\
+$directory\
+$line_break\
+$character"""
+
+scan_timeout = 10
+
+add_newline = false
+# move the rest of the prompt to the right
+right_format = """
+$cmd_duration\
+$git_branch\
+$git_state\
+$git_status\
+$time\
+$all"""
+
+# right_format = """$git_branch$git_state$git_status$time$all"""
+
+[hostname]
+ssh_only = false
+format = "[@$ssh_symbol$hostname](green) "
+
+[username]
+show_always = true
+format = "[$user](green)"
+
+[time]
+disabled = false
+style = "purple"
+
+[directory]
+format = '[$path](blue)[$read_only]($read_only_style) '
+read_only = " "
+truncation_length = 2
+
+[battery]
+full_symbol = "•"
+charging_symbol = "⇡"
+discharging_symbol = "⇣"
+
+[git_branch]
+format = "[$branch]($style)"
+style = "bright-black"
+
+[git_status]
+# format = '$all_status$ahead_behind '
+ahead = '⬆(bold purple) '
+behind = '⬇(bold purple) '
+staged = '✚(green) '
+deleted = '✖(red) '
+# renamed = '[➜](purple) '
+# stashed = '[✭](cyan) '
+# untracked = '[◼](white) '
+untracked = ''
+stashed = ''
+renamed = ''
+modified = '!(blue)'
+conflicted = '=(yellow)'
+diverged = '⇕'
+up_to_date = ''
+
+[git_state]
+format = '\([$state( $progress_current/$progress_total)]($style)\) '
+style = "bright-black"
+
+[cmd_duration]
+format = "[$duration]($style) "
+style = "purple"
+
+[status]
+disabled = true
+symbol = '✘ '
+
+[line_break]
+disabled = true
