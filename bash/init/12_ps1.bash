@@ -91,5 +91,5 @@ __ps1_switch_form() {
     lib.unload ansi
 }
 
-__ps1_form=1
-__ps1_switch_form
+# __ps1_form=1
+# __ps1_switch_form
