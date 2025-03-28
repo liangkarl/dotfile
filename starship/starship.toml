@@ -19,6 +19,9 @@ $all"""
 
 # right_format = """$git_branch$git_state$git_status$time$all"""
 
+[character]
+success_symbol = '[❯](bold yellow)'
+
 [hostname]
 ssh_only = false
 format = "[@$ssh_symbol$hostname](green) "
@@ -29,6 +32,7 @@ format = "[$user](green)"
 
 [time]
 disabled = false
+format = '[$time]($style) '
 style = "purple"
 
 [directory]
@@ -40,27 +44,22 @@ truncation_length = 2
 full_symbol = "•"
 charging_symbol = "⇡"
 discharging_symbol = "⇣"
+disabled = true
 
 [git_branch]
-format = "[$branch]($style)"
+format = "[$branch]($style) "
 style = "bright-black"
 
 [git_status]
-# format = '$all_status$ahead_behind '
-ahead = '⬆(bold purple) '
-behind = '⬇(bold purple) '
-staged = '✚(green) '
-deleted = '✖(red) '
-# renamed = '[➜](purple) '
-# stashed = '[✭](cyan) '
-# untracked = '[◼](white) '
-untracked = ''
-stashed = ''
-renamed = ''
-modified = '!(blue)'
-conflicted = '=(yellow)'
-diverged = '⇕'
-up_to_date = ''
+format = '[${ahead_behind}](blue)[${conflicted}](yellow)[${modified}](cyan)[${staged}](green)[${deleted}](red) '
+ahead = '⇡${count}'
+diverged = '⇕⇡${ahead_count}⇣${behind_count} '
+behind = '⇣${count}'
+staged = 'A'
+deleted = 'D'
+modified = 'M'
+conflicted = '='
+style = 'bold red'
 
 [git_state]
 format = '\([$state( $progress_current/$progress_total)]($style)\) '
