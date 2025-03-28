@@ -39,10 +39,10 @@ top: procps
 %.remove:
 	$(H)$(eval NAME:=$(strip $(subst .remove,,$@)))
 	$(H)if [ -d "$(CONF_HOME)/$(NAME)" ]; then
-		rm -rv $(CONF_HOME)/$(NAME)
+		rm -rvf $(CONF_HOME)/$(NAME)
 	elif [ -e "$(CONF_HOME)/dotfile/$(NAME)" ]; then
-		rm -rv $(CONF_HOME)/dotfile/$(NAME)
-		rm -rv ~/.$(NAME)
+		rm -rvf $(CONF_HOME)/dotfile/$(NAME)
+		rm -rvf ~/.$(NAME)
 	fi
 	$(H)echo "Remove Configuration: $(NAME)"
 
