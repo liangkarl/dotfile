@@ -1,23 +1,19 @@
 PKG_NAME=enhancd
 CONFIG_DIR=${XDG_CONFIG_HOME}/$(PKG_NAME)
-TMP:=$(shell mktemp -d)
-CMD=source $(CONFIG_DIR)/bootstrap.sh
-INIT=source $(CONFIG_DIR)/init.sh
+ENHANCD=${CONFIG_DIR}/${PKG_NAME}.git
+SHELL:=bash
 
 .ONESHELL:
 config.$(PKG_NAME): install.$(PKG_NAME)
 	$(H)echo "-- $(PKG_NAME): setup config --"
-	$(H)echo "$(INIT)" >> $(CONFIG_DIR)/bootstrap.sh
-#	$(H)grep -q -w "$(CMD)" ~/.bashrc ||
-#			printf -- "$(CMD)\n" >> ~/.bashrc
 
 install.$(PKG_NAME):
 	$(H)echo "-- $(PKG_NAME): install package --"
-	rm -rf $(CONFIG_DIR)/.git
-	git clone -n --depth=1 https://github.com/b4b4r07/enhancd.git $(TMP)
-	cp -rf $(TMP)/.git $(CONFIG_DIR)
-	rm -rf $(TMP)
-	git -C $(CONFIG_DIR) reset --hard
+	$(H)if [[ -e $(ENHANCD) ]]; then
+		git -C $(ENHANCD) pull
+	else
+		git clone https://github.com/b4b4r07/enhancd.git $(ENHANCD)
+	fi
 
 remove.$(PKG_NAME):
 	$(H)echo "-- $(PKG_NAME): remove package --"
