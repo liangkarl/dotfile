@@ -33,12 +33,12 @@ format = "[$user](green)"
 [time]
 disabled = false
 format = ' [$time]($style) '
-style = "purple"
+style = "fg:63"
 
 [directory]
 format = '[$path](blue)[$read_only]($read_only_style) '
 read_only = " "
-truncation_length = 2
+truncation_length = 1
 
 [battery]
 full_symbol = "•"
