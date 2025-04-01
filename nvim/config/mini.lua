@@ -7,7 +7,7 @@ return { -- A 'Swiss Army Knife' with many small features
     require('mini.cursorword').setup()
     require('mini.bufremove').setup()
     require('mini.align').setup()
-    require('mini.pairs').setup()
+    -- require('mini.pairs').setup()
     require('mini.surround').setup()
     require('mini.notify').setup({
       window = {
