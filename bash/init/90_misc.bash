@@ -40,16 +40,14 @@ else
 fi
 
 # coloring manual
-# (don't append space in the end of 'man')
-alias man=" \
-	LESS_TERMCAP_md=$'\e[01;31m' \
-    LESS_TERMCAP_me=$'\e[0m' \
-    LESS_TERMCAP_us=$'\e[01;32m' \
-    LESS_TERMCAP_ue=$'\e[0m' \
-    LESS_TERMCAP_so=$'\e[45;93m' \
-    LESS_TERMCAP_se=$'\e[0m' \
-    man\
-"
+alias man="\
+    LESS_TERMCAP_md=$'$(ansi 100)' \
+    LESS_TERMCAP_me=$'${_RS}' \
+    LESS_TERMCAP_us=$'$(ansi 010)' \
+    LESS_TERMCAP_ue=$'${_RS}' \
+    LESS_TERMCAP_so=$'$(ansi 002)' \
+    LESS_TERMCAP_se=$'${_RS}' \
+    man"
 
 # Override reboot command to avoid rebooting computer accidentally
 reboot() {

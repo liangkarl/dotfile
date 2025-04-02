@@ -10,6 +10,7 @@ lib.export library
 
 # for debug
 lib.load devel
+lib.load ansi
 # dbg.on
 
 # Order:
@@ -23,4 +24,5 @@ msg.dbg "path: $PATH"
 msg.dbg "completed"
 dbg.off
 
+lib.unload ansi
 lib.unload devel
