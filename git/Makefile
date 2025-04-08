@@ -25,6 +25,7 @@ config.$(PKG_NAME):
 	mv -vf $(CONFIG_DIR)/ignore.new $(CONFIG_DIR)/ignore
 	mv -vf $(CONFIG_DIR)/config.new $(CONFIG_DIR)/config
 
+	touch $(CONFIG_DIR)/config
 	$(call query_saved,user.name,$(USERNAME))
 	$(call query_saved,user.email,$(EMAIL))
 
