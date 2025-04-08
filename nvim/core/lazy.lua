@@ -78,6 +78,7 @@ require("lazy").setup({
 
   -- LSP plugin
   require('config.ccls'),
+  require('config.dropbar'),
 
   -- Debug Tools
   require('config.nvim-dap'),
