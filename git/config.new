@@ -33,14 +33,16 @@
 	diffnp = !git --no-pager diff
 	last = show -s HEAD^{commit}
 	stat = diff --stat-width=65
-	new = !git fetch -a && git status
+	new = !git fetch -a -p && git status
 	dr = diff --relative
 	ds = diff --staged
 	slog = log --pretty=slog
 	slogbw = log --pretty=bw
+	# show cached diff or add unstaged files
 	cache = "!f() { if [ $# -eq 0 ]; then git diff --cached; else git add \"$@\"; fi; }; f"
+	# edit gitignore or add ignore rule
 	ignore = "!f() { f=".gitignore"; r=$(git rev-parse --show-toplevel); [ $# -eq 0 ] && ${EDITOR:-vi} $r/$f || echo "$@" >> $r/$f; }; f"
-	# Diff of last commit
+	# diff of last commit
 	dlc = diff --cached HEAD^
 	# list all defined aliases
 	alias = config --get-regexp ^alias\\.
