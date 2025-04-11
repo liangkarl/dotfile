@@ -203,45 +203,47 @@ bind status  ca       >?git commit -v --amend
 bind status  cn       @?git commit --amend --no-edit
 
 ## Stage/Unstage file
-bind stage   f<Enter> @tig.run stage_file "%(file)"
-bind stage   fa       @tig.run stage_file
+bind stage   f<Enter> @git ui stage.file FILE='%(file)'
+bind stage   fa       @git ui stage.file
 
 ## Add stash
-bind main    sa        @tig.run git.stash "%(prompt new stash: )"
-bind main    s<Enter>  @tig.run git.stash
-bind main    sp       :!tig.run git.full stash pop stash@{0}
-bind stage   sa        @tig.run git.stash save "%(prompt new stash: )"
-bind stage   s<Enter>  @tig.run stash
-bind stage   sp       :!tig.run git.full stash pop stash@{0}
-bind status  sa        @tig.run git.stash save "%(prompt new stash: )"
-bind status  s<Enter>  @tig.run stash
-bind status  sp       :!tig.run git.full stash pop stash@{0}
+bind main    sa        @git ui stash.save NAME="%(prompt new stash: )"
+bind main    s<Enter>  @git ui stash.save
+bind main    sp       :!git ui stash.pop
+bind stage   sa        @git ui stash.save NAME="%(prompt new stash: )"
+bind stage   s<Enter>  @git ui stash.save
+bind stage   sp       :!git ui stash.pop
+bind status  sa        @git ui stash.save NAME="%(prompt new stash: )"
+bind status  s<Enter>  @git ui stash.save
+bind status  sp       :!git ui stash.pop
 
 ## Add/Remove/Move tag and branch
 bind main   ta       @tig.run git.quiet tag "%(prompt new tag: )" %(commit)
 bind main   t<ENTER> @tig.run git.quiet tag tag.$(git rev-parse --short %(commit)) %(commit)
 bind main   ba       @tig.run git.quiet branch "%(prompt new branch: )" %(commit)
 bind main   b<ENTER> @tig.run git.quiet branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)
-bind main   a<ENTER> @tig.run add "%(commit)"
-bind main   d<ENTER> @tig.run del "%(commit),%(branch),%(tag)"
+bind main   a<ENTER> @git ui refs.paste C=%(commit)
+bind main   d<ENTER> @git ui refs.cut C=%(commit)
+bind main   db       @git ui refs.cut C=%(commit) BR=%(branch)
 bind reflog ta       @tig.run git.quiet tag "%(prompt new tag: )" %(commit)
 bind reflog t<ENTER> @tig.run git.quiet tag tag.$(git rev-parse --short %(commit)) %(commit)
 bind reflog ba       @tig.run git.quiet branch "%(prompt new branch: )" %(commit)
 bind reflog b<ENTER> @tig.run git.quiet branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)
-bind reflog a<ENTER> @tig.run add "%(commit)"
-bind reflog d<ENTER> @tig.run del "%(commit),%(branch),%(tag)"
+bind reflog a<ENTER> @git ui refs.paste C=%(commit)
+bind reflog d<ENTER> @git ui refs.cut C=%(commit)
+bind reflog db       @git ui refs.cut C=%(commit) BR=%(branch)
 bind diff   ta       @tig.run git.quiet tag "%(prompt new tag: )" %(commit)
 bind diff   t<ENTER> @tig.run git.quiet tag tag.$(git rev-parse --short %(commit)) %(commit)
 bind diff   ba       @tig.run git.quiet branch "%(prompt new branch: )" %(commit)
 bind diff   b<ENTER> @tig.run git.quiet branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)
-bind diff   a<ENTER> @tig.run add "%(commit)"
-bind diff   d<ENTER> @tig.run del "%(commit),%(branch),%(tag)"
+bind diff   a<ENTER> @git ui refs.paste C=%(commit)
+bind diff   d<ENTER> @git ui refs.cut C=%(commit)
 bind refs   ta       @tig.run git.quiet tag "%(prompt new tag: )" HEAD
 bind refs   t<ENTER> @tig.run git.quiet tag tag.$(git rev-parse --short HEAD) HEAD
 bind refs   ba       @tig.run git.quiet branch "%(prompt new branch: )" HEAD
 bind refs   b<ENTER> @tig.run git.quiet branch branch.$(basename $(git rev-parse --show-toplevel)) HEAD
-bind refs   a<ENTER> @tig.run add "%(commit)"
-bind refs   d<ENTER> @tig.run del "%(commit),%(branch),%(tag)"
+bind refs   a<ENTER> @git ui refs.paste C=%(commit)
+bind refs   d<ENTER> @git ui refs.cut C=%(commit)
 
 ## Checkout
 bind main   co  +tig.run git.full checkout %(commit)
@@ -329,7 +331,7 @@ bind refs pp       !?tig.run push "%(commit)"
 bind refs pP       !?tig.run push -f "%(commit)"
 bind refs pb       !?tig.run push.create "%(branch)"
 bind refs pt       !?tig.run push.create "%(tag)"
-bind refs cs        +tig.run clean
+bind refs cs        +git ui info.clean
 # }
 
 # Main {
@@ -341,14 +343,14 @@ bind main bg +?tig.run git.full bisect good %(commit)
 bind main bb +?tig.run git.full bisect bad %(commit)
 bind main rv :!tig.run git.rcv revert --no-edit %(commit)
 bind diff rv :!tig.run git.rcv revert --no-edit %(commit)
-bind main rb >?git rebase -i %(commit)
+bind main rb >?git ui act.rebase C=%(commit)
 bind main rk >?git rebase --skip
 # progress stop: rebase, merge, revert, cherry-pick, bisect
-bind main pa  +?tig.run abort
+bind main pa +?git ui act.abort
 # progress continue: rebase, merge, revert, cherry-pick, bisect
-bind main pc !?tig.run going
+bind main pc !?git ui act.going
 # progress info
-bind main pi +tig.run progress
+bind main pi  +git ui act.check
 bind main pp !?tig.run push %(commit)
 bind main <SingleQuote> :!tig.run commit_report
 # }
