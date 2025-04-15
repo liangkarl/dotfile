@@ -12,6 +12,7 @@
 #   '': enter entry
 #   -d: delete entrys
 #   -e: edit entry configuration
+#   -s entry: save current tmux layout to [entry] workspace
 #   -h: help
 
 # this is for setting up a workspace in tmux
@@ -20,68 +21,63 @@ TARGET_NAME="$1"
 
 lib.load menu
 lib.load devel
-
-edit() {
-	[[ ! -d "$CONFDIR" ]] && mkdir $CONFDIR
-
-	if [[ ! -e "$CONFDIR/${1}.yml" ]]; then
-		smug print |
-			sed -e '/layout/d' -e '/panes/d' -e '/- commands/d' \
-			> $CONFDIR/${1}.yml
-	fi
-
-	smug edit $1
-}
+# dbg.on
 
 get_entry() {
-	menu.title "$title"
-	menu.opts $(smug list)
+	menu.title "$*"
+	menu.opts $(tmuxp ls)
 	menu.run
 
 	msg.dbg "idx: $(menu.ans_idx)"
 	msg.dbg "opt: $(menu.ans_opt)"
+
+	[[ $(menu.ans_idx) -ge 0 ]]
 }
 
-enter() {
-	smug start $1 -a
-}
-
-# delete entry
-remove() {
-	smug stop $1
-	exit
-}
+cmd.has tmuxp || msg.exit 1  "no 'tmuxp' command available."
 
 # set -xv
 set -eE
 
-CONFDIR="$XDG_CONFIG_HOME/smug"
-title="select a profile:"
+CONFDIR="$XDG_CONFIG_HOME/tmuxp"
 
-set -- $(getopt ":deh" $*)
+set -- $(getopt ":s:deh" $*)
 
 while [[ $# -ne 0 ]]; do
 	case $1 in
-		-d) remove=y;
-			title="remove a profile:";;
-		-e) edit=y;
-			title="edit or add a profile:";;
+		-d) remove=y;;
+		-e) edit=y;;
 		-h) cmd.help 0;;
+		-s) save=y
+			shift
+			entry=$1
+			;;
 		--) enter=y;;
 		*) cmd.help 1;;
 	esac
 	shift
 done
 
-get_entry
-if [[ $(menu.ans_idx) -lt 0 ]]; then
-	msg.err "no configuration selected"
-	exit 1
+if [[ "$save" == y ]]; then
+	tmuxp freeze $entry
+	exit
 fi
+
+if ! get_entry "select a profile:"; then
+	msg.exit 1 "no configuration selected"
+fi
+
 entry="$(menu.ans_opt)"
 
-[[ "$edit" == y ]] && edit "$entry"
+if [[ "$edit" == y ]]; then
+	tmuxp edit $entry
+fi
 
-[[ "$remove" == y ]] && remove "$entry"
+if [[ "$remove" == y ]]; then
+	rm ${CONFDIR}/${1}.yaml
+	exit
+fi
 
-[[ "$enter" == y ]] && enter "$entry"
+if [[ "$enter" == y ]]; then
+	tmuxp load $entry
+fi
