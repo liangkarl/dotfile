@@ -8,7 +8,7 @@ config.$(PKG_NAME):
 	$(H)if [[ ! -e $(LOCAL_BIN) ]]; then
 		mkdir $(LOCAL_BIN)
 	fi
-	git config --global alias.ui '!bash -c "source $(CONFIG_DIR)/tig.bash; $$1"'
+	git config --global alias.ui '!bash -c "source $(CONFIG_DIR)/tig.bash; $$*"'
 	$(H)ln -sf $(CONFIG_DIR)/tig.run $(LOCAL_BIN)
 
 install.$(PKG_NAME):

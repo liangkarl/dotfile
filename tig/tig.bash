@@ -19,49 +19,33 @@ lib.load config
 dir='/tmp/tig'
 NODE="${dir}/node"
 patch=${dir}/tig.patch
-cmt_conf=${dir}/tig.commit
 save_conf=${dir}/tig.save
-out_conf=${dir}/tig.out
 
 mkdir $dir 2> $__N
 
-# cmd CMD [FILE]
-cmd() { $1 &>${2:-&1}; }
-
-# cmd.full CMD [FILE]
-cmd.full() {
-    if cmd "$1" "$2"; then
-        echo "'$*' done"
-    else
-        echo "'$*' failed ($?)"
-    fi
-
-	if [[ -e "$2" ]]; then
-		echo ""
-		cat $2
+git.msg() {
+	if git $*; then
+		echo "'$*' done"
+	else
+		echo "'$*' failed ($?)"
+		false
 	fi
 }
 
-git.quiet() { cmd "git $*" $__N; }
-git.full() { cmd.full "git $*"; }
-
-git.rcv() {
-	if ! git.full "$@"; then
-		set -- $*
-		git $1 --abort;
-	fi
+git.auto() {
+	git.msg $* || git.msg $1 --abort
 }
 
 # is_commit <sha>
-is_commit() { git rev-parse --verify --quiet ${1} &> /dev/null; }
+is_commit() { git rev-parse --verify --quiet ${1} &> $__N; }
 # is_branch <branch>
-is_branch() { git show-ref --verify --quiet refs/heads/${1} &> /dev/null; }
+is_branch() { git show-ref --verify --quiet refs/heads/${1} &> $__N; }
 # is_tag <tag>
-is_tag() { git show-ref --verify --quiet refs/tags/${1} &> /dev/null; }
+is_tag() { git show-ref --verify --quiet refs/tags/${1} &> $__N; }
 # is_remote_branch <refname>
-is_remote_branch() { git show-ref --verify --quiet refs/remotes/${1} &> /dev/null; }
+is_remote_branch() { git show-ref --verify --quiet refs/remotes/${1} &> $__N; }
 # to_sha <tag|branch>
-to_sha() { git rev-parse $1 2> /dev/null; }
+to_sha() { git rev-parse $1 2> $__N; }
 
 # NAME=%(branch) [C=%(commit)] [TYPE=[local|remote]] br.check
 br.check() {
@@ -148,7 +132,7 @@ refs.upstream() {
 		return 1
 	fi
 
-	remote=$(git rev-parse --abbrev-ref ${1}@{upstream} &> /dev/null)
+	remote=$(git rev-parse --abbrev-ref ${1}@{upstream} &> $__N)
 
 	if [ -n "$remote" ]; then
 		echo $remote
@@ -168,16 +152,18 @@ stash.save() {
 	local repo="$(basename $(git rev-parse --show-toplevel))"
 	local sha="$(git rev-parse --short HEAD)"
 
-	git.quiet stash save ${NAME:-${repo}.${sha}}
+	git.msg stash save ${NAME:-${repo}.${sha}}
 }
 
 # NAME= stash.pop
 stash.pop() {
-	if git diff --quiet; then
-		git add -u
-	fi
-	git.quiet stash pop stash@{0}
-	git.quiet reset
+	# stage changes if exist
+	git diff --quiet || git add -u
+
+	git.msg stash pop stash@{0}
+
+	# reset to release staged changes
+	git reset
 }
 
 # add <commit>
@@ -299,18 +285,18 @@ patch.create() {
 		git format-patch --start-number $i -k --binary --histogram -1 -o . $item
 		git tag -d patch.$((i - 100))
 		(( i++ ))
-	done &> /dev/null
+	done &> $__N
 
 	rm -f $file
 	echo "$((i - 100)) patches has been created."
 }
 
-# patch.add <commit>
+# C= patch.add
 patch.add() {
 	local file idx
 	local commit
 
-	commit="$1"
+	commit="$C"
 	file=$patch
 	touch $file
 
@@ -324,9 +310,7 @@ patch.add() {
 	fi
 }
 
-# general: push
-# force: push -f
-# create: push -c
+# FORCE= C= push
 push() {
 	local dst args
 
@@ -346,17 +330,17 @@ push() {
 		return
 	fi
 
-	if [[ "$1" == '-f' ]]; then
+	if [[ "$FORCE" == 'y' ]]; then
 		args="--force-with-lease"
 		shift
 	fi
 
-	git.full push $args $remote ${1:-HEAD}:${dst}
+	git.msg push $args $remote ${C:-HEAD}:${dst}
 
 	rm -rf $save_conf
 }
 
-# push <branch|tag>
+# TAG= BR= push.create
 push.create() {
 	source $save_conf
 
@@ -370,7 +354,7 @@ push.create() {
 		return
 	fi
 
-	git.full push $remote $1
+	git.msg push $remote ${BR:-$TAG}
 
 	rm -rf $save_conf
 }
@@ -456,64 +440,80 @@ info.write() {
 	config.save
 }
 
-# C= act.rebase <commit>
+# C= OPT= act.rebase
 act.rebase() {
 	local change
+	local stash
 
 	change=$(git status --porcelain | grep -v '^??')
 	if [[ -n "$change" ]]; then
 		git stash
+		stash=y
 	fi
 
-	git.full rebase -i $C
+	git.msg rebase $OPT $C
+	if [[ "$stash" == y  ]] && act.check; then
+		git stash pop stash@{0}
+	fi
 }
 
 act.check() {
+	declare -A list
+	list=()
+	list[REBASE_HEAD]='rebase'
+	list[MERGE_HEAD]='merge'
+	list[REVERT_HEAD]='revert'
+	list[CHERRY_PICK_HEAD]='cherry-pick'
+	list[BISECT_ANCESTORS_OK]='bisect'
+
 	local cmd bis
 	for cmd in REBASE_HEAD MERGE_HEAD REVERT_HEAD CHERRY_PICK_HEAD; do
-		if git rev-parse --verify $cmd &> /dev/null; then
-			cmd=${cmd%%_HEAD}
-			cmd=${cmd//_/-}
-			cmd=${cmd~~}
-			echo "'$cmd' is in progress"
-			return
+		if git rev-parse --verify $cmd &> $__N; then
+			msg.dbg "'${list[$cmd]}' is in progress"
+			return 1
 		fi
 	done
 
 	bis=$(git rev-parse --show-toplevel)/.git/BISECT_ANCESTORS_OK
 	if [[ -e $bis ]]; then
-		echo "'bisect' is in progress"
+		msg.dbg "'${list[$bis]}' is in progress"
+		return 1
 	fi
 
-	echo "not in any git session"
+	msg.dbg "not in any git session"
 }
 
 act.abort() {
 	local cmd bis
+
+	eval "$ARGS"
+
 	for cmd in REBASE_HEAD MERGE_HEAD REVERT_HEAD CHERRY_PICK_HEAD; do
-		if git rev-parse --verify $cmd &> /dev/null; then
+		if git rev-parse --verify $cmd &> $__N; then
 			cmd=${cmd%%_HEAD}
 			cmd=${cmd//_/-}
 			cmd=${cmd~~}
-			git.full $cmd --abort
+			git.msg $cmd --abort
 			return
 		fi
 	done
 
 	bis=$(git rev-parse --show-toplevel)/.git/BISECT_ANCESTORS_OK
 	if [[ -e $bis ]]; then
-		git.full bisect reset
+		git.msg bisect reset
 	fi
 }
 
 act.going() {
 	local cmd
+
+	eval "$*"
 	for cmd in REBASE_HEAD MERGE_HEAD REVERT_HEAD CHERRY_PICK_HEAD; do
-		if git rev-parse --verify $cmd &> /dev/null; then
+		if git rev-parse --verify $cmd &> $__N; then
 			cmd=${cmd%%_HEAD}
 			cmd=${cmd//_/-}
 			cmd=${cmd~~}
-			git.full $cmd --continue
+			git.msg $cmd --continue
 			return
 		fi
 	done
@@ -528,9 +528,11 @@ commit_report() {
 	git shortlog --summary --numbered --all --no-merges
 }
 
-set -x
+if [[ ! "$0" =~ git* ]]; then
+	# Since tig request the format "BINARY FUNC xxx" and doesn't accept this
+	# format "C=xxx BINARY FUNC", the solution here is define our custom
+	# format "BINARY FUNC C=xxx"
+	eval "$*"
+fi
 
-# Since tig request the format "BINARY FUNC xxx" and doesn't accept this
-# format "C=xxx BINARY FUNC", the solution here is define our custom
-# format "BINARY FUNC C=xxx"
-eval "$*"
+set -x
