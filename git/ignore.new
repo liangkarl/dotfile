@@ -25,12 +25,14 @@
 # doc/**/*.pdf
 
 # LSP command database
-compile_commands.json
+# compile_commands.json
 
 # ccls
 .ccls
 .ccls-root
 .ccls-cache/
+.cache
+.ccache
 
 # clangd
 .clangd
