@@ -44,6 +44,7 @@ menu.opts() {
 		return
 	fi
 
+	set -- "$@"
 	__m_opts=("$@")
 }
 
