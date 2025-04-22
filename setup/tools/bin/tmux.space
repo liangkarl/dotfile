@@ -68,13 +68,16 @@ if ! get_entry "select a profile:"; then
 fi
 
 entry="$(menu.ans_opt)"
+if [[ -z "$entry" ]]; then
+	msg.exit 1 "no available entry"
+fi
 
 if [[ "$edit" == y ]]; then
 	tmuxp edit $entry
 fi
 
 if [[ "$remove" == y ]]; then
-	rm ${CONFDIR}/${1}.yaml
+	rm ${CONFDIR}/${entry}.yaml
 	exit
 fi
 
