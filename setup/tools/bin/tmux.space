@@ -41,27 +41,19 @@ set -eE
 
 CONFDIR="$XDG_CONFIG_HOME/tmuxp"
 
-set -- $(getopt ":s:deh" $*)
+set -- $(getopt ":sdeh" $*)
 
 while [[ $# -ne 0 ]]; do
 	case $1 in
 		-d) remove=y;;
 		-e) edit=y;;
 		-h) cmd.help 0;;
-		-s) save=y
-			shift
-			entry=$1
-			;;
+		-s) save=y;;
 		--) enter=y;;
 		*) cmd.help 1;;
 	esac
 	shift
 done
-
-if [[ "$save" == y ]]; then
-	tmuxp freeze $entry
-	exit
-fi
 
 if ! get_entry "select a profile:"; then
 	msg.exit 1 "no configuration selected"
@@ -70,6 +62,10 @@ fi
 entry="$(menu.ans_opt)"
 if [[ -z "$entry" ]]; then
 	msg.exit 1 "no available entry"
+fi
+
+if [[ "$save" == y ]]; then
+	tmuxp freeze -o ${CONFDIR}/${entry}.yaml $entry
 fi
 
 if [[ "$edit" == y ]]; then
