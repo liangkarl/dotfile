@@ -12,8 +12,12 @@
 #   '': enter entry
 #   -d: delete entrys
 #   -e: edit entry configuration
-#   -s entry: save current tmux layout to [entry] workspace
+#   -s: save current tmux session to workspace
 #   -h: help
+#
+# SAMPLE:
+#  $ tmux -s test           # create a active session
+#  $ tmux.space -s test     # save the session
 
 # this is for setting up a workspace in tmux
 # TARGET_DIR=$(fasd -d $@)
