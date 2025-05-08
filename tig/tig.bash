@@ -218,6 +218,50 @@ refs.cut() {
 	config.save
 }
 
+# 1. Choose a local reference then push to remote
+# info.write (local)
+# TAG= BR= REF= OPT= refs.push
+# 2. Choose remote reference then select local commit
+# info.write (remote)
+# C= refs.push
+# 3. Push to upstream
+#
+refs.push() {
+	config.load "$save_conf"
+	config.get remote_branch "$remote_branch"
+	config.get remote_tag "$remote_tag"
+	config.get track_branch "$track_branch"
+	config.get track_tag "$track_tag"
+	config.get file "$file"
+
+	if [[ -n "$BR" || -n "$TAG" || -n "$REF" ]]; then
+		config.get commit commit
+		config.get local_branch local_branch
+		config.get local_tag local_tag
+
+		if [[ -n "${REF%%/$BR}" ]]; then
+			remote="${REF%%/$BR}"
+		elif [[ -n "${REF%%/$TAG}" ]]; then
+			remote="${REF%%/$TAG}"
+		fi
+
+		git.msg push $OPT $remote ${local_branch:-$local_tag}:${BR:-$TAG}
+	elif [[ -n "$C" ]]; then
+		config.get remote_branch remote_branch
+		config.get remote_tag remote_tag
+		config.get remote remote
+
+		if [[ -z "$remote" ]]; then
+			echo "no remote name"; false
+			return
+		fi
+
+		git.msg push $OPT $remote ${C}:${remote_branch:-$remote_tag}
+	fi
+
+	rm -rf $save_conf
+}
+
 # copy <text>
 copy() {
 	local cmd
@@ -307,36 +351,6 @@ patch.add() {
 	fi
 }
 
-# FORCE= C= push
-push() {
-	local dst args
-
-	source $save_conf
-
-	if [[ -z "$remote" ]]; then
-		echo "no remote name"; false
-		return
-	fi
-
-	if [[ -n "$branch" ]]; then
-		dst="$branch"
-	elif [[ -n "$tag" ]]; then
-		dst="$tag"
-	else
-		echo "no remote branch or tag"; false
-		return
-	fi
-
-	if [[ "$FORCE" == 'y' ]]; then
-		args="--force-with-lease"
-		shift
-	fi
-
-	git.msg push $args $remote ${C:-HEAD}:${dst}
-
-	rm -rf $save_conf
-}
-
 # TAG= BR= push.create
 push.create() {
 	source $save_conf
@@ -356,83 +370,64 @@ push.create() {
 	rm -rf $save_conf
 }
 
-# SHA=
-# BR=
-# REF=
-# TAG=
-# FILE=
-
 info.clean() {
 	echo "clean configurations"
 	rm -f $save_conf
 }
 
-# VAR=VAL info.write
-# 1. select local br/tag
-#  - SRC=xxx info.write
-# 2. push to remote
-#  - DST=xxx info.write; push
+# C= BR= TAG= REF= FILE= OFILE= info.write
+# config:
+# commit=
+# local_branch=
+# local_tag=
+# track_branch=
+# track_tag=
+# remote_branch=
+# remote_tag=
+# remote=
 info.write() {
-	local commit branch refname tag file
-	local is_merged is_remote remote raw
+	local commit file
+	local local_branch local_tag
+	local remote remote_branch remote_tag
+	local track_branch track_tag
 
-	config.load $save_conf
-	config.get is_merged "is_merged"
-	config.get is_remote "is_remote"
-	config.get commit "commit"
-	config.get branch "branch"
-	config.get remote "remote"
-	config.get tag "tag"
-	config.get file "file"
-	config.get src "src"
-	config.get dst "dst"
+	is_commit "$C" && commit="$C"
+	is_tag "$TAG" && tag="$TAG"
 
-	commit="$C"
-	branch="$NAME"
-	refname="$REF"
-	tag="$NAME"
-	file="$FILE"
-
-	src="$SRC"
-	dst="$DST"
-
-	if [[ "$commit" =~ ^0+$ ]]; then
-		commit=
-		branch=
-		tag=
-		refname=
+	if [[ -n "$FILE" && "$FILE" != "$__N" ]]; then
+		file="$FILE"
 	else
-		if [[ $(git cat-file -p $commit | grep -c '^parent ') > 1 ]]; then
-			is_merged=y
-		fi
-
-		# tag and branch commit?
-		#       tag: branch:'',   refname:tag,         tag:tag
-		#  local br: branch:name, refname:name,        tag:''
-		# remote br: branch:name, refname:origin/name, tag:''
-		if [[ "$branch" == "$refname" ]]; then
-			remote=''
-			branch=$(check_branch $commit $branch)
-		else
-			is_remote=y
-			remote="${refname%/$branch}"
-		fi
-
-		tag=$(check_tag $commit $tag)
+		file="$OFILE"
 	fi
 
-	# check file
-	[[ -e "$FILE" ]] && file="$FILE"
+	# tag and branch commit?
+	#       tag: branch:'',   refname:tag,         tag:tag
+	#  local br: branch:name, refname:name,        tag:''
+	# remote br: branch:name, refname:origin/name, tag:''
+	if [[ "$BR" == "$REF" ]]; then
+		local_branch="$BR"
+	elif [[ "$TAG" == "$REF" ]]; then
+		local_tag="$TAG"
+	elif [[ -n "${REF%%/$BR}" ]]; then
+		remote_branch="$BR"
+		remote="${REF%%/$BR}"
+	elif [[ -n "${REF%%/$TAG}" ]]; then
+		remote_tag="$TAG"
+		remote="${REF%%/$TAG}"
+	else
+		msg.err "no matched pattern ($REF) for br:$BR or tag:$TAG"
+	fi
 
-	config.set "is_merged" "$is_merged"
-	config.set "is_remote" "$is_remote"
-	config.set "commit" "$commit"
-	config.set "branch" "$branch"
-	config.set "remote" "$remote"
-	config.set "tag" "$tag"
-	config.set "file" "$file"
-	config.set "src" "$src"
-	config.set "dst" "$dst"
+	config.load "$save_conf"
+	config.set commit "$commit"
+	config.set local_branch "$local_branch"
+	config.set local_tag "$local_tag"
+	config.set remote_branch "$remote_branch"
+	config.set remote_tag "$remote_tag"
+	config.set remote "$remote"
+	config.set track_branch "$track_branch"
+	config.set track_tag "$track_tag"
+	config.set file "$file"
 	config.dump
 	config.save
 }

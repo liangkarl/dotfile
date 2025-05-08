@@ -324,13 +324,13 @@ bind status ! none
 bind refs C none
 bind refs ! none
 
-bind refs s<ENTER> :!git ui save C=%(commit) BR=%(branch) REF=%(refname) TAG=%(tag) FILE=%(file)
+bind refs s<ENTER> :!git ui info.write C=%(commit) BR=%(branch) REF=%(refname) TAG=%(tag) FILE=%(file) OFILE=%(file_old)
 bind refs f<ENTER> :!git ui git.msg fetch --prune --all
 bind refs rb       :!git ui act.rebase C=%(commit)
-bind refs pp       !?git ui push C=%(commit)
-bind refs pP       !?git ui push C=%(commit) FORCE=y
-bind refs pb       !?git ui push.create BR=%(branch)
-bind refs pt       !?git ui push.create TAG=%(tag)
+# 1. Select local branch
+# 2. Select assigned remote branch
+bind refs pp       !?git ui refs.push TAG=%(tag) BR=%(branch) REF=%(refname)
+bind refs pP       !?git ui refs.push TAG=%(tag) BR=%(branch) REF=%(refname) OPT='--force-with-lease'
 bind refs cs        +git ui info.clean
 # }
 
@@ -351,7 +351,8 @@ bind main pa +?git ui act.abort
 bind main pc !?git ui act.going
 # progress info
 bind main pi  +git ui act.check
-bind main pp !?git ui push C=%(commit)
+bind main pp !?git ui refs.push C=%(commit)
+bind main pP !?git ui refs.push C=%(commit) OPT='--force-with-lease'
 bind main <SingleQuote> :!git ui commit_report
 # }
 
