@@ -51,11 +51,9 @@ to_sha() { git rev-parse $1 2> $__N; }
 br.check() {
 	is_branch "$NAME"  || return 1
 
-	if [[ -n "$C" ]]; then
-		is_commit "$C" || return 2
+	is_commit "$C" || return 2
 
-		[ "$(to_sha $NAME)" == "$(to_sha $C)" ]
-	fi
+	[ "$(to_sha refs/heads/${NAME})" == "$(to_sha $C)" ]
 }
 
 # C=%(commit) br.get
@@ -86,11 +84,9 @@ br.get() {
 tag.check() {
 	is_tag "$NAME"  || return 1
 
-	if [[ -n "$C" ]]; then
-		is_commit "$C" || return 2
+	is_commit "$C" || return 2
 
-		[ "$(to_sha $NAME)" == "$(to_sha $C)" ]
-	fi
+	[ "$(to_sha refs/tags/${NAME})" == "$(to_sha $C)" ]
 }
 
 # C=%(commit) tag.get
@@ -182,13 +178,14 @@ refs.paste() {
 	rm $NODE
 }
 
-# C= [BR=] [TAG=] refs.cut
+# C= refs.cut
+# BR= TAG= refs.cut
 refs.cut() {
 	local br tag
 
-	is_commit "$C" || return 1
+	if [[ -z "$TAG" && -z "$BR" ]]; then
+		is_commit "$C" || return 1
 
-	if [[ -z "$TAG" || -z "$BR" ]]; then
 		BR=$(C=$C br.get)
 		TAG=$(C=$C tag.get)
 		if [[ -z "$TAG$BR" ]]; then
@@ -205,7 +202,7 @@ refs.cut() {
 		else
 			echo "invalid branch: $BR, $C"
 		fi
-	else
+	elif [[ -n "$TAG" ]]; then
 		if C=$C NAME=$TAG tag.check; then
 			git tag -d $TAG
 			if [[ "$TAG" =~ patch\.[0-9]+ ]]; then

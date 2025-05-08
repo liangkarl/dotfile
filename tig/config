@@ -243,7 +243,7 @@ bind refs   t<ENTER> @git ui git.msg tag tag.$(git rev-parse --short HEAD) HEAD
 bind refs   ba       @git ui git.msg branch "%(prompt new branch: )" HEAD
 bind refs   b<ENTER> @git ui git.msg branch branch.$(basename $(git rev-parse --show-toplevel)) HEAD
 bind refs   a<ENTER> @git ui refs.paste C=%(commit)
-bind refs   d<ENTER> @git ui refs.cut C=%(commit)
+bind refs   d<ENTER> @git ui refs.cut C=%(commit) BR=%(branch) TAG=%(tag)
 
 ## Checkout
 bind main   co  +git ui git.msg checkout %(commit)
