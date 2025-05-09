@@ -33,7 +33,23 @@ git.msg() {
 }
 
 git.auto() {
-	git.msg $* || git.msg $1 --abort
+	local list="stash rebase merge cherry-pick revert"
+	local change
+
+	change=$(git status --porcelain | grep -v '^??')
+	if [[ -n "$change" ]]; then
+		git stash
+	fi
+
+	if ! git.msg $*; then
+		if grep -q $1 <<< $list; then
+			git.msg $1 --abort
+		fi
+	fi
+
+	if [[ -n "$change" ]] && act.check; then
+		git stash pop stash@{0} || echo "failed to restore unchecked changes"
+	fi
 }
 
 # is_commit <sha>
@@ -434,19 +450,7 @@ info.write() {
 
 # C= OPT= act.rebase
 act.rebase() {
-	local change
-	local stash
-
-	change=$(git status --porcelain | grep -v '^??')
-	if [[ -n "$change" ]]; then
-		git stash
-		stash=y
-	fi
-
-	git.msg rebase $OPT $C
-	if [[ "$stash" == y  ]] && act.check; then
-		git stash pop stash@{0}
-	fi
+	git.auto rebase $OPT $C
 }
 
 act.check() {
