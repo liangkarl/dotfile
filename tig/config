@@ -251,8 +251,8 @@ bind refs   co :!git ui git.auto checkout %(ref)
 bind reflog co :!git ui git.auto checkout %(commit)
 bind status co +?git ui git.auto checkout %(file)
 bind stage  co +?git ui git.auto checkout %(file)
-bind stage  c< +?git ui git.auto checkout --ours %(file)
-bind stage  c> +?git ui git.auto checkout --theirs %(file)
+bind stage  c<LT><LT> +?git ui git.auto checkout --ours %(file)
+bind stage  c>> +?git ui git.auto checkout --theirs %(file)
 bind diff   co +?git ui git.auto checkout %(commit) -- %(file)
 
 ### File Operation
@@ -267,15 +267,15 @@ bind diff   d<Enter> @?rm -rf %(file)
 bind diff   dd       @?rm -rf $(dirname %(file))
 
 ## Reset commits
-bind main    rh +sh -c '[[ "%(prompt enter "y" to hard reset: )" == "y" ]] && git reset --hard %(commit)'
-bind reflog  rh +sh -c '[[ "%(prompt enter "y" to hard reset: )" == "y" ]] && git reset --hard %(commit)'
-bind diff    rh +sh -c '[[ "%(prompt enter "y" to hard reset: )" == "y" ]] && git reset --hard %(commit)'
-bind main    rs +sh -c '[[ "%(prompt enter "y" to reset: )" == "y" ]] && git reset %(commit)'
-bind reflog  rs +sh -c '[[ "%(prompt enter "y" to reset: )" == "y" ]] && git reset %(commit)'
-bind diff    rs +sh -c '[[ "%(prompt enter "y" to reset: )" == "y" ]] && git reset %(commit)'
-bind stage   rn +sh -c '[[ "%(prompt enter "y" to hard reset HEAD: )" == "y" ]] && git reset --hard'
-bind main    rn +sh -c '[[ "%(prompt enter "y" to hard reset HEAD: )" == "y" ]] && git reset --hard'
-bind main    rp +sh -c '[[ "%(prompt enter "y" to reset HEAD@{1}: )" == "y" ]] && git reset HEAD@{1}'
+bind stage   rS +?git ui git.msg reset --hard'
+bind reflog  rS +?git ui git.msg reset --hard %(commit)'
+bind diff    rS +?git ui git.msg reset --hard %(commit)'
+bind main    rS +?git ui git.msg reset --hard %(commit)'
+bind reflog  rs +?git ui git.msg reset %(commit)'
+bind diff    rs +?git ui git.msg reset %(commit)'
+bind main    rs +?git ui git.msg reset %(commit)'
+bind main    rn +?git ui git.msg reset --hard'
+bind main    rp +?git ui git.msg reset HEAD@{1}'
 
 ## Cherry-pick
 bind main   cp :!git ui git.auto cherry-pick -s %(commit)
@@ -310,6 +310,12 @@ bind stage  p1       @git ui git.msg diff --output=$(date +%y%m%d%H%M%S).diff --
 bind stage  pf       @git ui git.msg diff --output=$(date +%y%m%d%H%M%S)_$(basename %(file)).diff --binary --histogram %(file)
 # }
 
+# Save Info {
+bind refs ss       :!git ui info.write C=%(commit) BR=%(branch) REF=%(refname) TAG=%(tag) FILE=%(file) OFILE=%(file_old)
+bind main ss       :!git ui info.write C=%(commit) FILE=%(file) OFILE=%(file_old)
+bind reflog ss     :!git ui info.write C=%(commit) FILE=%(file) OFILE=%(file_old)
+# }
+
 # Stage {
 bind stage A stage-update-part
 bind stage a stage-update-line
@@ -324,7 +330,6 @@ bind status ! none
 bind refs C none
 bind refs ! none
 
-bind refs s<ENTER> :!git ui info.write C=%(commit) BR=%(branch) REF=%(refname) TAG=%(tag) FILE=%(file) OFILE=%(file_old)
 bind refs f<ENTER> :!git ui git.msg fetch --prune --all
 bind refs rb       :!git ui act.rebase C=%(commit)
 # 1. Select local branch
@@ -346,9 +351,9 @@ bind diff rv :!git ui git.auto revert --no-edit %(commit)
 bind main rb >?git ui act.rebase C=%(commit) OPT='-i'
 bind main rk >?git rebase --skip
 # progress stop: rebase, merge, revert, cherry-pick, bisect
-bind main pa +?git ui act.abort
+bind main pa :!git ui act.abort
 # progress continue: rebase, merge, revert, cherry-pick, bisect
-bind main pc !?git ui act.going
+bind main pc :!git ui act.going
 # progress info
 bind main pi  +git ui act.check
 bind main pp !?git ui refs.push C=%(commit)
