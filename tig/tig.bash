@@ -511,7 +511,7 @@ act.abort() {
 		fi
 	done
 
-	bis=$(git rev-parse --show-toplevel)/.git/BISECT_ANCESTORS_OK
+	bis=$(git rev-parse --show-toplevel)/.git/BISECT_START
 	if [[ -e $bis ]]; then
 		git.msg bisect reset
 	fi
