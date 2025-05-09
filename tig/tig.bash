@@ -235,13 +235,15 @@ refs.cut() {
 }
 
 # 1. Choose a local reference then push to remote
-# info.write (local)
-# TAG= BR= REF= OPT= refs.push
-# 2. Choose remote reference then select local commit
-# info.write (remote)
-# C= refs.push
-# 3. Push to upstream
-#
+# refs: info.write (local)
+# refs: TAG= BR= REF= OPT= refs.push
+# 2. Choose a local commit, and then push
+# main: info.write (local)
+# refs: TAG= BR= REF= OPT= refs.push
+# 3. Choose remote reference then select local commit
+# refs: info.write (remote)
+# main: C= refs.push
+# 4. Push to upstream
 refs.push() {
 	config.load "$save_conf"
 	config.get remote_branch "$remote_branch"
@@ -251,9 +253,9 @@ refs.push() {
 	config.get file "$file"
 
 	if [[ -n "$BR" || -n "$TAG" || -n "$REF" ]]; then
-		config.get commit commit
 		config.get local_branch local_branch
 		config.get local_tag local_tag
+		config.get commit commit
 
 		if [[ -n "${REF%%/$BR}" ]]; then
 			remote="${REF%%/$BR}"
@@ -261,7 +263,13 @@ refs.push() {
 			remote="${REF%%/$TAG}"
 		fi
 
-		git.msg push $OPT $remote ${local_branch:-$local_tag}:${BR:-$TAG}
+		if [[ -n "$local_branch" ]]; then
+			git.msg push $OPT $remote ${local_branch}:${BR}
+		elif [[ -n "$local_tag" ]]; then
+			git.msg push $OPT $remote ${local_tag}:${TAG}
+		elif [[ -n "$commit" ]]; then
+			git.msg push $OPT $remote ${commit}:${BR:-$TAG}
+		fi
 	elif [[ -n "$C" ]]; then
 		config.get remote_branch remote_branch
 		config.get remote_tag remote_tag
