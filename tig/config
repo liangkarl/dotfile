@@ -166,6 +166,8 @@ bind generic Q  quit
 bind generic <Ctrl-r> <tig
 bind diff    l  scroll-right
 bind diff    h  scroll-left
+bind status  l  scroll-right
+bind status  h  scroll-left
 bind stage   l  scroll-right
 bind stage   h  scroll-left
 bind blame   l  scroll-right
@@ -257,14 +259,14 @@ bind diff   co +?git ui git.auto checkout %(commit) -- %(file)
 
 ### File Operation
 bind main   dc       +?git ui git.msg clean -fd
-bind status d<Enter> @?rm -rf %(file)
-bind status dd       @?rm -rf $(dirname %(file))
+bind status d<Enter> +?git ui cmd rm -rf %(file)
+bind status dd       +?git ui cmd rm -rf $(dirname %(file))
 bind status dc       +?git ui git.msg clean -fd
-bind stage  d<Enter> @?rm -rf %(file)
-bind stage  dd       @?rm -rf $(dirname %(file))
+bind stage  d<Enter> +?git ui cmd rm -rf %(file)
+bind stage  dd       +?git ui cmd rm -rf $(dirname %(file))
 bind stage  dc       +?git ui git.msg clean -fd
-bind diff   d<Enter> @?rm -rf %(file)
-bind diff   dd       @?rm -rf $(dirname %(file))
+bind diff   d<Enter> +?git ui cmd rm -rf %(file)
+bind diff   dd       +?git ui cmd rm -rf $(dirname %(file))
 
 ## Reset commits
 bind stage   rS +?git ui git.msg reset --hard'
@@ -284,30 +286,30 @@ bind reflog cp :!git ui git.auto cherry-pick -s %(commit)
 bind diff   cp :!git ui git.auto cherry-pick -s %(commit)
 
 ## Format patch {
-bind main   ps       @git ui patch.add C=%(commit)
-bind main   p<Enter> +git ui patch.create
-bind main   p1       +git ui git.msg format-patch -k --binary --histogram -o .patch -2 %(commit)
-bind main   pn       +git ui git.msg format-patch -k --binary --histogram -o .patch %(commit)^
-bind main   pr       +git ui patch.reset
+bind main   pr       @git ui patch.reset
+bind main   ps       :!git ui patch.add C=%(commit)
+bind main   p<Enter> :!git ui patch.create
+bind main   pn       :!git ui patch.create C=%(commit)^
+bind main   p1       :!git ui patch.create C=%(commit) NAME='$(date +%y%m%d%H%M%S)'
 bind diff   ps       @git ui patch.add C=%(commit)
-bind diff   p<Enter> +git ui patch.create
-bind diff   p1       +git ui git.msg format-patch -k --binary --histogram -o .patch -1 %(commit)
-bind diff   pn       +git ui git.msg format-patch -k --binary --histogram -o .patch %(commit)^
-bind diff   pf       +git ui git.msg format-patch -k --binary --histogram -o .patch %(commit) %(file)
 bind diff   pr       @git ui patch.reset
+bind diff   p<Enter> :!git ui patch.create
+bind diff   p1       :!git ui patch.create C=%(commit)
+bind diff   pn       :!git ui patch.create C=%(commit)^
+bind diff   pf       :!git ui patch.create C=%(commit) FILE=%(file)
 bind log    ps       @git ui patch.add C=%(commit)
-bind log    p<Enter> +git ui patch.create
-bind log    p1       +git ui git.msg format-patch -k --binary --histogram -o .patch -1 %(commit)
-bind log    pn       +git ui git.msg format-patch -k --binary --histogram -o .patch %(commit)^
-bind log    pf       +git ui git.msg format-patch -k --binary --histogram -o .patch %(commit) %(file)
 bind log    pr       @git ui patch.reset
+bind log    p<Enter> :!git ui patch.create
+bind log    p1       :!git ui patch.create C=%(commit)
+bind log    pn       :!git ui patch.create C=%(commit)^
+bind log    pf       :!git ui patch.create C=%(commit) FILE=%(file)
 bind reflog ps       @git ui patch.add C=%(commit)
-bind reflog p<Enter> +git ui patch.create
-bind reflog p1       +git ui git.msg format-patch -k --binary --histogram -o .patch -1 %(commit)
 bind reflog pr       @git ui patch.reset
-bind blame  p1       +git ui git.msg format-patch -k --binary --histogram -o .patch -1 %(commit)
-bind stage  p1       @git ui git.msg diff --output=$(date +%y%m%d%H%M%S).diff --binary --histogram
-bind stage  pf       @git ui git.msg diff --output=$(date +%y%m%d%H%M%S)_$(basename %(file)).diff --binary --histogram %(file)
+bind reflog p<Enter> +git ui patch.create
+bind reflog p1       :!git ui patch.create C=%(commit)
+bind blame  p1       :!git ui patch.create C=%(commit)
+bind stage  p1       :!git ui patch.create C=%(commit) NAME='$(date +%y%m%d%H%M%S)'
+bind stage  pf       :!git ui patch.create C=%(commit) NAME='$(date +%y%m%d%H%M%S)_$(basename %(file))' FILE=%(file)
 # }
 
 # Save Info {
@@ -331,7 +333,7 @@ bind refs C none
 bind refs ! none
 
 bind refs f<ENTER> :!git ui git.msg fetch --prune --all
-bind refs rb       :!git ui act.rebase C=%(commit)
+bind refs rb       :!git ui git.auto rebase %(commit)
 # 1. Select local branch
 # 2. Select assigned remote branch
 bind refs pp       !?git ui refs.push TAG=%(tag) BR=%(branch) REF=%(refname)
@@ -348,7 +350,7 @@ bind main bg +?git ui git.msg bisect good %(commit)
 bind main bb +?git ui git.msg bisect bad %(commit)
 bind main rv :!git ui git.auto revert --no-edit %(commit)
 bind diff rv :!git ui git.auto revert --no-edit %(commit)
-bind main rb >?git ui act.rebase C=%(commit) OPT='-i'
+bind main rb >?git ui git.auto rebase -i %(commit)
 bind main rk >?git rebase --skip
 # progress stop: rebase, merge, revert, cherry-pick, bisect
 bind main pa :!git ui act.abort

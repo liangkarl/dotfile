@@ -18,19 +18,24 @@ lib.load config
 
 dir='/tmp/tig'
 NODE="${dir}/node"
-patch=${dir}/tig.patch
-save_conf=${dir}/tig.save
+patch_file=${dir}/tig.patch
+info_file=${dir}/tig.save
+p_opts='--binary --histogram'
 
 mkdir $dir 2> $__N
 
-git.msg() {
-	if git $*; then
+cmd() { eval "$*"; }
+
+cmd.msg() {
+	if cmd $*; then
 		echo "'$*' done"
 	else
 		echo "'$*' failed ($?)"
 		false
 	fi
 }
+
+git.msg() { cmd git $*; }
 
 git.auto() {
 	local list="stash rebase merge cherry-pick revert"
@@ -222,7 +227,7 @@ refs.cut() {
 		if C=$C NAME=$TAG tag.check; then
 			git tag -d $TAG
 			if [[ "$TAG" =~ patch\.[0-9]+ ]]; then
-				sed -i -e "/${TAG}/d" $patch
+				sed -i -e "/${TAG}/d" $patch_file
 				patch.refresh
 				return
 			fi
@@ -245,7 +250,7 @@ refs.cut() {
 # main: C= refs.push
 # 4. Push to upstream
 refs.push() {
-	config.load "$save_conf"
+	config.load "$info_file"
 	config.get remote_branch "$remote_branch"
 	config.get remote_tag "$remote_tag"
 	config.get track_branch "$track_branch"
@@ -283,7 +288,7 @@ refs.push() {
 		git.msg push $OPT $remote ${C}:${remote_branch:-$remote_tag}
 	fi
 
-	rm -rf $save_conf
+	rm -rf $info_file
 }
 
 # copy <text>
@@ -330,30 +335,34 @@ patch.refresh() {
 }
 
 patch.reset() {
-	local file="$patch"
 	local item i
 
-	i=100
-	for item in $(cat $file); do
-		git tag -d patch.$((i - 100))
-		(( i++ ))
+	i=0
+	for item in $(cat $patch_file); do
+		git tag -d patch.$((i++))
 	done
-	rm -f $file
+	rm -f $patch_file
 }
 
+# (commit) C= patch.create
+# (diff)   C=000... NAME= patch.create
+# [OPT=all] patch.create
 patch.create() {
-	local file="$patch"
-	local item i
+	if [[ -z "$C" ]]; then
+		local item i
 
-	i=100
-	for item in $(cat $file); do
-		git format-patch --start-number $i -k --binary --histogram -1 -o . $item
-		git tag -d patch.$((i - 100))
-		(( i++ ))
-	done &> $__N
+		i=100
+		for item in $(cat $patch_file); do
+			git format-patch --start-number $((i++)) -k $p_opts -1 -o git-patch $item
+		done &> $__N
 
-	rm -f $file
-	echo "$((i - 100)) patches has been created."
+		patch.reset
+		echo "$((i - 100)) patches has been created."
+	elif [[ "$C" =~ ^0+$ ]]; then
+		git.msg diff --output=${NAME}.diff $p_opts $FILE
+	elif is_commit $C; then
+		git.msg format-patch -k $p_opts -o git-patch -1 $C $FILE
+	fi
 }
 
 # C= patch.add
@@ -362,7 +371,7 @@ patch.add() {
 	local commit
 
 	commit="$C"
-	file=$patch
+	file=$patch_file
 	touch $file
 
 	idx=$(wc -l $file | cut -d' ' -f 1)
@@ -377,7 +386,7 @@ patch.add() {
 
 # TAG= BR= push.create
 push.create() {
-	source $save_conf
+	source $info_file
 
 	if [[ -z "$remote" ]]; then
 		echo "no remote name"; false
@@ -391,12 +400,12 @@ push.create() {
 
 	git.msg push $remote ${BR:-$TAG}
 
-	rm -rf $save_conf
+	rm -rf $info_file
 }
 
 info.clean() {
 	echo "clean configurations"
-	rm -f $save_conf
+	rm -f $info_file
 }
 
 # C= BR= TAG= REF= FILE= OFILE= info.write
@@ -442,7 +451,7 @@ info.write() {
 		msg.err "no matched pattern ($REF) for br:$BR or tag:$TAG"
 	fi
 
-	config.load "$save_conf"
+	config.load "$info_file"
 	config.set commit "$commit"
 	config.set local_branch "$local_branch"
 	config.set local_tag "$local_tag"
