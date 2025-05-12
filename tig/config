@@ -251,11 +251,11 @@ bind refs   d<ENTER> @git ui refs.cut C=%(commit) BR=%(branch) TAG=%(tag)
 bind main   co :!git ui git.auto checkout %(commit)
 bind refs   co :!git ui git.auto checkout %(ref)
 bind reflog co :!git ui git.auto checkout %(commit)
-bind status co +?git ui git.auto checkout %(file)
-bind stage  co +?git ui git.auto checkout %(file)
-bind stage  c<LT><LT> +?git ui git.auto checkout --ours %(file)
-bind stage  c>> +?git ui git.auto checkout --theirs %(file)
-bind diff   co +?git ui git.auto checkout %(commit) -- %(file)
+bind status co +?git ui git.msg  checkout %(file)
+bind stage  co +?git ui git.msg  checkout %(file)
+bind stage  c<LT><LT> +?git ui git.msg checkout --ours %(file)
+bind stage  c>> +?git ui git.msg checkout --theirs %(file)
+bind diff   co +?git ui git.msg checkout %(commit) -- %(file)
 
 ### File Operation
 bind main   dc       +?git ui git.msg clean -fd
@@ -269,15 +269,15 @@ bind diff   d<Enter> +?git ui cmd rm -rf %(file)
 bind diff   dd       +?git ui cmd rm -rf $(dirname %(file))
 
 ## Reset commits
-bind stage   rS +?git ui git.msg reset --hard'
-bind reflog  rS +?git ui git.msg reset --hard %(commit)'
-bind diff    rS +?git ui git.msg reset --hard %(commit)'
-bind main    rS +?git ui git.msg reset --hard %(commit)'
-bind reflog  rs +?git ui git.msg reset %(commit)'
-bind diff    rs +?git ui git.msg reset %(commit)'
-bind main    rs +?git ui git.msg reset %(commit)'
-bind main    rn +?git ui git.msg reset --hard'
-bind main    rp +?git ui git.msg reset HEAD@{1}'
+bind stage   rS +?git ui git.msg reset --hard
+bind reflog  rS +?git ui git.msg reset --hard %(commit)
+bind diff    rS +?git ui git.msg reset --hard %(commit)
+bind main    rS +?git ui git.msg reset --hard %(commit)
+bind reflog  rs +?git ui git.msg reset %(commit)
+bind diff    rs +?git ui git.msg reset %(commit)
+bind main    rs +?git ui git.msg reset %(commit)
+bind main    rn +?git ui git.msg reset --hard
+bind main    rp +?git ui git.msg reset HEAD@{1}
 
 ## Cherry-pick
 bind main   cp :!git ui git.auto cherry-pick -s %(commit)
