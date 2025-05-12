@@ -199,8 +199,7 @@ refs.paste() {
 	rm $NODE
 }
 
-# C= refs.cut
-# BR= TAG= refs.cut
+# C= [BR=] [TAG=] refs.cut
 refs.cut() {
 	local br tag
 
@@ -215,6 +214,7 @@ refs.cut() {
 		fi
 	fi
 
+	rm -f $NODE
 	config.load $NODE
 	if [[ -n "$BR" ]]; then
 		if C=$C NAME=$BR br.check; then
