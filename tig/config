@@ -336,6 +336,9 @@ bind refs f<ENTER> :!git ui git.msg fetch --prune --all
 bind refs rb       :!git ui git.auto rebase %(commit)
 # 1. Select local branch
 # 2. Select assigned remote branch
+bind refs pb       !?git ui refs.push BR="%(prompt new branch: )" REMOTE=%(remote)
+bind refs pt       !?git ui refs.push TAG="%(prompt new tag: )" REMOTE=%(remote)
+bind refs pc       !?git ui refs.push REMOTE=%(remote)
 bind refs pp       !?git ui refs.push TAG=%(tag) BR=%(branch) REF=%(refname)
 bind refs pP       !?git ui refs.push TAG=%(tag) BR=%(branch) REF=%(refname) OPT='--force-with-lease'
 bind refs cs        +git ui info.clean
