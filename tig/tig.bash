@@ -35,7 +35,7 @@ cmd.msg() {
 	fi
 }
 
-git.msg() { cmd git $*; }
+git.msg() { cmd.msg git $*; }
 
 git.auto() {
 	local list="stash rebase merge cherry-pick revert"
