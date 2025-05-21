@@ -61,3 +61,5 @@ kill.contain() {
     fi
     kill $(ps -s $1 -o pid=);
 }
+
+export HOSTNAME
