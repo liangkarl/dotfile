@@ -26,7 +26,7 @@ input_box() {
 }
 
 list_win_all() {
-    tmux list-windows -a -F "[#S] #I:#W"
+    tmux list-windows -a -F "#S:#I - #W"
 }
 
 list_win_session() {
@@ -161,96 +161,258 @@ pane_width
     done
 }
 
-update_cb() {
-    cb_ans="$2"
+# handle_main [state1] [state2]
+handle_main() {
+    local ans idx state
+
+    if [[ -n "$1" ]]; then
+        eval "handle_$1 \"$@\""
+        return
+    fi
+
+    state="handle_main"
+    while :; do
+        menu.height 15
+        menu.opts "${main_menu[@]}"
+        menu.add_opt "exit"
+        menu.run
+        ans=$(menu.ans_opt)
+        idx=$(menu.ans_idx)
+
+        if [[ -z "$idx" || -z "$ans" ]]; then
+            return 1
+        fi
+
+        if [[ "$ans" == "exit" ]]; then
+            exit
+        fi
+
+        handle_${ans}
+    done
 }
 
-main() {
-    menu.height 15
-    menu.opts "${main_menu[@]}"
-    menu.add_exit
-    menu.run
+run_win_cmd() {
+    local ans idx state
+    local src dst
+    local sym opt
+
+    declare -A sym opt
+    sym=([swap]="<->"
+         [link]="~>"
+         [move]="->")
+    opt=([break]="break-pane -P"
+         [kill]="kill-window"
+         [switch]="select-window"
+         [rename]="rename-window"
+         [new]="new-window -n")
+
+    ans="$1"
+    case "$ans" in
+        rename | new)
+            name=$(input_box 'Enter new window title')
+            # current window
+            tmux ${opt[$ans]} "$name"
+            ;;
+        swap | move | link)
+            src=$(list_win_all | fzf)
+            [[ -z "$src" ]] && return
+
+            dst=$(list_win_all | sed -e "s/^/$src ${sym[$ans]} /" | fzf | sed -e "s/^$src ${sym[$ans]} //")
+            [[ -z "$dst" ]] && return
+
+            src=${src%%-*}
+            dst=${dst%%-*}
+            tmux ${ans}-window -s $src -t $dst
+            ;;
+        break | kill | switch)
+            src=$(list_win_all | fzf)
+            [[ -z "$src" ]] && return
+
+            src=${src%%-*}
+            tmux ${opt[$ans]} -t $src
+            ;;
+        info)
+            win_info | fzf
+            ;;
+        exit) return;;
+        *) return 1;;
+    esac
 }
 
-window() {
+handle_window() {
+    local ans idx state
+    local src dst
+
+    if [[ -n "$1" ]]; then
+        run_win_cmd $1
+        exit
+    fi
+
+    state="handle_window"
     menu.height 15
     menu.opts "${win_menu[@]}"
-    menu.add_cancel
-    menu.add_exit
-    menu.run
+    menu.add_opt "exit"
+    menu.add_opt "back"
+    while :; do
+        menu.run
+        ans=$(menu.ans_opt)
+        idx=$(menu.ans_idx)
 
-    case "$cb_ans" in
-        rename)
-            cb_ans=cancel
+        if [[ -z "$idx" ]]; then
+            return 1
+        fi
+
+        run_win_cmd $ans && exit
+    done
+}
+
+run_pane_cmd() {
+    local ans idx state
+    local src dst
+    local sym opt
+
+    declare -A sym opt
+    sym=([swap]="<->"
+         [link]="~>"
+         [move]="->")
+    opt=([break]="break-pane -P"
+         [kill]="kill-window"
+         [switch]="select-window"
+         [rename]="rename-window"
+         [new]="new-window -n")
+
+    ans="$1"
+    case "$ans" in
+        rename | new)
             name=$(input_box 'Enter new window title')
-            tmux rename-window "$name" && cb_ans=exit
+            # current window
+            tmux ${opt[$ans]} "$name"
+            ;;
+        swap | move | link)
+            src=$(list_win_all | fzf)
+            [[ -z "$src" ]] && return
+
+            dst=$(list_win_all | sed -e "s/^/$src ${sym[$ans]} /" | fzf | sed -e "s/^$src ${sym[$ans]} //")
+            [[ -z "$dst" ]] && return
+
+            src=${src%%-*}
+            dst=${dst%%-*}
+            tmux ${ans}-window -s $src -t $dst
+            ;;
+        break | kill | switch)
+            src=$(list_win_all | fzf)
+            [[ -z "$src" ]] && return
+
+            src=${src%%-*}
+            tmux ${opt[$ans]} -t $src
             ;;
         info)
-            cb_ans=cancel
             win_info | fzf
-            cb_ans=exit
             ;;
-        *)
+        exit) return;;
+        *) return 1;;
     esac
 }
 
-pane() {
+handle_pane() {
+    local ans idx state
+
+    state="handle_pane"
     menu.height 15
     menu.opts "${pane_menu[@]}"
-    menu.add_cancel
-    menu.add_exit
-    menu.run
-    case "$cb_ans" in
-        rename)
-            name=$(input_box 'Enter new pane title')
-            cb_ans=cancel
-            tmux select-pane -T "$name" && cb_ans=exit
+    menu.add_opt "exit"
+    menu.add_opt "back"
+    while :; do
+        menu.run
+        ans=$(menu.ans_opt)
+        idx=$(menu.ans_idx)
+
+        if [[ -z "$idx" ]]; then
+            return 1
+        fi
+
+        run_win_cmd $ans && exit
+    done
+}
+
+run_session_cmd() {
+    local ans idx state
+    local src dst
+    local sym opt
+
+    declare -A sym opt
+    sym=([swap]="<->"
+         [link]="~>"
+         [move]="->")
+    opt=([break]="break-pane -P"
+         [kill]="kill-window"
+         [switch]="select-window"
+         [rename]="rename-window"
+         [new]="new-window -n")
+
+    ans="$1"
+    case "$ans" in
+        rename | new)
+            name=$(input_box 'Enter new window title')
+            # current window
+            tmux ${opt[$ans]} "$name"
+            ;;
+        swap | move | link)
+            src=$(list_win_all | fzf)
+            [[ -z "$src" ]] && return
+
+            dst=$(list_win_all | sed -e "s/^/$src ${sym[$ans]} /" | fzf | sed -e "s/^$src ${sym[$ans]} //")
+            [[ -z "$dst" ]] && return
+
+            src=${src%%-*}
+            dst=${dst%%-*}
+            tmux ${ans}-window -s $src -t $dst
+            ;;
+        break | kill | switch)
+            src=$(list_win_all | fzf)
+            [[ -z "$src" ]] && return
+
+            src=${src%%-*}
+            tmux ${opt[$ans]} -t $src
             ;;
         info)
-            cb_ans=cancel
-            pane_info | fzf
-            cb_ans=exit
+            win_info | fzf
             ;;
-        *)
+        exit) return;;
+        *) return 1;;
     esac
 }
 
-session() {
-    menu.height 15
-    menu.opts "${session_menu[@]}"
-    menu.add_cancel
-    menu.add_exit
-    menu.run
-    case "$cb_ans" in
-        rename)
-            name=$(input_box 'Enter new pane title')
-            cb_ans=cancel
-            tmux select-pane -T "$name" && cb_ans=exit
-            ;;
-        info)
-            cb_ans=cancel
-            session_info | fzf
-            cb_ans=exit
-            ;;
-        *)
-    esac
+handle_session() {
+    local ans idx state
+
+    state="handle_session"
+    while :; do
+        menu.height 15
+        menu.opts "${session_menu[@]}"
+        menu.add_opt "exit"
+        menu.add_opt "back"
+        menu.run
+        ans=$(menu.ans_opt)
+        idx=$(menu.ans_idx)
+
+        case "$ans" in
+            rename)
+                name=$(input_box 'Enter new pane title')
+                ans=cancel
+                tmux select-pane -T "$name" && ans=exit
+                ;;
+            info)
+                ans=cancel
+                session_info | fzf
+                ans=exit
+                ;;
+            exit) exit;;
+            *|back) return;;
+        esac
+    done
 }
 
 menu.backend "fzf"
-menu.callback update_cb
-state="main"
-while :; do
-    eval "$state"
-    next="$cb_ans"
-    if [[ -z "$next" ]]; then
-        echo "no next step" >&2
-        exit
-    fi
-    if [[ "$next" == "exit" ]]; then
-        exit
-    fi
-    if [[ "$next" == "cancel" ]]; then
-        next="main"
-    fi
-    eval "state=$next"
-done
+# state='handle_main'
+handle_main "$@"
