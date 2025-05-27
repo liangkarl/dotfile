@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-lib.load io
+lib.load devel
 
 # set -xv
 set -eE

@@ -24,8 +24,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-lib.load io
-lib.load file
+lib.load devel
 lib.load menu
 source $(myscript helper.aosp)
 
