@@ -120,7 +120,7 @@ msg.dbg() {
 
     # don't use source.name since it would return devel.sh while using this
     # function in other scripts
-    eval "id=\$(basename \${BASH_SOURCE[${__DBG_IDX:-1}]})"
+    eval "id=\$(basename \${BASH_SOURCE[${__DBG_IDX:-1}]} 2> $__N)"
     # echo "stack=${BASH_SOURCE[@]}"
     # echo "id: $id"
     offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST $id)
@@ -188,7 +188,7 @@ dbg.mark() {
 
     # don't use source.name since it would return devel.sh while using this
     # function in other scripts
-    id=$(basename ${BASH_SOURCE[1]})
+    id=$(basename ${BASH_SOURCE[1]} 2> $__N)
     id="${1:-$id}"
 
     offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST "$id")
