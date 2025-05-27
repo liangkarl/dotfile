@@ -20,7 +20,7 @@ return {
     -- WA: Update current function
     m.autocmd({ "CursorMoved", "CursorMovedI" }, "*",
       function()
-        if #vim.lsp.get_active_clients({bufnr = 0}) > 0 then
+        if #vim.lsp.get_clients({bufnr = 0}) > 0 then
           lsp_status.update_current_function()
         end
       end, {
