@@ -43,6 +43,7 @@ aerial = {
         max_width = { 70, 0.4 },
         width = 40,
         min_width = { 30, 0.2 },
+        default_direction = "right",
       },
 
       -- Enum: persist, close, auto, global
