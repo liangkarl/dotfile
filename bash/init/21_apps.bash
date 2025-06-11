@@ -29,6 +29,7 @@ configure_fuzzy_finder() {
         # avoid conflict to the preview command setting from other apps
         # `toggle-track` is only available after fzf 0.40
         export FZF_DEFAULT_OPTS="--ansi
+                --height=~50%
                 --bind '$binds'
                 --preview-window=':hidden,wrap'
                 --preview='echo -- Full String --; echo {}; if [[ -f {} ]]; then echo; echo -- File Preview --; head {}; fi'
