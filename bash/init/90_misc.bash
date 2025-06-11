@@ -63,3 +63,4 @@ kill.contain() {
 }
 
 export HOSTNAME
+export EDITOR=vim
