@@ -195,32 +195,32 @@ local function config()
   end, "Search current cursor string (Quickfix)")
 
   -- Git / Coding
-  m.noremap("n", "<leader>;r", function ()
-    exe_loop({
-      { id = 'glance', action = 'Glance references' },
-      { id = 'trouble', action = 'Trouble lsp_references toggle' }
-    })
-  end, "Code Reference")
-  m.noremap('n', '<leader>;d', function ()
-    exe_loop({
-      { id = 'glance', action = 'Glance definitions' },
-      { id = 'trouble', action = 'Trouble lsp_definitions toggle' }
-    })
-  end, "Definition")
-  m.noremap('n', '<leader>;D', function ()
-    exe_loop({
-      { id = 'glance', action = 'Glance type_definitions' },
-      { id = 'trouble', action = 'Trouble lsp_type_definitions toggle' }
-    })
-  end, "Type Definition")
-  m.noremap('n', '<leader>;p', function ()
-    exe_loop({
-      { id = 'glance', action = 'Glance implementations' },
-      { id = 'trouble', action = 'Trouble lsp_implementations toggle' }
-    })
-  end, "Implementations")
-  m.noremap('n', '<leader>;n', lsp.rename, "Rename (LSP)")
-  m.noremap('',  '<leader>;c', lsp.code_action, "Show code action menu (LSP)")
+  -- m.noremap("n", "<leader>;r", function ()
+  --   exe_loop({
+  --     { id = 'glance', action = 'Glance references' },
+  --     { id = 'trouble', action = 'Trouble lsp_references toggle' }
+  --   })
+  -- end, "Code Reference")
+  -- m.noremap('n', '<leader>;d', function ()
+  --   exe_loop({
+  --     { id = 'glance', action = 'Glance definitions' },
+  --     { id = 'trouble', action = 'Trouble lsp_definitions toggle' }
+  --   })
+  -- end, "Definition")
+  -- m.noremap('n', '<leader>;D', function ()
+  --   exe_loop({
+  --     { id = 'glance', action = 'Glance type_definitions' },
+  --     { id = 'trouble', action = 'Trouble lsp_type_definitions toggle' }
+  --   })
+  -- end, "Type Definition")
+  -- m.noremap('n', '<leader>;p', function ()
+  --   exe_loop({
+  --     { id = 'glance', action = 'Glance implementations' },
+  --     { id = 'trouble', action = 'Trouble lsp_implementations toggle' }
+  --   })
+  -- end, "Implementations")
+  -- m.noremap('n', '<leader>;n', lsp.rename, "Rename (LSP)")
+  -- m.noremap('',  '<leader>;c', lsp.code_action, "Show code action menu (LSP)")
   m.noremap('n', '<leader>;v', lsp.hover, "Show info (LSP)")
   m.noremap('n', '<leader>;h', lsp.signature_help, "Show signatures (LSP)")
   m.noremap('n', '<leader>;w', '<cmd>TroubleToggle workspace_diagnostics<cr>', "Diagnostic Workspace (Trouble)")

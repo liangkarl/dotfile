@@ -47,10 +47,10 @@ return {
     keyset("n", "]g", "<Plug>(coc-diagnostic-next)", {silent = true})
 
     -- GoTo code navigation
-    keyset("n", "gd", "<Plug>(coc-definition)", {silent = true})
-    keyset("n", "gy", "<Plug>(coc-type-definition)", {silent = true})
-    keyset("n", "gi", "<Plug>(coc-implementation)", {silent = true})
-    keyset("n", "gr", "<Plug>(coc-references)", {silent = true})
+    keyset("n", "<leader>;d", "<Plug>(coc-definition)", {silent = true})
+    keyset("n", "<leader>;D", "<Plug>(coc-type-definition)", {silent = true})
+    keyset("n", "<leader>;p", "<Plug>(coc-implementation)", {silent = true})
+    keyset("n", "<leader>;r", "<Plug>(coc-references)", {silent = true})
 
 
     -- Use K to show documentation in preview window
@@ -77,7 +77,7 @@ return {
 
 
     -- Symbol renaming
-    keyset("n", "<leader>rn", "<Plug>(coc-rename)", {silent = true})
+    keyset("n", "<leader>;n", "<Plug>(coc-rename)", {silent = true})
 
 
     -- Formatting selected code
@@ -173,7 +173,7 @@ return {
     -- Find symbol of current document
     keyset("n", "<space>o", ":<C-u>CocList outline<cr>", opts)
     -- Search workspace symbols
-    keyset("n", "<space>s", ":<C-u>CocList -I symbols<cr>", opts)
+    -- keyset("n", "<space>s", ":<C-u>CocList -I symbols<cr>", opts)
     -- Do default action for next item
     keyset("n", "<space>j", ":<C-u>CocNext<cr>", opts)
     -- Do default action for previous item

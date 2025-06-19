@@ -102,7 +102,7 @@ require("lazy").setup({
   require('config.vim-startuptime'),
 
   -- Autocompletion
-  require('config.nvim-cmp'),
+  -- require('config.nvim-cmp'),
 
   require('config.tabnine-nvim'),
   require('config.lsp-status'),
@@ -111,7 +111,8 @@ require("lazy").setup({
   require('config.ChatGPT'),
 
   -- LSP
-  require('core.lspconfig'),
+  -- require('core.lspconfig'),
+  require('config.coc'),
 
   -- Keymaps
   require("core.which-key")

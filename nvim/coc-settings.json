@@ -5,12 +5,18 @@
     "https://github.com/neoclide/coc.nvim/wiki/Language-servers#ccobjective-c"
   ],
 
+  "languageserver": {
+  },
+
   "suggest.detailMaxLength": 50,
   "suggest.maxPreviewWidth": 50,
   "diagnostic.displayByAle": true,
 
   "http.proxyStrictSSL": false,
   "https.rejectUnauthorized": false,
+
+  "suggest.labelMaxLength": 80,
+  "suggest.detailMaxLength": 80,
 
   "//":"coc-explorer setup",
   "explorer.icon.enableNerdfont": true
