@@ -2,7 +2,7 @@ return { -- Syntax highlight/lint with `treesitter`
   -- NOTE: treesitter might have to update after updating neovim
   'nvim-treesitter/nvim-treesitter',
   build = ":TSUpdateSync",
-  tag = 'v0.9.3',
+  tag = 'v0.10.0',
   config = function()
     local treesitter = require('nvim-treesitter.configs')
     local vim = vim
