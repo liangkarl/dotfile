@@ -41,6 +41,12 @@ vim.diagnostic.config({ virtual_text = false })
 vim.o.updatetime = 1000
 vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
 
+vim.cmd("highlight clear LineNr")
+vim.cmd("highlight clear CursorLine")
+vim.cmd("highlight LineNrAbove guifg=#424242")
+vim.cmd("highlight link LineNrBelow LineNrAbove")
+vim.cmd("highlight link LineNr CursorLineNr")
+
 m.highlight("nCursor", { fg=nil, bg='SlateBlue', cterm=nil, ctermbg=1 })
 m.highlight("iCursor", { fg=nil, bg='#ffffff', cterm=nil, ctermbg=15 })
 m.highlight("rCursor", { fg=nil, bg='Red', cterm=nil, ctermbg=12 })
