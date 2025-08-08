@@ -14,8 +14,7 @@ $cmd_duration\
 $git_branch\
 $git_state\
 $git_status\
-$time\
-$all"""
+$time"""
 
 # right_format = """$git_branch$git_state$git_status$time$all"""
 
