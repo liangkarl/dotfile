@@ -573,4 +573,4 @@ if [[ ! "$0" =~ git* ]]; then
 	eval "$*"
 fi
 
-set -x
+# set -x
