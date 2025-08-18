@@ -69,6 +69,52 @@ local function config()
     print("no matched function for the key")
   end
 
+  -- Check if any Coc LSP server is running for the current buffer
+  function has_coc_lsp()
+    local ok, services = pcall(vim.fn.CocAction, "services")
+    if not ok then
+      vim.notify("coc.nvim not available", vim.log.levels.ERROR)
+      return false
+    end
+
+    for _, srv in ipairs(services) do
+      if srv.state == "running" then
+        return true
+      end
+    end
+    return false
+  end
+
+  --- Run a command only if a package/module exists
+  --- @param pack string  -- module/package name
+  --- @param cmd string   -- vim command to run
+  function run_if_has(cmd)
+    local ok, _ = pcall(require, cmd.need)
+    local new, def
+
+    if ok then
+      new = vim.api.nvim_replace_termcodes(cmd.cmd, true, false, true)
+      vim.api.nvim_feedkeys(new, "n", false)
+    elseif cmd.fallback then
+      def = vim.api.nvim_replace_termcodes(cmd.fallback, true, false, true)
+      vim.api.nvim_feedkeys(def, "n", false)
+    else
+      vim.notify("failed: skipping command: " .. cmd.cmd, vim.log.levels.WARN)
+    end
+  end
+
+  function run_if_coc_has(cmd)
+    if has_coc_lsp() then
+      cmd = vim.api.nvim_replace_termcodes(cmd.cmd, true, false, true)
+      vim.api.nvim_feedkeys(cmd, "n", false)
+    elseif cmd.fallback then
+      def = vim.api.nvim_replace_termcodes(cmd.fallback, true, false, true)
+      vim.api.nvim_feedkeys(def, "n", false)
+    else
+      vim.notify("failed: skipping command: " .. cmd.cmd, vim.log.levels.WARN)
+    end
+  end
+
   -- NOTE:
   -- '' in map mode means normal, visual and select modes
 
@@ -131,35 +177,60 @@ local function config()
   m.noremap({'n', 'v', 'i'},  '<S-Down>', '<C-d>')
 
   -------------------
-  -- Direct Keymap --
+  -- Extension --
   -------------------
-  m.noremap('n', '<leader>\\', '<C-w>w', "Switch to next window")
-  m.noremap('n', '<leader><S-Tab>', '<cmd>BufferLineCyclePrev<cr>', "Switch to previous buffer")
-  m.noremap('n', '<leader><Tab>', '<cmd>BufferLineCycleNext<cr>', "Switch to next buffer")
-  m.noremap('',  '<leader>0', '^', "Go to the first character of line")
-  m.noremap('',  '<leader>9', '$', "Go to the end of line")
-  m.noremap('n', '<leader>?', '<cmd>Telescope keymaps<cr>', "Open keymaps")
-  m.noremap('n', '<leader>h', '<cmd>Telescope help_tags<cr>', "Show help manuals like :help")
-  -- Search
-  m.noremap('v', '<leader>/', '<Esc>/\\%V', "Search within selected block")
-  -- Coding
-  m.noremap('n', '<leader>!', '<cmd>ToggleAlternate<cr>', "Invert boolean value")
+  --- action: switch
+  m.noremap('n', '<TAB><TAB>', '<C-w>w', "Switch to next window")
+  m.noremap('n', '<TAB>h', '<C-w>h', "Switch to left window")
+  m.noremap('n', '<TAB>j', '<C-w>j', "Switch to down window")
+  m.noremap('n', '<TAB>k', '<C-w>k', "Switch to up window")
+  m.noremap('n', '<TAB>l', '<C-w>l', "Switch to right window")
+  m.noremap('n', '<TAB>p', '<cmd>BufferLineCyclePrev<cr>', "Switch to previous buffer")
+  m.noremap('n', '<TAB>n', '<cmd>BufferLineCycleNext<cr>', "Switch to next buffer")
+  m.noremap('n', '<TAB>/', '<cmd>Telescope buffers<cr>', "Switch opened buffers")
+
+  -- action: search
+  m.noremap('n', '//', '<cmd>Telescope live_grep<cr>', "Grep under CWD (Telescope)")
+  m.noremap('n', '//w', '<cmd>Telescope grep_string<cr>', "Search <cword> under CWD (Telescope)")
+  m.noremap('n', '//b', '<cmd>Telescope current_buffer_fuzzy_find<cr>', "Search in current buffer (Telescope)")
+  -- https://stackoverflow.com/questions/40867576/how-to-use-vimgrep-to-grep-work-thats-high-lighted-by-vim
+  m.noremap('n', '//s', function()
+    vim.cmd("exe 'vimgrep' expand('<cword>') '%'")
+    vim.cmd("copen")
+  end, "Search current cursor string (Quickfix)")
+  m.noremap('v', '/', '<Esc>/\\%V', "Search within selected block")
+
+  --- action: goto
+  m.noremap('',  'g0', '^', "Go to the first character of line")
+  m.noremap('',  'g9', '$', "Go to the end of line")
+  m.noremap('',  'g/', '<cmd>HopPattern<cr>')
+  m.noremap("n", "gd", "<Plug>(coc-definition)", "Goto definition")
+  m.noremap("n", "gD", "<Plug>(coc-type-definition)", "Goto type definition")
+  m.noremap("n", "gp", "<Plug>(coc-implementation)", "Goto implementation")
+  m.noremap("n", "gr", "<Plug>(coc-references)", "Goto references")
+
+  --- action: change
+  m.noremap("n", "cn", "<Plug>(coc-rename)", "LSP: rename")
+  m.noremap('n', 'c!', '<cmd>ToggleAlternate<cr>', "Invert boolean value")
+
+  --- action: delete
+  m.noremap('n', 'ds', '<cmd>lua MiniTrailspace.trim()<cr>', 'Remove trailing spaces')
+
+  --- action: yank
+  m.noremap('',  'ys', '"+y', "Copy to Clipboard")
+  m.noremap('',  'yc', '"*y', "Copy to 'copy-on-select' Clipboard")
+
+  --- action: autoformat
+  m.noremap('',  '==', function() lsp.format({ async = true }) end, "LSP: Format Code")
+
   -- There are two different clipboards for Linux and only one for Win
   -- *: clipboard for copy-on-select
   -- +: clipboard for <C-c> and <C-v>
-  m.noremap('',  '<leader>y', '"+y', "Copy to Clipboard")
   m.noremap('',  '<leader>p', '"+p', "Paste from Clipboard")
-  m.noremap('',  '<leader>Y', '"*y', "Copy to 'copy-on-select' Clipboard")
   m.noremap('',  '<leader>P', '"*p', "Paste from 'copy-on-select' Clipboard")
-  m.noremap('',  '<leader>=', function() lsp.format({ async = true }) end, "Format code (LSP)")
-  m.noremap('n', '<leader>b', '<cmd>Telescope buffers<cr>', "Switch opened buffers")
   m.noremap('n', '<leader>S', '<cmd>AerialToggle<cr>', 'Symbol Manager')
   m.noremap('n', '<leader>F', '<cmd>lua MiniFiles.open()<cr>', 'File Explorer')
   m.noremap('n', '<leader>d', M.close_buf, "Close current buffer")
-  m.noremap('',  '<leader>g', '<cmd>HopChar1<cr>')
-  m.noremap('',  '<leader>j', '<cmd>HopPattern<cr>')
-  m.noremap('',  '<leader>l', '<cmd>HopWord<cr>')
-  m.noremap('',  '<leader>k', '<cmd>HopVertical<cr>')
 
   -------------------
   -- Folded Keymap --
@@ -171,9 +242,13 @@ local function config()
     { "<leader>;", group = "Coding" },
     { "<leader>f", group = "File" },
     { "<leader>s", group = "Setup / Status" },
-    { "<leader>w", group = "Window / Plugin" },
+    { "<leader>w", group = "Window" },
+    { "<leader>b", group = "Buffer" },
+    { "<leader>g", group = "Git" },
   })
 
+  m.noremap('n', '<leader>?', '<cmd>Telescope keymaps<cr>', "Open keymaps")
+  m.noremap('n', '<leader>h', '<cmd>Telescope help_tags<cr>', "Show help manuals like :help")
   -- File (Open/Close/Save)
   -- m.noremap('n', '<leader>', '', "Open file (Current file path)")
   m.noremap('n', '<leader>fr', '<cmd>Telescope oldfiles<cr>', "Open recently closed files")
@@ -181,18 +256,6 @@ local function config()
   m.noremap('n', '<leader>fw', '<cmd>w<cr>', "Save")
   -- m.noremap('n', '<leader>fm', '<cmd>Bdelete menu<cr>', "Show delete menu")
   -- m.noremap('n', '<leader>fD', '<cmd>Bdelete select<cr>', "Select")
-
-  m.noremap('n', '<leader>fg', '<cmd>TigOpenCurrentFile<cr>', "Git log with current file")
-
-  -- Search
-  m.noremap('n', '<leader>/', '<cmd>Telescope live_grep<cr>', "Grep under CWD (Telescope)")
-  m.noremap('n', '<leader>/w', '<cmd>Telescope grep_string<cr>', "Search <cword> under CWD (Telescope)")
-  m.noremap('n', '<leader>/b', '<cmd>Telescope current_buffer_fuzzy_find<cr>', "Search in current buffer (Telescope)")
-  -- https://stackoverflow.com/questions/40867576/how-to-use-vimgrep-to-grep-work-thats-high-lighted-by-vim
-  m.noremap('n', '<leader>/s', function()
-    vim.cmd("exe 'vimgrep' expand('<cword>') '%'")
-    vim.cmd("copen")
-  end, "Search current cursor string (Quickfix)")
 
   -- Git / Coding
   -- m.noremap("n", "<leader>;r", function ()
@@ -225,14 +288,16 @@ local function config()
   m.noremap('n', '<leader>;h', lsp.signature_help, "Show signatures (LSP)")
   m.noremap('n', '<leader>;w', '<cmd>TroubleToggle workspace_diagnostics<cr>', "Diagnostic Workspace (Trouble)")
   m.noremap('n', '<leader>;f', '<cmd>TroubleToggle document_diagnostics<cr>', "Diagnostic Document (Trouble)")
-  m.noremap('n', '<leader>;;B', '<cmd>Gitsigns blame<cr>', "Blame file")
+  m.noremap('n', '<leader>gB', '<cmd>Gitsigns blame<cr>', "Blame file")
   -- m.noremap('n', '<leader>;;b', '<cmd>Gitsigns blame_line<cr>', "Blame file (inline)")
-  m.noremap('n', '<leader>;;b', '<cmd>TigBlame<cr>', "Blame file")
-  m.noremap('n', '<leader>;;p', '<cmd>Gitsigns preview_hunk_inline<cr>', "Preview line change(s)")
-  m.noremap('n', '<leader>;;d', '<cmd>Gitsigns diffthis<cr>', "Open two panes to show the diff")
-  m.noremap('n', '<leader>;;l', '<cmd>Gitsigns setloclist<cr>', "List the change(s)")
-  m.noremap('n', '<leader>;;r', '<cmd>Gitsigns reset_hunk<cr>', "Reset the hunk")
-  m.noremap('n', '<leader>;;a', '<cmd>Gitsigns stage_hunk<cr>', "Add the hunk")
+  m.noremap('n', '<leader>g;', '<cmd>TigBlame<cr>', "Blame file")
+  m.noremap('n', '<leader>g.', '<cmd>TigOpenCurrentFile<cr>', "Git log with current file")
+  m.noremap('n', '<leader>g/', '<cmd>TigOpenProjectRootDir<cr>', "Tig: Project Root Dir")
+  m.noremap('n', '<leader>gp', '<cmd>Gitsigns preview_hunk_inline<cr>', "Preview line change(s)")
+  m.noremap('n', '<leader>gd', '<cmd>Gitsigns diffthis<cr>', "Open two panes to show the diff")
+  m.noremap('n', '<leader>gl', '<cmd>Gitsigns setloclist<cr>', "List the change(s)")
+  m.noremap('n', '<leader>gr', '<cmd>Gitsigns reset_hunk<cr>', "Reset the hunk")
+  m.noremap('n', '<leader>ga', '<cmd>Gitsigns stage_hunk<cr>', "Add the hunk")
 
   -- Compile/ Debug
   m.noremap('n', '<leader>\'b', "<cmd>DapToggleBreakpoint<cr>")
@@ -245,7 +310,6 @@ local function config()
   -- Window
   m.noremap('n', '<leader>wo', '<cmd>only<cr>', "Close all other windows")
   m.noremap('n', '<leader>wt', '<cmd>Telescope builtin include_extensions=true<cr>', "Telescope: Main Menu")
-  m.noremap('n', '<leader>wg', '<cmd>TigOpenProjectRootDir<cr>', "Tig: Project Root Dir")
   m.noremap("n", "<leader>wq", '<cmd>TroubleToggle quickfix<cr>', "Trouble: Toggle Quickfix")
   m.noremap("n", "<leader>wQ", '<cmd>TroubleToggle loclist<cr>', "Trouble: Toggle Quickfix")
   m.noremap('n', '<leader>wr', '<cmd>Telescope registers<cr>', "Open registers")
@@ -271,8 +335,6 @@ local function config()
   m.noremap('n', '<leader>sr', M.reload_settings, "Reload init.lua")
   m.noremap('n', '<leader>s,', M.edit_settings, "Edit runtime init.lua")
 
-  -- Replace
-  m.noremap('n', '<leader>sd', '<cmd>lua MiniTrailspace.trim()<cr>', 'Remove trailing spaces')
 end
 
 return { -- Display cheat sheet of vim shortcut
