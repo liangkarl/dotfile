@@ -60,7 +60,7 @@ return {
     end,
   },
   {
-    'nvim-telescope/telescope.nvim', tag = '0.1.4',
+    'nvim-telescope/telescope.nvim', tag = '0.1.8',
     dependencies = {
       'nvim-lua/plenary.nvim',
       { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
@@ -69,12 +69,14 @@ return {
       'SalOrak/whaler',
       'debugloop/telescope-undo.nvim',
       'benfowler/telescope-luasnip.nvim',
-      { "nvim-telescope/telescope-live-grep-args.nvim" , version = "^1.0.0", },
+      'fdschmidt93/telescope-egrepify.nvim',
+      { "nvim-telescope/telescope-live-grep-args.nvim" , version = "^1.1.0", },
     },
     config = function()
       local telescope = require('telescope')
       local actions = require("telescope.actions")
       local action_layout = require("telescope.actions.layout")
+      local egrep_actions = require "telescope._extensions.egrepify.actions"
 
       telescope.setup({
         defaults = {
@@ -92,7 +94,7 @@ return {
             },
           },
           preview = {
-            hide_on_startup = true,
+            hide_on_startup = true
           },
           mappings = {
             i = {
@@ -150,6 +152,44 @@ return {
             case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
             -- the default case_mode is "smart_case"
           },
+          egrepify = {
+            -- intersect tokens in prompt ala "str1.*str2" that ONLY matches
+            -- if str1 and str2 are consecutively in line with anything in between (wildcard)
+            AND = true,                     -- default
+            permutations = false,           -- opt-in to imply AND & match all permutations of prompt tokens
+            lnum = true,                    -- default, not required
+            lnum_hl = "EgrepifyLnum",       -- default, not required, links to `Constant`
+            col = false,                    -- default, not required
+            col_hl = "EgrepifyCol",         -- default, not required, links to `Constant`
+            title = true,                   -- default, not required, show filename as title rather than inline
+            filename_hl = "EgrepifyFile",   -- default, not required, links to `Title`
+            results_ts_hl = true,           -- set to false if you experience latency issues!
+            -- suffix = long line, see screenshot
+            -- EXAMPLE ON HOW TO ADD PREFIX!
+            prefixes = {
+              -- ADDED ! to invert matches
+              -- example prompt: ! sorter
+              -- matches all lines that do not comprise sorter
+              -- rg --invert-match -- sorter
+              ["!"] = {
+                flag = "invert-match",
+              },
+              -- HOW TO OPT OUT OF PREFIX
+              -- ^ is not a default prefix and safe example
+              -- ["^"] = false
+            },
+            -- default mappings
+            mappings = {
+              i = {
+                -- toggle prefixes, prefixes is default
+                ["<C-z>"] = egrep_actions.toggle_prefixes,
+                -- toggle AND, AND is default, AND matches tokens and any chars in between
+                ["<C-a>"] = egrep_actions.toggle_and,
+                -- toggle permutations, permutations of tokens is opt-in
+                ["<C-r>"] = egrep_actions.toggle_permutations,
+              },
+            },
+          },
         }
       })
 
@@ -162,7 +202,8 @@ return {
       telescope.load_extension('undo')
       telescope.load_extension('whaler')
       telescope.load_extension('luasnip')
-      telescope.load_extension("live_grep_args")
+      telescope.load_extension('live_grep_args')
+      telescope.load_extension('egrepify')
     end,
   },
 }

@@ -115,6 +115,27 @@ local function config()
     end
   end
 
+  local tel_bltn = require("telescope.builtin")
+  local actions = require("telescope.actions")
+  local action_state = require("telescope.actions.state")
+  function grep_string_open(prompt_bufnr, map)
+    actions.select_default:replace(function()
+      -- 先取得選擇的 entry
+      local entry = action_state.get_selected_entry()
+      local filename = vim.fn.fnamemodify(entry.path or entry.filename, ":p")
+      local lnum = entry.lnum or 1
+
+      -- 在離開 Telescope 前，push 當前位置到 jumps
+      vim.cmd("normal! m'")
+
+      -- 執行原本的 select_default 行為
+      actions.close(prompt_bufnr)
+
+      -- 最後打開檔案並移動到正確行
+      vim.cmd(string.format("edit +%d %s", lnum, filename))
+    end)
+    return true
+  end
   -- NOTE:
   -- '' in map mode means normal, visual and select modes
 
@@ -180,23 +201,40 @@ local function config()
   -- Extension --
   -------------------
   --- action: switch
-  m.noremap('n', '<TAB><TAB>', '<C-w>w', "Switch to next window")
-  m.noremap('n', '<TAB>h', '<C-w>h', "Switch to left window")
-  m.noremap('n', '<TAB>j', '<C-w>j', "Switch to down window")
-  m.noremap('n', '<TAB>k', '<C-w>k', "Switch to up window")
-  m.noremap('n', '<TAB>l', '<C-w>l', "Switch to right window")
-  m.noremap('n', '<TAB>p', '<cmd>BufferLineCyclePrev<cr>', "Switch to previous buffer")
-  m.noremap('n', '<TAB>n', '<cmd>BufferLineCycleNext<cr>', "Switch to next buffer")
-  m.noremap('n', '<TAB>/', '<cmd>Telescope buffers<cr>', "Switch opened buffers")
+  --- <TAB> = <C-i> that could makes pause while using <C-i>
+  m.noremap('n', '<leader>\\', '<C-w>w', "Switch to next window")
+  m.noremap('n', '<leader><Left>', '<C-w>h', "Switch to left window")
+  m.noremap('n', '<leader><Down>', '<C-w>j', "Switch to down window")
+  m.noremap('n', '<leader><Up>', '<C-w>k', "Switch to up window")
+  m.noremap('n', '<leader><Right>', '<C-w>l', "Switch to right window")
+  m.noremap('n', '<leader><S-TAB>', '<cmd>BufferLineCyclePrev<cr>', "Switch to previous buffer")
+  m.noremap('n', '<leader><TAB>', '<cmd>BufferLineCycleNext<cr>', "Switch to next buffer")
 
   -- action: search
-  m.noremap('n', '//', '<cmd>Telescope live_grep<cr>', "Grep under CWD (Telescope)")
-  m.noremap('n', '//w', '<cmd>Telescope grep_string<cr>', "Search <cword> under CWD (Telescope)")
-  m.noremap('n', '//b', '<cmd>Telescope current_buffer_fuzzy_find<cr>', "Search in current buffer (Telescope)")
-  -- https://stackoverflow.com/questions/40867576/how-to-use-vimgrep-to-grep-work-thats-high-lighted-by-vim
+  m.noremap('n', '//', '<cmd>Telescope egrepify<cr>', "Grep under CWD (Telescope)")
+  -- m.noremap('n', '//w', '<cmd>Telescope grep_string<cr>', "Search <cword> under CWD (Telescope)")
+  -- m.noremap('n', '//w', function() tel_bltn.grep_string({ word_match = "-w" }) end, "Search <cword> under CWD (Telescope)")
+  m.noremap('n', '//w', function()
+    tel_bltn.grep_string({
+      word_match = "-w",
+      attach_mappings = grep_string_open,
+    })
+  end, "Search <cword> under CWD (Telescope)")
+  -- m.noremap('n', '//b', '<cmd>Telescope current_buffer_fuzzy_find<cr>', "Search in current buffer (Telescope)")
+  m.noremap('n', '//b', function()
+    tel_bltn.grep_string({
+      search = '',
+      search_dirs = { vim.fn.expand('%:p') },
+      attach_mappings = grep_string_open,
+    })
+  end, "Search in current buffer (Telescope)")
   m.noremap('n', '//s', function()
-    vim.cmd("exe 'vimgrep' expand('<cword>') '%'")
-    vim.cmd("copen")
+    tel_bltn.grep_string({
+      search_dirs = { vim.fn.expand('%:p') },
+      word_match = '-w',
+      search = vim.fn.expand('<cword>'),
+      attach_mappings = grep_string_open,
+    })
   end, "Search current cursor string (Quickfix)")
   m.noremap('v', '/', '<Esc>/\\%V', "Search within selected block")
 
@@ -247,6 +285,7 @@ local function config()
     { "<leader>g", group = "Git" },
   })
 
+  m.noremap('n', '<leader>b', '<cmd>Telescope buffers<cr>', "Switch opened buffers")
   m.noremap('n', '<leader>?', '<cmd>Telescope keymaps<cr>', "Open keymaps")
   m.noremap('n', '<leader>h', '<cmd>Telescope help_tags<cr>', "Show help manuals like :help")
   -- File (Open/Close/Save)
@@ -258,31 +297,6 @@ local function config()
   -- m.noremap('n', '<leader>fD', '<cmd>Bdelete select<cr>', "Select")
 
   -- Git / Coding
-  -- m.noremap("n", "<leader>;r", function ()
-  --   exe_loop({
-  --     { id = 'glance', action = 'Glance references' },
-  --     { id = 'trouble', action = 'Trouble lsp_references toggle' }
-  --   })
-  -- end, "Code Reference")
-  -- m.noremap('n', '<leader>;d', function ()
-  --   exe_loop({
-  --     { id = 'glance', action = 'Glance definitions' },
-  --     { id = 'trouble', action = 'Trouble lsp_definitions toggle' }
-  --   })
-  -- end, "Definition")
-  -- m.noremap('n', '<leader>;D', function ()
-  --   exe_loop({
-  --     { id = 'glance', action = 'Glance type_definitions' },
-  --     { id = 'trouble', action = 'Trouble lsp_type_definitions toggle' }
-  --   })
-  -- end, "Type Definition")
-  -- m.noremap('n', '<leader>;p', function ()
-  --   exe_loop({
-  --     { id = 'glance', action = 'Glance implementations' },
-  --     { id = 'trouble', action = 'Trouble lsp_implementations toggle' }
-  --   })
-  -- end, "Implementations")
-  -- m.noremap('n', '<leader>;n', lsp.rename, "Rename (LSP)")
   -- m.noremap('',  '<leader>;c', lsp.code_action, "Show code action menu (LSP)")
   m.noremap('n', '<leader>;v', lsp.hover, "Show info (LSP)")
   m.noremap('n', '<leader>;h', lsp.signature_help, "Show signatures (LSP)")
