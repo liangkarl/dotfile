@@ -69,6 +69,7 @@ return {
       'SalOrak/whaler',
       'debugloop/telescope-undo.nvim',
       'benfowler/telescope-luasnip.nvim',
+      { "nvim-telescope/telescope-live-grep-args.nvim" , version = "^1.0.0", },
     },
     config = function()
       local telescope = require('telescope')
@@ -161,6 +162,7 @@ return {
       telescope.load_extension('undo')
       telescope.load_extension('whaler')
       telescope.load_extension('luasnip')
+      telescope.load_extension("live_grep_args")
     end,
   },
 }
