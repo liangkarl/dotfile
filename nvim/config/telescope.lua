@@ -80,16 +80,17 @@ return {
 
       telescope.setup({
         defaults = {
-          layout_strategy = 'bottom_pane',
+          layout_strategy = 'vertical',
           layout_config = {
             vertical = {
               prompt_position = "bottom",
               preview_cutoff = 15,
-              width = 0.7,
+              width = 0.6,
+              height = 0.5,
             },
             bottom_pane = {
               prompt_position = "bottom",
-              height = 0.36,
+              height = 0.4,
               preview_width = 0.7,
             },
           },
@@ -128,6 +129,15 @@ return {
           },
         },
         pickers = {
+          grep_string = {
+            layout_strategy = 'bottom_pane'
+          },
+          help_tags = {
+            layout_strategy = 'vertical',
+          },
+          keymaps = {
+            layout_strategy = 'vertical',
+          },
           buffers = {
             mappings = {
               i = {
@@ -153,6 +163,7 @@ return {
             -- the default case_mode is "smart_case"
           },
           egrepify = {
+            layout_strategy = "bottom_pane",
             -- intersect tokens in prompt ala "str1.*str2" that ONLY matches
             -- if str1 and str2 are consecutively in line with anything in between (wildcard)
             AND = true,                     -- default
