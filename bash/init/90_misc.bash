@@ -22,21 +22,21 @@ export -f update-alternatives
 
 # compression
 if [[ -n "$(type -p pxz)" ]]; then
-	alias txz='tar -I pxz -v'
+    alias txz='tar -I pxz -v'
 else
-	alias txz='tar -Jv'
+    alias txz='tar -Jv'
 fi
 
 if [[ -n "$(type -p pigz)" ]]; then
-	alias tgz='tar -I pigz -v'
+    alias tgz='tar -I pigz -v'
 else
-	alias tgz='tar -zv'
+    alias tgz='tar -zv'
 fi
 
 if [[ -n "$(type -p pbzip2)" ]]; then
-	alias bz2='tar -I pbzip2 -v'
+    alias bz2='tar -I pbzip2 -v'
 else
-	alias bz2='tar -jv'
+    alias bz2='tar -jv'
 fi
 
 # coloring manual
@@ -60,6 +60,52 @@ kill.contain() {
         return 1
     fi
     kill $(ps -s $1 -o pid=);
+}
+
+ln() {
+    local cmd opt dst
+    local src ab_src oldpwd i
+
+    cmd=()
+    src=()
+    ab_src=()
+    for opt in "$@"; do
+        if [[ -e "$opt" ]]; then
+            src+=($opt)
+            ab_src+=($(realpath $opt))
+        fi
+    done
+
+    dst=${src[$((${#src[@]}-1))]}
+
+    i=0
+    oldpwd=$OLDPWD
+    for opt in "$@"; do
+         # skip last elm (dst)
+        if [[ $i -ne $((${#src[@]}-1)) ]]; then
+            # check if src path appeared
+            if [[ "$opt" == "${src[$i]}" ]]; then
+                # check src path availability
+                if builtin cd $dst || builtin cd $(dirname $dst); then
+                    if [[ ! -e "${opt}" ]]; then
+                        echo "replace: ${opt} -> ${ab_src[$i]}"
+                        opt=${ab_src[$i]}
+                    fi
+                    builtin cd $OLDPWD
+                fi 2> /dev/null
+                i=$((i + 1))
+            fi
+        fi
+        cmd+=($opt)
+    done
+
+    if [[ -n "$oldpwd" ]]; then
+        OLDPWD=$oldpwd
+    else
+        unset OLDPWD
+    fi
+
+    $(which ln) "${cmd[@]}"
 }
 
 export HOSTNAME
