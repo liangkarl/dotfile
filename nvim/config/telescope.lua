@@ -30,7 +30,7 @@ end
 
 return {
   { -- provides superior project management
-    "ahmedkhalf/project.nvim",
+    "DrKJeff16/project.nvim",
     config = function()
       require("project_nvim").setup {
         -- Manual mode doesn't automatically change your root directory, so you have
@@ -56,6 +56,7 @@ return {
         -- Path where project.nvim will store the project history for use in
         -- telescope
         datapath = vim.fn.stdpath("data"),
+        silent_chdir = true,
       }
     end,
   },
