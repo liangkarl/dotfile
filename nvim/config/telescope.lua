@@ -90,6 +90,14 @@ return {
               height = 0.36,
               preview_width = 0.7,
             },
+            -- TODO: customized layout
+            -- bottom_vertical = {
+            --   prompt_position = "bottom",
+            --   preview_cutoff = 15,
+            --   height = 0.36,
+            --   preview_width = 0.7,
+            --   width = 1,
+            -- },
           },
           preview = {
             hide_on_startup = true,
