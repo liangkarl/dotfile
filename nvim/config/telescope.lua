@@ -2,7 +2,7 @@
 -- https://github.com/nvim-telescope/telescope.nvim
 
 local m = require('core.utils')
-local opts = { noremap=true, silent=true }
+local opts = { noremap = true, silent = true }
 
 -- WA for multi-selections
 -- https://github.com/nvim-telescope/telescope.nvim/issues/1048
@@ -45,7 +45,7 @@ return {
 
         -- All the patterns used to detect root dir, when **"pattern"** is in
         -- detection_methods
-        patterns = { ".project", ".git", },
+        patterns = { ".root", ".git", },
 
         -- What scope to change the directory, valid options are
         -- * global (default)
@@ -61,33 +61,38 @@ return {
     end,
   },
   {
-    'nvim-telescope/telescope.nvim', tag = '0.1.4',
+    'nvim-telescope/telescope.nvim',
+    tag = '0.1.8',
     dependencies = {
       'nvim-lua/plenary.nvim',
-      { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+      { 'nvim-telescope/telescope-fzf-native.nvim',     build = 'make' },
       'zane-/cder.nvim',
       'LinArcX/telescope-scriptnames.nvim',
       'SalOrak/whaler',
       'debugloop/telescope-undo.nvim',
       'benfowler/telescope-luasnip.nvim',
+      'fdschmidt93/telescope-egrepify.nvim',
+      { "nvim-telescope/telescope-live-grep-args.nvim", version = "^1.1.0", },
     },
     config = function()
       local telescope = require('telescope')
       local actions = require("telescope.actions")
       local action_layout = require("telescope.actions.layout")
+      local egrep_actions = require "telescope._extensions.egrepify.actions"
 
       telescope.setup({
         defaults = {
-          layout_strategy = 'bottom_pane',
+          layout_strategy = 'vertical',
           layout_config = {
             vertical = {
               prompt_position = "bottom",
               preview_cutoff = 15,
-              width = 0.7,
+              width = 0.6,
+              height = 0.5,
             },
             bottom_pane = {
               prompt_position = "bottom",
-              height = 0.36,
+              height = 0.4,
               preview_width = 0.7,
             },
             -- TODO: customized layout
@@ -142,6 +147,15 @@ return {
           },
         },
         pickers = {
+          grep_string = {
+            layout_strategy = 'bottom_pane'
+          },
+          help_tags = {
+            layout_strategy = 'vertical',
+          },
+          keymaps = {
+            layout_strategy = 'vertical',
+          },
           buffers = {
             mappings = {
               i = {
@@ -157,14 +171,53 @@ return {
             pager_command = 'cat',
             dir_command = { 'fd', '-I', '--type=d', '.', function()
               vim.fn.getcwd()
-            end},
+            end },
           },
           fzf = {
-            fuzzy = false,                    -- false will only do exact matching
-            override_generic_sorter = true,  -- override the generic sorter
-            override_file_sorter = true,     -- override the file sorter
-            case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
+            fuzzy = false,                  -- false will only do exact matching
+            override_generic_sorter = true, -- override the generic sorter
+            override_file_sorter = true,    -- override the file sorter
+            case_mode = "smart_case",       -- or "ignore_case" or "respect_case"
             -- the default case_mode is "smart_case"
+          },
+          egrepify = {
+            layout_strategy = "bottom_pane",
+            -- intersect tokens in prompt ala "str1.*str2" that ONLY matches
+            -- if str1 and str2 are consecutively in line with anything in between (wildcard)
+            AND = true,                   -- default
+            permutations = false,         -- opt-in to imply AND & match all permutations of prompt tokens
+            lnum = true,                  -- default, not required
+            lnum_hl = "EgrepifyLnum",     -- default, not required, links to `Constant`
+            col = false,                  -- default, not required
+            col_hl = "EgrepifyCol",       -- default, not required, links to `Constant`
+            title = true,                 -- default, not required, show filename as title rather than inline
+            filename_hl = "EgrepifyFile", -- default, not required, links to `Title`
+            results_ts_hl = true,         -- set to false if you experience latency issues!
+            -- suffix = long line, see screenshot
+            -- EXAMPLE ON HOW TO ADD PREFIX!
+            prefixes = {
+              -- ADDED ! to invert matches
+              -- example prompt: ! sorter
+              -- matches all lines that do not comprise sorter
+              -- rg --invert-match -- sorter
+              ["!"] = {
+                flag = "invert-match",
+              },
+              -- HOW TO OPT OUT OF PREFIX
+              -- ^ is not a default prefix and safe example
+              -- ["^"] = false
+            },
+            -- default mappings
+            mappings = {
+              i = {
+                -- toggle prefixes, prefixes is default
+                ["<C-z>"] = egrep_actions.toggle_prefixes,
+                -- toggle AND, AND is default, AND matches tokens and any chars in between
+                ["<C-a>"] = egrep_actions.toggle_and,
+                -- toggle permutations, permutations of tokens is opt-in
+                ["<C-r>"] = egrep_actions.toggle_permutations,
+              },
+            },
           },
         }
       })
@@ -178,6 +231,8 @@ return {
       telescope.load_extension('undo')
       telescope.load_extension('whaler')
       telescope.load_extension('luasnip')
+      telescope.load_extension('live_grep_args')
+      telescope.load_extension('egrepify')
     end,
   },
 }

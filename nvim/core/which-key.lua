@@ -69,6 +69,27 @@ local function config()
     print("no matched function for the key")
   end
 
+  local tel_bltn = require("telescope.builtin")
+  local actions = require("telescope.actions")
+  local action_state = require("telescope.actions.state")
+  function grep_string_open(prompt_bufnr, map)
+    actions.select_default:replace(function()
+      -- 先取得選擇的 entry
+      local entry = action_state.get_selected_entry()
+      local filename = vim.fn.fnamemodify(entry.path or entry.filename, ":p")
+      local lnum = entry.lnum or 1
+
+      -- 在離開 Telescope 前，push 當前位置到 jumps
+      vim.cmd("normal! m'")
+
+      -- 執行原本的 select_default 行為
+      actions.close(prompt_bufnr)
+
+      -- 最後打開檔案並移動到正確行
+      vim.cmd(string.format("edit +%d %s", lnum, filename))
+    end)
+    return true
+  end
   -- NOTE:
   -- '' in map mode means normal, visual and select modes
 
@@ -133,146 +154,219 @@ local function config()
   -------------------
   -- Direct Keymap --
   -------------------
+  --- action: switch
+  --- <TAB> = <C-i> that could makes pause while using <C-i>
   m.noremap('n', '<leader>\\', '<C-w>w', "Switch to next window")
-  m.noremap('n', '<leader><S-Tab>', '<cmd>BufferLineCyclePrev<cr>', "Switch to previous buffer")
-  m.noremap('n', '<leader><Tab>', '<cmd>BufferLineCycleNext<cr>', "Switch to next buffer")
-  m.noremap('',  '<leader>0', '^', "Go to the first character of line")
-  m.noremap('',  '<leader>9', '$', "Go to the end of line")
-  m.noremap('n', '<leader>?', '<cmd>Telescope keymaps<cr>', "Open keymaps")
-  m.noremap('n', '<leader>h', '<cmd>Telescope help_tags<cr>', "Show help manuals like :help")
-  -- Search
-  m.noremap('v', '<leader>/', '<Esc>/\\%V', "Search within selected block")
-  -- Coding
-  m.noremap('n', '<leader>!', '<cmd>ToggleAlternate<cr>', "Invert boolean value")
+  m.noremap('n', '<leader><Left>', '<C-w>h', "Switch to left window")
+  m.noremap('n', '<leader><Down>', '<C-w>j', "Switch to down window")
+  m.noremap('n', '<leader><Up>', '<C-w>k', "Switch to up window")
+  m.noremap('n', '<leader><Right>', '<C-w>l', "Switch to right window")
+  m.noremap('n', '<leader><S-TAB>', '<cmd>BufferLineCyclePrev<cr>', "Switch to previous buffer")
+  m.noremap('n', '<leader><TAB>', '<cmd>BufferLineCycleNext<cr>', "Switch to next buffer")
+
   -- There are two different clipboards for Linux and only one for Win
   -- *: clipboard for copy-on-select
   -- +: clipboard for <C-c> and <C-v>
-  m.noremap('',  '<leader>y', '"+y', "Copy to Clipboard")
   m.noremap('',  '<leader>p', '"+p', "Paste from Clipboard")
-  m.noremap('',  '<leader>Y', '"*y', "Copy to 'copy-on-select' Clipboard")
   m.noremap('',  '<leader>P', '"*p', "Paste from 'copy-on-select' Clipboard")
-  m.noremap('',  '<leader>=', function() lsp.format({ async = true }) end, "Format code (LSP)")
-  m.noremap('n', '<leader>b', '<cmd>Telescope buffers<cr>', "Switch opened buffers")
   m.noremap('n', '<leader>S', '<cmd>AerialToggle<cr>', 'Symbol Manager')
   m.noremap('n', '<leader>F', '<cmd>lua MiniFiles.open()<cr>', 'File Explorer')
   m.noremap('n', '<leader>d', M.close_buf, "Close current buffer")
-  m.noremap('',  '<leader>g', '<cmd>HopChar1<cr>')
-  m.noremap('',  '<leader>j', '<cmd>HopPattern<cr>')
-  m.noremap('',  '<leader>l', '<cmd>HopWord<cr>')
-  m.noremap('',  '<leader>k', '<cmd>HopVertical<cr>')
 
   -------------------
   -- Folded Keymap --
   -------------------
   wk.setup()
+  -- NOTE: need explicity declaration if override g, s, c, d, =, etc.
   wk.add({
-    { "<leader>'", group = "Debug / Compile" },
-    { "<leader>/", group = "Search / Edit" },
-    { "<leader>;", group = "Coding" },
-    { "<leader>f", group = "File" },
-    { "<leader>s", group = "Setup / Status" },
-    { "<leader>w", group = "Window / Plugin" },
+    {
+      mode = '',
+      group = 'default',
+      remap = false,
+    },
+    {
+      group = "Extra Cmd G",
+      { 'g0', '^', desc = "Go to the first character of line" },
+      { 'g9', '$', desc = "Go to the end of line" },
+      { 'g/', '<cmd>HopPattern<cr>' },
+    },
+    {
+      group = "Change",
+      { 'c', 'c', desc = "Change" },
+      { 'c!', '<cmd>ToggleAlternate<cr>', desc = "Invert boolean value" },
+    },
+    {
+      group = "Delete",
+      { 'd', 'd', desc = "Delete" },
+      { 'ds', '<cmd>lua MiniTrailspace.trim()<cr>', desc = 'Remove trailing spaces'}
+    },
+    {
+      group = "Format",
+      { '=', '=', desc = "Format" },
+      { '==', '<cmd>lua vim.lsp.buf.format({ async = true })<cr>', desc = "LSP: Format" },
+    },
+    {
+      group = "Yank",
+      { 'y', 'y', desc = "Yank" },
+      { 'ys', '"+y', desc = "Copy to Clipboard" },
+      { 'yc', '"*y', desc = "Copy to 'copy-on-select' Clipboard" },
+    },
+    {
+      group = "Search",
+      mode = { 'n' },
+
+      -- action: search
+      { '/', '/', desc = "Fearch" },
+      {
+        '//',
+        function()
+          require("telescope").extensions.egrepify.egrepify({
+            attach_mappings = grep_string_open,
+          })
+        end,
+        desc = "Grep under CWD (Telescope)"
+      },
+      {
+        '//w',
+        function()
+          require("telescope").extensions.egrepify.egrepify({
+            default_text = string.format("\\b%s\\b", vim.fn.expand('<cword>')),
+            attach_mappings = grep_string_open,
+          })
+        end,
+        desc = "Search <cword> under CWD (Telescope)"
+      },
+      {
+        '//f',
+        function()
+          require("telescope").extensions.egrepify.egrepify({
+            search_dirs = { vim.fn.expand('%:p') },
+            attach_mappings = grep_string_open,
+          })
+        end,
+        desc = "Search in current buffer (Telescope)"
+      },
+      {
+        '//c',
+        function()
+          require("telescope").extensions.egrepify.egrepify({
+            search_dirs = { vim.fn.expand('%:p') },
+            default_text = string.format("\\b%s\\b", vim.fn.expand('<cword>')),
+            attach_mappings = grep_string_open,
+          })
+        end,
+        desc = "Search current cursor string (Quickfix)"
+      },
+      { mode = 'v', '/', '<Esc>/\\%V', desc = "Search within selected block"},
+    },
+    {
+      group = "Debug / Compile",
+      mode = "n",
+      { '<leader>\'b', desc = "<cmd>DapToggleBreakpoint<cr>" },
+      { '<leader>\'c', desc = "<cmd>DapContinue<cr>" },
+      { '<leader>\'s', desc = "<cmd>DapStepOver<cr>" },
+      { '<leader>\'i', desc = "<cmd>DapStepInto<cr>" },
+      { '<leader>\'o', desc = "<cmd>DapStepOut<cr>" },
+      { '<leader>\'t', desc = "<cmd>DapToggleRepl<cr>" },
+    },
+    {
+      group = "Coding",
+      mode = "n",
+      { "<leader>;r", function ()
+        exe_loop({
+          { id = 'glance', action = 'Glance references' },
+          { id = 'trouble', action = 'Trouble lsp_references toggle' }
+        })
+      end, desc = "Code Reference" },
+      { '<leader>;d', function ()
+        exe_loop({
+          { id = 'glance', action = 'Glance definitions' },
+          { id = 'trouble', action = 'Trouble lsp_definitions toggle' }
+        })
+      end, desc = "Definition" },
+      { '<leader>;D', function ()
+        exe_loop({
+          { id = 'glance', action = 'Glance type_definitions' },
+          { id = 'trouble', action = 'Trouble lsp_type_definitions toggle' }
+        })
+      end, desc = "Type Definition" },
+      { '<leader>;p', function ()
+        exe_loop({
+          { id = 'glance', action = 'Glance implementations' },
+          { id = 'trouble', action = 'Trouble lsp_implementations toggle' }
+        })
+      end, desc = "Implementations" },
+      { '<leader>;n', lsp.rename, desc = "Rename (LSP)" },
+      { '<leader>;c', lsp.code_action, desc = "Show code action menu (LSP)" },
+      { '<leader>;v', lsp.hover, desc = "Show info (LSP)" },
+      { '<leader>;h', lsp.signature_help, desc = "Show signatures (LSP)" },
+      { '<leader>;w', '<cmd>TroubleToggle workspace_diagnostics<cr>', desc = "Diagnostic Workspace (Trouble)" },
+      { '<leader>;f', '<cmd>TroubleToggle document_diagnostics<cr>', desc = "Diagnostic Document (Trouble)" },
+    },
+    {
+      group = "File",
+      mode = "n",
+      { '<leader>fr', '<cmd>Telescope oldfiles<cr>', desc = "Open recently closed files" },
+      { '<leader>ff', '<cmd>Telescope find_files<cr>', desc = "Open files" },
+      { '<leader>fw', '<cmd>w<cr>', desc = "Save" },
+      -- { '<leader>fm', '<cmd>Bdelete menu<cr>', desc = "Show delete menu" },
+      -- { '<leader>fD', '<cmd>Bdelete select<cr>', desc = "Select" },
+
+    },
+    {
+      group = "Setup / Status",
+      mode = "n",
+      { '<leader>sa', lsp.add_workspace_folder, desc = "Add LSP workspace" },
+      { '<leader>sr', lsp.remove_workspace_folder, desc = "Remove LSP workspace" },
+      { '<leader>sw', function()
+        -- TODO: Add to quickfix list
+        print(vim.inspect(lsp.list_workspace_folders()))
+      end, desc = "Show LSP workspace" },
+      { '<leader>st', '<cmd>Telescope filetypes<cr>', desc = "Change filetypes" },
+      { '<leader>sl', '<cmd>Mason<cr>', desc = "Mason: Main Menu" },
+      { '<leader>sp', '<cmd>Lazy<cr>', desc = "Lazy: Main Menu" },
+      { '<leader>si', '<cmd>LspInfo<cr>', desc = "LSP Server Info (LspInfo)" },
+      { '<leader>sm', '<cmd>AerialInfo<cr>', desc = 'Symbol Manager Info (AerialInfo)' },
+      { '<leader>sg', '<cmd>GuessIndent<cr>', desc = 'Set up indent (GuessIndent)' },
+      { '<leader>sc', M.change_cwd, desc = "Set CWD to current buffer" },
+      { '<leader>sC', '<cmd>Telescope cder<cr>', desc = "Change CWD with specified path" },
+      { '<leader>sf', M.show_file_info, desc = "Show File and CWD info" },
+      { '<leader>sr', M.reload_settings, desc = "Reload init.lua" },
+      { '<leader>s,', M.edit_settings, desc = "Edit runtime init.lua" },
+      -- { '<leader>sm', '<cmd>Outline<cr>', 'Toggle Outline Symbol Manager' },
+      -- { '<leader>si', '<cmd>OutlineStatus<cr>', 'Get Outline Symbol Manager info' },
+      {'<leader>st', '<cmd>Telescope builtin include_extensions=true<cr>', desc = "Telescope: Main Menu"},
+      {"<leader>sq", '<cmd>TroubleToggle quickfix<cr>', desc = "Trouble: Toggle Quickfix"},
+      {"<leader>sQ", '<cmd>TroubleToggle loclist<cr>', desc = "Trouble: Toggle Quickfix"},
+      {'<leader>sr', '<cmd>Telescope registers<cr>', desc = "Open registers"},
+    },
+    {
+      group = "Window",
+      mode = 'n',
+      {'<leader>wo', '<cmd>only<cr>', desc = "Close all other windows"},
+    },
+    {
+      group = "Git",
+      mode = "n",
+      -- {'n', '<leader>;;b', '<cmd>Gitsigns blame_line<cr>', "Blame file (inline)"}
+      {'<leader>gB', '<cmd>Gitsigns blame<cr>', desc = "Blame file"},
+      {'<leader>g;', '<cmd>TigBlame<cr>', desc = "Blame file"},
+      {'<leader>g.', '<cmd>TigOpenCurrentFile<cr>', desc = "Git log with current file"},
+      {'<leader>g/', '<cmd>TigOpenProjectRootDir<cr>', desc = "Tig: Project Root Dir"},
+      {'<leader>gp', '<cmd>Gitsigns preview_hunk_inline<cr>', desc = "Preview line change(s)"},
+      {'<leader>gd', '<cmd>Gitsigns diffthis<cr>', desc = "Open two panes to show the diff"},
+      {'<leader>gl', '<cmd>Gitsigns setloclist<cr>', desc = "List the change(s)"},
+      {'<leader>gr', '<cmd>Gitsigns reset_hunk<cr>', desc = "Reset the hunk"},
+      {'<leader>ga', '<cmd>Gitsigns stage_hunk<cr>', desc = "Add the hunk"},
+    },
   })
 
+  m.noremap('n', '<leader>b', '<cmd>Telescope buffers<cr>', "Switch opened buffers")
+  m.noremap('n', '<leader>?', '<cmd>Telescope keymaps<cr>', "Open keymaps")
+  m.noremap('n', '<leader>h', '<cmd>Telescope help_tags<cr>', "Show help manuals like :help")
   -- File (Open/Close/Save)
   -- m.noremap('n', '<leader>', '', "Open file (Current file path)")
-  m.noremap('n', '<leader>fr', '<cmd>Telescope oldfiles<cr>', "Open recently closed files")
-  m.noremap('n', '<leader>ff', '<cmd>Telescope find_files<cr>', "Open files")
-  m.noremap('n', '<leader>fw', '<cmd>w<cr>', "Save")
-  -- m.noremap('n', '<leader>fm', '<cmd>Bdelete menu<cr>', "Show delete menu")
-  -- m.noremap('n', '<leader>fD', '<cmd>Bdelete select<cr>', "Select")
 
-  m.noremap('n', '<leader>fg', '<cmd>TigOpenCurrentFile<cr>', "Git log with current file")
-
-  -- Search
-  m.noremap('n', '<leader>/', '<cmd>Telescope live_grep<cr>', "Grep under CWD (Telescope)")
-  m.noremap('n', '<leader>/w', '<cmd>Telescope grep_string<cr>', "Search <cword> under CWD (Telescope)")
-  m.noremap('n', '<leader>/b', '<cmd>Telescope current_buffer_fuzzy_find<cr>', "Search in current buffer (Telescope)")
-  -- https://stackoverflow.com/questions/40867576/how-to-use-vimgrep-to-grep-work-thats-high-lighted-by-vim
-  m.noremap('n', '<leader>/s', function()
-    vim.cmd("exe 'vimgrep' expand('<cword>') '%'")
-    vim.cmd("copen")
-  end, "Search current cursor string (Quickfix)")
-
-  -- Git / Coding
-  m.noremap("n", "<leader>;r", function ()
-    exe_loop({
-      { id = 'glance', action = 'Glance references' },
-      { id = 'trouble', action = 'Trouble lsp_references toggle' }
-    })
-  end, "Code Reference")
-  m.noremap('n', '<leader>;d', function ()
-    exe_loop({
-      { id = 'glance', action = 'Glance definitions' },
-      { id = 'trouble', action = 'Trouble lsp_definitions toggle' }
-    })
-  end, "Definition")
-  m.noremap('n', '<leader>;D', function ()
-    exe_loop({
-      { id = 'glance', action = 'Glance type_definitions' },
-      { id = 'trouble', action = 'Trouble lsp_type_definitions toggle' }
-    })
-  end, "Type Definition")
-  m.noremap('n', '<leader>;p', function ()
-    exe_loop({
-      { id = 'glance', action = 'Glance implementations' },
-      { id = 'trouble', action = 'Trouble lsp_implementations toggle' }
-    })
-  end, "Implementations")
-  m.noremap('n', '<leader>;n', lsp.rename, "Rename (LSP)")
-  m.noremap('',  '<leader>;c', lsp.code_action, "Show code action menu (LSP)")
-  m.noremap('n', '<leader>;v', lsp.hover, "Show info (LSP)")
-  m.noremap('n', '<leader>;h', lsp.signature_help, "Show signatures (LSP)")
-  m.noremap('n', '<leader>;w', '<cmd>TroubleToggle workspace_diagnostics<cr>', "Diagnostic Workspace (Trouble)")
-  m.noremap('n', '<leader>;f', '<cmd>TroubleToggle document_diagnostics<cr>', "Diagnostic Document (Trouble)")
-  m.noremap('n', '<leader>;;B', '<cmd>Gitsigns blame<cr>', "Blame file")
-  -- m.noremap('n', '<leader>;;b', '<cmd>Gitsigns blame_line<cr>', "Blame file (inline)")
-  m.noremap('n', '<leader>;;b', '<cmd>TigBlame<cr>', "Blame file")
-  m.noremap('n', '<leader>;;p', '<cmd>Gitsigns preview_hunk_inline<cr>', "Preview line change(s)")
-  m.noremap('n', '<leader>;;d', '<cmd>Gitsigns diffthis<cr>', "Open two panes to show the diff")
-  m.noremap('n', '<leader>;;l', '<cmd>Gitsigns setloclist<cr>', "List the change(s)")
-  m.noremap('n', '<leader>;;r', '<cmd>Gitsigns reset_hunk<cr>', "Reset the hunk")
-  m.noremap('n', '<leader>;;a', '<cmd>Gitsigns stage_hunk<cr>', "Add the hunk")
-
-  -- Compile/ Debug
-  m.noremap('n', '<leader>\'b', "<cmd>DapToggleBreakpoint<cr>")
-  m.noremap('n', '<leader>\'c', "<cmd>DapContinue<cr>")
-  m.noremap('n', '<leader>\'s', "<cmd>DapStepOver<cr>")
-  m.noremap('n', '<leader>\'i', "<cmd>DapStepInto<cr>")
-  m.noremap('n', '<leader>\'o', "<cmd>DapStepOut<cr>")
-  m.noremap('n', '<leader>\'t', "<cmd>DapToggleRepl<cr>")
-
-  -- Window
-  m.noremap('n', '<leader>wo', '<cmd>only<cr>', "Close all other windows")
-  m.noremap('n', '<leader>wt', '<cmd>Telescope builtin include_extensions=true<cr>', "Telescope: Main Menu")
-  m.noremap('n', '<leader>wg', '<cmd>TigOpenProjectRootDir<cr>', "Tig: Project Root Dir")
-  m.noremap("n", "<leader>wq", '<cmd>TroubleToggle quickfix<cr>', "Trouble: Toggle Quickfix")
-  m.noremap("n", "<leader>wQ", '<cmd>TroubleToggle loclist<cr>', "Trouble: Toggle Quickfix")
-  m.noremap('n', '<leader>wr', '<cmd>Telescope registers<cr>', "Open registers")
-  -- m.noremap('n', '<leader>sm', '<cmd>Outline<cr>', 'Toggle Outline Symbol Manager')
-  -- m.noremap('n', '<leader>si', '<cmd>OutlineStatus<cr>', 'Get Outline Symbol Manager info')
-
-  -- Setting/ Status
-  m.noremap('n', '<leader>sa', lsp.add_workspace_folder, "Add LSP workspace")
-  m.noremap('n', '<leader>sr', lsp.remove_workspace_folder, "Remove LSP workspace")
-  m.noremap('n', '<leader>sw', function()
-    -- TODO: Add to quickfix list
-    print(vim.inspect(lsp.list_workspace_folders()))
-  end, "Show LSP workspace")
-  m.noremap('n', '<leader>st', '<cmd>Telescope filetypes<cr>', "Change filetypes")
-  m.noremap('n', '<leader>sl', '<cmd>Mason<cr>', "Mason: Main Menu")
-  m.noremap('n', '<leader>sp', '<cmd>Lazy<cr>', "Lazy: Main Menu")
-  m.noremap('n', '<leader>si', '<cmd>LspInfo<cr>', "LSP Server Info (LspInfo)")
-  m.noremap('n', '<leader>sm', '<cmd>AerialInfo<cr>', 'Symbol Manager Info (AerialInfo)')
-  m.noremap('n', '<leader>sg', '<cmd>GuessIndent<cr>', 'Set up indent (GuessIndent)')
-  m.noremap('n', '<leader>sc', M.change_cwd, "Set CWD to current buffer")
-  m.noremap('n', '<leader>sC', '<cmd>Telescope cder<cr>', "Change CWD with specified path")
-  m.noremap('n', '<leader>sf', M.show_file_info, "Show File and CWD info")
-  m.noremap('n', '<leader>sr', M.reload_settings, "Reload init.lua")
-  m.noremap('n', '<leader>s,', M.edit_settings, "Edit runtime init.lua")
-
-  -- Replace
-  m.noremap('n', '<leader>sd', '<cmd>lua MiniTrailspace.trim()<cr>', 'Remove trailing spaces')
 end
 
 return { -- Display cheat sheet of vim shortcut
