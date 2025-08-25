@@ -38,9 +38,8 @@ return {
 
     -- Use <c-j> to trigger snippets
     keyset("i", "<c-j>", "<Plug>(coc-snippets-expand-jump)")
-
     -- Use <c-space> to trigger completion
-    keyset("i", "<c-p>", "coc#refresh()", {silent = true, expr = true})
+    keyset("i", "<c-space>", "coc#refresh()", {silent = true, expr = true})
 
     -- Use `[g` and `]g` to navigate diagnostics
     -- Use `:CocDiagnostics` to get all diagnostics of current buffer in location list
@@ -48,10 +47,10 @@ return {
     keyset("n", "]g", "<Plug>(coc-diagnostic-next)", {silent = true})
 
     -- GoTo code navigation
-    -- keyset("n", "gd", "<Plug>(coc-definition)", {silent = true})
-    -- keyset("n", "gD", "<Plug>(coc-type-definition)", {silent = true})
-    -- keyset("n", "gp", "<Plug>(coc-implementation)", {silent = true})
-    -- keyset("n", "gr", "<Plug>(coc-references)", {silent = true})
+    keyset("n", "gd", "<Plug>(coc-definition)", {silent = true})
+    keyset("n", "gy", "<Plug>(coc-type-definition)", {silent = true})
+    keyset("n", "gi", "<Plug>(coc-implementation)", {silent = true})
+    keyset("n", "gr", "<Plug>(coc-references)", {silent = true})
 
 
     -- Use K to show documentation in preview window
@@ -78,7 +77,7 @@ return {
 
 
     -- Symbol renaming
-    -- keyset("n", "cn", "<Plug>(coc-rename)", {silent = true})
+    keyset("n", "<leader>rn", "<Plug>(coc-rename)", {silent = true})
 
 
     -- Formatting selected code
@@ -174,18 +173,12 @@ return {
     -- Find symbol of current document
     keyset("n", "<space>o", ":<C-u>CocList outline<cr>", opts)
     -- Search workspace symbols
-    -- keyset("n", "<space>s", ":<C-u>CocList -I symbols<cr>", opts)
+    keyset("n", "<space>s", ":<C-u>CocList -I symbols<cr>", opts)
     -- Do default action for next item
     keyset("n", "<space>j", ":<C-u>CocNext<cr>", opts)
     -- Do default action for previous item
     keyset("n", "<space>k", ":<C-u>CocPrev<cr>", opts)
     -- Resume latest coc list
     keyset("n", "<space>p", ":<C-u>CocListResume<cr>", opts)
-
-    utils = require("core.utils")
-    utils.run_once("coc", function()
-      vim.cmd([[:CocInstall coc-json coc-yaml coc-xml coc-markdownlint coc-clangd coc-sh coc-pyright]])
-      vim.cmd([[:CocInstall coc-lists coc-html coc-tsserver coc-lua coc-yank coc-symbol-line coc-snippets coc-class-css coc-cmake]])
-    end)
   end
 }
