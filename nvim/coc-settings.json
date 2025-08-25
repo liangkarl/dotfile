@@ -1,0 +1,43 @@
+{
+  "//": [
+    "Coc's LSP documents",
+    "https://github.com/neoclide/coc.nvim/wiki/Language-servers",
+    "https://github.com/neoclide/coc.nvim/wiki/Language-servers#ccobjective-c"
+  ],
+
+  "languageserver": {
+  },
+
+  "suggest.detailMaxLength": 50,
+  "suggest.maxPreviewWidth": 50,
+  "diagnostic.displayByAle": true,
+
+  "http.proxyStrictSSL": false,
+  "https.rejectUnauthorized": false,
+
+  "suggest.labelMaxLength": 80,
+  "suggest.detailMaxLength": 80,
+
+  "//":"coc-explorer setup",
+  "explorer.icon.enableNerdfont": true,
+
+  "list.normalMappings": {
+    "<C-k>": "do:previewup",
+    "<C-j>": "do:previewdown",
+    "<TAB>": ""
+  },
+  "list.insertMappings": {
+    "<C-p>": "do:previewtoggle",
+    "<C-_>": "do:help"
+    "<C-r>": "do:refresh",
+    "<C-k>": "do:previewup"
+    "<C-j>": "do:previewdown"
+    "<C-u>": "feedkeys:\\<C-u>",
+    "<C-d>": "feedkeys:\\<C-d>",
+    "<C-t>": "action:tabe",
+    // paste yanked text to prompt
+    "<C-v>": "eval:@@",
+    "<C-a>": "do:chooseaction",
+    "<TAB>": "",
+  }
+}

@@ -69,6 +69,52 @@ local function config()
     print("no matched function for the key")
   end
 
+  -- Check if any Coc LSP server is running for the current buffer
+  function has_coc_lsp()
+    local ok, services = pcall(vim.fn.CocAction, "services")
+    if not ok then
+      vim.notify("coc.nvim not available", vim.log.levels.ERROR)
+      return false
+    end
+
+    for _, srv in ipairs(services) do
+      if srv.state == "running" then
+        return true
+      end
+    end
+    return false
+  end
+
+  --- Run a command only if a package/module exists
+  --- @param pack string  -- module/package name
+  --- @param cmd string   -- vim command to run
+  function run_if_has(cmd)
+    local ok, _ = pcall(require, cmd.need)
+    local new, def
+
+    if ok then
+      new = vim.api.nvim_replace_termcodes(cmd.cmd, true, false, true)
+      vim.api.nvim_feedkeys(new, "n", false)
+    elseif cmd.fallback then
+      def = vim.api.nvim_replace_termcodes(cmd.fallback, true, false, true)
+      vim.api.nvim_feedkeys(def, "n", false)
+    else
+      vim.notify("failed: skipping command: " .. cmd.cmd, vim.log.levels.WARN)
+    end
+  end
+
+  function run_if_coc_has(cmd)
+    if has_coc_lsp() then
+      cmd = vim.api.nvim_replace_termcodes(cmd.cmd, true, false, true)
+      vim.api.nvim_feedkeys(cmd, "n", false)
+    elseif cmd.fallback then
+      def = vim.api.nvim_replace_termcodes(cmd.fallback, true, false, true)
+      vim.api.nvim_feedkeys(def, "n", false)
+    else
+      vim.notify("failed: skipping command: " .. cmd.cmd, vim.log.levels.WARN)
+    end
+  end
+
   local tel_bltn = require("telescope.builtin")
   local actions = require("telescope.actions")
   local action_state = require("telescope.actions.state")
@@ -272,32 +318,32 @@ local function config()
     {
       group = "Coding",
       mode = "n",
-      { "<leader>;r", function ()
-        exe_loop({
-          { id = 'glance', action = 'Glance references' },
-          { id = 'trouble', action = 'Trouble lsp_references toggle' }
-        })
-      end, desc = "Code Reference" },
-      { '<leader>;d', function ()
-        exe_loop({
-          { id = 'glance', action = 'Glance definitions' },
-          { id = 'trouble', action = 'Trouble lsp_definitions toggle' }
-        })
-      end, desc = "Definition" },
-      { '<leader>;D', function ()
-        exe_loop({
-          { id = 'glance', action = 'Glance type_definitions' },
-          { id = 'trouble', action = 'Trouble lsp_type_definitions toggle' }
-        })
-      end, desc = "Type Definition" },
-      { '<leader>;p', function ()
-        exe_loop({
-          { id = 'glance', action = 'Glance implementations' },
-          { id = 'trouble', action = 'Trouble lsp_implementations toggle' }
-        })
-      end, desc = "Implementations" },
-      { '<leader>;n', lsp.rename, desc = "Rename (LSP)" },
-      { '<leader>;c', lsp.code_action, desc = "Show code action menu (LSP)" },
+      -- { "<leader>;r", function ()
+      --   exe_loop({
+      --     { id = 'glance', action = 'Glance references' },
+      --     { id = 'trouble', action = 'Trouble lsp_references toggle' }
+      --   })
+      -- end, desc = "Code Reference" },
+      -- { '<leader>;d', function ()
+      --   exe_loop({
+      --     { id = 'glance', action = 'Glance definitions' },
+      --     { id = 'trouble', action = 'Trouble lsp_definitions toggle' }
+      --   })
+      -- end, desc = "Definition" },
+      -- { '<leader>;D', function ()
+      --   exe_loop({
+      --     { id = 'glance', action = 'Glance type_definitions' },
+      --     { id = 'trouble', action = 'Trouble lsp_type_definitions toggle' }
+      --   })
+      -- end, desc = "Type Definition" },
+      -- { '<leader>;p', function ()
+      --   exe_loop({
+      --     { id = 'glance', action = 'Glance implementations' },
+      --     { id = 'trouble', action = 'Trouble lsp_implementations toggle' }
+      --   })
+      -- end, desc = "Implementations" },
+      -- { '<leader>;n', lsp.rename, desc = "Rename (LSP)" },
+      -- { '<leader>;c', lsp.code_action, desc = "Show code action menu (LSP)" },
       { '<leader>;v', lsp.hover, desc = "Show info (LSP)" },
       { '<leader>;h', lsp.signature_help, desc = "Show signatures (LSP)" },
       { '<leader>;w', '<cmd>TroubleToggle workspace_diagnostics<cr>', desc = "Diagnostic Workspace (Trouble)" },

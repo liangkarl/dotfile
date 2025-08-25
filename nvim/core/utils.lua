@@ -44,4 +44,26 @@ M.command = function(cmd, action, opts)
   return api.nvim_create_user_command(cmd, action, opts)
 end
 
+M.run_once = function(name, fn)
+  local post_install_file = vim.fn.stdpath("data") .. "/post_installs/" .. name
+
+  if vim.fn.filereadable(post_install_file) == 1 then
+    return
+  end
+
+  fn()
+
+  -- Create directory if it doesn't exist
+  vim.fn.mkdir(vim.fn.fnamemodify(post_install_file, ":h"), "p")
+
+  -- Create empty file
+  local file = io.open(post_install_file, "w")
+  file:close()
+end
+
+M.run_if_exits = function(cmd)
+
+
+end
+
 return M
