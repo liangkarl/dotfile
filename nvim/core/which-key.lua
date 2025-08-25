@@ -69,13 +69,53 @@ local function config()
     print("no matched function for the key")
   end
 
-  local tel_bltn = require("telescope.builtin")
+  local telescope = require("telescope")
+  local builtin = require("telescope.builtin")
   local actions = require("telescope.actions")
-  local action_state = require("telescope.actions.state")
+  local a_state = require("telescope.actions.state")
+
+  -- 小工具 function，顯示當前 buffer 的 LSP root_dir
+  local function show_lsp_root()
+    local clients = vim.lsp.get_active_clients({ bufnr = 0 })
+    if #clients == 0 then
+      print("No LSP client attached")
+      return
+    end
+    for _, client in ipairs(clients) do
+      print(client.name .. " → " .. client.config.root_dir)
+    end
+  end
+
+  function open_file(prompt_bufnr, map)
+    actions.select_default:replace(function()
+      local selection = a_state.get_selected_entry()
+      actions.close(prompt_bufnr)
+      if selection and selection.path then
+        -- 用 :edit 開啟檔案，而不是 buffer switch
+        vim.cmd("edit " .. vim.fn.fnameescape(selection.path))
+      end
+      -- 延遲執行，等 buffer attach 好
+      vim.schedule(show_lsp_root)
+    end)
+    return true
+  end
+
+  function wa_open_file(prompt_bufnr, map)
+    actions.select_default:replace(function()
+      local entry = a_state.get_selected_entry()
+      actions.close(prompt_bufnr)
+      -- 在 cmdline 填入 :edit {filename}
+      vim.defer_fn(function()
+        vim.api.nvim_feedkeys(":edit " .. vim.fn.fnameescape(entry.path), "n", false)
+      end, 10)
+    end)
+    return true
+  end
+
   function grep_string_open(prompt_bufnr, map)
     actions.select_default:replace(function()
       -- 先取得選擇的 entry
-      local entry = action_state.get_selected_entry()
+      local entry = a_state.get_selected_entry()
       local filename = vim.fn.fnamemodify(entry.path or entry.filename, ":p")
       local lnum = entry.lnum or 1
 
@@ -90,6 +130,7 @@ local function config()
     end)
     return true
   end
+
   -- NOTE:
   -- '' in map mode means normal, visual and select modes
 
@@ -220,7 +261,7 @@ local function config()
       {
         '//',
         function()
-          require("telescope").extensions.egrepify.egrepify({
+          telescope.extensions.egrepify.egrepify({
             attach_mappings = grep_string_open,
           })
         end,
@@ -229,7 +270,7 @@ local function config()
       {
         '//w',
         function()
-          require("telescope").extensions.egrepify.egrepify({
+          telescope.extensions.egrepify.egrepify({
             default_text = string.format("\\b%s\\b", vim.fn.expand('<cword>')),
             attach_mappings = grep_string_open,
           })
@@ -239,7 +280,7 @@ local function config()
       {
         '//f',
         function()
-          require("telescope").extensions.egrepify.egrepify({
+          telescope.extensions.egrepify.egrepify({
             search_dirs = { vim.fn.expand('%:p') },
             attach_mappings = grep_string_open,
           })
@@ -249,7 +290,7 @@ local function config()
       {
         '//c',
         function()
-          require("telescope").extensions.egrepify.egrepify({
+          telescope.extensions.egrepify.egrepify({
             search_dirs = { vim.fn.expand('%:p') },
             default_text = string.format("\\b%s\\b", vim.fn.expand('<cword>')),
             attach_mappings = grep_string_open,
@@ -306,8 +347,26 @@ local function config()
     {
       group = "File",
       mode = "n",
-      { '<leader>fr', '<cmd>Telescope oldfiles<cr>', desc = "Open recently closed files" },
-      { '<leader>ff', '<cmd>Telescope find_files<cr>', desc = "Open files" },
+      -- { '<leader>fr', '<cmd>Telescope oldfiles<cr>', desc = "Open recently closed files" },
+      -- { '<leader>ff', '<cmd>Telescope find_files<cr>', desc = "Open files" },
+      {
+        '<leader>ff', function()
+          builtin.find_files({
+            attach_mappings = open_file,
+            -- cwd = require('lspconfig.util').root_pattern(".git", '.root')(vim.fn.expand("%:p")) or vim.loop.cwd()
+            cwd = false,
+          })
+        end, desc = "Open files"
+      },
+      {
+        '<leader>fr', function()
+          builtin.oldfiles({
+            attach_mappings = open_file,
+            -- cwd = require('lspconfig.util').root_pattern(".git", '.root')(vim.fn.expand("%:p")) or vim.loop.cwd()
+            cwd = false,
+          })
+        end, desc = "Open Recently Closed Files"
+      },
       { '<leader>fw', '<cmd>w<cr>', desc = "Save" },
       -- { '<leader>fm', '<cmd>Bdelete menu<cr>', desc = "Show delete menu" },
       -- { '<leader>fD', '<cmd>Bdelete select<cr>', desc = "Select" },

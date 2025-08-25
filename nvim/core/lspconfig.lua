@@ -92,23 +92,25 @@ return { -- LSP configuration
   config = function()
     local lspconfig = require('lspconfig')
     local lsp_status = require('lsp-status')
-    local mason_lsp = require('mason-lspconfig.settings').current.ensure_installed
-    local conf_tbl = {}
+    local lsps = require('mason-lspconfig.settings').current.ensure_installed
+    local lsp = {}
+    local util = require('lspconfig.util')
+    local lua_ls
 
-    for _, server in ipairs(mason_lsp) do
-      conf_tbl[server] = {
+    for _, server in ipairs(lsps) do
+      lsp[server] = {
         on_attach = lsp_status.on_attach,
+        root_dir = util.root_pattern(".root", ".git"),
+        root_markers = util.root_pattern(".root", ".git"),
       }
     end
 
-    -- customize configurations here
-    -- FIXME: The LSP setting would lose after changing from insert mode to insert mode
-    conf_tbl['lua_ls'] = {
+    lua_ls = {
       settings = {
         Lua = {
           runtime = {
             -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-            version = 'LuaJIT',
+            -- version = 'LuaJIT',
           },
           diagnostics = {
             -- Disable certain diagnostics globally
@@ -116,7 +118,7 @@ return { -- LSP configuration
             -- Every time a file is edited, created, deleted, etc. the workspace
             -- will be re-diagnosed in the background after this delay. Setting
             -- to a negative number will disable workspace diagnostics.
-            workspaceDelay = 1,
+            workspaceDelay = -1,
           },
           workspace = {
             checkThirdParty = false
@@ -127,12 +129,17 @@ return { -- LSP configuration
           },
         },
       },
-      on_attach = lsp_status.on_attach,
     }
 
+    -- Merge Table
+    vim.tbl_extend("force", lsp['lua_ls'], lua_ls)
+
+    -- customize configurations here
+    -- FIXME: The LSP setting would lose after changing from insert mode to insert mode
+
     -- initialize basic configurations for LSP servers installed by mason
-    for _, server in ipairs(mason_lsp) do
-      lspconfig[server].setup(conf_tbl[server])
+    for _, server in ipairs(lsps) do
+      lspconfig[server].setup(lsp[server])
     end
 
     -- configurations for external installation of LSP
@@ -165,7 +172,6 @@ return { -- LSP configuration
     m.autocmd('LspAttach', '*', function(ev)
       -- Enable completion triggered by <c-x><c-o>
       vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
-
     end, {
       group = m.augroup('UserLspConfig'),
     })
