@@ -82,10 +82,15 @@ return {
 
       telescope.setup({
         defaults = {
-          layout_strategy = 'vertical',
+          layout_strategy = 'center',
           layout_config = {
+            center = {
+              preview_cutoff = 15,
+              width = 0.6,
+              height = 0.5,
+            },
             vertical = {
-              prompt_position = "bottom",
+              prompt_position = "top",
               preview_cutoff = 15,
               width = 0.6,
               height = 0.5,
@@ -151,10 +156,10 @@ return {
             layout_strategy = 'bottom_pane'
           },
           help_tags = {
-            layout_strategy = 'vertical',
+            layout_strategy = 'center',
           },
           keymaps = {
-            layout_strategy = 'vertical',
+            layout_strategy = 'center',
           },
           buffers = {
             mappings = {
