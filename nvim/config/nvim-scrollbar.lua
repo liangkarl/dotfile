@@ -5,6 +5,7 @@ return {
     mod.setup({
       handlers = {
         cursor = false,
+        diagnostic = false,
       },
       handle = {
         blend = 0,
