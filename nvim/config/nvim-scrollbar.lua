@@ -8,7 +8,7 @@ return {
         diagnostic = false,
       },
       handle = {
-        blend = 0,
+        blend = 30,
       }
     })
   end,
