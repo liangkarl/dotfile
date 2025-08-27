@@ -5,7 +5,7 @@ local g = vim.g
 --- General
 -------------------------------------------------
 opt.termguicolors = true
-opt.timeoutlen = 300         -- set wait time for combined keys
+opt.timeoutlen = 600         -- set wait time for combined keys
 opt.wildmode = "full"        -- Tab completion in command bar
 opt.wildignore = "*.o,*.obj,.git,*.rbc,.pyc,__pycache__"
 -- Symbols for non-charactors:
