@@ -152,15 +152,13 @@ return {
           },
         },
         pickers = {
-          grep_string = {
-            layout_strategy = 'bottom_pane'
-          },
-          help_tags = {
-            layout_strategy = 'center',
-          },
-          keymaps = {
-            layout_strategy = 'center',
-          },
+          grep_string = { layout_strategy = 'bottom_pane' },
+          help_tags = { layout_strategy = 'center', },
+          keymaps = { layout_strategy = 'center', },
+          lsp_references = { layout_strategy = 'bottom_pane' },
+          lsp_definitions = { layout_strategy = 'bottom_pane' },
+          lsp_implementations = { layout_strategy = 'bottom_pane' },
+          lsp_type_definitions = { layout_strategy = 'bottom_pane' },
           buffers = {
             mappings = {
               i = {
