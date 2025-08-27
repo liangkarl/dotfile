@@ -78,7 +78,6 @@ require("lazy").setup({
   require('config.vim-clang-format'),
 
   -- LSP plugin
-  require('config.ccls'),
   require('config.dropbar'),
 
   -- Debug Tools
@@ -106,10 +105,8 @@ require("lazy").setup({
   require('config.nvim-cmp'),
 
   require('config.tabnine-nvim'),
-  require('config.lsp-status'),
   require('config.fold-preview'),
   require('config.editorconfig'),
-  require('config.ChatGPT'),
 
   -- LSP
   require('core.lspconfig'),
