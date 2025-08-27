@@ -208,8 +208,10 @@ local function config()
   -- There are two different clipboards for Linux and only one for Win
   -- *: clipboard for copy-on-select
   -- +: clipboard for <C-c> and <C-v>
-  m.noremap('',  '<leader>p', '"+p', "Paste from Clipboard")
-  m.noremap('',  '<leader>P', '"*p', "Paste from 'copy-on-select' Clipboard")
+  m.noremap('',  '<leader>ps', '"+p', "Paste from Clipboard")
+  m.noremap('',  '<leader>Ps', '"+P', "Paste from Clipboard")
+  m.noremap('',  '<leader>pc', '"*p', "Paste from 'copy-on-select' Clipboard")
+  m.noremap('',  '<leader>Pc', '"*P', "Paste from 'copy-on-select' Clipboard")
   m.noremap('n', '<leader>S', '<cmd>AerialToggle<cr>', 'Symbol Manager')
   m.noremap('n', '<leader>F', '<cmd>lua MiniFiles.open()<cr>', 'File Explorer')
   m.noremap('n', '<leader>d', M.close_buf, "Close current buffer")
@@ -230,6 +232,41 @@ local function config()
       { 'g0', '^', desc = "Go to the first character of line" },
       { 'g9', '$', desc = "Go to the end of line" },
       { 'g/', '<cmd>HopPattern<cr>' },
+      { "gr", function ()
+        exe_loop({
+          { id = 'telescope', action = 'Telescope lsp_references' },
+          { id = 'coc', action = "<Plug>(coc-references)" },
+          { id = 'glance', action = 'Glance references' },
+          { id = 'trouble', action = 'Trouble lsp_references toggle' }
+        })
+      end, desc = "Code Reference" },
+      { 'gd', function ()
+        exe_loop({
+          { id = 'telescope', action = 'Telescope lsp_definitions' },
+          { id = 'coc', action = "<Plug>(coc-definition)" },
+          { id = 'glance', action = 'Glance definitions' },
+          { id = 'trouble', action = 'Trouble lsp_definitions toggle' }
+        })
+      end, desc = "Definition" },
+      { 'gD', function ()
+        exe_loop({
+          { id = 'telescope', action = 'Telescope lsp_type_definitions' },
+          { id = 'coc', action = "<Plug>(coc-type-definition)" },
+          { id = 'glance', action = 'Glance type_definitions' },
+          { id = 'trouble', action = 'Trouble lsp_type_definitions toggle' }
+        })
+      end, desc = "Type Definition" },
+      { 'gp', function ()
+        exe_loop({
+          { id = 'telescope', action = 'Telescope lsp_implementations' },
+          { id = 'coc', action = "<Plug>(coc-implementation)" },
+          { id = 'glance', action = 'Glance implementations' },
+          { id = 'trouble', action = 'Trouble lsp_implementations toggle' }
+        })
+      end, desc = "Implementations" },
+      { 'go', "<cmd>DapStepOver<cr>", desc = "DAP: Step Over" },
+      { 'g>', "<cmd>DapStepInto<cr>", desc = "DAP: Step In" },
+      { 'g<', "<cmd>DapStepOut<cr>", desc = "DAP: Step Out"},
     },
     {
       group = "Change",
@@ -247,8 +284,8 @@ local function config()
       { '==', '<cmd>lua vim.lsp.buf.format({ async = true })<cr>', desc = "LSP: Format" },
     },
     {
+      mode = { 'n', 'v' },
       group = "Yank",
-      { 'y', 'y', desc = "Yank" },
       { 'ys', '"+y', desc = "Copy to Clipboard" },
       { 'yc', '"*y', desc = "Copy to 'copy-on-select' Clipboard" },
     },
@@ -301,54 +338,16 @@ local function config()
       { mode = 'v', '/', '<Esc>/\\%V', desc = "Search within selected block"},
     },
     {
-      group = "Debug / Compile",
+      group = "LSP",
       mode = "n",
-      { '<leader>\'b', desc = "<cmd>DapToggleBreakpoint<cr>" },
-      { '<leader>\'c', desc = "<cmd>DapContinue<cr>" },
-      { '<leader>\'s', desc = "<cmd>DapStepOver<cr>" },
-      { '<leader>\'i', desc = "<cmd>DapStepInto<cr>" },
-      { '<leader>\'o', desc = "<cmd>DapStepOut<cr>" },
-      { '<leader>\'t', desc = "<cmd>DapToggleRepl<cr>" },
-    },
-    {
-      group = "Coding",
-      mode = "n",
-      { "<leader>;r", function ()
-        exe_loop({
-          { id = 'glance', action = 'Glance references' },
-          { id = 'trouble', action = 'Trouble lsp_references toggle' }
-        })
-      end, desc = "Code Reference" },
-      { '<leader>;d', function ()
-        exe_loop({
-          { id = 'glance', action = 'Glance definitions' },
-          { id = 'trouble', action = 'Trouble lsp_definitions toggle' }
-        })
-      end, desc = "Definition" },
-      { '<leader>;D', function ()
-        exe_loop({
-          { id = 'glance', action = 'Glance type_definitions' },
-          { id = 'trouble', action = 'Trouble lsp_type_definitions toggle' }
-        })
-      end, desc = "Type Definition" },
-      { '<leader>;p', function ()
-        exe_loop({
-          { id = 'glance', action = 'Glance implementations' },
-          { id = 'trouble', action = 'Trouble lsp_implementations toggle' }
-        })
-      end, desc = "Implementations" },
-      { '<leader>;n', lsp.rename, desc = "Rename (LSP)" },
-      { '<leader>;c', lsp.code_action, desc = "Show code action menu (LSP)" },
-      { '<leader>;v', lsp.hover, desc = "Show info (LSP)" },
-      { '<leader>;h', lsp.signature_help, desc = "Show signatures (LSP)" },
-      { '<leader>;w', '<cmd>TroubleToggle workspace_diagnostics<cr>', desc = "Diagnostic Workspace (Trouble)" },
-      { '<leader>;f', '<cmd>TroubleToggle document_diagnostics<cr>', desc = "Diagnostic Document (Trouble)" },
+      { '<leader>;t', desc = "<cmd>DapToggleBreakpoint<cr>" },
+      { '<leader>;c', desc = "<cmd>DapContinue<cr>" },
+      { '<leader>;t', desc = "<cmd>DapToggleRepl<cr>" },
+      { '<leader>;m', lsp.code_action, desc = "Show code action menu (LSP)" },
     },
     {
       group = "File",
       mode = "n",
-      -- { '<leader>fr', '<cmd>Telescope oldfiles<cr>', desc = "Open recently closed files" },
-      -- { '<leader>ff', '<cmd>Telescope find_files<cr>', desc = "Open files" },
       {
         '<leader>ff', function()
           builtin.find_files({
@@ -370,59 +369,67 @@ local function config()
       { '<leader>fw', '<cmd>w<cr>', desc = "Save" },
       -- { '<leader>fm', '<cmd>Bdelete menu<cr>', desc = "Show delete menu" },
       -- { '<leader>fD', '<cmd>Bdelete select<cr>', desc = "Select" },
-
+      { '<leader>ft', '<cmd>Telescope filetypes<cr>', desc = "Change File Type" },
     },
     {
-      group = "Setup / Status",
-      mode = "n",
-      { '<leader>sa', lsp.add_workspace_folder, desc = "Add LSP workspace" },
-      { '<leader>sr', lsp.remove_workspace_folder, desc = "Remove LSP workspace" },
-      { '<leader>sw', function()
-        -- TODO: Add to quickfix list
-        print(vim.inspect(lsp.list_workspace_folders()))
-      end, desc = "Show LSP workspace" },
-      { '<leader>st', '<cmd>Telescope filetypes<cr>', desc = "Change filetypes" },
-      { '<leader>sl', '<cmd>Mason<cr>', desc = "Mason: Main Menu" },
-      { '<leader>sp', '<cmd>Lazy<cr>', desc = "Lazy: Main Menu" },
+      group = "Show",
+      -- {'<leader>', '<cmd>Gitsigns toggle_current_line_blam<cr>', desc = "Add the hunk"},
       { '<leader>si', '<cmd>LspInfo<cr>', desc = "LSP Server Info (LspInfo)" },
       { '<leader>sm', '<cmd>AerialInfo<cr>', desc = 'Symbol Manager Info (AerialInfo)' },
-      { '<leader>sg', '<cmd>GuessIndent<cr>', desc = 'Set up indent (GuessIndent)' },
-      { '<leader>sc', M.change_cwd, desc = "Set CWD to current buffer" },
-      { '<leader>sC', '<cmd>Telescope cder<cr>', desc = "Change CWD with specified path" },
-      { '<leader>sf', M.show_file_info, desc = "Show File and CWD info" },
-      { '<leader>sr', M.reload_settings, desc = "Reload init.lua" },
-      { '<leader>s,', M.edit_settings, desc = "Edit runtime init.lua" },
+      { '<leader>sl', function()
+        -- TODO: Add to quickfix list
+        print(vim.inspect(lsp.list_workspace_folders()))
+      end, desc = "LSP: Show LSP Workspace Dir" },
+      { '<leader>sh', lsp.hover, desc = "Show info (LSP)" },
+      { '<leader>ss', lsp.signature_help, desc = "Show signatures (LSP)" },
+      { '<leader>sc', '<cmd>Gitsigns preview_hunk_inline<cr>', desc = "Preview line change(s)"},
+      { '<leader>sC', '<cmd>Gitsigns setloclist<cr>', desc = "List the change(s)"},
+      { '<leader>sb', '<cmd>Gitsigns blame_line<cr>', desc = "Blame Line"},
+      { '<leader>sB', '<cmd>Gitsigns blame<cr>', desc = "Blame File"},
+      { '<leader>s.', '<cmd>only<cr>', desc = "Close all other windows"},
+      { '<leader>sx', '<cmd>close<cr>', desc = "Close this window"},
+      { '<leader>s[', '<cmd>Telescope buffers<cr>', desc = "Switch opened buffers"},
+    },
+    {
+      group = "Options",
+      { '<leader>o<space>', '<cmd>GuessIndent<cr>', desc = 'Set up indent (GuessIndent)' },
+      { '<leader>os', M.change_cwd, desc = "Set CWD to current buffer" },
+      { '<leader>oS', '<cmd>Telescope cder<cr>', desc = "Change CWD with specified path" },
+      { '<leader>oa', lsp.add_workspace_folder, desc = "LSP: Add LSP Workspace Dir" },
+      { '<leader>or', lsp.remove_workspace_folder, desc = "LSP: Remove LSP Workspace Dir" },
+      { '<leader>ob', '<cmd>Gitsigns toggle_current_line_blame<cr>', desc = "Preview line change(s)"},
+    },
+    {
+      group = "Edit",
+      { '<leader>c+', '<cmd>Gitsigns stage_hunk<cr>', desc = "Add the hunk"},
+      { '<leader>c-', '<cmd>Gitsigns reset_hunk<cr>', desc = "Reset the hunk"},
+      { '<leader>cn', lsp.rename, desc = "Rename (LSP)" },
+    },
+    {
+      group = "Menu",
+      mode = "n",
+      { '<leader><space>l', '<cmd>Mason<cr>', desc = "Mason: Main Menu" },
+      { '<leader><space>p', '<cmd>Lazy<cr>', desc = "Lazy: Main Menu" },
+      { '<leader><space>t', '<cmd>Telescope builtin include_extensions=true<cr>', desc = "Telescope: Main Menu"},
+      { '<leader><space>i', M.show_file_info, desc = "Show File and CWD info" },
       -- { '<leader>sm', '<cmd>Outline<cr>', 'Toggle Outline Symbol Manager' },
       -- { '<leader>si', '<cmd>OutlineStatus<cr>', 'Get Outline Symbol Manager info' },
-      {'<leader>st', '<cmd>Telescope builtin include_extensions=true<cr>', desc = "Telescope: Main Menu"},
-      {"<leader>sq", '<cmd>TroubleToggle quickfix<cr>', desc = "Trouble: Toggle Quickfix"},
-      {"<leader>sQ", '<cmd>TroubleToggle loclist<cr>', desc = "Trouble: Toggle Quickfix"},
-      {'<leader>sr', '<cmd>Telescope registers<cr>', desc = "Open registers"},
-    },
-    {
-      group = "Window",
-      mode = 'n',
-      {'<leader>wo', '<cmd>only<cr>', desc = "Close all other windows"},
-    },
-    {
-      group = "Git",
-      mode = "n",
-      -- {'n', '<leader>;;b', '<cmd>Gitsigns blame_line<cr>', "Blame file (inline)"}
-      {'<leader>gB', '<cmd>Gitsigns blame<cr>', desc = "Blame file"},
-      {'<leader>g;', '<cmd>TigBlame<cr>', desc = "Blame file"},
-      {'<leader>g.', '<cmd>TigOpenCurrentFile<cr>', desc = "Git log with current file"},
-      {'<leader>g/', '<cmd>TigOpenProjectRootDir<cr>', desc = "Tig: Project Root Dir"},
-      {'<leader>gp', '<cmd>Gitsigns preview_hunk_inline<cr>', desc = "Preview line change(s)"},
-      {'<leader>gd', '<cmd>Gitsigns diffthis<cr>', desc = "Open two panes to show the diff"},
-      {'<leader>gl', '<cmd>Gitsigns setloclist<cr>', desc = "List the change(s)"},
-      {'<leader>gr', '<cmd>Gitsigns reset_hunk<cr>', desc = "Reset the hunk"},
-      {'<leader>ga', '<cmd>Gitsigns stage_hunk<cr>', desc = "Add the hunk"},
+      { "<leader><space>q", '<cmd>TroubleToggle quickfix<cr>', desc = "Trouble: Toggle Quickfix"},
+      { "<leader><space>Q", '<cmd>TroubleToggle loclist<cr>', desc = "Trouble: Toggle Quickfix"},
+      -- {'<leader>sr', '<cmd>Telescope registers<cr>', desc = "Open registers"},
+      { '<leader><space>w', '<cmd>TroubleToggle workspace_diagnostics<cr>', desc = "Diagnostic Workspace (Trouble)" },
+      { '<leader><space>f', '<cmd>TroubleToggle document_diagnostics<cr>', desc = "Diagnostic Document (Trouble)" },
+      { '<leader><space>b', '<cmd>TigBlame<cr>', desc = "Blame file"},
+      { '<leader><space>c', '<cmd>TigOpenCurrentFile<cr>', desc = "Git log with current file"},
+      { '<leader><space>r', '<cmd>TigOpenProjectRootDir<cr>', desc = "Tig: Project Root Dir"},
     },
   })
 
-  m.noremap('n', '<leader>b', '<cmd>Telescope buffers<cr>', "Switch opened buffers")
   m.noremap('n', '<leader>?', '<cmd>Telescope keymaps<cr>', "Open keymaps")
-  m.noremap('n', '<leader>h', '<cmd>Telescope help_tags<cr>', "Show help manuals like :help")
+  -- m.noremap('n', '<leader>K', '<cmd>Telescope help_tags<cr>', "Show help manuals like :help")
+  m.noremap('n', '<leader>K', function ()
+    builtin.help_tags({ default_text = vim.fn.expand('<cword>') })
+  end, "Show help manuals like :help")
   -- File (Open/Close/Save)
   -- m.noremap('n', '<leader>', '', "Open file (Current file path)")
 
