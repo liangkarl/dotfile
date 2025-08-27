@@ -149,7 +149,7 @@ local function config()
     if not vim.o.modifiable then
       -- Using :quit instead of :close is because :quit could exit nvim
       -- once the current buffer is the last buffer
-      m.noremap('n', 'q', '<cmd>quit<cr>', "Close buffer", { buffer = true })
+      m.noremap('n', 'q', M.close_buf, "Close buffer", { buffer = true })
     end
   end, {
       desc = "Set different keybinds according to the options",
