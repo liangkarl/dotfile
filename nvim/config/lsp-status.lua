@@ -18,14 +18,14 @@ return {
     })
 
     -- WA: Update current function
-    m.autocmd({ "CursorMoved", "CursorMovedI" }, "*",
-      function()
-        if #vim.lsp.get_clients({bufnr = 0}) > 0 then
-          lsp_status.update_current_function()
-        end
-      end, {
-      group = m.augroup("LspStatupUpdate")
-    })
+    -- m.autocmd({ "CursorMoved", "CursorMovedI" }, "*",
+    --   function()
+    --     if #vim.lsp.get_clients({bufnr = 0}) > 0 then
+    --       lsp_status.update_current_function()
+    --     end
+    --   end, {
+    --   group = m.augroup("LspStatupUpdate")
+    -- })
 
     -- LspStatus(): status string for lualine
     -- _G.LspStatus = function()
