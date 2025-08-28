@@ -115,7 +115,7 @@ m.autocmd("TextYankPost", '*', function() vim.highlight.on_yank() end, {
   group = gid,
 })
 
-function check_treesitter_and_set_highlight()
+function detect_syntax_hl()
     local ft = vim.bo.filetype
 
     if require("nvim-treesitter.parsers").has_parser(ft) then
@@ -127,7 +127,7 @@ function check_treesitter_and_set_highlight()
     end
 end
 
-m.autocmd({"VimEnter", "BufEnter"}, '*', check_treesitter_and_set_highlight, {
+m.autocmd({"VimEnter", "BufEnter"}, '*', detect_syntax_hl, {
   desc = "Enable Treesitter highlight if parser exists, otherwise fallback to syntax highlight",
   group = gid
 })

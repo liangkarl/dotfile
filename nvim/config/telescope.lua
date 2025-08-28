@@ -6,7 +6,7 @@ local opts = { noremap = true, silent = true }
 
 -- WA for multi-selections
 -- https://github.com/nvim-telescope/telescope.nvim/issues/1048
-local select_one_or_multi = function(prompt_bufnr)
+local function select_one_or_multi(prompt_bufnr)
   local picker = require('telescope.actions.state').get_current_picker(prompt_bufnr)
   local multi = picker:get_multi_selection()
   if not vim.tbl_isempty(multi) then
@@ -26,6 +26,12 @@ local function trouble_func()
   if open_with_trouble then
     return open_with_trouble
   end
+end
+
+-- Custom action: clear from cursor to beginning of line
+local function clear_to_start(prompt_bufnr)
+  -- TODO: Need implementation
+  return {}
 end
 
 return {
@@ -119,6 +125,7 @@ return {
               ["<c-o>"] = action_layout.toggle_mirror,
               ["<c-s>"] = actions.select_horizontal,
               ["<c-v>"] = actions.select_vertical,
+              ["<c-a>"] = clear_to_start,
               ["<c-u>"] = actions.results_scrolling_up,
               ["<c-d>"] = actions.results_scrolling_down,
               -- ["<c-h>"] = actions.results_scrolling_left,
