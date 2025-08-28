@@ -105,7 +105,7 @@ require("lazy").setup({
   require('config.nvim-cmp'),
 
   require('config.tabnine-nvim'),
-  require('config.fold-preview'),
+  require('config.nvim-ufo'),
   require('config.editorconfig'),
 
   -- LSP
