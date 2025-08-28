@@ -33,6 +33,52 @@ M.edit_settings = function()
 end
 
 -- Save buffer content if modifiable is 'on'
+M.quit = function()
+  -- Get listed buffer
+  local listed_buffers = fn.getbufinfo({buflisted = 1})
+  local cur_bufnr = vim.api.nvim_get_current_buf()
+  local name = vim.api.nvim_buf_get_name(cur_bufnr)
+  local is_listed = false
+  local is_side_win = false
+
+  -- Check if current bufnr is in listed buffers
+  for _, buf in ipairs(listed_buffers) do
+    if buf.bufnr == cur_bufnr then
+      is_listed = true
+      break
+    end
+  end
+
+  -- Prevent cases like diff window
+  if name:match("^[%a]+://") then
+    is_side_win = true
+  end
+
+  -- TODO: Check diff mode
+  -- 1. Close all other diff side windows
+  -- 2. Change back to primary window
+
+  if is_listed then
+    if vim.bo.modifiable and not is_side_win then
+      -- Close current buffer, load next buffer, and keep window position
+      -- Usually, it would use in the main window
+      vim.cmd('lua MiniBufremove.delete(0)')
+    else
+      -- Close current buffer, load next buffer, and destroy current window
+      vim.cmd('silent! bdelete!')
+    end
+
+    -- Close all windows when current buffer is the last buffer and window
+    if #listed_buffers <= 1 then
+      vim.cmd('confirm quitall')
+    end
+  else
+    -- If this is a hidden buffer, usually it's from certain plugin
+    -- Keep buffer and close current window (or exit vim)
+    vim.cmd('quit!')
+  end
+end
+
 M.close_buf = function()
   -- Get listed buffer
   local listed_buffers = fn.filter(fn.getbufinfo({buflisted = 1}), 'v:val.listed == 1')
@@ -141,20 +187,20 @@ local function config()
   gid = m.augroup("KeybindProfile")
 
   m.autocmd({ "BufAdd", "OptionSet" }, "*", function()
-    if vim.o.diff then
-      m.noremap('n', 'Q', '<cmd>qall<cr>', "Quit all")
-      m.noremap('n', '<leader>q', '<cmd>diffoff | only<cr>', "Back to Normal edit mode")
-    end
+      if vim.o.diff then
+        m.noremap('n', 'Q', '<cmd>qall<cr>', "Quit all")
+        -- m.noremap('n', '<leader>q', '<cmd>diffoff | only<cr>', "Back to Normal edit mode")
+      end
 
-    if not vim.o.modifiable then
-      -- Using :quit instead of :close is because :quit could exit nvim
-      -- once the current buffer is the last buffer
-      m.noremap('n', 'q', M.close_buf, "Close buffer", { buffer = true })
-    end
-  end, {
+      if not vim.o.modifiable then
+        -- Using :quit instead of :close is because :quit could exit nvim
+        -- once the current buffer is the last buffer
+        m.noremap('n', 'q', M.quit, "Close Buffer", { buffer = true })
+      end
+    end, {
       desc = "Set different keybinds according to the options",
       group = gid
-    })
+  })
 
   -- XXX: WA for 'E335: Menu not defined for Insert mode'
   -- https://github.com/neovim/neovim/issues/19473
@@ -193,39 +239,45 @@ local function config()
   m.noremap({'n', 'v', 'i'},  '<S-Down>', '<C-d>')
 
   -------------------
-  -- Direct Keymap --
-  -------------------
-  --- action: switch
-  --- <TAB> = <C-i> that could makes pause while using <C-i>
-  m.noremap('n', '<leader>\\', '<C-w>w', "Switch to next window")
-  m.noremap('n', '<leader><Left>', '<C-w>h', "Switch to left window")
-  m.noremap('n', '<leader><Down>', '<C-w>j', "Switch to down window")
-  m.noremap('n', '<leader><Up>', '<C-w>k', "Switch to up window")
-  m.noremap('n', '<leader><Right>', '<C-w>l', "Switch to right window")
-  m.noremap('n', '<leader><S-TAB>', '<cmd>BufferLineCyclePrev<cr>', "Switch to previous buffer")
-  m.noremap('n', '<leader><TAB>', '<cmd>BufferLineCycleNext<cr>', "Switch to next buffer")
-
-  -- There are two different clipboards for Linux and only one for Win
-  -- *: clipboard for copy-on-select
-  -- +: clipboard for <C-c> and <C-v>
-  m.noremap('',  '<leader>ps', '"+p', "Paste from Clipboard")
-  m.noremap('',  '<leader>Ps', '"+P', "Paste from Clipboard")
-  m.noremap('',  '<leader>pc', '"*p', "Paste from 'copy-on-select' Clipboard")
-  m.noremap('',  '<leader>Pc', '"*P', "Paste from 'copy-on-select' Clipboard")
-  m.noremap('n', '<leader>S', '<cmd>AerialToggle<cr>', 'Symbol Manager')
-  m.noremap('n', '<leader>F', '<cmd>lua MiniFiles.open()<cr>', 'File Explorer')
-  m.noremap('n', '<leader>d', M.close_buf, "Close current buffer")
-
-  -------------------
   -- Folded Keymap --
   -------------------
   wk.setup()
   -- NOTE: need explicity declaration if override g, s, c, d, =, etc.
   wk.add({
     {
-      mode = '',
-      group = 'default',
+      mode = 'n',
+      group = 'Direct Keymap',
       remap = false,
+      { '<leader>.', '<cmd>only<cr>', desc = "Close All Other Windows"},
+      { '<leader>.t', '<cmd>tabonly<cr>', desc = "Close All Other Tabs"},
+      { '<leader>x', '<cmd>close<cr>', desc = "Close Current Window"},
+      { '<leader>q', M.quit, desc = "Close Current Buffer and Window"},
+      { '<leader>[', '<cmd>Telescope buffers<cr>', desc = "Switch opened buffers"},
+      { '<leader>K', function ()
+        builtin.help_tags({ default_text = vim.fn.expand('<cword>') })
+      end, desc = "Show help manuals like :help" },
+
+      -- There are two different clipboards for Linux and only one for Win
+      -- *: clipboard for copy-on-select
+      -- +: clipboard for <C-c> and <C-v>
+      {  '<leader>ps', '"+p', desc = "Paste from Clipboard"},
+      {  '<leader>Ps', '"+P', desc = "Paste from Clipboard"},
+      {  '<leader>pc', '"*p', desc = "Paste from 'copy-on-select' Clipboard"},
+      {  '<leader>Pc', '"*P', desc = "Paste from 'copy-on-select' Clipboard"},
+
+      --- action: switch
+      --- <TAB> = <C-i> that could makes pause while using <C-i>
+      { '<leader>\\', '<C-w>w', desc = "Switch to next window"},
+      { '<leader><Left>', '<C-w>h',desc = "Switch to left window"},
+      { '<leader><Down>', '<C-w>j',desc = "Switch to down window"},
+      { '<leader><Up>', '<C-w>k', desc = "Switch to up window"},
+      { '<leader><Right>', '<C-w>l', desc = "Switch to right window"},
+      { '<leader><S-TAB>', '<cmd>BufferLineCyclePrev<cr>', desc = "Switch to previous buffer"},
+      { '<leader><TAB>', '<cmd>BufferLineCycleNext<cr>', desc = "Switch to next buffer"},
+
+      { '<leader>S', '<cmd>AerialToggle<cr>', desc = 'Symbol Manager'},
+      { '<leader>F', '<cmd>lua MiniFiles.open(},<cr>', desc = 'File Explorer'},
+      { '<leader>d', M.quit, desc = "Close current buffer"},
     },
     {
       group = "Extra Cmd G",
@@ -386,9 +438,6 @@ local function config()
       { '<leader>sC', '<cmd>Gitsigns setloclist<cr>', desc = "List the change(s)"},
       { '<leader>sb', '<cmd>Gitsigns blame_line<cr>', desc = "Blame Line"},
       { '<leader>sB', '<cmd>Gitsigns blame<cr>', desc = "Blame File"},
-      { '<leader>s.', '<cmd>only<cr>', desc = "Close all other windows"},
-      { '<leader>sx', '<cmd>close<cr>', desc = "Close this window"},
-      { '<leader>s[', '<cmd>Telescope buffers<cr>', desc = "Switch opened buffers"},
     },
     {
       group = "Options",
@@ -411,6 +460,8 @@ local function config()
       { '<leader><space>l', '<cmd>Mason<cr>', desc = "Mason: Main Menu" },
       { '<leader><space>p', '<cmd>Lazy<cr>', desc = "Lazy: Main Menu" },
       { '<leader><space>t', '<cmd>Telescope builtin include_extensions=true<cr>', desc = "Telescope: Main Menu"},
+      { '<leader><space>h', '<cmd>Telescope help_tags<cr>', desc = "Help Manuals"},
+      { '<leader><space>k', '<cmd>Telescope keymaps<cr>', desc = "Keymaps" },
       { '<leader><space>i', M.show_file_info, desc = "Show File and CWD info" },
       -- { '<leader>sm', '<cmd>Outline<cr>', 'Toggle Outline Symbol Manager' },
       -- { '<leader>si', '<cmd>OutlineStatus<cr>', 'Get Outline Symbol Manager info' },
@@ -425,11 +476,7 @@ local function config()
     },
   })
 
-  m.noremap('n', '<leader>?', '<cmd>Telescope keymaps<cr>', "Open keymaps")
   -- m.noremap('n', '<leader>K', '<cmd>Telescope help_tags<cr>', "Show help manuals like :help")
-  m.noremap('n', '<leader>K', function ()
-    builtin.help_tags({ default_text = vim.fn.expand('<cword>') })
-  end, "Show help manuals like :help")
   -- File (Open/Close/Save)
   -- m.noremap('n', '<leader>', '', "Open file (Current file path)")
 
