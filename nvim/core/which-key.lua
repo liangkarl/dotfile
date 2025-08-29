@@ -1,28 +1,27 @@
-local M = {}
 local vim = vim
 local fn = vim.fn
 local m = require("core.utils")
 
 -- Show information about the current file
-M.show_file_info = function()
+local show_file_info = function()
   vim.notify(string.format('File: %s\nCWD:  %s',
       vim.fn.expand('%:p'), vim.fn.getcwd()))
 end
 
 -- Change the current working directory to the file's directory
-M.change_cwd = function()
+local change_cwd = function()
   vim.cmd('lcd %:p:h')
   vim.notify('Set CWD to ' .. vim.fn.getcwd())
 end
 
 -- Reload the Neovim configuration
-M.reload_settings = function()
+local reload_settings = function()
   vim.cmd('source $MYVIMRC')
   vim.notify('Reload: ' .. vim.env.MYVIMRC)
 end
 
 -- Update the Neovim configuration
-M.edit_settings = function()
+local edit_settings = function()
   vim.cmd('edit $MYVIMRC')
   m.autocmd('BufDelete', vim.env.MYVIMRC, function()
     vim.cmd('source ' .. vim.env.MYVIMRC)
@@ -32,8 +31,30 @@ M.edit_settings = function()
   })
 end
 
+local show_lsp_workspace = function()
+  local folders = vim.lsp.buf.list_workspace_folders()
+
+  if not folders or vim.tbl_isempty(folders) then
+    vim.notify("No LSP workspace folders found", vim.log.levels.WARN)
+    return
+  end
+
+  local items = {}
+  for _, f in ipairs(folders) do
+    table.insert(items, {
+      filename = f,
+      lnum = 1,
+      col = 1,
+      text = "LSP Workspace Folder"
+    })
+  end
+
+  vim.fn.setqflist(items, 'r') -- replace quickfix list
+  vim.cmd("copen")
+end
+
 -- Save buffer content if modifiable is 'on'
-M.quit = function()
+local quit = function()
   -- Get listed buffer
   local listed_buffers = fn.getbufinfo({buflisted = 1})
   local cur_bufnr = vim.api.nvim_get_current_buf()
@@ -76,23 +97,6 @@ M.quit = function()
     -- If this is a hidden buffer, usually it's from certain plugin
     -- Keep buffer and close current window (or exit vim)
     vim.cmd('quit!')
-  end
-end
-
-M.close_buf = function()
-  -- Get listed buffer
-  local listed_buffers = fn.filter(fn.getbufinfo({buflisted = 1}), 'v:val.listed == 1')
-
-  if #listed_buffers <= 1 then
-    vim.cmd('quit!')
-  else
-    -- Usually, the modifiable buffer would be the main window and
-    -- the nomodifiable buffer would be the side window
-    if vim.bo.modifiable then
-      vim.cmd('lua MiniBufremove.delete(0)')
-    else
-      vim.cmd('silent! bdelete!')
-    end
   end
 end
 
@@ -187,20 +191,20 @@ local function config()
   gid = m.augroup("KeybindProfile")
 
   m.autocmd({ "BufAdd", "OptionSet" }, "*", function()
-      if vim.o.diff then
-        m.noremap('n', 'Q', '<cmd>qall<cr>', "Quit all")
-        -- m.noremap('n', '<leader>q', '<cmd>diffoff | only<cr>', "Back to Normal edit mode")
-      end
+    if vim.o.diff then
+      m.noremap('n', 'Q', '<cmd>qall<cr>', "Quit all")
+      -- m.noremap('n', '<leader>q', '<cmd>diffoff | only<cr>', "Back to Normal edit mode")
+    end
 
-      if not vim.o.modifiable then
-        -- Using :quit instead of :close is because :quit could exit nvim
-        -- once the current buffer is the last buffer
-        m.noremap('n', 'q', M.quit, "Close Buffer", { buffer = true })
-      end
-    end, {
+    if not vim.o.modifiable then
+      -- Using :quit instead of :close is because :quit could exit nvim
+      -- once the current buffer is the last buffer
+      m.noremap('n', 'q', quit, "Close Buffer", { buffer = true })
+    end
+  end, {
       desc = "Set different keybinds according to the options",
       group = gid
-  })
+    })
 
   -- XXX: WA for 'E335: Menu not defined for Insert mode'
   -- https://github.com/neovim/neovim/issues/19473
@@ -251,7 +255,7 @@ local function config()
       { '<leader>.', '<cmd>only<cr>', desc = "Close All Other Windows"},
       { '<leader>.t', '<cmd>tabonly<cr>', desc = "Close All Other Tabs"},
       { '<leader>x', '<cmd>close<cr>', desc = "Close Current Window"},
-      { '<leader>q', M.quit, desc = "Close Current Buffer and Window"},
+      { '<leader>q', quit, desc = "Close Current Buffer and Window"},
       { '<leader>[', '<cmd>Telescope buffers<cr>', desc = "Switch opened buffers"},
       { '<leader>K', function ()
         builtin.help_tags({ default_text = vim.fn.expand('<cword>') })
@@ -275,9 +279,7 @@ local function config()
       { '<leader><S-TAB>', '<cmd>BufferLineCyclePrev<cr>', desc = "Switch to previous buffer"},
       { '<leader><TAB>', '<cmd>BufferLineCycleNext<cr>', desc = "Switch to next buffer"},
 
-      { '<leader>S', '<cmd>AerialToggle<cr>', desc = 'Symbol Manager'},
-      { '<leader>F', '<cmd>lua MiniFiles.open(},<cr>', desc = 'File Explorer'},
-      { '<leader>d', M.quit, desc = "Close current buffer"},
+      { '<leader>d', quit, desc = "Close current buffer"},
     },
     {
       group = "Extra Cmd G",
@@ -416,35 +418,47 @@ local function config()
       { '<leader>ft', '<cmd>Telescope filetypes<cr>', desc = "Change File Type" },
     },
     {
-      group = "Show",
-      -- {'<leader>', '<cmd>Gitsigns toggle_current_line_blam<cr>', desc = "Add the hunk"},
+      group = "Show / Set",
+      -- Unbind 's' since it can be replaced by 'cl'
+      -- Fix recursive keybind s -> <leader>s and no menu s -> <Nop> problem
+      { 's', function ()
+        require("which-key").show("<leader>s", { mode = "n" })
+      end, desc = "Show", remap = false },
+      { 'ss', '<Nop>' },
+      { 's<C-c>', '<Nop>' },
+
       { '<leader>si', '<cmd>LspInfo<cr>', desc = "LSP Server Info (LspInfo)" },
       { '<leader>sm', '<cmd>AerialInfo<cr>', desc = 'Symbol Manager Info (AerialInfo)' },
-      { '<leader>sl', function()
-        -- TODO: Add to quickfix list
-        print(vim.inspect(lsp.list_workspace_folders()))
-      end, desc = "LSP: Show LSP Workspace Dir" },
-      { '<leader>sh', lsp.hover, desc = "Show info (LSP)" },
-      { '<leader>ss', lsp.signature_help, desc = "Show signatures (LSP)" },
-      { '<leader>sc', '<cmd>Gitsigns preview_hunk_inline<cr>', desc = "Preview line change(s)"},
-      { '<leader>sC', '<cmd>Gitsigns setloclist<cr>', desc = "List the change(s)"},
+      { '<leader>sh', function()
+        lsp.hover({
+          border = "rounded", -- Choose your border style here
+          -- max_width = 120,   -- Optional: Set a maximum width
+          -- max_height = 25,   -- Optional: Set a maximum height
+        })
+      end, desc = "LSP: Show Symbol Info" },
+      { '<leader>sH', function ()
+        lsp.signature_help({ border = "rounded" })
+      end, desc = "LSP: Show Signature Help" },
+      { '<leader>sd', '<cmd>Gitsigns preview_hunk_inline<cr>', desc = "Preview line change(s)"},
+      { '<leader>sD', '<cmd>Gitsigns setloclist<cr>', desc = "List the change(s)"},
       { '<leader>sb', '<cmd>Gitsigns blame_line<cr>', desc = "Blame Line"},
       { '<leader>sB', '<cmd>Gitsigns blame<cr>', desc = "Blame File"},
-    },
-    {
-      group = "Options",
-      { '<leader>o<space>', '<cmd>GuessIndent<cr>', desc = 'Set up indent (GuessIndent)' },
-      { '<leader>os', M.change_cwd, desc = "Set CWD to current buffer" },
-      { '<leader>oS', '<cmd>Telescope cder<cr>', desc = "Change CWD with specified path" },
-      { '<leader>oa', lsp.add_workspace_folder, desc = "LSP: Add LSP Workspace Dir" },
-      { '<leader>or', lsp.remove_workspace_folder, desc = "LSP: Remove LSP Workspace Dir" },
-      { '<leader>ob', '<cmd>Gitsigns toggle_current_line_blame<cr>', desc = "Preview line change(s)"},
+      { '<leader>sg', '<cmd>GuessIndent<cr>', desc = 'Set up indent (GuessIndent)' },
+      { '<leader>sp', show_file_info, desc = "Show File Path and CWD Path" },
+      { '<leader>sP', change_cwd, desc = "Set CWD to current buffer" },
+      { '<leader>s.', '<cmd>Telescope cder<cr>', desc = "Change CWD with specified path" },
+      { '<leader>s+', lsp.add_workspace_folder, desc = "LSP: Add LSP Workspace Dir" },
+      { '<leader>s-', lsp.remove_workspace_folder, desc = "LSP: Remove LSP Workspace Dir" },
+      { '<leader>sl', show_lsp_workspace, desc = "LSP: Show LSP Workspace Dir" },
+      { '<leader>s!', '<cmd>Gitsigns toggle_current_line_blame<cr>', desc = "Preview line change(s)"},
+      -- check mini.lua
     },
     {
       group = "Edit",
       { '<leader>c+', '<cmd>Gitsigns stage_hunk<cr>', desc = "Add the hunk"},
       { '<leader>c-', '<cmd>Gitsigns reset_hunk<cr>', desc = "Reset the hunk"},
       { '<leader>cn', lsp.rename, desc = "Rename (LSP)" },
+      -- check mini.lua
     },
     {
       group = "Menu",
@@ -454,17 +468,18 @@ local function config()
       { '<leader><space>t', '<cmd>Telescope builtin include_extensions=true<cr>', desc = "Telescope: Main Menu"},
       { '<leader><space>h', '<cmd>Telescope help_tags<cr>', desc = "Help Manuals"},
       { '<leader><space>k', '<cmd>Telescope keymaps<cr>', desc = "Keymaps" },
-      { '<leader><space>i', M.show_file_info, desc = "Show File and CWD info" },
       -- { '<leader>sm', '<cmd>Outline<cr>', 'Toggle Outline Symbol Manager' },
       -- { '<leader>si', '<cmd>OutlineStatus<cr>', 'Get Outline Symbol Manager info' },
-      { "<leader><space>q", '<cmd>TroubleToggle quickfix<cr>', desc = "Trouble: Toggle Quickfix"},
-      { "<leader><space>Q", '<cmd>TroubleToggle loclist<cr>', desc = "Trouble: Toggle Quickfix"},
+      -- { "<leader><space>q", '<cmd>TroubleToggle quickfix<cr>', desc = "Trouble: Toggle Quickfix"},
+      -- { "<leader><space>Q", '<cmd>TroubleToggle loclist<cr>', desc = "Trouble: Toggle Quickfix"},
       -- {'<leader>sr', '<cmd>Telescope registers<cr>', desc = "Open registers"},
-      { '<leader><space>w', '<cmd>TroubleToggle workspace_diagnostics<cr>', desc = "Diagnostic Workspace (Trouble)" },
-      { '<leader><space>f', '<cmd>TroubleToggle document_diagnostics<cr>', desc = "Diagnostic Document (Trouble)" },
+      -- { '<leader><space>w', '<cmd>TroubleToggle workspace_diagnostics<cr>', desc = "Diagnostic Workspace (Trouble)" },
+      -- { '<leader><space>f', '<cmd>TroubleToggle document_diagnostics<cr>', desc = "Diagnostic Document (Trouble)" },
       { '<leader><space>b', '<cmd>TigBlame<cr>', desc = "Blame file"},
       { '<leader><space>c', '<cmd>TigOpenCurrentFile<cr>', desc = "Git log with current file"},
       { '<leader><space>r', '<cmd>TigOpenProjectRootDir<cr>', desc = "Tig: Project Root Dir"},
+      { '<leader><space>s', '<cmd>AerialToggle<cr>', desc = 'Symbol Manager'},
+      { '<leader><space>f', '<cmd>lua MiniFiles.open()<cr>', desc = 'File Explorer'},
     },
   })
 

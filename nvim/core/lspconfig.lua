@@ -24,6 +24,23 @@
 
 local m = require('core.utils')
 
+local function create_v_lsp_file()
+  -- ensure lsp.log points to /tmp/lsp.log
+  local state_dir = vim.fn.stdpath("state")
+  local log_path = state_dir .. "/lsp.log"
+  local tmp_log = "/tmp/lsp.log"
+
+  -- make sure state dir exists
+  vim.fn.mkdir(state_dir, "p")
+
+  -- check if lsp.log already exists
+  local stat = vim.loop.fs_stat(log_path)
+  if not stat then
+    -- create symlink if missing
+    vim.loop.fs_symlink(tmp_log, log_path)
+  end
+end
+
 -- FIXME: the setting would be lost if open the files within vim
 local function find_compile_commands_in_buffer()
   -- Get the directory of the current file
@@ -169,11 +186,13 @@ return { -- LSP configuration
 
     -- Use LspAttach autocommand to only map the following keys
     -- after the language server attaches to the current buffer
-    m.autocmd('LspAttach', '*', function(ev)
-      -- Enable completion triggered by <c-x><c-o>
-      vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
-    end, {
-      group = m.augroup('UserLspConfig'),
-    })
+    -- m.autocmd('LspAttach', '*', function(ev)
+    --   -- Enable completion triggered by <c-x><c-o>
+    --   vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
+    -- end, {
+    --   group = m.augroup('UserLspConfig'),
+    -- })
+    vim.lsp.set_log_level("WARN")
+    create_v_lsp_file()
   end,
 }

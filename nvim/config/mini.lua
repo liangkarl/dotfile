@@ -6,26 +6,10 @@ return { -- A 'Swiss Army Knife' with many small features
 
     leader = vim.g.mapleader
 
+    require('mini.pick').setup()
     require('mini.cursorword').setup()
     require('mini.bufremove').setup()
-    require('mini.align').setup({
-      mappings = {
-        start = '',
-        start_with_preview = '>=',
-      }
-    })
     -- require('mini.pairs').setup()
-    require('mini.surround').setup({
-      mappings = {
-        add = leader .. 'cs', -- Add surrounding in Normal and Visual modes
-        delete = leader .. 'cd', -- Delete surrounding
-        replace = leader .. 'cS', -- Replace surrounding (keybind[old surrounding][new surrounding])
-        find = 'g]', -- Find surrounding (to the right)
-        find_left = 'g[', -- Find surrounding (to the left)
-        highlight = 'sv', -- Highlight surrounding
-        update_n_lines = '', -- Update `n_lines`
-      },
-    })
     require('mini.notify').setup({
       window = {
         config = {
@@ -52,18 +36,37 @@ return { -- A 'Swiss Army Knife' with many small features
 
     require('mini.trailspace').setup({ only_in_normal_buffers = true })
 
+    require('mini.align').setup({
+      mappings = {
+        start = '',
+        start_with_preview = 'c=',
+      }
+    })
+    require('mini.surround').setup({
+      mappings = {
+        add = 'c[]', -- Add surrounding in Normal and Visual modes
+        delete = 'd[]', -- Delete surrounding
+        replace = 's[]', -- Replace surrounding (keybind[old surrounding][new surrounding])
+        find = ']]', -- Find surrounding (to the right)
+        find_left = '[[', -- Find surrounding (to the left)
+        highlight = 's%', -- Highlight surrounding
+        update_n_lines = '', -- Update `n_lines`
+      },
+    })
     require('mini.comment').setup({
       mappings = {
         -- Toggle comment (like `gcip` - comment inner paragraph) for both
-        -- Normal and Visual modes
-        comment = '',
-        -- Toggle comment on current line
-        comment_line = 'cg',
-        -- Toggle comment on visual selection
-        comment_visual = 'cg',
-        -- Define 'comment' textobject (like `dgc` - delete whole comment block)
-        textobject = '',
+        comment = '', -- Normal and Visual modes
+        comment_line = leader .. 'cc', -- Toggle comment on current line
+        comment_visual = leader .. 'cc', -- Toggle comment on visual selection
+        textobject = '', -- Define 'comment' textobject (like `dgc` - delete whole comment block)
       }
+    })
+    require('mini.splitjoin').setup({
+      mappings = {
+        -- TODO: how to configure it correctly?
+        toogle = leader .. 'J'
+      },
     })
 
     -- NOTE:

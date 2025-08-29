@@ -155,5 +155,3 @@ cmd([[
 ]])
 
 cmd("syntax off")
-
-vim.lsp.set_log_level("off")
