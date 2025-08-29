@@ -179,8 +179,8 @@ bind blob    h  scroll-left
 
 bind generic ;  +git rev-parse --show-toplevel
 
-bind generic yy +tig.run copy %(commit)
-bind generic yf +tig.run copy %(file)
+bind generic yy +git ui copy TEXT='%(commit)'
+bind generic yf +git ui copy TEXT='%(file)'
 # }
 
 # TODO:
@@ -316,6 +316,11 @@ bind stage  pf       :!git ui patch.create C=%(commit) NAME='$(date +%y%m%d%H%M%
 bind refs ss       :!git ui info.write C=%(commit) BR=%(branch) REF=%(refname) TAG=%(tag) FILE=%(file) OFILE=%(file_old)
 bind main ss       :!git ui info.write C=%(commit) FILE=%(file) OFILE=%(file_old)
 bind reflog ss     :!git ui info.write C=%(commit) FILE=%(file) OFILE=%(file_old)
+# }
+
+# Check line history {
+bind diff  b       :!git ui info.line_history LINE=%(lineno) FILE=%(file)
+bind blame b       :!git ui info.line_history LINE=%(lineno) FILE=%(file)
 # }
 
 # Stage {

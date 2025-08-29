@@ -328,8 +328,8 @@ copy() {
 		return
 	fi
 
-	echo -n "$@" | $cmd
-	echo "copy '$@'"
+	echo -n "$TEXT" | $cmd
+	echo "copy '$TEXT'"
 }
 
 # FILE= stage_file
@@ -488,6 +488,32 @@ info.write() {
 	config.set file "$file"
 	config.dump
 	config.save
+}
+
+# FILE= LINE= info.line_history
+info.line_history() {
+	if [ -z "$FILE" ] || [ -z "$LINE" ]; then
+		echo "Usage: $0 <file_path> <line_number>"
+		exit 1
+	fi
+
+	# Step 1: 找出該行第一次出現的 commit
+	FIRST_COMMIT=$(git log -S "$(sed -n "${LINE}p" "$FILE")" --pretty=format:"%H" --reverse -- "$FILE" | head -n1)
+
+	if [ -z "$FIRST_COMMIT" ]; then
+		echo "Cannot find any commit for line $LINE in $FILE"
+		exit 1
+	fi
+
+	echo "First commit affecting line $LINE: $FIRST_COMMIT"
+	echo ""
+	echo "***** Line History: (near to far) *****"
+	echo ""
+
+	# Step 2: 顯示該行的歷史修改
+	git log -L ${LINE},${LINE}:${FILE} --pretty=format:"%h %an %ad %s" --date=short
+
+	echo "Last commit ended"
 }
 
 # C= OPT= act.rebase
