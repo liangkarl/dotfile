@@ -348,44 +348,36 @@ local function config()
       -- action: search
       { '/', '/', desc = "Fearch" },
       {
-        '//',
-        function()
+        '//', function()
           telescope.extensions.egrepify.egrepify({
             attach_mappings = grep_string_open,
           })
-        end,
-        desc = "Grep under CWD (Telescope)"
+        end, desc = "Grep under CWD (Telescope)"
       },
       {
-        '//w',
-        function()
+        '//w', function()
           telescope.extensions.egrepify.egrepify({
             default_text = string.format("\\b%s\\b", vim.fn.expand('<cword>')),
             attach_mappings = grep_string_open,
           })
-        end,
-        desc = "Search <cword> under CWD (Telescope)"
+        end, desc = "Search <cword> under CWD (Telescope)"
       },
       {
-        '//f',
-        function()
+        '//f', function()
           telescope.extensions.egrepify.egrepify({
             search_dirs = { vim.fn.expand('%:p') },
             attach_mappings = grep_string_open,
           })
-        end,
-        desc = "Search in current buffer (Telescope)"
+        end, desc = "Search in current buffer (Telescope)"
       },
       {
-        '//c',
-        function()
+        '//c', function()
           telescope.extensions.egrepify.egrepify({
             search_dirs = { vim.fn.expand('%:p') },
             default_text = string.format("\\b%s\\b", vim.fn.expand('<cword>')),
             attach_mappings = grep_string_open,
           })
-        end,
-        desc = "Search current cursor string (Quickfix)"
+        end, desc = "Search current cursor string (Quickfix)"
       },
       { mode = 'v', '/', '<Esc>/\\%V', desc = "Search within selected block"},
     },

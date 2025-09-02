@@ -4,11 +4,28 @@ return { -- A 'Swiss Army Knife' with many small features
   config = function()
     local m, leader
 
+    leader = vim.g.mapleader
+
     require('mini.cursorword').setup()
     require('mini.bufremove').setup()
-    require('mini.align').setup()
+    require('mini.align').setup({
+      mappings = {
+        start = '',
+        start_with_preview = '>=',
+      }
+    })
     -- require('mini.pairs').setup()
-    require('mini.surround').setup()
+    require('mini.surround').setup({
+      mappings = {
+        add = leader .. 'cs', -- Add surrounding in Normal and Visual modes
+        delete = leader .. 'cd', -- Delete surrounding
+        replace = leader .. 'cS', -- Replace surrounding (keybind[old surrounding][new surrounding])
+        find = 'g]', -- Find surrounding (to the right)
+        find_left = 'g[', -- Find surrounding (to the left)
+        highlight = 'sv', -- Highlight surrounding
+        update_n_lines = '', -- Update `n_lines`
+      },
+    })
     require('mini.notify').setup({
       window = {
         config = {
@@ -35,21 +52,17 @@ return { -- A 'Swiss Army Knife' with many small features
 
     require('mini.trailspace').setup({ only_in_normal_buffers = true })
 
-    leader = vim.g.mapleader
     require('mini.comment').setup({
       mappings = {
         -- Toggle comment (like `gcip` - comment inner paragraph) for both
         -- Normal and Visual modes
-        comment = leader .. 'gb',
-
+        comment = '',
         -- Toggle comment on current line
-        comment_line = leader .. 'gg',
-
+        comment_line = 'cg',
         -- Toggle comment on visual selection
-        comment_visual = leader .. 'gg',
-
+        comment_visual = 'cg',
         -- Define 'comment' textobject (like `dgc` - delete whole comment block)
-        textobject = leader .. 'gb',
+        textobject = '',
       }
     })
 
