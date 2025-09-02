@@ -99,8 +99,7 @@ return { -- LSP configuration
       opts = {
         ensure_installed = {
           "lua_ls", "bashls", "vimls",
-          "jdtls",
-          "pyright", "html", "eslint",
+          "pyright", "html", "eslint", "ts_ls",
           "clangd"
         },
       },
