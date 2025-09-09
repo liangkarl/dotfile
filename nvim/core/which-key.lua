@@ -286,6 +286,16 @@ local function config()
       { 'g0', '^', desc = "Go to the first character of line" },
       { 'g9', '$', desc = "Go to the end of line" },
       { 'g/', '<cmd>HopPattern<cr>' },
+      { "g[", function ()
+        exe_loop({
+          { id = 'telescope', action = 'Telescope lsp_incoming_calls' },
+        })
+      end, desc = "LSP: Incoming Calls" },
+      { "g]", function ()
+        exe_loop({
+          { id = 'telescope', action = 'Telescope lsp_outgoing_calls' },
+        })
+      end, desc = "LSP: Outgoing Calls" },
       { "gr", function ()
         exe_loop({
           { id = 'telescope', action = 'Telescope lsp_references' },

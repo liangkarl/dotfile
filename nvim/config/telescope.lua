@@ -188,6 +188,8 @@ return {
           lsp_implementations = { layout_strategy = 'bottom_pane' },
           lsp_type_definitions = { layout_strategy = 'bottom_pane' },
           lsp_references = { layout_strategy = 'bottom_pane' },
+          lsp_outgoing_calls = cursor_layout,
+          lsp_incoming_calls = cursor_layout,
           buffers = {
             mappings = {
               i = {
