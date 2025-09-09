@@ -90,7 +90,8 @@ return {
         layout_config = {
           width = 0.6,
           height = 0.5,
-        }
+        },
+        path_display = {},
       })
       local cursor_layout = themes.get_cursor({
         layout_config = {
