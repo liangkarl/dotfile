@@ -21,7 +21,7 @@ local function select_one_or_multi(prompt_bufnr)
   end
 end
 
-local function trouble_func()
+local function open_with_trouble()
   local open_with_trouble = require("trouble.sources.telescope").open
   if open_with_trouble then
     return open_with_trouble
@@ -83,8 +83,21 @@ return {
     config = function()
       local telescope = require('telescope')
       local actions = require("telescope.actions")
+      local themes = require("telescope.themes")
       local action_layout = require("telescope.actions.layout")
       local egrep_actions = require "telescope._extensions.egrepify.actions"
+      local drop_layout = themes.get_dropdown({
+        layout_config = {
+          width = 0.6,
+          height = 0.5,
+        }
+      })
+      local cursor_layout = themes.get_cursor({
+        layout_config = {
+          width = 0.6,
+          height = 0.5,
+        },
+      })
 
       telescope.setup({
         defaults = {
@@ -118,6 +131,13 @@ return {
           preview = {
             hide_on_startup = true,
           },
+          dynamic_preview_title = true,
+          path_display = {
+            shorten = {
+              len = 2,
+              exclude = { -1 }
+            },
+          },
           mappings = {
             i = {
               ["<CR>"] = select_one_or_multi,
@@ -136,7 +156,7 @@ return {
               -- ["<c-right>"] = actions.preview_scrolling_right,
               ["<esc>"] = actions.close,
               ["<c-?>"] = actions.which_key,
-              ["<c-t>"] = trouble_func(),
+              ["<c-t>"] = open_with_trouble(),
             },
             n = {
               ["<CR>"] = select_one_or_multi,
@@ -154,18 +174,20 @@ return {
               -- ["<c-right>"] = actions.preview_scrolling_right,
               ["<esc>"] = actions.close,
               ["<c-?>"] = actions.which_key,
-              ["<c-t>"] = trouble_func(),
+              ["<c-t>"] = open_with_trouble(),
             }
           },
         },
         pickers = {
+          keymaps = drop_layout,
+          help_tags = drop_layout,
+          oldfiles = drop_layout,
+          find_files = drop_layout,
           grep_string = { layout_strategy = 'bottom_pane' },
-          help_tags = { layout_strategy = 'center', },
-          keymaps = { layout_strategy = 'center', },
-          lsp_references = { layout_strategy = 'bottom_pane' },
           lsp_definitions = { layout_strategy = 'bottom_pane' },
           lsp_implementations = { layout_strategy = 'bottom_pane' },
           lsp_type_definitions = { layout_strategy = 'bottom_pane' },
+          lsp_references = { layout_strategy = 'bottom_pane' },
           buffers = {
             mappings = {
               i = {
