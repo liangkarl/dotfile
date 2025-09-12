@@ -100,6 +100,29 @@ local quit = function()
   end
 end
 
+local function smart_man_pages()
+  local builtin = require("telescope.builtin")
+  local ft = vim.bo.filetype
+  local word = vim.fn.expand("<cword>")
+  local sections
+
+  if ft == "sh" or ft == "bash" or ft == "zsh" or ft == "fish" then
+    -- 使用者命令、系統管理命令；也順帶把 POSIX 1p 放進來
+    sections = { "1", "8", "1p" }
+  elseif ft == "c" or ft == "cpp" or ft == "objc" or ft == "objcpp" then
+    -- C 函式庫優先，其次系統呼叫；也加上 POSIX 3p
+    sections = { "3", "2", "3p", "9", "4"  }
+  else
+    -- 其他語言就不過濾
+    sections = { "ALL" }
+  end
+
+  builtin.man_pages({
+    default_text = (word ~= "" and word) or nil,
+    sections = sections,
+  })
+end
+
 local function config()
   local wk = require("which-key")
   local lsp = vim.lsp.buf
@@ -260,6 +283,7 @@ local function config()
       { '<leader>K', function ()
         builtin.help_tags({ default_text = vim.fn.expand('<cword>') })
       end, desc = "Show help manuals like :help" },
+      { '<leader>M', smart_man_pages, desc = "Show Man manuals like :Man" },
 
       -- There are two different clipboards for Linux and only one for Win
       -- *: clipboard for copy-on-select
@@ -477,6 +501,7 @@ local function config()
       { '<leader><space>p', '<cmd>Lazy<cr>', desc = "Lazy: Main Menu" },
       { '<leader><space>t', '<cmd>Telescope builtin include_extensions=true<cr>', desc = "Telescope: Main Menu"},
       { '<leader><space>h', '<cmd>Telescope help_tags<cr>', desc = "Help Manuals"},
+      { '<leader><space>m', '<cmd>Telescope man_pages sections=ALL<cr>', desc = "Manuals"},
       { '<leader><space>k', '<cmd>Telescope keymaps<cr>', desc = "Keymaps" },
       -- { '<leader>sm', '<cmd>Outline<cr>', 'Toggle Outline Symbol Manager' },
       -- { '<leader>si', '<cmd>OutlineStatus<cr>', 'Get Outline Symbol Manager info' },

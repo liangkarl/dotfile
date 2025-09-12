@@ -182,6 +182,7 @@ return {
         pickers = {
           keymaps = drop_layout,
           help_tags = drop_layout,
+          man_pages = drop_layout,
           oldfiles = drop_layout,
           find_files = drop_layout,
           grep_string = { layout_strategy = 'bottom_pane' },
