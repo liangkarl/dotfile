@@ -22,6 +22,17 @@ return {
     --   },
     -- })
 
-    require("trouble").setup()
+    require("trouble").setup({
+      focus = true,
+      pinned = true,
+      open_no_results = true,
+      modes = {
+        lsp_references = {
+          params  = {
+            include_declaration = false,
+          }
+        }
+      }
+    })
   end
 }
