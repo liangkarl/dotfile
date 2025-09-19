@@ -44,4 +44,20 @@ M.command = function(cmd, action, opts)
   return api.nvim_create_user_command(cmd, action, opts)
 end
 
+M.has_lsp = function(bufnr, filetype, buftype)
+  local clients = vim.lsp.get_active_clients({ bufnr = bufnr })
+  return not vim.tbl_isempty(clients)
+end
+
+M.has_treesitter = function(bufnr, filetype, buftype)
+    -- Skip special buffers
+  if buftype ~= "" then return false end
+
+  local lang = vim.treesitter.language.get_lang(filetype)
+  if not lang then return false end
+
+  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
+  return ok and parser ~= nil
+end
+
 return M

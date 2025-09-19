@@ -3,7 +3,6 @@ return {
   dependencies = {
 		'kevinhwang91/promise-async',
   },
-	event = "VeryLazy",
 	opts = {}, -- needed even when using default config
 
 	-- recommended: disable vim's auto-folding
@@ -13,6 +12,8 @@ return {
 	end,
 
 	config = function ()
+		local util = require('core.utils')
+
 		-- Using ufo provider need remap `zR` and `zM`. If Neovim is 0.6.1, remap yourself
 		vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
 		vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
@@ -26,8 +27,22 @@ return {
 		-- performance and stability are better than `foldmethod=nvim_treesitter#foldexpr()`
 		require('ufo').setup({
 			provider_selector = function(bufnr, filetype, buftype)
-				return {'treesitter', 'indent'}
-			end
+				-- Try LSP first
+				if util.has_lsp(bufnr, filetype, buftype) then
+					return { 'lsp', 'indent' }
+				end
+				-- Fallback to Treesitter
+				if util.has_treesitter(bufnr, filetype, buftype) then
+					return { 'treesitter', 'indent' }
+				end
+				-- Fallback to indent if neither LSP nor Treesitter are available
+				return 'indent'
+			end,
+			preview = {
+				win_config = {
+					winblend = 0,
+				}
+			}
 		})
 		--
 	end,
