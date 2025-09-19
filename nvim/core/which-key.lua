@@ -489,8 +489,8 @@ local function config()
     },
     {
       group = "Edit",
-      { '<leader>c+', '<cmd>Gitsigns stage_hunk<cr>', desc = "Add the hunk"},
-      { '<leader>c-', '<cmd>Gitsigns reset_hunk<cr>', desc = "Reset the hunk"},
+      { '<leader>ca', '<cmd>Gitsigns stage_hunk<cr>', desc = "Add the hunk"},
+      { '<leader>cs', '<cmd>Gitsigns reset_hunk<cr>', desc = "Reset the hunk"},
       { '<leader>cn', lsp.rename, desc = "Rename (LSP)" },
       -- check mini.lua
     },
