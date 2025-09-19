@@ -312,44 +312,46 @@ local function config()
       { 'g/', '<cmd>HopPattern<cr>' },
       { "g[", function ()
         exe_loop({
+          { id = 'trouble', action = 'Trouble lsp_outgoing_calls toggle' },
           { id = 'telescope', action = 'Telescope lsp_incoming_calls' },
         })
       end, desc = "LSP: Incoming Calls" },
       { "g]", function ()
         exe_loop({
+          { id = 'trouble', action = 'Trouble lsp_incoming_calls toggle' },
           { id = 'telescope', action = 'Telescope lsp_outgoing_calls' },
         })
       end, desc = "LSP: Outgoing Calls" },
       { "gr", function ()
         exe_loop({
+          { id = 'trouble', action = 'Trouble lsp_references toggle' },
           { id = 'telescope', action = 'Telescope lsp_references' },
           { id = 'coc', action = "<Plug>(coc-references)" },
           { id = 'glance', action = 'Glance references' },
-          { id = 'trouble', action = 'Trouble lsp_references toggle' }
         })
       end, desc = "Code Reference" },
       { 'gd', function ()
         exe_loop({
+          { id = 'trouble', action = 'Trouble lsp_definitions toggle' },
           { id = 'telescope', action = 'Telescope lsp_definitions' },
           { id = 'coc', action = "<Plug>(coc-definition)" },
           { id = 'glance', action = 'Glance definitions' },
-          { id = 'trouble', action = 'Trouble lsp_definitions toggle' }
         })
       end, desc = "Definition" },
       { 'gD', function ()
         exe_loop({
+          { id = 'trouble', action = 'Trouble lsp_type_definitions toggle' },
           { id = 'telescope', action = 'Telescope lsp_type_definitions' },
           { id = 'coc', action = "<Plug>(coc-type-definition)" },
           { id = 'glance', action = 'Glance type_definitions' },
-          { id = 'trouble', action = 'Trouble lsp_type_definitions toggle' }
         })
       end, desc = "Type Definition" },
       { 'gp', function ()
         exe_loop({
+          { id = 'trouble', action = 'Trouble lsp_implementations toggle' },
           { id = 'telescope', action = 'Telescope lsp_implementations' },
           { id = 'coc', action = "<Plug>(coc-implementation)" },
           { id = 'glance', action = 'Glance implementations' },
-          { id = 'trouble', action = 'Trouble lsp_implementations toggle' }
         })
       end, desc = "Implementations" },
       { 'go', "<cmd>DapStepOver<cr>", desc = "DAP: Step Over" },
