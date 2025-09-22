@@ -204,6 +204,58 @@ local function config()
     return true
   end
 
+  -- 1) 轉義 PCRE/rg 的特殊字元
+  function escape_regex(s)
+    return s:gsub("([\\.^$|?*+()%[%]{}])", "\\%1")
+  end
+
+  -- 2) 清理選取文字：去除/壓縮換行、Tab、回車等
+  --    mode = "collapse"：把所有空白（含 \n \t \r）壓成單一空白
+  --    mode = "strip"   ：直接移除所有空白（含 \n \t \r）
+  function sanitize_selection(s, mode)
+    -- 把常見 escape 寫法的字面 "\n"、"\t"、"\r" 也一併處理
+    s = s:gsub("\\[ntr]", " ")  -- 文字中出現的 \n \t \r → 空白
+    if mode == "strip" then
+      s = s:gsub("[%s%c]+", "") -- 移除所有空白/控制字元
+    else
+      s = s:gsub("[%s%c]+", " ") -- 壓成單一空白（預設）
+      s = s:gsub("^%s+", ""):gsub("%s+$", "")
+    end
+    return s
+  end
+
+  --- mk_search(opts) 產生一個可綁定的函式
+  --- opts:
+  ---   - current_file : boolean   在目前檔案內搜尋
+  ---   - search_dirs         : {string}  自訂搜尋目錄/檔案
+  ---   - sanitize            : "collapse" | "strip"  預設 "collapse"
+  function mk_search(opts)
+    return function()
+      local text
+      if vim.fn.mode():find("[vV\022]") then
+        vim.cmd('normal! "zy')      -- 視覺選取 → 放進 "z
+        text = vim.fn.getreg("z")
+      else
+        text = vim.fn.expand("<cword>")
+      end
+
+      -- 忽略/處理換行等空白：把它們壓成單一空白（你也可改成 "strip"）
+      text = sanitize_selection(text, "collapse")
+      text = escape_regex(text)
+
+      if text == "" then return end
+      local patt = text:match("^%w+$") and ("\\b"..text.."\\b") or text
+      local args = {
+        default_text = patt,
+        attach_mappings = grep_string_open,
+      }
+      if opts.current_file then
+        args.search_dirs = { vim.fn.expand("%:p") }
+      end
+      require("telescope").extensions.egrepify.egrepify(args)
+    end
+  end
+
   -- NOTE:
   -- '' in map mode means normal, visual and select modes
 
@@ -384,21 +436,13 @@ local function config()
       mode = { 'n' },
 
       -- action: search
-      { '/', '/', desc = "Fearch" },
+      { '/', '/', desc = "Search" },
       {
         '//', function()
           telescope.extensions.egrepify.egrepify({
             attach_mappings = grep_string_open,
           })
-        end, desc = "Grep under CWD (Telescope)"
-      },
-      {
-        '//w', function()
-          telescope.extensions.egrepify.egrepify({
-            default_text = string.format("\\b%s\\b", vim.fn.expand('<cword>')),
-            attach_mappings = grep_string_open,
-          })
-        end, desc = "Search <cword> under CWD (Telescope)"
+        end, desc = "Grep under CWD"
       },
       {
         '//f', function()
@@ -406,16 +450,17 @@ local function config()
             search_dirs = { vim.fn.expand('%:p') },
             attach_mappings = grep_string_open,
           })
-        end, desc = "Search in current buffer (Telescope)"
+        end, desc = "Grep in current file"
       },
       {
-        '//c', function()
-          telescope.extensions.egrepify.egrepify({
-            search_dirs = { vim.fn.expand('%:p') },
-            default_text = string.format("\\b%s\\b", vim.fn.expand('<cword>')),
-            attach_mappings = grep_string_open,
-          })
-        end, desc = "Search current cursor string (Quickfix)"
+        '//w', mk_search({}),
+        mode = {"n", "x"},
+        desc = "Grep <cword> under CWD"
+      },
+      {
+        '//c', mk_search({ current_file = true }),
+        mode = {"n", "x"},
+        desc = "Grep <cword> in current file"
       },
       { mode = 'v', '/', '<Esc>/\\%V', desc = "Search within selected block"},
     },
