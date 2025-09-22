@@ -74,11 +74,9 @@ return {
       { 'nvim-telescope/telescope-fzf-native.nvim',     build = 'make' },
       'zane-/cder.nvim',
       'LinArcX/telescope-scriptnames.nvim',
-      'SalOrak/whaler',
       'debugloop/telescope-undo.nvim',
       'benfowler/telescope-luasnip.nvim',
       'fdschmidt93/telescope-egrepify.nvim',
-      { "nvim-telescope/telescope-live-grep-args.nvim", version = "^1.1.0", },
     },
     config = function()
       local telescope = require('telescope')
@@ -265,9 +263,7 @@ return {
       telescope.load_extension('projects')
       telescope.load_extension('scriptnames')
       telescope.load_extension('undo')
-      telescope.load_extension('whaler')
       telescope.load_extension('luasnip')
-      telescope.load_extension('live_grep_args')
       telescope.load_extension('egrepify')
     end,
   },
