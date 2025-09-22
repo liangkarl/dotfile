@@ -131,12 +131,13 @@ return {
             hide_on_startup = true,
           },
           dynamic_preview_title = true,
-          path_display = {
-            shorten = {
-              len = 2,
-              exclude = { -1 }
-            },
-          },
+          -- If the path is too long to show
+          -- path_display = {
+          --   shorten = {
+          --     len = 2,
+          --     exclude = { -1 }
+          --   },
+          -- },
           mappings = {
             i = {
               ["<CR>"] = select_one_or_multi,
