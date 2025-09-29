@@ -8,14 +8,14 @@ __starship_bootstrap() {
 
     dir=$(dirname ${BASH_SOURCE[0]})
 
-    # init ble.sh
-    source ${dir}/ble.sh/out/ble.sh --noattach --rcfile ${dir}/blerc
+    # init ble.sh.
+    # source ${dir}/ble.sh/out/ble.sh --noattach --rcfile ${dir}/blerc
 
     # init starship
     export STARSHIP_CONFIG=${dir}/starship.toml
     eval "$(starship init bash)"
 
-    [[ ! ${BLE_VERSION-} ]] || ble-attach
+    # [[ ! ${BLE_VERSION-} ]] || ble-attach
 }
 
 oneshot __starship_bootstrap
