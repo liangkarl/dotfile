@@ -1,20 +1,28 @@
 format = """
+$time\
+$cmd_duration\
+$status\
 $username\
 $hostname\
+$container\
 $directory\
+$git_branch\
+$git_state\
+$git_status\
 $line_break\
-$character"""
+$character\
+"""
 
 scan_timeout = 10
 
 add_newline = false
 # move the rest of the prompt to the right
-right_format = """
-$cmd_duration\
-$git_branch\
-$git_state\
-$git_status\
-$time"""
+# right_format = """
+# $cmd_duration\
+# $git_branch\
+# $git_state\
+# $git_status\
+# $time"""
 
 # right_format = """$git_branch$git_state$git_status$time$all"""
 
@@ -31,7 +39,7 @@ format = "[$user](green)"
 
 [time]
 disabled = false
-format = ' [$time]($style) '
+format = '[$time]($style) '
 style = "fg:63"
 
 [directory]
@@ -46,11 +54,11 @@ discharging_symbol = "⇣"
 disabled = true
 
 [git_branch]
-format = "[${branch}]($style) "
-style = "bright-black"
+format = '[\($branch\)]($style) '
+style = 'fg:8'
 
 [git_status]
-format = '[${ahead_behind}](blue)[${conflicted}](yellow)[${modified}](cyan)[${staged}](green)[${deleted}](red)'
+format = '([${modified}](cyan)[${staged}](green) )'
 ahead = '⇡${count}'
 diverged = '⇕⇡${ahead_count}⇣${behind_count} '
 behind = '⇣${count}'
@@ -67,11 +75,12 @@ style = "bright-black"
 
 [cmd_duration]
 format = "[$duration]($style) "
+min_time = 30000
 style = "yellow"
 
 [status]
-disabled = true
-symbol = '✘ '
+disabled = false
+format = '[$status(!$signal_number)]($style) '
 
 [line_break]
 disabled = true
