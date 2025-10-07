@@ -58,7 +58,7 @@ require("lazy").setup({
   require('config.nvim-treesitter'),
   require('config.vim-polyglot'),
   require('config.auto-pairs'),
-  -- require('config.vim-doge'),
+  require('config.vim-doge'),
 
   require('config.vim-tmux-clipboard'),
   require('config.close-buffers'),
