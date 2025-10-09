@@ -108,5 +108,33 @@ ln() {
     $(which ln) "${cmd[@]}"
 }
 
+################################################################################
+# nman
+# Arguments:
+#     $n: command names
+# Outputs:
+#     open manuals with vim
+# Returns:
+#     return nvim exit values
+################################################################################
+nman() {
+    local rm_empty="-c 'bufdo if empty(bufname()) | bdelete | endif'"
+    local cmd="nvim "
+
+    if [ $# -ne 0 ]; then
+        cmd+="-c 'Man $1 | only' "
+        shift
+    fi
+
+    if [ $# -ne 0 ]; then
+        for c in "$@"; do
+            cmd+="-c 'tabnew' -c 'Man $c | only' "
+        done
+    fi
+    cmd+=$rm_empty
+
+    eval $cmd
+}
+
 export HOSTNAME
 export EDITOR=vim
