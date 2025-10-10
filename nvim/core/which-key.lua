@@ -291,6 +291,7 @@ local function config()
   m.noremap('',  '0', 'g0')
   m.noremap('',  '$', 'g$')
   m.noremap('',  '^', 'g^')
+  m.noremap('',  '<PageDown>', '<C-f>zb')
   m.noremap({'n', 'v', 'i'},  '<S-Up>', '<C-u>')
   m.noremap({'n', 'v', 'i'},  '<S-Down>', '<C-d>')
 
