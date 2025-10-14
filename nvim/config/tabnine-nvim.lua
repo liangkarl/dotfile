@@ -15,5 +15,5 @@ return {
       log_file_path = nil, -- absolute path to Tabnine log file
     })
   end,
-  enabled = false,
+  enabled = true,
 }

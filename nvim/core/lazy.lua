@@ -104,7 +104,7 @@ require("lazy").setup({
   -- Autocompletion
   require('config.nvim-cmp'),
 
-  require('config.tabnine-nvim'),
+  -- require('config.tabnine-nvim'),
   require('config.nvim-ufo'),
   require('config.editorconfig'),
 
