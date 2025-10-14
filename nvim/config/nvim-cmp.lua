@@ -12,7 +12,7 @@
 return { -- Autocomplete framework
   'hrsh7th/nvim-cmp',
   -- load cmp on InsertEnter
-  event = "InsertEnter",
+  -- event = "InsertEnter",
   dependencies = {
     -- Snippet engine with LSP backend
     'neovim/nvim-lspconfig',
@@ -23,7 +23,7 @@ return { -- Autocomplete framework
       'L3MON4D3/LuaSnip',
       build = "make install_jsregexp",
       dependencies = { "rafamadriz/friendly-snippets" },
-      event = "InsertEnter",
+      -- event = "InsertEnter",
       config = function ()
         require("luasnip.loaders.from_vscode").lazy_load()
       end,
