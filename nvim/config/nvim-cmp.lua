@@ -37,6 +37,16 @@ return { -- Autocomplete framework
       build = './install.sh',
       dependencies = { 'hrsh7th/nvim-cmp' },
     },
+    {
+      "Exafunction/windsurf.nvim",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        "hrsh7th/nvim-cmp",
+      },
+      config = function()
+        require("codeium").setup({})
+      end
+    },
 
     'onsails/lspkind.nvim',
   },
@@ -67,6 +77,9 @@ return { -- Autocomplete framework
           --   vim_item.menu = entry.source.name
           --   return vim_item
           -- end,
+          symbol_map = {
+            Codeium = "",
+          }
         })
       },
       snippet = {
@@ -110,6 +123,7 @@ return { -- Autocomplete framework
       },
       sources = {
         { name = 'cmp_tabnine' },
+        { name = 'codeium' },
         { name = 'nvim_lsp' },
         { name = 'luasnip' },
         { name = 'buffer' },
