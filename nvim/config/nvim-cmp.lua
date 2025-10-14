@@ -70,8 +70,6 @@ return { -- Autocomplete framework
         end,
       },
       mapping = {
-        ['<C-p>'] = cmp.mapping.complete(),
-
         ["<Tab>"] = cmp.mapping(function(fallback)
           if cmp.visible() then
             cmp.select_next_item()
@@ -92,12 +90,12 @@ return { -- Autocomplete framework
           end
         end, { "i", "s" }),
 
-        ['<space>'] = cmp.mapping(function(fallback)
+        ['<C-p>'] = cmp.mapping(function(fallback)
           if cmp.visible() then
-          cmp.close()
-        else
-          fallback()
-        end
+            cmp.close()
+          else
+            cmp.complete()
+          end
         end, { "i", "s" }),
 
         ['<cr>'] = cmp.mapping.confirm {
