@@ -256,6 +256,7 @@ bind stage  co +?git ui git.msg  checkout %(file)
 bind stage  c<LT><LT> +?git ui git.msg checkout --ours %(file)
 bind stage  c>> +?git ui git.msg checkout --theirs %(file)
 bind diff   co +?git ui git.msg checkout %(commit) -- %(file)
+bind diff   cO +?git ui git.msg checkout %(commit)^ -- %(file)
 
 ### File Operation
 bind main   dc       +?git ui git.msg clean -fd
