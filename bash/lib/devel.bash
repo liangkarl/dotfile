@@ -195,7 +195,7 @@ dbg.mark() {
     [[ -n "$offset" ]] && return 1
 
     list.insert __DEVEL_BASH_DBG_SPACE_LIST "$id"
-    echo "$id"
+    # echo "$id"
 }
 
 dbg.mark ${__DBG_ALL} > $__N
