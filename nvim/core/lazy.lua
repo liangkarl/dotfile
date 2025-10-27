@@ -60,6 +60,8 @@ require("lazy").setup({
   require('config.auto-pairs'),
   require('config.vim-doge'),
 
+  -- jump list
+  require('config.jumppack'),
   require('config.vim-tmux-clipboard'),
   require('config.close-buffers'),
 
