@@ -155,3 +155,6 @@ cmd([[
 ]])
 
 cmd("syntax off")
+
+-- WARN: disable nvim deprecate API warning
+vim.deprecate = function() end
