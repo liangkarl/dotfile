@@ -1,6 +1,7 @@
 PKG_NAME=nvim
 CONFIG_DIR=${XDG_CONFIG_HOME}/$(PKG_NAME)
 NVIM_VER=0.9.4
+TMP:=$(shell mktemp)
 
 .ONESHELL:
 config.$(PKG_NAME):
@@ -14,8 +15,9 @@ config.$(PKG_NAME):
 	# 	break
 	# done
 	$(H)echo "let g:editor_theme = 'material'" > ${CONFIG_DIR}/config.vim
-	$(H)nvim +"set nomodifiable nomodified" \
-			<<< "Press 'q' to exit nvim if all plugins were installed."
+	$(H)echo "Press 'q' to exit nvim if all plugins were installed." > $(TMP)
+	$(H)nvim +"set nomodifiable nomodified" $(TMP)
+	$(H)rm -f $(TMP)
 
 install.$(PKG_NAME):
 	$(H)echo "-- $(PKG_NAME): install package --"
