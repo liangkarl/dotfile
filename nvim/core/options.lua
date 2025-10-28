@@ -1,6 +1,15 @@
 local opt = vim.o -- different from vim.opt
 local g = vim.g
 
+g.set_list = function(enable)
+   if enable then
+      opt.listchars = "tab:→ ,nbsp:␣,precedes:«,extends:»"
+      opt.list = true
+   else
+      opt.listchars = "tab:   ,space: ,nbsp: ,trail: ,extends: ,precedes: "
+      opt.list = false
+   end
+end
 -------------------------------------------------
 --- General
 -------------------------------------------------
@@ -10,7 +19,7 @@ opt.wildmode = "full"        -- Tab completion in command bar
 opt.wildignore = "*.o,*.obj,.git,*.rbc,.pyc,__pycache__"
 -- Symbols for non-charactors:
 -- tab:→\ , space:·, nbsp:␣, trail:•, eol:¶, precedes:«, extends:»
-opt.listchars = "tab:→ ,nbsp:␣,precedes:«,extends:»"
+g.set_list(false)
 opt.bomb = true              -- Set Byte Order Mask(BOM) dealing with UTF8 in window
 opt.equalalways = false      -- Close a split window in Vim without resizing other windows
 opt.mouse = ""               -- disable support mouse action in normal mode.
