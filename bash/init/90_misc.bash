@@ -62,54 +62,38 @@ kill.contain() {
     kill $(ps -s $1 -o pid=);
 }
 
-ln() {
-    local cmd opt dst
-    local src ab_src oldpwd i
+ln.abs() {
+    local dst=$(eval "echo \$$#")
+    local cmd linkdir opt
 
-    cmd=()
-    src=()
-    ab_src=()
-    for opt in "$@"; do
-        if [[ -e "$opt" ]]; then
-            src+=($opt)
-            ab_src+=($(realpath $opt))
-        fi
-    done
-
-    dst=${src[$((${#src[@]}-1))]}
-
-    i=0
-    oldpwd=$OLDPWD
-    for opt in "$@"; do
-         # skip last elm (dst)
-        if [[ $i -ne $((${#src[@]}-1)) ]]; then
-            # check if src path appeared
-            if [[ "$opt" == "${src[$i]}" ]]; then
-                # check src path availability
-                if builtin cd $dst || builtin cd $(dirname $dst); then
-                    if [[ ! -e "${opt}" ]]; then
-                        echo "replace: ${opt} -> ${ab_src[$i]}"
-                        opt=${ab_src[$i]}
-                    fi
-                    builtin cd $OLDPWD
-                fi 2> /dev/null
-                i=$((i + 1))
-            fi
-        fi
-        cmd+=($opt)
-    done
-
-    if [[ -n "$oldpwd" ]]; then
-        OLDPWD=$oldpwd
+    if [[ -d "$dst" ]]; then
+        linkdir="$dst"
+    elif [[ -e "$dst" || ! "$dst" =~ */ ]]; then
+        linkdir=$(dirname "$dst")
     else
-        unset OLDPWD
+        echo "not a valid directory or file: $dst" >&2
+        return 2
     fi
 
-    $(which ln) "${cmd[@]}"
+    for i in $(seq 1 $#); do
+        opt="$(eval "echo \${$i}")"
+
+        if [[ -e "$opt" && $i -ne "$#" ]]; then
+            cmd+="$(realpath "$opt") "
+        else
+            cmd+="$opt "
+        fi
+    done
+
+    ln $cmd
+}
+
+ln.rlt() {
+    ln -r "$@"
 }
 
 ################################################################################
-# nman
+# man.vim
 # Arguments:
 #     $n: command names
 # Outputs:
@@ -117,7 +101,7 @@ ln() {
 # Returns:
 #     return nvim exit values
 ################################################################################
-nman() {
+man.vim() {
     local rm_empty="-c 'bufdo if empty(bufname()) | bdelete | endif'"
     local cmd="nvim "
 
