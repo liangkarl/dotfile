@@ -22,7 +22,7 @@ indent_style = space
 indent_style = space
 
 [*.{c,cc,cpp,h}]
-trim_trailing_whitespace = true
+trim_trailing_whitespace = false
 
 # Other File Examples:
 #
