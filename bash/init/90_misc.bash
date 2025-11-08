@@ -39,6 +39,11 @@ else
     alias bz2='tar -jv'
 fi
 
+if [[ -n "$(type -p bat)" ]]; then
+    alias cat="$(which bat) --paging=never --plain"
+    alias bat="$(which bat) --style=numbers"
+fi
+
 # coloring manual
 alias man="\
     LESS_TERMCAP_md=$'$(ansi 100)' \
