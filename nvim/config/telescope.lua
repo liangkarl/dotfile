@@ -77,6 +77,7 @@ return {
       'debugloop/telescope-undo.nvim',
       'benfowler/telescope-luasnip.nvim',
       'fdschmidt93/telescope-egrepify.nvim',
+      'gbprod/yanky.nvim',
     },
     config = function()
       local telescope = require('telescope')
@@ -266,6 +267,7 @@ return {
       telescope.load_extension('undo')
       telescope.load_extension('luasnip')
       telescope.load_extension('egrepify')
+      telescope.load_extension('yank_history')
     end,
   },
 }

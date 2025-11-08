@@ -291,6 +291,9 @@ local function config()
   m.noremap('',  '0', 'g0')
   m.noremap('',  '$', 'g$')
   m.noremap('',  '^', 'g^')
+  m.noremap('',  'x', '"_x')
+  m.noremap('',  'X', '"_X')
+  m.noremap('',  'S', '"_S')
   m.noremap('',  '<PageDown>', '<C-f>zb')
   m.noremap({'n', 'v', 'i'},  '<S-Up>', '<C-u>')
   m.noremap({'n', 'v', 'i'},  '<S-Down>', '<C-d>')
@@ -396,7 +399,7 @@ local function config()
     },
     {
       group = "Change",
-      { 'c', 'c', desc = "Change" },
+      { 'c', '"_c', desc = "Change" },
       { 'c!', '<cmd>ToggleAlternate<cr>', desc = "Invert boolean value" },
     },
     {
@@ -534,16 +537,17 @@ local function config()
       { '<leader><space>h', '<cmd>Telescope help_tags<cr>', desc = "Help Manuals"},
       { '<leader><space>m', '<cmd>Telescope man_pages sections=ALL<cr>', desc = "Manuals"},
       { '<leader><space>k', '<cmd>Telescope keymaps<cr>', desc = "Keymaps" },
+      { '<leader><space>r', '<cmd>Telescope registers<cr>', desc = "Registers" },
+      { '<leader><space>y', '<cmd>Telescope yank_history<cr>', desc = "Clipboard History" },
       -- { '<leader>sm', '<cmd>Outline<cr>', 'Toggle Outline Symbol Manager' },
       -- { '<leader>si', '<cmd>OutlineStatus<cr>', 'Get Outline Symbol Manager info' },
       -- { "<leader><space>q", '<cmd>TroubleToggle quickfix<cr>', desc = "Trouble: Toggle Quickfix"},
       -- { "<leader><space>Q", '<cmd>TroubleToggle loclist<cr>', desc = "Trouble: Toggle Quickfix"},
-      -- {'<leader>sr', '<cmd>Telescope registers<cr>', desc = "Open registers"},
       -- { '<leader><space>w', '<cmd>TroubleToggle workspace_diagnostics<cr>', desc = "Diagnostic Workspace (Trouble)" },
       -- { '<leader><space>f', '<cmd>TroubleToggle document_diagnostics<cr>', desc = "Diagnostic Document (Trouble)" },
       { '<leader><space>b', '<cmd>TigBlame<cr>', desc = "Blame file"},
       { '<leader><space>c', '<cmd>TigOpenCurrentFile<cr>', desc = "Git log with current file"},
-      { '<leader><space>r', '<cmd>TigOpenProjectRootDir<cr>', desc = "Tig: Project Root Dir"},
+      { '<leader><space>g', '<cmd>TigOpenProjectRootDir<cr>', desc = "Tig: Project Root Dir"},
       { '<leader><space>s', '<cmd>AerialToggle<cr>', desc = 'Symbol Manager'},
       { '<leader><space>f', '<cmd>lua MiniFiles.open()<cr>', desc = 'File Explorer'},
     },

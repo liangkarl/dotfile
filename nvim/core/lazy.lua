@@ -59,6 +59,7 @@ require("lazy").setup({
   require('config.vim-polyglot'),
   require('config.auto-pairs'),
   require('config.vim-doge'),
+  require('config.yanky'),
 
   -- jump list
   require('config.jumppack'),
