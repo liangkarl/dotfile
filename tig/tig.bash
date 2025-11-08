@@ -258,7 +258,10 @@ refs.cut() {
 #
 # 5. Push to upstream
 # TODO
+# refs: (local) refs.push REMOTE= UPSTREAM= BR= REF= TAG=
 refs.push() {
+	local cmd
+
 	config.load "$info_file"
 	config.get remote_branch "$remote_branch"
 	config.get remote_tag "$remote_tag"
@@ -266,6 +269,7 @@ refs.push() {
 	config.get track_tag "$track_tag"
 	config.get file "$file"
 
+	# 4. Create a new branch
 	if [[ -n "$REMOTE" ]]; then
 		config.get local_branch local_branch
 		config.get local_tag local_tag
@@ -273,15 +277,16 @@ refs.push() {
 		TAG=${TAG:-$local_tag}
 		BR=${BR:-$local_branch}
 
-		if [[ -n "$BR$TAG" ]]; then
-			if [[ -n "$local_branch" ]]; then
-				git.msg push $OPT $REMOTE ${local_branch}:$BR
-			elif [[ -n "$local_tag" ]]; then
-				git.msg push $OPT $REMOTE ${local_tag}:$TAG
+		if [[ -n "${local_branch}${local_tag}" ]]; then
+			cmd="git.msg push $OPT $REMOTE ${local_branch}${local_tag}"
+			if [[ -n "${BR}${TAG}" ]]; then
+				cmd+=":$TAG$BR"
 			fi
-		elif [[ -n "$local_branch$local_tag" ]]; then
-			git.msg push $OPT $REMOTE ${local_branch}${local_tag}
 		fi
+		eval "$cmd"
+
+	# 1. Choose a local reference, and then push to remote
+	# 2. Choose a local commit, and then push to remote
 	elif [[ -n "$BR" || -n "$TAG" || -n "$REF" ]]; then
 		config.get local_branch local_branch
 		config.get local_tag local_tag
@@ -293,13 +298,13 @@ refs.push() {
 			remote="${REF%%/$TAG}"
 		fi
 
-		if [[ -n "$local_branch" ]]; then
-			git.msg push $OPT $remote ${local_branch}:${BR}
-		elif [[ -n "$local_tag" ]]; then
-			git.msg push $OPT $remote ${local_tag}:${TAG}
+		if [[ -n "${local_branch}${local_tag}" ]]; then
+			git.msg push $OPT $remote ${local_branch}${local_tag}:${BR}${TAG}
 		elif [[ -n "$commit" ]]; then
-			git.msg push $OPT $remote ${commit}:${BR:-$TAG}
+			git.msg push $OPT $remote ${commit}:${BR}${TAG}
 		fi
+
+	# 3. Choose remote reference then select local commit
 	elif [[ -n "$C" ]]; then
 		config.get remote_branch remote_branch
 		config.get remote_tag remote_tag
@@ -310,7 +315,11 @@ refs.push() {
 			return
 		fi
 
-		git.msg push $OPT $remote ${C}:${remote_branch:-$remote_tag}
+		git.msg push $OPT $remote ${C}:${remote_branch}${remote_tag}
+
+	elif [[ -n "$UPSTREAM" && -n "$REMOTE" ]]; then
+		# TODO
+		true
 	fi
 
 	rm -rf $info_file
