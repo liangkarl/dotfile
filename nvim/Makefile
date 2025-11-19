@@ -15,7 +15,7 @@ config.$(PKG_NAME):
 	# 	break
 	# done
 	$(H)echo "let g:editor_theme = 'material'" > ${CONFIG_DIR}/config.vim
-	$(H)echo "Press 'q' to exit nvim if all plugins were installed." > $(TMP)
+	$(H)echo "Press '<space>q' to exit nvim if all plugins were installed." > $(TMP)
 	$(H)nvim +"set nomodifiable nomodified" $(TMP)
 	$(H)rm -f $(TMP)
 
