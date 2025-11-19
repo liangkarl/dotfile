@@ -52,3 +52,12 @@
 	outgoing = log --pretty=slog @{upstream}..HEAD
 	# inline diff
 	wdiff = diff -w --word-diff=color --ignore-space-at-eol
+	# TODO: below four functions should be merged into single command
+	# skip changes of tracked files
+	skip = "!f() { git ls-files "$@" | xargs git update-index --skip-worktree; }; f"
+	# unskip changes of tracked files
+	unskip = "!f() { git ls-files "$@" | xargs git update-index --no-skip-worktree; }; f"
+	# reset all skipped files
+	rs-skip = "!f() { git ls-files -f | grep ^S | awk '{print $2}' | xargs git unskip; }; f"
+	# list all skipped files
+	ls-skip = "!f() { git ls-files -f | grep ^S; true; }; f"
