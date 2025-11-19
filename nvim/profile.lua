@@ -157,3 +157,17 @@ cmd("syntax off")
 
 -- WARN: disable nvim deprecate API warning
 vim.deprecate = function() end
+
+vim.keymap.set("n", "<leader>P", function()
+  local text = vim.fn.getreg('"')       -- 取 unnamed register
+  text = text:gsub("\x00", "")
+  vim.fn.setreg('p', text, 'l')
+  vim.cmd.normal('"pP')
+end, { desc = "Paste visual block as separate lines" })
+
+vim.keymap.set("n", "<leader>p", function()
+  local text = vim.fn.getreg('"')       -- 取 unnamed register
+  text = text:gsub("\x00", "")
+  vim.fn.setreg('p', text, 'l')
+  vim.cmd.normal('"pp')
+end, { desc = "Paste visual block as separate lines" })
