@@ -298,6 +298,9 @@ local function config()
   m.noremap({'n', 'v', 'i'},  '<S-Up>', '<C-u>')
   m.noremap({'n', 'v', 'i'},  '<S-Down>', '<C-d>')
 
+  -- Remove command history keybinds
+  m.noremap('',  'q:', '<Nop>')
+
   -------------------
   -- Folded Keymap --
   -------------------
