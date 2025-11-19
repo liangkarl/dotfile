@@ -242,21 +242,44 @@ local function config()
 
   gid = m.augroup("KeybindProfile")
 
-  m.autocmd({ "BufAdd", "OptionSet" }, "*", function()
-    if vim.o.diff then
-      m.noremap('n', 'Q', '<cmd>qall<cr>', "Quit all")
-      -- m.noremap('n', '<leader>q', '<cmd>diffoff | only<cr>', "Back to Normal edit mode")
-    end
-
-    if not vim.o.modifiable then
+  m.autocmd('BufAdd', "*", function ()
+    if not vim.bo.modifiable then
       -- Using :quit instead of :close is because :quit could exit nvim
       -- once the current buffer is the last buffer
-      m.noremap('n', 'q', quit, "Close Buffer", { buffer = true })
+      m.noremap('n', '<leader>q', quit, "Close Buffer", { buffer = true })
     end
   end, {
-      desc = "Set different keybinds according to the options",
-      group = gid
-    })
+    desc = "Configure keybinds for read-only buffers",
+    group = gid
+  })
+
+  m.autocmd("OptionSet", "diff", function ()
+    if vim.v.option_new then
+      -- print("optionset: set diff keys")
+      m.noremap('n', '<leader>Q', '<cmd>qall<cr>', "Quit all", { buffer = true})
+      m.noremap('n', '<leader>q', '<cmd>diffoff!|only<cr>', "Back to Normal edit mode", { buffer = true})
+    else
+      -- print("optionset: set normal keys")
+      m.noremap('n', '<leader>q', quit, "Close Buffer", { buffer = true })
+    end
+  end, {
+    desc = "Configure keybinds for diff windows",
+    group = gid
+  })
+
+  m.autocmd("VimEnter", "*", function()
+    if vim.o.diff then
+      -- print("vimenter: set diff keys")
+      m.noremap('n', '<leader>Q', '<cmd>qall<cr>', "Quit all")
+      m.noremap('n', '<leader>q', '<cmd>diffoff!|only<cr>', "Back to Normal edit mode")
+    else
+      -- print("vimenter: set normal keys")
+      m.noremap('n', '<leader>q', quit, "Close Buffer")
+    end
+  end, {
+    desc = "Configure keybinds for diff windows",
+    group = gid
+  })
 
   -- XXX: WA for 'E335: Menu not defined for Insert mode'
   -- https://github.com/neovim/neovim/issues/19473
@@ -314,7 +337,8 @@ local function config()
       { '<leader>.', '<cmd>only<cr>', desc = "Close All Other Windows"},
       { '<leader>.t', '<cmd>tabonly<cr>', desc = "Close All Other Tabs"},
       { '<leader>x', '<cmd>close<cr>', desc = "Close Current Window"},
-      { '<leader>q', quit, desc = "Close Current Buffer and Window"},
+      -- <leader>q would be dynamically set up
+      -- { '<leader>q', quit, desc = "Close Current Buffer and Window"},
       { '<leader>[', '<cmd>Telescope buffers<cr>', desc = "Switch opened buffers"},
       { '<leader>K', function()
         builtin.help_tags({ default_text = vim.fn.expand('<cword>') })
@@ -344,8 +368,6 @@ local function config()
       { '<leader><Right>', '<C-w>l', desc = "Switch to right window"},
       { '<leader><S-TAB>', '<cmd>BufferLineCyclePrev<cr>', desc = "Switch to previous buffer"},
       { '<leader><TAB>', '<cmd>BufferLineCycleNext<cr>', desc = "Switch to next buffer"},
-
-      { '<leader>d', quit, desc = "Close current buffer"},
     },
     {
       group = "Extra Cmd G",
