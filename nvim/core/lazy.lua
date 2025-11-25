@@ -101,6 +101,7 @@ require("lazy").setup({
 
   -- Terminal
   -- NOTE: Remove it as change to tmux console
+  require('config.codex'),
 
   -- Integration Development Environment
   require('config.vim-startuptime'),
