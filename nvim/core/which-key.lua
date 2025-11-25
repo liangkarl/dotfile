@@ -59,6 +59,7 @@ local quit = function()
   local listed_buffers = fn.getbufinfo({buflisted = 1})
   local cur_bufnr = vim.api.nvim_get_current_buf()
   local name = vim.api.nvim_buf_get_name(cur_bufnr)
+  local tab_count = #vim.api.nvim_list_tabpages()
   local is_listed = false
   local is_side_win = false
 
@@ -89,9 +90,13 @@ local quit = function()
       vim.cmd('silent! bdelete!')
     end
 
-    -- Close all windows when current buffer is the last buffer and window
-    if #listed_buffers <= 1 then
-      vim.cmd('confirm quitall')
+    -- Exit nvim if there's no other buffer and tab
+    if #listed_buffers <= 1 and tab_count <= 1 then
+      vim.cmd("confirm quitall")
+
+    -- Close current tab if current buffer is the only one and there is other tab
+    elseif #listed_buffers == 1 and tab_count > 1 then
+      vim.cmd("confirm tabclose")
     end
   else
     -- If this is a hidden buffer, usually it's from certain plugin
@@ -280,6 +285,11 @@ local function config()
     desc = "Configure keybinds for diff windows",
     group = gid
   })
+
+  vim.api.nvim_create_user_command("TabName", function(opts)
+    local tab = vim.api.nvim_get_current_tabpage()
+    vim.t[tab].name = opts.args
+  end, { nargs = 1 })
 
   -- XXX: WA for 'E335: Menu not defined for Insert mode'
   -- https://github.com/neovim/neovim/issues/19473

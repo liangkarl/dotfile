@@ -60,6 +60,7 @@ require("lazy").setup({
   require('config.auto-pairs'),
   require('config.vim-doge'),
   require('config.yanky'),
+  require('config.scope'),
 
   -- jump list
   require('config.jumppack'),
