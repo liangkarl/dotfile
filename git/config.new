@@ -61,3 +61,4 @@
 	rs-skip = "!f() { git ls-files -f | grep ^S | awk '{print $2}' | xargs git unskip; }; f"
 	# list all skipped files
 	ls-skip = "!f() { git ls-files -f | grep ^S; true; }; f"
+	top = rev-parse --show-toplevel
