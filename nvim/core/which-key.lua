@@ -251,7 +251,7 @@ local function config()
     if not vim.bo.modifiable then
       -- Using :quit instead of :close is because :quit could exit nvim
       -- once the current buffer is the last buffer
-      m.noremap('n', '<leader>q', quit, "Close Buffer", { buffer = true })
+      m.noremap('n', 'q', quit, "Close Buffer", { buffer = true, force = false })
     end
   end, {
     desc = "Configure keybinds for read-only buffers",

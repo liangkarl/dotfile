@@ -1,16 +1,41 @@
 local M = {}
 local api = vim.api
 
+M.key_is_free = function(mode, lhs)
+  -- get all maps for this mode
+  local maps = vim.api.nvim_get_keymap(mode)
+
+  -- check if any map already uses this lhs
+  for _, map in ipairs(maps) do
+    if map.lhs == lhs then
+      -- already mapped → skip
+      return false
+    end
+  end
+
+  return true
+end
+
 M.map = function(mode, lhs, rhs, desc, opts)
   opts = opts or {}
   opts.silent = opts.silent or true
   opts.desc = desc
+  opts.force = opts.force or true
+  if not opts.force and not M.key_is_free(mode, lhs) then
+    return
+  end
+  opts.force = nil
   vim.keymap.set(mode, lhs, rhs, opts)
 end
 
 M.noremap = function(mode, lhs, rhs, desc, opts)
   opts = opts or {}
   opts.noremap = true
+  opts.force = opts.force or true
+  if not opts.force and not M.key_is_free(mode, lhs) then
+    return
+  end
+  opts.force = nil
   M.map(mode, lhs, rhs, desc, opts)
 end
 
