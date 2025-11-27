@@ -40,8 +40,10 @@ else
 fi
 
 if [[ -n "$(type -p bat)" ]]; then
-    alias cat="$(which bat) --paging=never --plain"
-    alias bat="$(which bat) --style=numbers"
+    export BAT_THEME_DARK="TwoDark"
+    export BAT_THEME="dark"
+    alias cat="$(which bat) --theme-dark $BAT_THEME_DARK --paging=never --plain"
+    alias bat="$(which bat) --theme-dark $BAT_THEME_DARK --style=numbers"
 fi
 
 # coloring manual
