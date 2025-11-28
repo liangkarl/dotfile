@@ -8,6 +8,7 @@ configure_package_management() {
         if [[ -e "$cmd" ]]; then
             msg.dbg "found: $cmd"
             eval $($cmd shellenv)
+            path.append HOMEBREW_LIBRARY_PATHS "$($cmd --prefix)/lib"
         fi
     done
 

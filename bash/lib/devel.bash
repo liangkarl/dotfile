@@ -58,6 +58,24 @@ path.rel() {
             "grealpath -m -s --relative-to=$(pwd) '$*'"
 }
 
+# $0 VAR PATH
+# Append to the last pos
+path.append() {
+  local var="$1"
+  local dir="$2"
+
+  eval "$var=\"\${$var:+\${$var}:}$dir\""
+}
+
+# $0 VAR PATH
+# Prepend to the first pos
+path.prepend() {
+  local var="$1"
+  local dir="$2"
+
+  eval "$var=\"$dir\${$var:+:\${$var}}\""
+}
+
 # usage:
 # path.load FILE
 path.load() {
