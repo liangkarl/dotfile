@@ -33,8 +33,19 @@ return { -- Status line (button)
       sections = {
         lualine_a = { 'mode' },
         lualine_b = { 'branch', 'diff', 'diagnostics' },
-        lualine_c = { 'filename' },
-        lualine_x = { 'searchcount', 'encoding', 'fileformat', 'filetype' },
+        lualine_c = {
+          {
+            'tabs',
+            mode = 1,
+            use_mode_colors = true,
+            show_modified_status = false,
+            fmt = function(name, context)
+              return context.tabnr .. ':' .. (vim.t[context.tabnr].name or '*')
+            end
+          },
+          { 'filename', path = 1, symbols = { modified = '[M]', readonly = '[RO]' }},
+        },
+        lualine_x = { 'searchcount', 'encoding', 'fileformat', 'filetype', 'lsp_status' },
         lualine_y = { 'progress' },
         lualine_z = { 'location' }
       },
