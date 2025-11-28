@@ -1,5 +1,59 @@
 #!/usr/bin/env bash
 
+dbg.cmd "export SYS_INFO=\"${BASH_CFG}/info\""
+
+oneshot() {
+    eval "$*"
+    unset -f "$1"
+}
+
+bash_init() {
+    if ! cmp -s ${SYS_INFO} ${SYS_INFO}.last; then (
+        lib.load config
+
+        config.load ${SYS_INFO}
+        config.get system system
+        if [[ -z "$system" ]]; then
+            system=$(cmd.try "sw_vers -productName" "lsb_release -i -s")
+            system=${system,,}
+            config.set system "${system}$([[ -n "$WSL_DISTRO_NAME" ]] && echo ':wsl')"
+        fi
+
+        config.get bin bin
+        if [[ -z "$bin" ]]; then
+            config.set bin "${HOME}/.local/bin"
+        fi
+
+        config.get altdir ua_altdir
+        if [[ -z "$altdir" ]]; then
+            config.set ua_altdir "${HOME}/.local/etc/alternatives"
+        fi
+
+        config.get admdir ua_admdir
+        if [[ -z "$admdir" ]]; then
+            config.set ua_admdir "${HOME}/.local/etc/alternatives-admin"
+        fi
+
+        config.save
+        cp $SYS_INFO ${SYS_INFO}.last
+
+        msg.dbg "$SYS_INFO:"
+        msg.dbg "$(cat $SYS_INFO)"
+    ) fi
+}
+
+xdg_init() {
+    # XDG Base Directory Specification
+    # https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
+    # https://wiki.archlinux.org/title/XDG_Base_Directory
+    export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+    export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+    export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+    export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+    export XDG_DATA_DIRS="${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+    export XDG_CONFIG_DIRS="${XDG_CONFIG_DIRS:-/etc/xdg}"
+}
+
 # In ANSI code, for example, '\e[0m' was used for reseting
 # '\e' means 'escape string'.
 # '[0' is 'function parameters'.
@@ -93,3 +147,6 @@ __ps1_switch_form() {
 
 # __ps1_form=1
 # __ps1_switch_form
+
+oneshot bash_init
+oneshot xdg_init

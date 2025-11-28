@@ -1,5 +1,37 @@
 #!/usr/bin/env bash
 
+configure_package_management() {
+    local cmd
+
+    # HomeBrew
+    for cmd in "/home/linuxbrew/.linuxbrew/bin/brew" "/opt/homebrew/bin/brew"; do
+        if [[ -e "$cmd" ]]; then
+            msg.dbg "found: $cmd"
+            eval $($cmd shellenv)
+        fi
+    done
+
+    # NVM
+    if [[ -e "${HOME}/.config/nvm" ]]; then
+        msg.dbg "found: NVM configuration"
+        export NVM_DIR="$HOME/.config/nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+        [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+    fi
+
+    msg.dbg "path change: $PATH"
+}
+
+configure_alternatives() {
+    local admdir altdir
+
+    admdir=$(sys.info ua_admdir)
+    [[ -e "$admdir" ]] || mkdir -p $admdir
+
+    altdir=$(sys.info ua_altdir)
+    [[ -e "$altdir" ]] || mkdir -p $altdir
+}
+
 configure_fuzzy_finder() {
 
     if cmd.has fzf; then
@@ -93,7 +125,10 @@ configure_update_alternative() {
     export DPKG_ADMINDIR="$(sys.info ua_altdir)"
 }
 
+oneshot configure_alternatives
+oneshot configure_package_management
 # oneshot configure_glib
+
 oneshot configure_update_alternative
 oneshot configure_fuzzy_finder
 oneshot configure_enhancd

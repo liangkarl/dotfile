@@ -36,6 +36,10 @@ config.$(PKG_NAME): # Run in $(CONFIG_DIR)
 		fi
 	fi
 
+	$(H)rm -rf ${CONFIG_DIR}/init/all
+	$(H)cat ${CONFIG_DIR}/init/* > ${CONFIG_DIR}/init/all
+	$(H)rm -rf ${CONFIG_DIR}/init/*.bash
+
 	$(H)if [ ! -e "${COMPL_DIR}" ]; then
 		mkdir -p ${COMPL_DIR}
 	fi
