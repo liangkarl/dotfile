@@ -80,6 +80,9 @@ local quit = function()
   -- 1. Close all other diff side windows
   -- 2. Change back to primary window
 
+  -- bd: close buffer
+  -- close/tabclose/quit: close window
+  -- Usually use close buffer and close window can solve lots of things
   if is_listed then
     if vim.bo.modifiable and not is_side_win then
       -- Close current buffer, load next buffer, and keep window position
@@ -94,14 +97,25 @@ local quit = function()
     if #listed_buffers <= 1 and tab_count <= 1 then
       vim.cmd("confirm quitall")
 
-    -- Close current tab if current buffer is the only one and there is other tab
+    -- Close current tab if current buffer is the only one and there are other tabs
     elseif #listed_buffers == 1 and tab_count > 1 then
-      vim.cmd("confirm tabclose")
+      vim.cmd("silent! tabclose!")
     end
   else
     -- If this is a hidden buffer, usually it's from certain plugin
     -- Keep buffer and close current window (or exit vim)
-    vim.cmd('quit!')
+    -- vim.cmd('quit!')
+    vim.cmd("silent! bdelete!")
+
+    -- Exit nvim if there's no other buffer and tab
+    if #listed_buffers == 0 and tab_count == 1 then
+      vim.cmd("confirm quitall")
+
+    -- Close current tab if current buffer is the only one listed buffer
+    -- and there are other tabs
+    elseif #listed_buffers <= 1 and tab_count > 1 then
+      vim.cmd("silent! tabclose!")
+    end
   end
 end
 
