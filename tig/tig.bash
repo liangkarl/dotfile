@@ -68,8 +68,13 @@ is_remote_branch() { git show-ref --verify --quiet refs/remotes/${1} &> $__N; }
 # to_sha <tag|branch>
 to_sha() { git rev-parse $1 2> $__N; }
 
+# FILE=%(file) C=%(commit) file.checkout
+file.checkout() {
+    true
+}
+
 # NAME=%(branch) [C=%(commit)] [TYPE=[local|remote]] br.check
-br.check() {
+check_branch() {
 	is_branch "$NAME"  || return 1
 
 	is_commit "$C" || return 2
@@ -78,7 +83,7 @@ br.check() {
 }
 
 # C=%(commit) br.get
-br.get() {
+find_branch() {
 	local br rev
 
 	is_commit "$C" || return 1
@@ -102,7 +107,7 @@ br.get() {
 # }
 
 # NAME=%(TAG) [C=%(commit)] [TYPE=[local|remote]] tag.check
-tag.check() {
+check_tag() {
 	is_tag "$NAME"  || return 1
 
 	is_commit "$C" || return 2
@@ -111,7 +116,7 @@ tag.check() {
 }
 
 # C=%(commit) tag.get
-tag.get() {
+find_tag() {
 	local tag rev
 
 	is_commit "$C" || return 1
@@ -128,21 +133,21 @@ tag.get() {
 
 # node = commit
 # C= TYPE=[t|b] node.refs
-refs.get() {
+find_refs() {
 	local branch rev
 
 	is_commit "$C" || return 1
 
 	if [[ "$TYPE" == 't' ]]; then
-		C=$C tag.get
+		C=$C find_tag
 	else
-		C=$C br.get
+		C=$C find_branch
 	fi
 }
 
 # Check remote branch
 # get_remote_branch <branch>
-refs.upstream() {
+find_remote_branch() {
 	local remote
 
 	if ! is_commit $1; then
@@ -206,8 +211,8 @@ refs.cut() {
 	if [[ -z "$TAG" && -z "$BR" ]]; then
 		is_commit "$C" || return 1
 
-		BR=$(C=$C br.get)
-		TAG=$(C=$C tag.get)
+		BR=$(C=$C find_branch)
+		TAG=$(C=$C find_tag)
 		if [[ -z "$TAG$BR" ]]; then
 			echo "no branch or tag available"
 			return 2
@@ -217,14 +222,14 @@ refs.cut() {
 	rm -f $NODE
 	config.load $NODE
 	if [[ -n "$BR" ]]; then
-		if C=$C NAME=$BR br.check; then
+		if C=$C NAME=$BR check_branch; then
 			git branch -D $BR
 			config.set "BR" "$BR"
 		else
 			echo "invalid branch: $BR, $C"
 		fi
 	elif [[ -n "$TAG" ]]; then
-		if C=$C NAME=$TAG tag.check; then
+		if C=$C NAME=$TAG check_tag; then
 			git tag -d $TAG
 			if [[ "$TAG" =~ patch\.[0-9]+ ]]; then
 				sed -i -e "/${TAG}/d" $patch_file
