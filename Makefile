@@ -34,8 +34,6 @@ $(LIST):
 	fi
 	$(H)printf -- "-- completed: $@ --\n\n"
 
-top: procps
-
 %.remove:
 	$(H)$(eval NAME:=$(strip $(subst .remove,,$@)))
 	$(H)if [ -d "$(CONF_HOME)/$(NAME)" ]; then
