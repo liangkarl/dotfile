@@ -305,6 +305,9 @@ local function config()
     vim.t[tab].name = opts.args
   end, { nargs = 1 })
 
+  -- How to check the keycode?
+  -- :echo getcharstr() and press the key(s) to see the keycode
+
   -- XXX: WA for 'E335: Menu not defined for Insert mode'
   -- https://github.com/neovim/neovim/issues/19473
   m.noremap('v', '<RightMouse>', '<C-\\><C-g>gv<cmd>:popup! PopUp<cr>', "FIX E335 for popup issue")
@@ -344,6 +347,20 @@ local function config()
   m.noremap('',  '<PageDown>', '<C-f>zb')
   m.noremap({'n', 'v', 'i'},  '<S-Up>', '<C-u>')
   m.noremap({'n', 'v', 'i'},  '<S-Down>', '<C-d>')
+
+  -- Porting shell keyboard shortcuts
+  m.noremap({ 'i', 'c' }, '<C-a>', '<Home>')
+  m.noremap({ 'i', 'c' }, '<C-e>', '<End>')
+  m.noremap({ 'i', 'c' }, '<M-f>', '<C-Right>')
+  m.noremap({ 'i', 'c' }, '<M-b>', '<C-Left>')
+  m.noremap('i', '<C-x><C-x>', '<Esc>``a')
+  m.noremap('i', '<M-d>', '<C-o>dw')
+  m.noremap('c', '<M-d>', '<C-Right><C-w>')
+  m.noremap({'i', 'c'}, '<M-BS>', '<C-w>')
+  m.noremap("i", "<C-k>", "<C-o>D")
+  m.noremap("c", "<C-k>", "<C-k>")   -- default: delete to EOL
+  m.noremap("i", "<C-y>", '<C-r>"')
+  m.noremap("c", "<C-y>", "<C-y>")   -- default: paste cut text
 
   -- Remove command history keybinds
   m.noremap('',  'q:', '<Nop>')
