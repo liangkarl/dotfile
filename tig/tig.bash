@@ -73,31 +73,6 @@ file.checkout() {
     true
 }
 
-# NAME=%(branch) [C=%(commit)] [TYPE=[local|remote]] br.check
-check_branch() {
-	is_branch "$NAME"  || return 1
-
-	is_commit "$C" || return 2
-
-	[ "$(to_sha refs/heads/${NAME})" == "$(to_sha $C)" ]
-}
-
-# C=%(commit) br.get
-find_branch() {
-	local br rev
-
-	is_commit "$C" || return 1
-
-	for br in $(git branch --format='%(refname:short)' | sed '/HEAD/d'); do
-		rev=$(to_sha $br)
-		if [[ "$rev" == "$C" ]]; then
-			echo $br
-			return
-		fi
-	done
-	false
-}
-
 # br.add() {
 #
 # }
@@ -105,45 +80,6 @@ find_branch() {
 # tag.add() {
 #
 # }
-
-# NAME=%(TAG) [C=%(commit)] [TYPE=[local|remote]] tag.check
-check_tag() {
-	is_tag "$NAME"  || return 1
-
-	is_commit "$C" || return 2
-
-	[ "$(to_sha refs/tags/${NAME})" == "$(to_sha $C)" ]
-}
-
-# C=%(commit) tag.get
-find_tag() {
-	local tag rev
-
-	is_commit "$C" || return 1
-
-	for tag in $(git tag -l); do
-		rev=$(to_sha $tag)
-		if [[ "$rev" == "$C" ]]; then
-			echo $tag
-			return
-		fi
-	done
-	false
-}
-
-# node = commit
-# C= TYPE=[t|b] node.refs
-find_refs() {
-	local branch rev
-
-	is_commit "$C" || return 1
-
-	if [[ "$TYPE" == 't' ]]; then
-		C=$C find_tag
-	else
-		C=$C find_branch
-	fi
-}
 
 # Check remote branch
 # get_remote_branch <branch>
@@ -188,6 +124,48 @@ stash.pop() {
 	git reset
 }
 
+# TAG=|BR= C= [TYPE=[local|remote]] refs.verify
+refs.verify() {
+	is_commit "$C" || return 1
+
+    if [[ -n "$TAG" ]] && is_tag "$TAG"; then
+        [ "$(to_sha refs/tags/${TAG})" == "$(to_sha $C)" ]
+        return $?
+    elif [[ -n "$BR" ]] && is_branch "$BR"; then
+        [ "$(to_sha refs/heads/${BR})" == "$(to_sha $C)" ]
+        return $?
+    fi
+
+    return 3
+}
+
+# C= [TAG=y] [BR=y] UP= refs.find
+refs.find() {
+	local tag br rev
+
+	is_commit "$C" || return 1
+
+    if [[ -n "$TAG" ]]; then
+        for tag in $(git tag -l); do
+            rev=$(to_sha $tag)
+            if [[ "$rev" == "$C" ]]; then
+                echo $tag
+                return
+            fi
+        done
+    elif [[ -n "$BR" ]]; then
+        for br in $(git branch --format='%(refname:short)' | sed '/HEAD/d'); do
+            rev=$(to_sha $br)
+            if [[ "$rev" == "$C" ]]; then
+                echo $br
+                return
+            fi
+        done
+    fi
+
+    return 2
+}
+
 # add <commit>
 # C= TYPE=[t|b] refs.paste
 refs.paste() {
@@ -204,15 +182,30 @@ refs.paste() {
 	rm $NODE
 }
 
-# C= [BR=] [TAG=] refs.cut
+# C= NAME= [BR=] [TAG=] refs.rename
+refs.rename() {
+	set -x
+	is_commit "$C" || return 1
+	if [[ -n "$BR" ]] && refs.verify; then
+        git branch -m "$BR" "$NAME"
+	elif [[ -n "$TAG" ]] && refs.verify; then
+        git tag -d "$TAG"
+        git tag "$NAME" "$C"
+	else
+        echo "Invalid inputs: C($C) NAME($NAME) TAG($TAG) BR($BR)"
+	fi
+}
+
+# C= [BR=] [TAG=] [REMOTE=] refs.cut
+# TODO: add cutting remove branchs & tags
 refs.cut() {
 	local br tag
 
 	if [[ -z "$TAG" && -z "$BR" ]]; then
 		is_commit "$C" || return 1
 
-		BR=$(C=$C find_branch)
-		TAG=$(C=$C find_tag)
+		TAG=$(C=$C TAG=y BR='' refs.find)
+		BR=$(C=$C BR=y TAG='' refs.find)
 		if [[ -z "$TAG$BR" ]]; then
 			echo "no branch or tag available"
 			return 2
@@ -221,15 +214,22 @@ refs.cut() {
 
 	rm -f $NODE
 	config.load $NODE
-	if [[ -n "$BR" ]]; then
-		if C=$C NAME=$BR check_branch; then
+	if [[ -n "$REMOTE" ]]; then
+		# $REF only supports remote branch
+		if is_remote_branch "${REMOTE}/${BR}"; then
+			git push -d $REMOTE $BR
+		else
+			echo "invalid remote branch: ${REMOTE}/${BR}"
+		fi
+	elif [[ -n "$BR" ]]; then
+		if C=$C BR=$BR refs.verify; then
 			git branch -D $BR
 			config.set "BR" "$BR"
 		else
 			echo "invalid branch: $BR, $C"
 		fi
 	elif [[ -n "$TAG" ]]; then
-		if C=$C NAME=$TAG check_tag; then
+		if C=$C TAG=$TAG refs.verify; then
 			git tag -d $TAG
 			if [[ "$TAG" =~ patch\.[0-9]+ ]]; then
 				sed -i -e "/${TAG}/d" $patch_file
@@ -292,7 +292,7 @@ refs.push() {
 
 	# 1. Choose a local reference, and then push to remote
 	# 2. Choose a local commit, and then push to remote
-	elif [[ -n "$BR" || -n "$TAG" || -n "$REF" ]]; then
+	elif [[ -n "$BR$TAG$REF" ]]; then
 		config.get local_branch local_branch
 		config.get local_tag local_tag
 		config.get commit commit

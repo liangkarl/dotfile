@@ -181,6 +181,9 @@ bind generic ;  +git rev-parse --show-toplevel
 
 bind generic yy +git ui copy TEXT='%(commit)'
 bind generic yf +git ui copy TEXT='%(file)'
+bind generic yF +git ui copy TEXT='%(file_old)'
+bind generic yb +git ui copy TEXT='%(branch)'
+bind generic yt +git ui copy TEXT='%(tag)'
 # }
 
 # TODO:
@@ -221,31 +224,42 @@ bind status  sp       :!git ui stash.pop
 
 ## Add/Remove/Move tag and branch
 bind main   ta       @git ui git.msg tag "%(prompt new tag: )" %(commit)
+bind main   tr       @git ui refs.rename C=%(commit) NAME="%(prompt rename tag: )" TAG=%(tag)
 bind main   t<ENTER> @git ui git.msg tag tag.$(git rev-parse --short %(commit)) %(commit)
 bind main   ba       @git ui git.msg branch "%(prompt new branch: )" %(commit)
-bind main   b<ENTER> @git ui git.msg branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)
+bind main   br       @git ui refs.rename C=%(commit) NAME="%(prompt rename branch: )" BR=%(branch)
+bind main   b<ENTER> @git ui git.msg branch $(basename $(git rev-parse --show-toplevel)) %(commit)
 bind main   a<ENTER> @git ui refs.paste C=%(commit)
 bind main   d<ENTER> @git ui refs.cut C=%(commit)
-bind main   db       @git ui refs.cut C=%(commit) BR=%(branch)
+bind main   bd       @git ui refs.cut C=%(commit) BR=%(branch)
+bind main   td       @git ui refs.cut C=%(commit) TAG=%(tag)
 bind reflog ta       @git ui git.msg tag "%(prompt new tag: )" %(commit)
+bind reflog tr       @git ui refs.rename C=%(commit) NAME="%(prompt rename tag: )" TAG=%(tag)
 bind reflog t<ENTER> @git ui git.msg tag tag.$(git rev-parse --short %(commit)) %(commit)
 bind reflog ba       @git ui git.msg branch "%(prompt new branch: )" %(commit)
-bind reflog b<ENTER> @git ui git.msg branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)
+bind reflog br       @git ui refs.rename C=%(commit) NAME="%(prompt rename branch: )" BR=%(branch)
+bind reflog b<ENTER> @git ui git.msg branch $(basename $(git rev-parse --show-toplevel)) %(commit)
 bind reflog a<ENTER> @git ui refs.paste C=%(commit)
 bind reflog d<ENTER> @git ui refs.cut C=%(commit)
-bind reflog db       @git ui refs.cut C=%(commit) BR=%(branch)
+bind reflog bd       @git ui refs.cut C=%(commit) BR=%(branch)
+bind reflog td       @git ui refs.cut C=%(commit) TAG=%(tag)
 bind diff   ta       @git ui git.msg tag "%(prompt new tag: )" %(commit)
+bind diff   tr       @git ui refs.rename C=%(commit) NAME="%(prompt rename tag: )" TAG=%(tag)
 bind diff   t<ENTER> @git ui git.msg tag tag.$(git rev-parse --short %(commit)) %(commit)
 bind diff   ba       @git ui git.msg branch "%(prompt new branch: )" %(commit)
-bind diff   b<ENTER> @git ui git.msg branch branch.$(basename $(git rev-parse --show-toplevel)) %(commit)
+bind diff   br       @git ui refs.rename C=%(commit) NAME="%(prompt rename branch: )" BR=%(branch)
+bind diff   b<ENTER> @git ui git.msg branch $(basename $(git rev-parse --show-toplevel)) %(commit)
 bind diff   a<ENTER> @git ui refs.paste C=%(commit)
 bind diff   d<ENTER> @git ui refs.cut C=%(commit)
 bind refs   ta       @git ui git.msg tag "%(prompt new tag: )" HEAD
+bind refs   tr       @git ui refs.rename C=%(commit) NAME="%(prompt rename tag: )" TAG=%(tag)
 bind refs   t<ENTER> @git ui git.msg tag tag.$(git rev-parse --short HEAD) HEAD
 bind refs   ba       @git ui git.msg branch "%(prompt new branch: )" HEAD
-bind refs   b<ENTER> @git ui git.msg branch branch.$(basename $(git rev-parse --show-toplevel)) HEAD
+bind refs   br       @git ui refs.rename C=%(commit) NAME="%(prompt rename branch: )" BR=%(branch)
+bind refs   b<ENTER> @git ui git.msg branch $(basename $(git rev-parse --show-toplevel)) HEAD
 bind refs   a<ENTER> @git ui refs.paste C=%(commit)
 bind refs   d<ENTER> @git ui refs.cut C=%(commit) BR=%(branch) TAG=%(tag)
+bind refs   d!!      !?git ui refs.cut TAG=%(TAG) BR=%(branch) REMOTE=%(remote)
 
 ## Checkout
 bind main   co :!git ui git.auto checkout %(commit)
