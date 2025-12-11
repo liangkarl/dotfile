@@ -563,14 +563,14 @@ local function config()
 
       { '<leader>si', '<cmd>LspInfo<cr>', desc = "LSP Server Info (LspInfo)" },
       { '<leader>sm', '<cmd>AerialInfo<cr>', desc = 'Symbol Manager Info (AerialInfo)' },
-      { '<leader>sh', function()
+      { 'K', function()
         lsp.hover({
           border = "rounded", -- Choose your border style here
           -- max_width = 120,   -- Optional: Set a maximum width
           -- max_height = 25,   -- Optional: Set a maximum height
         })
       end, desc = "LSP: Show Symbol Info" },
-      { '<leader>sH', function ()
+      { '<leader>sh', function ()
         lsp.signature_help({ border = "rounded" })
       end, desc = "LSP: Show Signature Help" },
       { '<leader>sd', '<cmd>Gitsigns preview_hunk_inline<cr>', desc = "Preview line change(s)"},
