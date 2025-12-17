@@ -1,0 +1,6 @@
+# https://stackoverflow.com/questions/62624352/can-i-use-gcc-compiler-and-clangd-language-server
+# clang++ -E -xc++ - -Wp,-v < /dev/null
+# gcc -v -c -xc++ /dev/null
+CompileFlags:
+  Add: [ /usr/include/c++/9, /usr/include/x86_64-linux-gnu/c++/9, /usr/include/c++/9/backward, /usr/lib/gcc/x86_64-linux-gnu/9/include, /usr/local/include, /usr/include/x86_64-linux-gnu, /usr/include ]
+  Remove: [-m*, -f*] # Remove GCC flags for machine type, optimization
