@@ -148,7 +148,7 @@ return { -- LSP configuration
     }
 
     -- Merge Table
-    vim.tbl_extend("force", lsp['lua_ls'], lua_ls)
+    lsp['lua_ls'] = vim.tbl_extend("force", lsp['lua_ls'] or {}, lua_ls)
 
     -- customize configurations here
     -- FIXME: The LSP setting would lose after changing from insert mode to insert mode
