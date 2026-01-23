@@ -69,6 +69,18 @@ return { -- A 'Swiss Army Knife' with many small features
       },
     })
 
+    local animate = require('mini.animate')
+    animate.setup({
+      resize = { enable = false },
+      open = { enable = false },
+      close = { enable = false },
+      cursor = { enable = false },
+      scroll = {
+        enable = true,
+        timing = animate.gen_timing.linear({ duration = 30, unit = 'total' }),
+        subscroll = animate.gen_subscroll.equal({ max_output_steps = 3 }),
+      },
+    })
     -- NOTE:
     -- Low Performance when enabled in insert mode(?).
     vim.cmd([[
