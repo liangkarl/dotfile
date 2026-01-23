@@ -46,18 +46,19 @@ vim.cmd("highlight LineNrAbove guifg=#424242")
 vim.cmd("highlight link LineNrBelow LineNrAbove")
 vim.cmd("highlight link LineNr CursorLineNr")
 
-m.highlight("nCursor", { fg=nil, bg='SlateBlue', cterm=nil, ctermbg=1 })
-m.highlight("iCursor", { fg=nil, bg='#ffffff', cterm=nil, ctermbg=15 })
+m.highlight("nCursor", { fg=nil, bg=nil, cterm=nil, ctermbg=nil })
 m.highlight("rCursor", { fg=nil, bg='Red', cterm=nil, ctermbg=12 })
-vim.cmd('hi CurSearch guifg=gray90 guibg=PeachPuff4')
-vim.cmd('hi IncSearch guifg=PeachPuff4 guibg=gray90')
-vim.cmd('hi Search guifg=PeachPuff4 guibg=PeachPuff1')
+-- m.highlight("iCursor", { fg=nil, bg='#ffffff', cterm=nil, ctermbg=15 })
+vim.cmd('hi CurSearch gui=undercurl,bold guifg=tomato guibg=NONE')
+vim.cmd('hi IncSearch gui=undercurl,bold guifg=tomato guibg=NONE')
+vim.cmd('hi Search gui=undercurl,italic guifg=tomato guibg=NONE')
+vim.cmd('hi CursorLine cterm=NONE ctermbg=236 gui=NONE guibg=#2a2a2a')
 
 -- Set cursor pattern (no blink)
 vim.opt.guicursor = {
-  "n-v-c-sm:block-nCursor",
-  "i-ci-ve:ver25-iCursor",
-  "r-cr-o:hor20-rCursor"
+  "n-v-c-sm:block-blinkon300-blinkoff300-nCursor",
+  "i-ci-ve:ver25-blinkon300-blinkoff300-iCursor",
+  "r-cr-o:hor20-blinkon300-blinkoff300-rCursor"
 }
 vim.opt.scrolloff = 999
 vim.opt.sidescrolloff = 10
@@ -135,8 +136,8 @@ m.autocmd({"VimEnter", "BufEnter"}, '*', detect_syntax_hl, {
 m.autocmd( { "InsertLeave", "WinEnter" }, "*", "set cursorline", { group = gid })
 m.autocmd( { "InsertEnter", "WinLeave" }, "*", "set nocursorline", { group = gid })
 
-m.highlight("MiniCursorword", { fg = 'tomato', ctermfg = 'Red' })
-m.highlight("MiniCursorwordCurrent", { fg = 'tomato', ctermfg = 'Red' })
+m.highlight("MiniCursorword", { italic = true, underline = true, sp = 'tomato', ctermfg = 'Red' })
+m.highlight("MiniCursorwordCurrent", { underline = true, sp = 'tomato', ctermfg = 'Red' })
 
 m.autocmd("BufReadPost", "*", 'GuessIndent', { group = gid })
 m.autocmd("VimEnter", "*", 'clearjumps', { group = gid })

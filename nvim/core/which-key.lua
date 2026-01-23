@@ -319,7 +319,18 @@ local function config()
   --    The difference between <C-c> and <Esc> is as below:
   --    1. Would not check abbreviations
   --    2. Would not trigger `InsertLeave` event of autocommand.
-  m.noremap({'i', 'n', 'v'}, '<C-c>', '<Esc>', "<ESC>")
+  --
+  -- Mode Table:
+  -- n: normal mode
+  -- i: insert mode
+  -- v: visual mode
+  -- x: visual block mode
+  -- s: select mode
+  -- o: operator-pending mode
+  -- c: command-line mode
+  -- t: terminal mode
+  -- r: replace mode
+  m.noremap({'i', 'n', 'v', 'x', 's', 'o', 'c'}, '<C-c>', '<Esc>', "<ESC>")
   m.noremap('i', '<C-s>', '<C-o>', "<C-o>")
   m.noremap('v', 'p', 'P', "Paste without yanking the deleted text")
 
