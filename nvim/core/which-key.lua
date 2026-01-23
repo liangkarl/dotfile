@@ -334,8 +334,6 @@ local function config()
   -- The highest keybind priority
   -- m.noremap('n', 'H', '<C-w>W', "Switch to preview window")
 
-  m.noremap('',  'f', '<cmd>HopChar1CurrentLineAC<cr>')
-  m.noremap('',  'F', '<cmd>HopChar1CurrentLineBC<cr>')
   m.noremap('',  'j', 'gj')
   m.noremap('',  'k', 'gk')
   m.noremap('',  '0', 'g0')
@@ -409,12 +407,16 @@ local function config()
       { '<leader><Right>', '<C-w>l', desc = "Switch to right window"},
       { '<leader><S-TAB>', '<cmd>BufferLineCyclePrev<cr>', desc = "Switch to previous buffer"},
       { '<leader><TAB>', '<cmd>BufferLineCycleNext<cr>', desc = "Switch to next buffer"},
+
+      { 'S', function() require("flash").treesitter() end, mode = { "n", "x", "o" }, desc = "Flash Treesitter" },
+      { 'r', mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+      { 'R', mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
     },
     {
       group = "Extra Cmd G",
       { 'g0', '^', desc = "Go to the first character of line" },
       { 'g9', '$', desc = "Go to the end of line" },
-      { 'g/', '<cmd>HopPattern<cr>' },
+      { 'g/', function() require("flash").jump() end, mode = { "n", "x", "o" }, desc = "Flash"},
       { "g[", function ()
         exe_loop({
           { id = 'trouble', action = 'Trouble lsp_outgoing_calls toggle' },

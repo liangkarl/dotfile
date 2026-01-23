@@ -75,7 +75,7 @@ require("lazy").setup({
   -- FIXME: replace with new matchup plugin
   -- require('config.vim-matchup'),
   require('config.hlsearch'),
-  require('config.hop'),
+  require('config.flash'),
   require('config.alternate-toggler'),
 
   -- Formatter
