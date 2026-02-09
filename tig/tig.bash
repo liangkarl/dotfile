@@ -504,30 +504,35 @@ info.write() {
 	config.save
 }
 
-# FILE= LINE= info.line_history
+# FILE= LINE= REV= info.line_history
 info.line_history() {
 	if [ -z "$FILE" ] || [ -z "$LINE" ]; then
 		echo "Usage: $0 <file_path> <line_number>"
 		exit 1
 	fi
 
-	# Step 1: 找出該行第一次出現的 commit
-	FIRST_COMMIT=$(git log -S "$(sed -n "${LINE}p" "$FILE")" --pretty=format:"%H" --reverse -- "$FILE" | head -n1)
+    # Step 1: 從特定版本提取該行的內容（用於搜尋第一次出現的 commit）
+    # 使用 git show 確保我們拿到的是該版本的內容
+    # local LINE=$(git show "${REV}:${FILE}" | sed -n "${LINE}p")
 
-	if [ -z "$FIRST_COMMIT" ]; then
-		echo "Cannot find any commit for line $LINE in $FILE"
-		exit 1
-	fi
+    # if [ -z "$LINE" ]; then
+    #     echo "Error: Could not find line $LINE in $FILE at revision $REV"
+    #     return 1
+    # fi
 
-	echo "First commit affecting line $LINE: $FIRST_COMMIT"
-	echo ""
-	echo "***** Line History: (near to far) *****"
-	echo ""
-
-	# Step 2: 顯示該行的歷史修改
-	git log -L ${LINE},${LINE}:${FILE} --pretty=format:"%h %an %ad %s" --date=short
-
-	echo "Last commit ended"
+	# 如果使用者沒有指定 SHA，代表他可能想查目前正在改的這一行
+    if [ -z "$REV" ]; then
+        # 取得目前工作目錄該行的內容
+        local CURRENT_CONTENT=$(sed -n "${LINE}p" "$FILE")
+        echo "Checking history for current (unstaged) content:"
+		echo "\"$CURRENT_CONTENT\""
+        
+        # 從 HEAD 開始往回找這行內容
+        git log -S "$CURRENT_CONTENT" --pretty=format:"%h %an %ad %s" --date=short -- "$FILE"
+    else
+        # 如果有指定 SHA，則走原本的精確行號模式
+        git log -L "${LINE},${LINE}:${FILE}" "$REV" --pretty=format:"%h %an %ad %s" --date=short
+    fi
 }
 
 # C= OPT= act.rebase

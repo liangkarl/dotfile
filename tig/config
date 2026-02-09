@@ -334,8 +334,9 @@ bind reflog ss     :!git ui info.write C=%(commit) FILE=%(file) OFILE=%(file_old
 # }
 
 # Check line history {
-bind diff  b       :!git ui info.line_history LINE=%(lineno) FILE=%(file)
-bind blame b       :!git ui info.line_history LINE=%(lineno) FILE=%(file)
+bind stage b       :!git ui info.line_history LINE=%(lineno) FILE=%(file)
+bind diff  b       :!git ui info.line_history LINE=%(lineno) FILE=%(file) REV=%(commit)
+bind blame b       :!git ui info.line_history LINE=%(lineno) FILE=%(file) REV=%(commit)
 # }
 
 # Stage {
