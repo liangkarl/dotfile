@@ -77,8 +77,8 @@ return { -- A 'Swiss Army Knife' with many small features
       cursor = { enable = false },
       scroll = {
         enable = true,
-        timing = animate.gen_timing.linear({ duration = 30, unit = 'total' }),
-        subscroll = animate.gen_subscroll.equal({ max_output_steps = 3 }),
+        timing = animate.gen_timing.linear({ duration = 10, unit = 'total' }),
+        subscroll = animate.gen_subscroll.equal({ max_output_steps = 5 }),
       },
     })
     -- NOTE:
