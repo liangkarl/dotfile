@@ -322,7 +322,7 @@ local function config()
   --
   -- Mode Table:
   -- n: normal mode
-  -- i: insert mode
+  -- i: insert mode / replace mode
   -- v: visual mode
   -- x: visual block mode
   -- s: select mode
@@ -353,9 +353,11 @@ local function config()
   m.noremap('',  'x', '"_x')
   m.noremap('',  'X', '"_X')
   m.noremap('',  'S', '"_S')
-  m.noremap('',  '<PageDown>', '<C-f>zb')
-  m.noremap({'n', 'v', 'i'},  '<S-Up>', '<C-u>')
-  m.noremap({'n', 'v', 'i'},  '<S-Down>', '<C-d>')
+  -- m.noremap('',  '<PageDown>', '<C-f>zb')
+  m.noremap({'n', 'v'},  '<S-Up>', '<C-u>')
+  m.noremap({'n', 'v'},  '<S-Down>', '<C-d>')
+  m.noremap({'i'}, '<S-Up>', function() require("flash").jump() end)
+  m.noremap({'i'}, '<S-Down>', function() require("flash").jump() end)
 
   -- Porting shell keyboard shortcuts
   m.noremap({ 'i', 'c' }, '<C-a>', '<Home>')
