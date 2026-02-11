@@ -139,7 +139,7 @@ m.autocmd( { "InsertEnter", "WinLeave" }, "*", "set nocursorline", { group = gid
 m.highlight("MiniCursorword", { italic = true, underline = true, sp = 'tomato', ctermfg = 'Red' })
 m.highlight("MiniCursorwordCurrent", { underline = true, sp = 'tomato', ctermfg = 'Red' })
 
-m.autocmd("BufReadPost", "*", 'GuessIndent', { group = gid })
+m.autocmd("BufReadPost", "*", 'silent! GuessIndent', { group = gid })
 m.autocmd("VimEnter", "*", 'clearjumps', { group = gid })
 
 cmd([[
