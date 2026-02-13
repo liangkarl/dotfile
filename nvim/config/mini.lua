@@ -74,9 +74,13 @@ return { -- A 'Swiss Army Knife' with many small features
       resize = { enable = false },
       open = { enable = false },
       close = { enable = false },
-      cursor = { enable = false },
-      scroll = {
+      cursor = {
+        -- Enable it if mini.scroll + mini.move has some problems
         enable = true,
+        timing = animate.gen_timing.linear({ duration = 150, unit = 'total' }),
+      },
+      scroll = {
+        enable = false,
         timing = animate.gen_timing.linear({ duration = 10, unit = 'total' }),
         subscroll = animate.gen_subscroll.equal({ max_output_steps = 5 }),
       },

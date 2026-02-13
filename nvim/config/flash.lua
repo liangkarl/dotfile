@@ -3,8 +3,13 @@ return {
   event = "VeryLazy",
   ---@type Flash.Config
   opts = {
-
-
+    modes = {
+      search = {
+        enabled = true, -- 讓 / ? 搜尋時自動出現 flash labels
+        -- 這裡不寫也行，因為預設 search mode 就是 nohlsearch=true
+        jump = { nohlsearch = true },
+      },
+    },
   },
   keys = {
     -- { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
