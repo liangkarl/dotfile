@@ -95,6 +95,7 @@ require("lazy").setup({
 
   -- Theme
   require('config.theme'),
+  require('config.notice'),
 
   -- Fuzzy Finder
   require('config.telescope'),
