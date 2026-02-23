@@ -9,7 +9,7 @@
 # used for boosting loading speed
 set main-options = -n 20000
 set diff-options = --patience
-set log-options  = --patience -p
+set log-options  = --patience
 
 set commit-order = default
 set main-view-commit-title-graph = v1
@@ -112,11 +112,13 @@ bind blame -f       <tig --no-merges -- %(file)
 
 ## Diff format
 bind diff  -<ENTER> :set diff-options = --patience --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
+bind diff  -r       :set diff-options = --patience
 bind diff  -f       <tig --no-merges -- %(file)
 bind diff  -b       <tig blame %(file)
 
 ## Stage format
 bind stage -<ENTER> :set diff-options = --patience --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
+bind stage -r       :set diff-options = --patience
 bind stage -f       <tig --no-merges -- %(file)
 bind stage -b       <tig blame %(file)
 
@@ -135,6 +137,8 @@ bind tree  -f       <tig --no-merges -- %(file)
 
 # Log format
 bind log   -<ENTER> :set log-options = --patience -p --no-merges --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
+bind log   -v       :set log-options = --patience -p
+bind log   -r       :set log-options = --patience
 bind log   -a       <tig log --no-merges --author="%(prompt search author name: )"
 bind log   -f       <tig log -- "%(file)"
 
