@@ -15,8 +15,8 @@ return { -- Status line (button)
         theme = 'powerline',
         -- component_separators = { left = '', right = ''},
         -- section_separators = { left = '', right = ''},
-        component_separators = {},
-        section_separators = {},
+        component_separators = { left = '', right = '' },
+        section_separators = { left = '', right = '' },
         disabled_filetypes = {
           statusline = {},
           winbar = {},
@@ -40,7 +40,10 @@ return { -- Status line (button)
             use_mode_colors = true,
             show_modified_status = false,
             fmt = function(name, context)
-              return context.tabnr .. ':' .. (vim.t[context.tabnr].name or '*')
+              local tabnr = context.tabnr
+              local ok, t = pcall(function() return vim.t[tabnr] end)
+              local name = (ok and t and t.name) or '*'
+              return tabnr .. ':' .. name
             end
           },
           { 'filename', path = 1, symbols = { modified = '[M]', readonly = '[RO]' }},
