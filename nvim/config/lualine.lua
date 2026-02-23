@@ -1,6 +1,12 @@
 -- Plugin: lualine.nvim
 -- https://github.com/nvim-lualine/lualine.nvim
 
+local function macro_recording()
+  local reg = vim.fn.reg_recording()
+  if reg == "" then return "" end
+  return "REC @" .. reg
+end
+
 return { -- Status line (button)
   'nvim-lualine/lualine.nvim',
   dependencies = {
@@ -47,6 +53,7 @@ return { -- Status line (button)
             end
           },
           { 'filename', path = 1, symbols = { modified = '[M]', readonly = '[RO]' }},
+          { macro_recording, color = "Macro" },
         },
         lualine_x = { 'searchcount', 'encoding', 'fileformat', 'filetype', 'lsp_status' },
         lualine_y = { 'progress' },
