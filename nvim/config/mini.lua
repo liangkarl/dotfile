@@ -10,13 +10,13 @@ return { -- A 'Swiss Army Knife' with many small features
     require('mini.cursorword').setup()
     require('mini.bufremove').setup()
     -- require('mini.pairs').setup()
-    require('mini.notify').setup({
-      window = {
-        config = {
-          height = 5
-        }
-      }
-    })
+    -- require('mini.notify').setup({
+    --   window = {
+    --     config = {
+    --       height = 5
+    --     }
+    --   }
+    -- })
 
     m = require('mini.indentscope')
     m.setup({
