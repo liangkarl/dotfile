@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+lib.load devel
+
+for i in $(find $1 -type f -name *.patch | sort); do
+	echo "-- $i: --"
+	patch -p1 < $i
+	[[ $? -gt 0 ]] && msg.exit 1 "-- failed: $i --"
+done
+
+echo "-- done --"
