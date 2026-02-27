@@ -15,7 +15,16 @@ return {
         sources = function(buf, _)
           local sources = require('dropbar.sources')
           local utils = require('dropbar.utils')
-
+          if vim.bo[buf].ft == 'markdown' then
+            return {
+              sources.markdown,
+            }
+          end
+          if vim.bo[buf].buftype == 'terminal' then
+            return {
+              sources.terminal,
+            }
+          end
           -- 一般檔案：只用 LSP / Treesitter 的符號來源（不含 path）
           return {
             -- 只顯示檔名
@@ -30,7 +39,6 @@ return {
               end,
             },
             utils.source.fallback({
-              sources.lsp,
               sources.treesitter,
             }),
           }
