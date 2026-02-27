@@ -240,7 +240,8 @@ local function config()
       text = escape_regex(text)
 
       if text == "" then return end
-      local patt = text:match("^%w+$") and ("\\b"..text.."\\b") or text
+
+      local patt = ("\\b"..text.."\\b")
       local args = {
         default_text = patt,
         attach_mappings = grep_string_open,
