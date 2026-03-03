@@ -2,10 +2,17 @@
 
 lib.load devel
 
+skip=
 for i in $(find $1 -type f -name *.patch | sort); do
 	echo "-- $i: --"
-	patch -p1 < $i
-	[[ $? -gt 0 ]] && msg.exit 1 "-- failed: $i --"
+	if [[ -n "$skip" ]]; then
+		echo "skip"
+		continue
+	fi
+	if ! patch -p1 < $i; then
+		msg.err "Failed: $i"
+		skip=y
+	fi
 done
 
 echo "-- done --"
