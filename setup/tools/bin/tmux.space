@@ -29,6 +29,8 @@ lib.load devel
 
 get_entry() {
 	menu.title "$*"
+	# tmuxp lis only list workspaces in .config/tmuxp, and doesn't
+	# check availability
 	menu.opts $(tmuxp ls)
 	menu.run
 
@@ -45,7 +47,7 @@ set -eE
 
 CONFDIR="$XDG_CONFIG_HOME/tmuxp"
 
-set -- $(getopt ":sdeh" $*)
+set -- $(getopt ":sdehrc" $*)
 
 while [[ $# -ne 0 ]]; do
 	case $1 in
@@ -53,11 +55,29 @@ while [[ $# -ne 0 ]]; do
 		-e) edit=y;;
 		-h) cmd.help 0;;
 		-s) save=y;;
+		-r) rename=y;;
+		-c) create=y;;
 		--) enter=y;;
 		*) cmd.help 1;;
 	esac
 	shift
 done
+
+if [[ "$create" == y ]]; then
+	echo "NOTE: The default configuration of new entry will be the current tmux session"
+	read -p "create new workspace name: " name
+	if [[ -z "$name" ]]; then
+		msg.exit 1 "no name given"
+	fi
+
+	tmuxp freeze -o ${CONFDIR}/${name}.yaml || msg.exit $? "Exit"
+
+	read -p "edit $name(y/N): " opt
+	if [[ "$opt" == y ]]; then
+		tmuxp edit $name
+	fi
+	exit
+fi
 
 if ! get_entry "select a profile:"; then
 	msg.exit 1 "no configuration selected"
@@ -66,6 +86,14 @@ fi
 entry="$(menu.ans_opt)"
 if [[ -z "$entry" ]]; then
 	msg.exit 1 "no available entry"
+fi
+
+if [[ "$rename" == y ]]; then
+	read -p "new workspace name: " name
+	if [[ -z "$name" ]]; then
+		msg.exit 1 "no name given"
+	fi
+	mv ${CONFDIR}/${entry} ${CONFDIR}/${name}
 fi
 
 if [[ "$save" == y ]]; then
