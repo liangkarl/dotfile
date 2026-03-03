@@ -1,0 +1,93 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import subprocess
+import argparse
+
+cmd = subprocess
+
+def run(argv):
+    return cmd.run(argv, stdout=True, stderr=True, text=True)
+
+def shell(argv):
+    return cmd.run(argv, stdout=True, stderr=True)
+
+def parse_args(argv):
+    parser = argparse.ArgumentParser(description='tmux entries')
+    parser.add_argument('-l', '--list', action='store_true',
+                        help='list the sessions')
+    parser.add_argument('-r', '--rename', action='store_true',
+                        help='rename a session')
+    parser.add_argument('-c', '--create', action='store_true',
+                        help='create a session')
+    parser.add_argument('-s', '--save', action='store_true',
+                        help='save the session')
+    parser.add_argument('-d', '--delete', action='store_true',
+                        help='delete a session')
+    parser.add_argument('-e', '--edit', action='store_true',
+                        help='edit a session')
+    parser.add_argument('-E', '--enter', action='store_true',
+                        default=True, help='enter a session')
+    return parser.parse_args(argv)
+
+def get_entry():
+    r = cmd.run('tmuxp ls | fzf',
+                shell=True, capture_output=True, text=True)
+    return r.stdout.strip() or None
+
+def main(argv):
+    config_dir = os.environ["XDG_CONFIG_HOME"] + '/tmuxp'
+    args = parse_args(argv)
+
+    if args.list:
+        run(['tmuxp', 'ls'])
+        exit(0)
+
+    if args.create:
+        print("NOTE: The default configuration of new entry "
+              "will be the current tmux session")
+        entry = input("Name a new entry: ")
+        if entry == '':
+            print("No name given")
+            exit(1)
+        args.save = True
+
+        opt = input("Do you want to edit it now? [y/N] ")
+        if opt == 'y':
+            args.edit = True
+
+    else:
+        entry = get_entry()
+        if entry is None:
+            print("No entry selected")
+            exit(1)
+
+    if args.save:
+        if args.create:
+            shell(['tmuxp', 'freeze', '-o', f'{config_dir}/{entry}.yaml'])
+        else:
+            shell(['tmuxp', 'freeze', '-o', f'{config_dir}/{entry}.yaml', entry])
+
+    if args.edit:
+        shell(['tmuxp', 'edit', entry])
+
+    if args.rename:
+        name = input("Name the new entry: ")
+        if name == '':
+            print("No name given")
+            exit(2)
+        run(['mv', f'{config_dir}/{entry}.yaml', f'{config_dir}/{name}.yaml'])
+        exit(0)
+
+    if args.delete:
+        run(['rm', f'{config_dir}/{entry}.yaml'])
+        exit(0)
+
+    if args.enter:
+        shell(["tmuxp", "load", entry])
+
+    exit(0)
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
