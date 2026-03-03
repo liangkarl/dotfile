@@ -146,13 +146,13 @@ msg.dbg() {
     eval "id=\$(basename \${BASH_SOURCE[${__DBG_IDX:-1}]} 2> $__N)"
     # echo "stack=${BASH_SOURCE[@]}"
     # echo "id: $id"
-    offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST $id)
+    offset=$(list.idx_of __DEVEL_BASH_DBG_SPACE_LIST $id)
     if [[ -z "$offset" ]]; then
-        offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST ${__DBG_ALL})
+        offset=$(list.idx_of __DEVEL_BASH_DBG_SPACE_LIST ${__DBG_ALL})
         [[ -z "$offset" ]] && return
     fi
 
-    idx=$(list.index_of __DEVEL_BASH_CUR_SPACE_LIST $offset)
+    idx=$(list.idx_of __DEVEL_BASH_CUR_SPACE_LIST $offset)
     [[ -z "$idx" ]] && return
 
     msg "DEBUG: ${id}: $*" 2>${__N} >&$(__dbg_fd $offset)
@@ -170,8 +170,8 @@ msg.exit() {
     exit $r
 }
 
-# list.index_of LIST VALUE
-list.index_of() {
+# list.idx_of LIST VALUE
+list.idx_of() {
     [[ $# -lt 2 ]] && return
     eval "echo \"\$(printf \"%s\\n\" \"\${$1[@]}\" | awk -v val=\"$2\" '{if (\$0 == val) print NR-1}')\""
 }
@@ -196,7 +196,7 @@ list.remove() {
 # list.has LIST VALUE
 list.has() {
     [[ $# -lt 2 ]] && return 1
-    [[ -z "$(list.index_of \"$1\" \"$2\")" ]] &> $__N
+    [[ -z "$(list.idx_of \"$1\" \"$2\")" ]] &> $__N
 }
 
 # declare -a __DEVEL_BASH_DBG_SPACE
@@ -214,7 +214,7 @@ dbg.mark() {
     id=$(basename ${BASH_SOURCE[1]} 2> $__N)
     id="${1:-$id}"
 
-    offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST "$id")
+    offset=$(list.idx_of __DEVEL_BASH_DBG_SPACE_LIST "$id")
     [[ -n "$offset" ]] && return 1
 
     list.insert __DEVEL_BASH_DBG_SPACE_LIST "$id"
@@ -241,13 +241,13 @@ dbg.on() {
         return
     fi
 
-    offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST "$1")
+    offset=$(list.idx_of __DEVEL_BASH_DBG_SPACE_LIST "$1")
     if [[ -z "$offset" ]]; then
         dbg.mark "$1"
-        offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST "$1")
+        offset=$(list.idx_of __DEVEL_BASH_DBG_SPACE_LIST "$1")
     fi
 
-    idx=$(list.index_of __DEVEL_BASH_CUR_SPACE_LIST "$offset")
+    idx=$(list.idx_of __DEVEL_BASH_CUR_SPACE_LIST "$offset")
     [[ -n "$idx" ]] && return
 
     eval "exec $(__dbg_fd $offset)>&1"
@@ -270,10 +270,10 @@ dbg.off() {
         return
     fi
 
-    offset=$(list.index_of __DEVEL_BASH_DBG_SPACE_LIST "$1")
+    offset=$(list.idx_of __DEVEL_BASH_DBG_SPACE_LIST "$1")
     [[ -z "$offset" ]] && return 1
 
-    idx=$(list.index_of __DEVEL_BASH_CUR_SPACE_LIST "$offset")
+    idx=$(list.idx_of __DEVEL_BASH_CUR_SPACE_LIST "$offset")
     [[ -z "$idx" ]] && return 1
 
     eval "exec $(__dbg_fd $offset)>&-"
