@@ -10,6 +10,8 @@
 #
 # OPTIONS:
 #   '': enter entry
+#   -c: create new entry
+#   -r: rename entry
 #   -d: delete entrys
 #   -e: edit entry configuration
 #   -s: save current tmux session to workspace
