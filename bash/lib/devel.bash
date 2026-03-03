@@ -116,7 +116,12 @@ source.name() {
 } 2> $__N
 
 msg.err() {
+    local r=$?
+    if [[ "$r" -eq 0 ]]; then
+        r=255
+    fi
     msg "ERROR: $*" >&2
+    return $r
 }
 
 msg.warn() {
