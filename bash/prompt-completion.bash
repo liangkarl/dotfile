@@ -1,5 +1,5 @@
 # ==============================================================================
-# Context-Aware History Search - Extreme Performance (V21)
+# Context-Aware History Search (V29 - Ultimate Performance)
 # ==============================================================================
 
 _context_history_search() {
@@ -7,56 +7,54 @@ _context_history_search() {
     local current_line="$READLINE_LINE"
     local cursor_pos="$READLINE_POINT"
 
-    # 1. 狀態重設與快取建立 (效能核心：只在必要時更新)
+    # 1. 修正游標異常
+    if [[ $cursor_pos -eq 0 && ${#current_line} -gt 0 ]]; then
+        cursor_pos=${#current_line}
+    fi
+
+    # 2. 狀態重設與快取建立 (僅在搜尋條件改變時執行一次昂貴操作)
     if [[ "$current_line" != "$_chs_last_result" || "$cursor_pos" != "$_chs_last_pos" ]]; then
         _chs_orig_line="$current_line"
         _chs_orig_prefix="${current_line:0:cursor_pos}"
         _chs_orig_suffix="${current_line:cursor_pos}"
         _chs_index=0
 
-        # 同步 Session 歷史
-        history -a; history -c; history -r
+        # 同步歷史
+        history -a; history -r
 
-        # 高效處理歷史清單：使用 awk 一次性完成去編號、反轉與去重
-        # 限制 3000 筆，這是兼顧搜尋深度與反應速度的黃金比例
-        local escaped_orig=$(printf '%s' "$_chs_orig_line" | sed 's/[].[^$\\*]/\\&/g')
-        _chs_cache=$(history 5000 | awk -v orig="$_chs_orig_line" '
+        local rev_cmd="tac"
+        [[ "$OSTYPE" == "darwin"* ]] && rev_cmd="tail -r"
+
+        # 一次性處理：去行號、去重、過濾並存入陣列 (限 5000 筆)
+        # 使用 Bash 的 mapfile 配合一次性的 awk 處理，效能最高
+        _chs_match_list=()
+        local escaped_p="${_chs_orig_prefix}"
+        local escaped_s="${_chs_orig_suffix}"
+
+        # 這裡利用 awk 的高效過濾能力，直接在建立快取時就完成 Prefix/Mid-line 比對
+        mapfile -t _chs_match_list < <(history 5000 | $rev_cmd | sed -E 's/^[ ]*[0-9]+[ ]+//' | \
+            awk -v orig="$_chs_orig_line" -v pref="$_chs_orig_prefix" -v suff="$_chs_orig_suffix" '
             {
-                # 移除前方的行號
-                sub(/^[ ]*[0-9]+[ ]*/, "");
-                # 排除目前這一行，並利用陣列去重，最後按順序存儲
-                if ($0 != orig && !seen[$0]++) {
-                    line[count++] = $0
+                if ($0 == orig || $0 == "" || seen[$0]++) next;
+                if (suff != "") {
+                    # 行中模式：prefix.*suffix
+                    if (index($0, pref) == 1 && substr($0, length($0)-length(suff)+1) == suff) print $0
+                } else {
+                    # 行尾/Prefix 模式
+                    if (index($0, pref) == 1) print $0
                 }
-            }
-            END {
-                # 倒序輸出 (tac 的效果)
-                for (i=count-1; i>=0; i--) print line[i]
             }')
+
+        # 如果 prefix 搜尋沒結果且是行尾模式，則載入全歷史作為 Fallback
+        if [[ ${#_chs_match_list[@]} -eq 0 && -z "$_chs_orig_suffix" ]]; then
+            mapfile -t _chs_match_list < <(history 5000 | $rev_cmd | sed -E 's/^[ ]*[0-9]+[ ]+//' | \
+                awk -v orig="$_chs_orig_line" '{if ($0 != orig && $0 != "" && !seen[$0]++) print $0}')
+        fi
     fi
 
-    # 2. 建立搜尋正則
-    local prefix="$_chs_orig_prefix"
-    local suffix="$_chs_orig_suffix"
-    local escaped_p=$(printf '%s' "$prefix" | sed 's/[].[^$\\*]/\\&/g')
-    local escaped_s=$(printf '%s' "$suffix" | sed 's/[].[^$\\*]/\\&/g')
+    local match_count=${#_chs_match_list[@]}
 
-    # 3. 執行搜尋
-    local matches=""
-    if [[ -n "$suffix" ]]; then
-        matches=$(printf '%s\n' "$_chs_cache" | grep "^${escaped_p}.*${escaped_s}$")
-    else
-        matches=$(printf '%s\n' "$_chs_cache" | grep "^${escaped_p}")
-        [[ -z "$matches" ]] && matches="$_chs_cache"
-    fi
-
-    # 取得匹配總數 (使用 Bash 內建方式計數以提速)
-    local match_list=()
-    mapfile -t match_list <<< "$matches"
-    local match_count=${#match_list[@]}
-    [[ $match_count -eq 1 && -z "${match_list[0]}" ]] && match_count=0
-
-    # 4. 索引計算
+    # 3. 索引遍歷 (純記憶體操作，極快)
     if [[ "$direction" == "up" ]]; then
         ((_chs_index++))
         [[ $_chs_index -gt $match_count ]] && _chs_index=$match_count
@@ -72,25 +70,30 @@ _context_history_search() {
         fi
     fi
 
-    # 5. 套用選中結果
+    # 4. 套用結果 (減少重繪)
     if [[ $match_count -gt 0 ]]; then
-        local selected="${match_list[$((_chs_index - 1))]}"
-        if [[ -n "$selected" ]]; then
-            READLINE_LINE="$selected"
-            # 游標位置更新
-            [[ -z "$suffix" ]] && READLINE_POINT=${#selected} || READLINE_POINT=${#prefix}
+        local selected="${_chs_match_list[$((_chs_index - 1))]}"
 
-            _chs_last_result="$selected"
-            _chs_last_pos="$READLINE_POINT"
+        if [[ "$READLINE_LINE" != "$selected" ]]; then
+            READLINE_LINE="$selected"
         fi
+
+        # 更新游標位置
+        if [[ -z "$_chs_orig_suffix" ]]; then
+            READLINE_POINT=${#selected}
+        else
+            READLINE_POINT=${#_chs_orig_prefix}
+        fi
+
+        _chs_last_result="$selected"
+        _chs_last_pos="$READLINE_POINT"
     fi
 }
 
-# 輔助 Function 與強制綁定
+# 綁定與效能調優
 _chs_up() { _context_history_search "up"; }
 _chs_down() { _context_history_search "down"; }
 
-# 清除預設綁定並強制注入
 bind -r "\e[A" 2>/dev/null; bind -r "\eOA" 2>/dev/null
 bind -r "\e[B" 2>/dev/null; bind -r "\eOB" 2>/dev/null
 bind -x '"\e[A": _chs_up'; bind -x '"\eOA": _chs_up'
