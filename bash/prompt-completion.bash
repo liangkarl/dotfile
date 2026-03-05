@@ -1,5 +1,5 @@
 # ==============================================================================
-# Context-Aware History Search (V30 - Ultimate Performance)
+# Context-Aware History Search (V31 - Performance + Intelligent Fallback)
 # ==============================================================================
 
 _context_history_search() {
@@ -22,8 +22,7 @@ _context_history_search() {
         # 同步當前視窗歷史
         history -a; history -r
 
-        # 3. 極致優化：單一 awk 處理「去行號、去重、過濾、反轉」
-        # 我們不再使用 sed, tac 或 tail，節省進程開銷
+        # 3. 極速一次性掃描：同時計算精確匹配與全歷史備份
         _chs_match_list=()
         mapfile -t _chs_match_list < <(history 5000 | awk -v orig="$_chs_orig_line" -v pref="$_chs_orig_prefix" -v suff="$_chs_orig_suffix" '
             {
@@ -33,7 +32,10 @@ _context_history_search() {
                 # 排除空行、重複行、以及目前這行
                 if ($0 == "" || seen[$0]++ || $0 == orig) next;
 
-                # 匹配邏輯 (取代 grep)
+                # 記錄全歷史 (用於 Fallback)
+                all_history[all_count++] = $0;
+
+                # 精確匹配判定
                 match_ok = 0;
                 if (suff != "") {
                     # 行中搜尋: prefix...suffix
@@ -47,8 +49,13 @@ _context_history_search() {
                 if (match_ok) results[count++] = $0;
             }
             END {
-                # 倒序輸出，確保最新的在最上面
-                for (i = count - 1; i >= 0; i--) print results[i];
+                if (count > 0) {
+                    # 輸出精確匹配結果 (倒序)
+                    for (i = count - 1; i >= 0; i--) print results[i];
+                } else if (suff == "") {
+                    # 只有在行尾模式且找不到精確結果時，才輸出全歷史 (Fallback)
+                    for (i = all_count - 1; i >= 0; i--) print all_history[i];
+                }
             }')
     fi
 
