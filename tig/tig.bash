@@ -218,6 +218,7 @@ refs.cut() {
 		# $REF only supports remote branch
 		if is_remote_branch "${REMOTE}/${BR}"; then
 			git push -d $REMOTE $BR
+			config.set "BR" "$BR"
 		else
 			echo "invalid remote branch: ${REMOTE}/${BR}"
 		fi

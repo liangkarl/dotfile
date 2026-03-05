@@ -263,7 +263,7 @@ bind refs   br       @git ui refs.rename C=%(commit) NAME="%(prompt rename branc
 bind refs   b<ENTER> @git ui git.msg branch $(basename $(git rev-parse --show-toplevel)) HEAD
 bind refs   a<ENTER> @git ui refs.paste C=%(commit)
 bind refs   d<ENTER> @git ui refs.cut C=%(commit) BR=%(branch) TAG=%(tag)
-bind refs   d!!      !?git ui refs.cut TAG=%(TAG) BR=%(branch) REMOTE=%(remote)
+bind refs   d!       !?git ui refs.cut TAG=%(TAG) BR=%(branch) REMOTE=%(remote)
 
 ## Checkout
 bind main   co :!git ui git.auto checkout %(commit)
