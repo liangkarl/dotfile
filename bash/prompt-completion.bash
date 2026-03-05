@@ -24,7 +24,7 @@ _context_history_search() {
 
         # 3. 極速一次性掃描：同時計算精確匹配與全歷史備份
         _chs_match_list=()
-        mapfile -t _chs_match_list < <(history 5000 | awk -v orig="$_chs_orig_line" -v pref="$_chs_orig_prefix" -v suff="$_chs_orig_suffix" '
+        mapfile -t _chs_match_list < <(HISTTIMEFORMAT= history 5000 | awk -v orig="$_chs_orig_line" -v pref="$_chs_orig_prefix" -v suff="$_chs_orig_suffix" '
             {
                 # 移除行首行號 (取代 sed)
                 sub(/^[ ]*[0-9]+[ ]+/, "");
