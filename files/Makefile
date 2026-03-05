@@ -4,7 +4,7 @@ XDG_CACHE_HOME?=${HOME}/.cache
 CONF_HOME:=${XDG_CONFIG_HOME}
 DOTFILE_DIR:= $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
 DOTFILE:=$(shell ls -p $(DOTFILE_DIR) | grep -v -E '/$|^\.|^Makefile')
-UNDER_HOME:=clang-format editorconfig quiltrc
+UNDER_HOME:=clang-format editorconfig quiltrc inputrc
 UNDER_CONFDIR:=curlrc
 UNDER_CONFDIR_SUBDIR:=
 

@@ -1,0 +1,26 @@
+# word navigation
+"\eb": vi-backward-word
+"\ew": vi-forward-word   # Mach vim's 'w'
+
+# delete word
+"\e\177": backward-kill-word
+"\ed": kill-word
+
+# line navigation
+"\ea": beginning-of-line
+"\ee": end-of-line
+
+# delete
+"\ek": kill-line
+"\eu": unix-line-discard
+
+# history
+"\ep": history-search-backward   # Alt+p = search older match
+"\en": history-search-forward    # Alt+n = search newer match
+
+# move
+"\ek": "\e[A"
+"\ej": "\e[B"
+"\eh": backward-char        # Alt+h  = Left
+"\el": forward-char         # Alt+l  = Right
+
