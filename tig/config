@@ -300,9 +300,13 @@ bind main    rp +?git ui git.msg reset HEAD@{1}
 
 ## Cherry-pick
 bind main   cp :!git ui git.auto cherry-pick -s %(commit)
+bind main   cP :!git ui git.msg cherry-pick -s %(commit)
 bind refs   cp :!git ui git.auto cherry-pick -s %(commit)
+bind refs   cp :!git ui git.msg cherry-pick -s %(commit)
 bind reflog cp :!git ui git.auto cherry-pick -s %(commit)
+bind reflog cp :!git ui git.msg cherry-pick -s %(commit)
 bind diff   cp :!git ui git.auto cherry-pick -s %(commit)
+bind diff   cp :!git ui git.msg cherry-pick -s %(commit)
 
 ## Format patch {
 bind main   pr       @git ui patch.reset
@@ -359,6 +363,7 @@ bind refs ! none
 
 bind refs f<ENTER> :!git ui git.msg fetch --prune --all
 bind refs rb       :!git ui git.auto rebase %(commit)
+bind refs rB       :!git ui git.msg rebase %(commit)
 # 1. Select local branch
 # 2. Select assigned remote branch
 bind refs pb       !?git ui refs.push BR="%(prompt new branch: )" REMOTE=%(remote)
@@ -377,8 +382,11 @@ bind main bs +?git ui git.msg bisect start
 bind main bg +?git ui git.msg bisect good %(commit)
 bind main bb +?git ui git.msg bisect bad %(commit)
 bind main rv :!git ui git.auto revert --no-edit %(commit)
+bind main rV :!git ui git.msg revert --no-edit %(commit)
 bind diff rv :!git ui git.auto revert --no-edit %(commit)
+bind diff rV :!git ui git.msg revert --no-edit %(commit)
 bind main rb >?git ui git.auto rebase -i %(commit)
+bind main rB >?git ui git.msg rebase -i %(commit)
 bind main rk >?git rebase --skip
 # progress stop: rebase, merge, revert, cherry-pick, bisect
 bind main pa :!git ui act.abort
