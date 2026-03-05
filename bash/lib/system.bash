@@ -50,7 +50,9 @@ sys.reload_path() {
 # sys.info var [VAL]
 sys.info() {(
     if [[ -e "${SYS_INFO}" ]]; then
-        if [[ -z "$2" ]]; then
+        if [[ -z "$1" ]]; then
+            cat ${SYS_INFO}
+        elif [[ -z "$2" ]]; then
             source ${SYS_INFO}
             echo "${!1}"
         else
