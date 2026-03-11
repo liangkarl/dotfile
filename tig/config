@@ -301,10 +301,12 @@ bind main    rp +?git ui git.msg reset HEAD@{1}
 ## Cherry-pick
 bind main   cp :!git ui git.auto cherry-pick -s %(commit)
 bind main   cP :!git ui git.msg cherry-pick -s %(commit)
+bind main   cs :!git ui git.msg cherry-pick -n %(commit)
 bind refs   cp :!git ui git.auto cherry-pick -s %(commit)
 bind refs   cp :!git ui git.msg cherry-pick -s %(commit)
 bind reflog cp :!git ui git.auto cherry-pick -s %(commit)
 bind reflog cp :!git ui git.msg cherry-pick -s %(commit)
+bind reflog cs :!git ui git.msg cherry-pick -n %(commit)
 bind diff   cp :!git ui git.auto cherry-pick -s %(commit)
 bind diff   cp :!git ui git.msg cherry-pick -s %(commit)
 
