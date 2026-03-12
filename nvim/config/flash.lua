@@ -3,6 +3,9 @@ return {
   event = "VeryLazy",
   ---@type Flash.Config
   opts = {
+    label = {
+      uppercase = false,
+    },
     modes = {
       search = {
         enabled = true, -- 讓 / ? 搜尋時自動出現 flash labels
