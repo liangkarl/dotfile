@@ -290,17 +290,18 @@ bind diff   dd       +?git cmd cmd rm -rf $(dirname %(file))
 ## Reset commits
 bind stage  r.       +?git cmd git.msg reset --hard
 bind main   r.       +?git cmd git.msg reset --hard
+bind stage  r,       +?git cmd git.msg reset
+bind main   r,       +?git cmd git.msg reset
 bind main   rp       +?git cmd git.msg reset HEAD@{1}
 bind reflog r<Enter> +?git cmd git.msg reset --hard %(commit)
 bind diff   r<Enter> +?git cmd git.msg reset --hard %(commit)
 bind main   r<Enter> +?git cmd git.msg reset --hard %(commit)
-bind reflog rr       +?git cmd git.msg reset %(commit)
-bind diff   rr       +?git cmd git.msg reset %(commit)
-bind main   rr       +?git cmd git.msg reset %(commit)
-bind main   ra       @git  cmd select.reset
-bind diff   ra       @git  cmd select.reset
-bind log    ra       @git  cmd select.reset
-bind reflog ra       @git  cmd select.reset
+bind reflog rs       +?git cmd git.msg reset %(commit)
+bind diff   rs       +?git cmd git.msg reset %(commit)
+bind main   rs       +?git cmd git.msg reset %(commit)
+bind main   rc       @git  cmd select.reset
+bind diff   rc       @git  cmd select.reset
+bind reflog rc       @git  cmd select.reset
 
 ## Cherry-pick
 bind main   cp       :!git cmd git.auto cherry-pick -s %(commit)
@@ -314,11 +315,6 @@ bind reflog cs       >git  cmd commit.create
 bind diff   cp       :!git cmd git.auto cherry-pick -s %(commit)
 bind diff   cp       :!git cmd git.msg  cherry-pick -s %(commit)
 
-bind reflog aa       @git cmd select.add C=%(commit)
-bind log    aa       @git cmd select.add C=%(commit)
-bind diff   aa       @git cmd select.add C=%(commit)
-bind main   aa       @git cmd select.add C=%(commit)
-
 ## Format patch
 bind main   p<Enter> :!git cmd patch.create
 bind main   pn       :!git cmd patch.create C=%(commit)^
@@ -331,17 +327,21 @@ bind log    p<Enter> :!git cmd patch.create
 bind log    p1       :!git cmd patch.create C=%(commit)
 bind log    pn       :!git cmd patch.create C=%(commit)^
 bind log    pf       :!git cmd patch.create C=%(commit) FILE=%(file)
-bind reflog p<Enter> +git cmd patch.create
+bind reflog p<Enter> +git  cmd patch.create
 bind reflog p1       :!git cmd patch.create C=%(commit)
 bind blame  p1       :!git cmd patch.create C=%(commit)
 bind stage  p1       :!git cmd patch.create C=%(commit) NAME='$(date +%y%m%d%H%M%S)'
-bind stage  pf       :!git cmd patch.create C=%(commit) NAME='$(date +%y%m%d%H%M%S)_$(basename %(file))' FILE=%(file)
+bind stage  pf       :!git cmd patch.create C=%(commit) NAME='$(date +%y%m%d%H%M%S)_$(basename %(file))'  FILE=%(file)
 
-# Save Info {
-bind refs ss       :!git cmd info.write C=%(commit) BR=%(branch) REF=%(refname) TAG=%(tag) FILE=%(file) OFILE=%(file_old)
-bind main ss       :!git cmd info.write C=%(commit) FILE=%(file) OFILE=%(file_old)
-bind reflog ss     :!git cmd info.write C=%(commit) FILE=%(file) OFILE=%(file_old)
-# }
+# Save Info
+bind refs   ss       :!git cmd info.write   C=%(commit) BR=%(branch) REF=%(refname) TAG=%(tag) FILE=%(file) OFILE=%(file_old)
+bind main   ss       :!git cmd info.write   C=%(commit) FILE=%(file) OFILE=%(file_old)
+bind reflog ss       :!git cmd info.write   C=%(commit) FILE=%(file) OFILE=%(file_old)
+bind reflog sc       @git cmd select.add C=%(commit)
+bind log    sc       @git cmd select.add C=%(commit)
+bind diff   sc       @git cmd select.add C=%(commit)
+bind main   sc       @git cmd select.add C=%(commit)
+
 
 # Check line history {
 bind stage b       :!git cmd info.line_history LINE=%(lineno) FILE=%(file)
