@@ -16,13 +16,32 @@ lib.load config
 # # optional: patch generation
 # PATCH='xxx yyy zzz'
 
-dir='/tmp/tig'
-NODE="${dir}/node"
-commits=${dir}/tig.commits
-info_file=${dir}/tig.save
+topdir="$(git rev-parse --show-toplevel)"
+gitdir="${topdir}/.git"
+tmpdir='/tmp/tig'
+node="${tmpdir}/node"
+commits=${tmpdir}/tig.commits
+infos=${tmpdir}/tig.save
 p_opts='--binary --histogram'
 
-mkdir $dir 2> $__N
+heads=(
+	REBASE_HEAD
+	MERGE_HEAD
+	REVERT_HEAD
+	CHERRY_PICK_HEAD
+	BISECT_START
+)
+
+declare -A opts
+opts=(
+	[REBASE_HEAD]='rebase'
+	[MERGE_HEAD]='merge'
+	[REVERT_HEAD]='revert'
+	[CHERRY_PICK_HEAD]='cherry-pick'
+	[BISECT_START]='bisect'
+)
+
+mkdir $tmpdir 2> $__N
 
 cmd.msg() {
 	if $*; then
@@ -105,7 +124,7 @@ _load_last_action() {
 
 # NAME= stash.save
 stash.save() {
-	local repo="$(basename $(git rev-parse --show-toplevel))"
+	local repo="$(basename $topdir)"
 	local sha="$(git rev-parse --short HEAD)"
 
 	git.msg stash save ${NAME:-${repo}.${sha}}
@@ -167,7 +186,7 @@ refs.find() {
 # add <commit>
 # C= TYPE=[t|b] refs.paste
 refs.paste() {
-	config.load $NODE
+	config.load $node
 	config.get BR BR
 	config.get TAG TAG
 	if [[ -n "$BR" ]]; then
@@ -177,7 +196,7 @@ refs.paste() {
 	else
 		echo "no assigned tag or branch"
 	fi
-	rm $NODE
+	rm $node
 }
 
 # C= NAME= [BR=] [TAG=] refs.rename
@@ -210,8 +229,8 @@ refs.cut() {
 		fi
 	fi
 
-	rm -f $NODE
-	config.load $NODE
+	rm -f $node
+	config.load $node
 	if [[ -n "$REMOTE" ]]; then
 		# $REF only supports remote branch
 		if is_remote_branch "${REMOTE}/${BR}"; then
@@ -261,12 +280,11 @@ refs.cut() {
 # refs: (remote) refs.push REMOTE= [BR= TAG=]
 #
 # 5. Push to upstream
-# TODO
-# refs: (local) refs.push REMOTE= UPSTREAM= BR= REF= TAG=
+# refs: (local) refs.push UPSTREAM= BR= TAG=
 refs.push() {
 	local cmd
 
-	config.load "$info_file"
+	config.load "$infos"
 	config.get remote_branch "$remote_branch"
 	config.get remote_tag "$remote_tag"
 	config.get track_branch "$track_branch"
@@ -288,6 +306,9 @@ refs.push() {
 			fi
 		fi
 		eval "$cmd"
+
+	elif [[ -n "$UPSTREAM" ]]; then
+		git.msg push
 
 	# 1. Choose a local reference, and then push to remote
 	# 2. Choose a local commit, and then push to remote
@@ -321,12 +342,9 @@ refs.push() {
 
 		git.msg push $OPT $remote ${C}:${remote_branch}${remote_tag}
 
-	elif [[ -n "$UPSTREAM" && -n "$REMOTE" ]]; then
-		# TODO
-		true
 	fi
 
-	rm -rf $info_file
+	rm -rf $infos
 }
 
 # copy <text>
@@ -437,7 +455,7 @@ select.add() {
 
 # TAG= BR= push.create
 push.create() {
-	source $info_file
+	source $infos
 
 	if [[ -z "$remote" ]]; then
 		echo "no remote name"; false
@@ -451,12 +469,12 @@ push.create() {
 
 	git.msg push $remote ${BR:-$TAG}
 
-	rm -rf $info_file
+	rm -rf $infos
 }
 
 info.clean() {
 	echo "clean configurations"
-	rm -f $info_file
+	rm -f $infos
 }
 
 # C= BR= TAG= REF= FILE= OFILE= info.write
@@ -502,7 +520,7 @@ info.write() {
 		msg.err "no matched pattern ($REF) for br:$BR or tag:$TAG"
 	fi
 
-	config.load "$info_file"
+	config.load "$infos"
 	config.set commit "$commit"
 	config.set local_branch "$local_branch"
 	config.set local_tag "$local_tag"
@@ -538,7 +556,7 @@ info.line_history() {
         local CURRENT_CONTENT=$(sed -n "${LINE}p" "$FILE")
         echo "Checking history for current (unstaged) content:"
 		echo "\"$CURRENT_CONTENT\""
-        
+
         # 從 HEAD 開始往回找這行內容
         git log -S "$CURRENT_CONTENT" --pretty=format:"%h %an %ad %s" --date=short -- "$FILE"
     else
@@ -547,68 +565,50 @@ info.line_history() {
     fi
 }
 
-# C= OPT= act.rebase
-act.rebase() {
-	git.auto rebase $OPT $C
-}
+action.check() {
+	local hdr bis
 
-act.check() {
-	declare -A list
-	list=()
-	list[REBASE_HEAD]='rebase'
-	list[MERGE_HEAD]='merge'
-	list[REVERT_HEAD]='revert'
-	list[CHERRY_PICK_HEAD]='cherry-pick'
-	list[BISECT_ANCESTORS_OK]='bisect'
-
-	local cmd bis
-	for cmd in REBASE_HEAD MERGE_HEAD REVERT_HEAD CHERRY_PICK_HEAD; do
-		if git rev-parse --verify $cmd &> $__N; then
-			msg.dbg "'${list[$cmd]}' is in progress"
-			return 1
-		fi
-	done
-
-	bis=$(git rev-parse --show-toplevel)/.git/BISECT_ANCESTORS_OK
+	bis=${gitdir}/BISECT_START
 	if [[ -e $bis ]]; then
-		msg.dbg "'${list[$bis]}' is in progress"
+		echo "'${opts[$bis]}' is in progress"
 		return 1
 	fi
 
-	msg.dbg "not in any git session"
+	for hdr in "${heads[@]}"; do
+		if git rev-parse --verify $hdr &> $__N; then
+			echo "'${opts[$hdr]}' is in progress"
+			return 1
+		fi
+	done
+	echo "not in any git session"
 }
 
-act.abort() {
-	local cmd bis
+action.abort() {
+	local hdr bis
 
 	eval "$ARGS"
 
-	for cmd in REBASE_HEAD MERGE_HEAD REVERT_HEAD CHERRY_PICK_HEAD; do
-		if git rev-parse --verify $cmd &> $__N; then
-			cmd=${cmd%%_HEAD}
-			cmd=${cmd//_/-}
-			cmd=${cmd~~}
-			git.msg $cmd --abort
+	bis=${gitdir}/BISECT_START
+	if [[ -e $bis ]]; then
+		git.msg bisect reset
+		return
+	fi
+
+	for hdr in "${heads[@]}"; do
+		if git rev-parse --verify $hdr &> $__N; then
+			git.msg ${opts[$hdr]} --abort
 			return
 		fi
 	done
-
-	bis=$(git rev-parse --show-toplevel)/.git/BISECT_START
-	if [[ -e $bis ]]; then
-		git.msg bisect reset
-	fi
 }
 
-act.going() {
-	local cmd
+action.next() {
+	local h
 
 	eval "$*"
-	for cmd in REBASE_HEAD MERGE_HEAD REVERT_HEAD CHERRY_PICK_HEAD; do
-		if git rev-parse --verify $cmd &> $__N; then
-			cmd=${cmd%%_HEAD}
-			cmd=${cmd//_/-}
-			cmd=${cmd~~}
-			git.msg $cmd --continue
+	for h in "${heads[@]}"; do
+		if git rev-parse --verify $h &> $__N; then
+			git.msg $h --continue
 			return
 		fi
 	done
@@ -624,10 +624,8 @@ commit_report() {
 }
 
 if [[ ! "$0" =~ git* ]]; then
-	# Since tig request the format "BINARY FUNC xxx" and doesn't accept this
-	# format "C=xxx BINARY FUNC", the solution here is define our custom
-	# format "BINARY FUNC C=xxx"
+	# As tig requests the format "script FUNC argv1 ..." and doesn't accept this
+	# format "C=xxx script FUNC", so we could define our custom format
+	# "script FUNC C=xxx"
 	eval "$*"
 fi
-
-# set -x

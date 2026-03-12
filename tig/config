@@ -183,11 +183,11 @@ bind blob    h  scroll-left
 
 bind generic ;  +git rev-parse --show-toplevel
 
-bind generic yy +git ui copy TEXT='%(commit)'
-bind generic yf +git ui copy TEXT='%(file)'
-bind generic yF +git ui copy TEXT='%(file_old)'
-bind generic yb +git ui copy TEXT='%(branch)'
-bind generic yt +git ui copy TEXT='%(tag)'
+bind generic yy +git cmd copy TEXT='%(commit)'
+bind generic yf +git cmd copy TEXT='%(file)'
+bind generic yF +git cmd copy TEXT='%(file_old)'
+bind generic yb +git cmd copy TEXT='%(branch)'
+bind generic yt +git cmd copy TEXT='%(tag)'
 # }
 
 # TODO:
@@ -212,142 +212,141 @@ bind status  ca       >?git commit -v --amend
 bind status  cn       @?git commit --amend --no-edit
 
 ## Stage/Unstage file
-bind stage   f<Enter> @git ui stage.file FILE='%(file)'
-bind stage   fa       @git ui stage.file
+bind stage   f<Enter> @git cmd stage.file FILE='%(file)'
+bind stage   fa       @git cmd stage.file
 
 ## Add stash
-bind main    sa        @git ui stash.save NAME="%(prompt new stash: )"
-bind main    s<Enter>  @git ui stash.save
-bind main    sp       :!git ui stash.pop
-bind stage   sa        @git ui stash.save NAME="%(prompt new stash: )"
-bind stage   s<Enter>  @git ui stash.save
-bind stage   sp       :!git ui stash.pop
-bind status  sa        @git ui stash.save NAME="%(prompt new stash: )"
-bind status  s<Enter>  @git ui stash.save
-bind status  sp       :!git ui stash.pop
+bind main    sa        @git cmd stash.save NAME="%(prompt new stash: )"
+bind main    s<Enter>  @git cmd stash.save
+bind main    sp       :!git cmd stash.pop
+bind stage   sa        @git cmd stash.save NAME="%(prompt new stash: )"
+bind stage   s<Enter>  @git cmd stash.save
+bind stage   sp       :!git cmd stash.pop
+bind status  sa        @git cmd stash.save NAME="%(prompt new stash: )"
+bind status  s<Enter>  @git cmd stash.save
+bind status  sp       :!git cmd stash.pop
 
 ## Add/Remove/Move tag and branch
-bind main   ta       @git ui git.msg tag "%(prompt new tag: )" %(commit)
-bind main   tr       @git ui refs.rename C=%(commit) NAME="%(prompt rename tag: )" TAG=%(tag)
-bind main   t<ENTER> @git ui git.msg tag tag.$(git rev-parse --short %(commit)) %(commit)
-bind main   ba       @git ui git.msg branch "%(prompt new branch: )" %(commit)
-bind main   br       @git ui refs.rename C=%(commit) NAME="%(prompt rename branch: )" BR=%(branch)
-bind main   b<ENTER> @git ui git.msg branch $(basename $(git rev-parse --show-toplevel)) %(commit)
-bind main   a<ENTER> @git ui refs.paste C=%(commit)
-bind main   d<ENTER> @git ui refs.cut C=%(commit)
-bind main   bd       @git ui refs.cut C=%(commit) BR=%(branch)
-bind main   td       @git ui refs.cut C=%(commit) TAG=%(tag)
-bind reflog ta       @git ui git.msg tag "%(prompt new tag: )" %(commit)
-bind reflog tr       @git ui refs.rename C=%(commit) NAME="%(prompt rename tag: )" TAG=%(tag)
-bind reflog t<ENTER> @git ui git.msg tag tag.$(git rev-parse --short %(commit)) %(commit)
-bind reflog ba       @git ui git.msg branch "%(prompt new branch: )" %(commit)
-bind reflog br       @git ui refs.rename C=%(commit) NAME="%(prompt rename branch: )" BR=%(branch)
-bind reflog b<ENTER> @git ui git.msg branch $(basename $(git rev-parse --show-toplevel)) %(commit)
-bind reflog a<ENTER> @git ui refs.paste C=%(commit)
-bind reflog d<ENTER> @git ui refs.cut C=%(commit)
-bind reflog bd       @git ui refs.cut C=%(commit) BR=%(branch)
-bind reflog td       @git ui refs.cut C=%(commit) TAG=%(tag)
-bind diff   ta       @git ui git.msg tag "%(prompt new tag: )" %(commit)
-bind diff   tr       @git ui refs.rename C=%(commit) NAME="%(prompt rename tag: )" TAG=%(tag)
-bind diff   t<ENTER> @git ui git.msg tag tag.$(git rev-parse --short %(commit)) %(commit)
-bind diff   ba       @git ui git.msg branch "%(prompt new branch: )" %(commit)
-bind diff   br       @git ui refs.rename C=%(commit) NAME="%(prompt rename branch: )" BR=%(branch)
-bind diff   b<ENTER> @git ui git.msg branch $(basename $(git rev-parse --show-toplevel)) %(commit)
-bind diff   a<ENTER> @git ui refs.paste C=%(commit)
-bind diff   d<ENTER> @git ui refs.cut C=%(commit)
-bind refs   ta       @git ui git.msg tag "%(prompt new tag: )" HEAD
-bind refs   tr       @git ui refs.rename C=%(commit) NAME="%(prompt rename tag: )" TAG=%(tag)
-bind refs   t<ENTER> @git ui git.msg tag tag.$(git rev-parse --short HEAD) HEAD
-bind refs   ba       @git ui git.msg branch "%(prompt new branch: )" HEAD
-bind refs   br       @git ui refs.rename C=%(commit) NAME="%(prompt rename branch: )" BR=%(branch)
-bind refs   b<ENTER> @git ui git.msg branch $(basename $(git rev-parse --show-toplevel)) HEAD
-bind refs   a<ENTER> @git ui refs.paste C=%(commit)
-bind refs   d<ENTER> @git ui refs.cut C=%(commit) BR=%(branch) TAG=%(tag)
-bind refs   d!       !?git ui refs.cut TAG=%(TAG) BR=%(branch) REMOTE=%(remote)
+bind main   ta       @git cmd git.msg tag "%(prompt new tag: )" %(commit)
+bind main   tr       @git cmd refs.rename C=%(commit) NAME="%(prompt rename tag: )" TAG=%(tag)
+bind main   t<ENTER> @git cmd git.msg tag tag.$(git rev-parse --short %(commit)) %(commit)
+bind main   ba       @git cmd git.msg branch "%(prompt new branch: )" %(commit)
+bind main   br       @git cmd refs.rename C=%(commit) NAME="%(prompt rename branch: )" BR=%(branch)
+bind main   b<ENTER> @git cmd git.msg branch $(basename $(git rev-parse --show-toplevel)) %(commit)
+bind main   a<ENTER> @git cmd refs.paste C=%(commit)
+bind main   d<ENTER> @git cmd refs.cut C=%(commit)
+bind main   bd       @git cmd refs.cut C=%(commit) BR=%(branch)
+bind main   td       @git cmd refs.cut C=%(commit) TAG=%(tag)
+bind reflog ta       @git cmd git.msg tag "%(prompt new tag: )" %(commit)
+bind reflog tr       @git cmd refs.rename C=%(commit) NAME="%(prompt rename tag: )" TAG=%(tag)
+bind reflog t<ENTER> @git cmd git.msg tag tag.$(git rev-parse --short %(commit)) %(commit)
+bind reflog ba       @git cmd git.msg branch "%(prompt new branch: )" %(commit)
+bind reflog br       @git cmd refs.rename C=%(commit) NAME="%(prompt rename branch: )" BR=%(branch)
+bind reflog b<ENTER> @git cmd git.msg branch $(basename $(git rev-parse --show-toplevel)) %(commit)
+bind reflog a<ENTER> @git cmd refs.paste C=%(commit)
+bind reflog d<ENTER> @git cmd refs.cut C=%(commit)
+bind reflog bd       @git cmd refs.cut C=%(commit) BR=%(branch)
+bind reflog td       @git cmd refs.cut C=%(commit) TAG=%(tag)
+bind diff   ta       @git cmd git.msg tag "%(prompt new tag: )" %(commit)
+bind diff   tr       @git cmd refs.rename C=%(commit) NAME="%(prompt rename tag: )" TAG=%(tag)
+bind diff   t<ENTER> @git cmd git.msg tag tag.$(git rev-parse --short %(commit)) %(commit)
+bind diff   ba       @git cmd git.msg branch "%(prompt new branch: )" %(commit)
+bind diff   br       @git cmd refs.rename C=%(commit) NAME="%(prompt rename branch: )" BR=%(branch)
+bind diff   b<ENTER> @git cmd git.msg branch $(basename $(git rev-parse --show-toplevel)) %(commit)
+bind diff   a<ENTER> @git cmd refs.paste C=%(commit)
+bind diff   d<ENTER> @git cmd refs.cut C=%(commit)
+bind refs   ta       @git cmd git.msg tag "%(prompt new tag: )" HEAD
+bind refs   tr       @git cmd refs.rename C=%(commit) NAME="%(prompt rename tag: )" TAG=%(tag)
+bind refs   t<ENTER> @git cmd git.msg tag tag.$(git rev-parse --short HEAD) HEAD
+bind refs   ba       @git cmd git.msg branch "%(prompt new branch: )" HEAD
+bind refs   br       @git cmd refs.rename C=%(commit) NAME="%(prompt rename branch: )" BR=%(branch)
+bind refs   b<ENTER> @git cmd git.msg branch $(basename $(git rev-parse --show-toplevel)) HEAD
+bind refs   a<ENTER> @git cmd refs.paste C=%(commit)
+bind refs   d<ENTER> @git  cmd refs.cut C=%(commit) BR=%(branch) TAG=%(tag)
+bind refs   d!       !?git cmd refs.cut TAG=%(TAG)  BR=%(branch) REMOTE=%(remote)
 
-## Checkout
-bind main   co :!git ui git.auto checkout %(commit)
-bind refs   co :!git ui git.auto checkout %(ref)
-bind reflog co :!git ui git.auto checkout %(commit)
-bind status co +?git ui git.msg  checkout %(file)
-bind stage  co +?git ui git.msg  checkout %(file)
-bind stage  c<LT><LT> +?git ui git.msg checkout --ours %(file)
-bind stage  c>> +?git ui git.msg checkout --theirs %(file)
-bind diff   co +?git ui git.msg checkout %(commit) -- %(file)
-bind diff   cO +?git ui git.msg checkout %(commit)^ -- %(file)
+##   Checkout
+bind main   co        :!git cmd git.auto checkout %(commit)
+bind refs   co        :!git cmd git.auto checkout %(ref)
+bind reflog co        :!git cmd git.auto checkout %(commit)
+bind status co        +?git cmd git.msg  checkout %(file)
+bind stage  co        +?git cmd git.msg  checkout %(file)
+bind stage  c<LT><LT> +?git cmd git.msg  checkout --ours   %(file)
+bind stage  c>>       +?git cmd git.msg  checkout --theirs %(file)
+bind diff   co        +?git cmd git.msg  checkout %(commit)  -- %(file)
+bind diff   cO        +?git cmd git.msg  checkout %(commit)^ -- %(file)
 
 ### File Operation
-bind main   dc       +?git ui git.msg clean -fd
-bind status d<Enter> +?git ui cmd rm -rf %(file)
-bind status dd       +?git ui cmd rm -rf $(dirname %(file))
-bind status dc       +?git ui git.msg clean -fd
-bind stage  d<Enter> +?git ui cmd rm -rf %(file)
-bind stage  dd       +?git ui cmd rm -rf $(dirname %(file))
-bind stage  dc       +?git ui git.msg clean -fd
-bind diff   d<Enter> +?git ui cmd rm -rf %(file)
-bind diff   dd       +?git ui cmd rm -rf $(dirname %(file))
+bind main   dc       +?git cmd git.msg clean -fd
+bind status d<Enter> +?git cmd cmd rm -rf %(file)
+bind status dd       +?git cmd cmd rm -rf $(dirname %(file))
+bind status dc       +?git cmd git.msg clean -fd
+bind stage  d<Enter> +?git cmd cmd rm -rf %(file)
+bind stage  dd       +?git cmd cmd rm -rf $(dirname %(file))
+bind stage  dc       +?git cmd git.msg clean -fd
+bind diff   d<Enter> +?git cmd cmd rm -rf %(file)
+bind diff   dd       +?git cmd cmd rm -rf $(dirname %(file))
 
 ## Reset commits
-bind stage   r.       +?git ui git.msg reset --hard
-bind main    r.       +?git ui git.msg reset --hard
-bind main    rp       +?git ui git.msg reset HEAD@{1}
-bind reflog  r<Enter> +?git ui git.msg reset --hard %(commit)
-bind diff    r<Enter> +?git ui git.msg reset --hard %(commit)
-bind main    r<Enter> +?git ui git.msg reset --hard %(commit)
-bind reflog  rr       +?git ui git.msg reset %(commit)
-bind diff    rr       +?git ui git.msg reset %(commit)
-bind main    rr       +?git ui git.msg reset %(commit)
-bind main    ra       @git ui select.reset
-bind diff    ra       @git ui select.reset
-bind log     ra       @git ui select.reset
-bind reflog  ra       @git ui select.reset
+bind stage  r.       +?git cmd git.msg reset --hard
+bind main   r.       +?git cmd git.msg reset --hard
+bind main   rp       +?git cmd git.msg reset HEAD@{1}
+bind reflog r<Enter> +?git cmd git.msg reset --hard %(commit)
+bind diff   r<Enter> +?git cmd git.msg reset --hard %(commit)
+bind main   r<Enter> +?git cmd git.msg reset --hard %(commit)
+bind reflog rr       +?git cmd git.msg reset %(commit)
+bind diff   rr       +?git cmd git.msg reset %(commit)
+bind main   rr       +?git cmd git.msg reset %(commit)
+bind main   ra       @git  cmd select.reset
+bind diff   ra       @git  cmd select.reset
+bind log    ra       @git  cmd select.reset
+bind reflog ra       @git  cmd select.reset
 
 ## Cherry-pick
-bind main   cp :!git ui git.auto cherry-pick -s %(commit)
-bind main   cP :!git ui git.msg cherry-pick -s %(commit)
-bind main   cs >git ui commit.create
-bind refs   cp :!git ui git.auto cherry-pick -s %(commit)
-bind refs   cp :!git ui git.msg cherry-pick -s %(commit)
-bind reflog cp :!git ui git.auto cherry-pick -s %(commit)
-bind reflog cp :!git ui git.msg cherry-pick -s %(commit)
-bind reflog cs >git ui commit.create
-bind diff   cp :!git ui git.auto cherry-pick -s %(commit)
-bind diff   cp :!git ui git.msg cherry-pick -s %(commit)
+bind main   cp       :!git cmd git.auto cherry-pick -s %(commit)
+bind main   cP       :!git cmd git.msg  cherry-pick -s %(commit)
+bind main   cs       >git  cmd commit.create
+bind refs   cp       :!git cmd git.auto cherry-pick -s %(commit)
+bind refs   cp       :!git cmd git.msg  cherry-pick -s %(commit)
+bind reflog cp       :!git cmd git.auto cherry-pick -s %(commit)
+bind reflog cp       :!git cmd git.msg  cherry-pick -s %(commit)
+bind reflog cs       >git  cmd commit.create
+bind diff   cp       :!git cmd git.auto cherry-pick -s %(commit)
+bind diff   cp       :!git cmd git.msg  cherry-pick -s %(commit)
 
-bind reflog aa       @git ui select.add C=%(commit)
-bind log    aa       @git ui select.add C=%(commit)
-bind diff   aa       @git ui select.add C=%(commit)
-bind main   aa       @git ui select.add C=%(commit)
+bind reflog aa       @git cmd select.add C=%(commit)
+bind log    aa       @git cmd select.add C=%(commit)
+bind diff   aa       @git cmd select.add C=%(commit)
+bind main   aa       @git cmd select.add C=%(commit)
 
-## Format patch {
-bind main   p<Enter> :!git ui patch.create
-bind main   pn       :!git ui patch.create C=%(commit)^
-bind main   p1       :!git ui patch.create C=%(commit) NAME='$(date +%y%m%d%H%M%S)'
-bind diff   p<Enter> :!git ui patch.create
-bind diff   p1       :!git ui patch.create C=%(commit)
-bind diff   pn       :!git ui patch.create C=%(commit)^
-bind diff   pf       :!git ui patch.create C=%(commit) FILE=%(file)
-bind log    p<Enter> :!git ui patch.create
-bind log    p1       :!git ui patch.create C=%(commit)
-bind log    pn       :!git ui patch.create C=%(commit)^
-bind log    pf       :!git ui patch.create C=%(commit) FILE=%(file)
-bind reflog p<Enter> +git ui patch.create
-bind reflog p1       :!git ui patch.create C=%(commit)
-bind blame  p1       :!git ui patch.create C=%(commit)
-bind stage  p1       :!git ui patch.create C=%(commit) NAME='$(date +%y%m%d%H%M%S)'
-bind stage  pf       :!git ui patch.create C=%(commit) NAME='$(date +%y%m%d%H%M%S)_$(basename %(file))' FILE=%(file)
-# }
+## Format patch
+bind main   p<Enter> :!git cmd patch.create
+bind main   pn       :!git cmd patch.create C=%(commit)^
+bind main   p1       :!git cmd patch.create C=%(commit) NAME='$(date +%y%m%d%H%M%S)'
+bind diff   p<Enter> :!git cmd patch.create
+bind diff   p1       :!git cmd patch.create C=%(commit)
+bind diff   pn       :!git cmd patch.create C=%(commit)^
+bind diff   pf       :!git cmd patch.create C=%(commit) FILE=%(file)
+bind log    p<Enter> :!git cmd patch.create
+bind log    p1       :!git cmd patch.create C=%(commit)
+bind log    pn       :!git cmd patch.create C=%(commit)^
+bind log    pf       :!git cmd patch.create C=%(commit) FILE=%(file)
+bind reflog p<Enter> +git cmd patch.create
+bind reflog p1       :!git cmd patch.create C=%(commit)
+bind blame  p1       :!git cmd patch.create C=%(commit)
+bind stage  p1       :!git cmd patch.create C=%(commit) NAME='$(date +%y%m%d%H%M%S)'
+bind stage  pf       :!git cmd patch.create C=%(commit) NAME='$(date +%y%m%d%H%M%S)_$(basename %(file))' FILE=%(file)
 
 # Save Info {
-bind refs ss       :!git ui info.write C=%(commit) BR=%(branch) REF=%(refname) TAG=%(tag) FILE=%(file) OFILE=%(file_old)
-bind main ss       :!git ui info.write C=%(commit) FILE=%(file) OFILE=%(file_old)
-bind reflog ss     :!git ui info.write C=%(commit) FILE=%(file) OFILE=%(file_old)
+bind refs ss       :!git cmd info.write C=%(commit) BR=%(branch) REF=%(refname) TAG=%(tag) FILE=%(file) OFILE=%(file_old)
+bind main ss       :!git cmd info.write C=%(commit) FILE=%(file) OFILE=%(file_old)
+bind reflog ss     :!git cmd info.write C=%(commit) FILE=%(file) OFILE=%(file_old)
 # }
 
 # Check line history {
-bind stage b       :!git ui info.line_history LINE=%(lineno) FILE=%(file)
-bind diff  b       :!git ui info.line_history LINE=%(lineno) FILE=%(file) REV=%(commit)
-bind blame b       :!git ui info.line_history LINE=%(lineno) FILE=%(file) REV=%(commit)
+bind stage b       :!git cmd info.line_history LINE=%(lineno) FILE=%(file)
+bind diff  b       :!git cmd info.line_history LINE=%(lineno) FILE=%(file) REV=%(commit)
+bind blame b       :!git cmd info.line_history LINE=%(lineno) FILE=%(file) REV=%(commit)
 # }
 
 # Stage {
@@ -364,42 +363,43 @@ bind status ! none
 bind refs C none
 bind refs ! none
 
-bind refs f<ENTER> :!git ui git.msg fetch --prune --all
-bind refs rb       :!git ui git.auto rebase %(commit)
-bind refs rB       :!git ui git.msg rebase %(commit)
+bind refs f<ENTER> :!git cmd git.msg fetch --prune --all
+bind refs rb       :!git cmd git.auto rebase %(commit)
+bind refs rB       :!git cmd git.msg rebase %(commit)
 # 1. Select local branch
 # 2. Select assigned remote branch
-bind refs pb       !?git ui refs.push BR="%(prompt new branch: )" REMOTE=%(remote)
-bind refs pt       !?git ui refs.push TAG="%(prompt new tag: )" REMOTE=%(remote)
-bind refs pc       !?git ui refs.push REMOTE=%(remote)
-bind refs pp       !?git ui refs.push TAG=%(tag) BR=%(branch) REF=%(refname)
-bind refs pP       !?git ui refs.push TAG=%(tag) BR=%(branch) REF=%(refname) OPT='--force-with-lease'
-bind refs cs        +git ui info.clean
+bind refs pb       !?git cmd refs.push BR="%(prompt new branch: )" REMOTE=%(remote)
+bind refs pt       !?git cmd refs.push TAG="%(prompt new tag: )" REMOTE=%(remote)
+bind refs pc       !?git cmd refs.push REMOTE=%(remote)
+bind refs pp       !?git cmd refs.push TAG=%(tag) BR=%(branch) REF=%(refname)
+bind refs pP       !?git cmd refs.push TAG=%(tag) BR=%(branch) REF=%(refname) OPT='--force-with-lease'
+bind refs pu       !?git cmd refs.push TAG=%(tag) BR=%(branch) UPSTREAM=%(repo:upstream)
+bind refs cs        +git cmd info.clean
 # }
 
 # Main {
 bind main C none
 bind main ! none
 
-bind main bs +?git ui git.msg bisect start
-bind main bg +?git ui git.msg bisect good %(commit)
-bind main bb +?git ui git.msg bisect bad %(commit)
-bind main rv :!git ui git.auto revert --no-edit %(commit)
-bind main rV :!git ui git.msg revert --no-edit %(commit)
-bind diff rv :!git ui git.auto revert --no-edit %(commit)
-bind diff rV :!git ui git.msg revert --no-edit %(commit)
-bind main rb >?git ui git.auto rebase -i %(commit)
-bind main rB >?git ui git.msg rebase -i %(commit)
+bind main bs +?git cmd git.msg bisect start
+bind main bg +?git cmd git.msg bisect good %(commit)
+bind main bb +?git cmd git.msg bisect bad %(commit)
+bind main rv :!git cmd git.auto revert --no-edit %(commit)
+bind main rV :!git cmd git.msg revert --no-edit %(commit)
+bind diff rv :!git cmd git.auto revert --no-edit %(commit)
+bind diff rV :!git cmd git.msg revert --no-edit %(commit)
+bind main rb >?git cmd git.auto rebase -i %(commit)
+bind main rB >?git cmd git.msg rebase -i %(commit)
 bind main rk >?git rebase --skip
 # progress stop: rebase, merge, revert, cherry-pick, bisect
-bind main pa :!git ui act.abort
+bind main pa :!git cmd action.abort
 # progress continue: rebase, merge, revert, cherry-pick, bisect
-bind main pc :!git ui act.going
+bind main pc :!git cmd action.next
 # progress info
-bind main pi  +git ui act.check
-bind main pp !?git ui refs.push C=%(commit)
-bind main pP !?git ui refs.push C=%(commit) OPT='--force-with-lease'
-bind main <SingleQuote> :!git ui commit_report
+bind main pi :!git cmd action.check
+bind main pp !?git cmd refs.push C=%(commit)
+bind main pP !?git cmd refs.push C=%(commit) OPT='--force-with-lease'
+bind main <SingleQuote> :!git cmd commit_report
 # }
 
 # Log {
