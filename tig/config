@@ -288,15 +288,15 @@ bind diff   d<Enter> +?git ui cmd rm -rf %(file)
 bind diff   dd       +?git ui cmd rm -rf $(dirname %(file))
 
 ## Reset commits
-bind stage   rS +?git ui git.msg reset --hard
-bind reflog  rS +?git ui git.msg reset --hard %(commit)
-bind diff    rS +?git ui git.msg reset --hard %(commit)
-bind main    rS +?git ui git.msg reset --hard %(commit)
-bind reflog  rs +?git ui git.msg reset %(commit)
-bind diff    rs +?git ui git.msg reset %(commit)
-bind main    rs +?git ui git.msg reset %(commit)
-bind main    rn +?git ui git.msg reset --hard
-bind main    rp +?git ui git.msg reset HEAD@{1}
+bind stage   r.       +?git ui git.msg reset --hard
+bind main    r.       +?git ui git.msg reset --hard
+bind main    rp       +?git ui git.msg reset HEAD@{1}
+bind reflog  r<Enter> +?git ui git.msg reset --hard %(commit)
+bind diff    r<Enter> +?git ui git.msg reset --hard %(commit)
+bind main    r<Enter> +?git ui git.msg reset --hard %(commit)
+bind reflog  rr       +?git ui git.msg reset %(commit)
+bind diff    rr       +?git ui git.msg reset %(commit)
+bind main    rr       +?git ui git.msg reset %(commit)
 
 ## Cherry-pick
 bind main   cp :!git ui git.auto cherry-pick -s %(commit)
