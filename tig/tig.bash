@@ -18,16 +18,14 @@ lib.load config
 
 dir='/tmp/tig'
 NODE="${dir}/node"
-patch_file=${dir}/tig.patch
+commits=${dir}/tig.commits
 info_file=${dir}/tig.save
 p_opts='--binary --histogram'
 
 mkdir $dir 2> $__N
 
-cmd() { eval "$*"; }
-
 cmd.msg() {
-	if cmd $*; then
+	if $*; then
 		echo "'$*' done"
 	else
 		echo "'$*' failed ($?)"
@@ -233,7 +231,7 @@ refs.cut() {
 		if C=$C TAG=$TAG refs.verify; then
 			git tag -d $TAG
 			if [[ "$TAG" =~ patch\.[0-9]+ ]]; then
-				sed -i -e "/${TAG}/d" $patch_file
+				sed -i -e "/${TAG}/d" $commits
 				patch.refresh
 				return
 			fi
@@ -357,12 +355,46 @@ stage.file() {
 	fi
 }
 
-patch.refresh() {
+# (commit) C= patch.create
+# (diff)   C=000... NAME= patch.create
+# [OPT=all] patch.create
+patch.create() {
+	if [[ -z "$C" ]]; then
+		local item i
+
+		i=100
+		for item in $(cat $commits); do
+			git format-patch --start-number $((i++)) -k $p_opts -1 -o git-patch $item
+		done &> $__N
+
+		select.reset
+		echo "$((i - 100)) patches has been created."
+	elif [[ "$C" =~ ^0+$ ]]; then
+		git.msg diff --output=${NAME}.diff $p_opts $FILE
+	elif is_commit $C; then
+		git.msg format-patch -k $p_opts -o git-patch -1 $C $FILE
+	fi
+}
+
+# C= commit.create
+commit.create() {
+	local item list
+
+	for item in $(cat $commits); do
+		list+="$item "
+	done &> $__N
+
+	git.msg cherry-pick -n $list
+	git commit -e -m "$(printf "TITLE:\n\nMerged:\n"; git show -s --format='- %h: %s' $list)"
+	select.reset
+}
+
+select.refresh() {
 	local i t p
 
 	i=0
-	for t in $(git tag -l | grep ^patch. | sort); do
-		p="patch.$i"
+	for t in $(git tag -l | grep ^select. | sort); do
+		p="select.$i"
 		((i++))
 
 		if [[ $t == $p ]]; then
@@ -374,53 +406,32 @@ patch.refresh() {
 	done
 }
 
-patch.reset() {
+select.reset() {
 	local item i
 
 	i=0
-	for item in $(cat $patch_file); do
-		git tag -d patch.$((i++))
+	for item in $(cat $commits); do
+		git tag -d select.$((i++))
 	done
-	rm -f $patch_file
+	rm -f $commits
 }
 
-# (commit) C= patch.create
-# (diff)   C=000... NAME= patch.create
-# [OPT=all] patch.create
-patch.create() {
-	if [[ -z "$C" ]]; then
-		local item i
-
-		i=100
-		for item in $(cat $patch_file); do
-			git format-patch --start-number $((i++)) -k $p_opts -1 -o git-patch $item
-		done &> $__N
-
-		patch.reset
-		echo "$((i - 100)) patches has been created."
-	elif [[ "$C" =~ ^0+$ ]]; then
-		git.msg diff --output=${NAME}.diff $p_opts $FILE
-	elif is_commit $C; then
-		git.msg format-patch -k $p_opts -o git-patch -1 $C $FILE
-	fi
-}
-
-# C= patch.add
-patch.add() {
+# C= commit.add
+select.add() {
 	local file idx
 	local commit
 
 	commit="$C"
-	file=$patch_file
+	file=$commits
 	touch $file
 
 	idx=$(wc -l $file | cut -d' ' -f 1)
 	if ! cat $file | grep -q $commit; then
-		echo "select commit patch. ($commit)"
-		git tag patch.${idx} $commit
+		echo "select: $commit"
+		git tag select.${idx} $commit
 		echo $commit >> $file
 	else
-		echo "same commit patch has been detected. ($commit)"
+		echo "'$commit' has already been added."
 	fi
 }
 

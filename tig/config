@@ -297,39 +297,40 @@ bind main    r<Enter> +?git ui git.msg reset --hard %(commit)
 bind reflog  rr       +?git ui git.msg reset %(commit)
 bind diff    rr       +?git ui git.msg reset %(commit)
 bind main    rr       +?git ui git.msg reset %(commit)
+bind main    ra       @git ui select.reset
+bind diff    ra       @git ui select.reset
+bind log     ra       @git ui select.reset
+bind reflog  ra       @git ui select.reset
 
 ## Cherry-pick
 bind main   cp :!git ui git.auto cherry-pick -s %(commit)
 bind main   cP :!git ui git.msg cherry-pick -s %(commit)
-bind main   cs :!git ui git.msg cherry-pick -n %(commit)
+bind main   cs >git ui commit.create
 bind refs   cp :!git ui git.auto cherry-pick -s %(commit)
 bind refs   cp :!git ui git.msg cherry-pick -s %(commit)
 bind reflog cp :!git ui git.auto cherry-pick -s %(commit)
 bind reflog cp :!git ui git.msg cherry-pick -s %(commit)
-bind reflog cs :!git ui git.msg cherry-pick -n %(commit)
+bind reflog cs >git ui commit.create
 bind diff   cp :!git ui git.auto cherry-pick -s %(commit)
 bind diff   cp :!git ui git.msg cherry-pick -s %(commit)
 
+bind reflog aa       @git ui select.add C=%(commit)
+bind log    aa       @git ui select.add C=%(commit)
+bind diff   aa       @git ui select.add C=%(commit)
+bind main   aa       @git ui select.add C=%(commit)
+
 ## Format patch {
-bind main   pr       @git ui patch.reset
-bind main   ps       :!git ui patch.add C=%(commit)
 bind main   p<Enter> :!git ui patch.create
 bind main   pn       :!git ui patch.create C=%(commit)^
 bind main   p1       :!git ui patch.create C=%(commit) NAME='$(date +%y%m%d%H%M%S)'
-bind diff   ps       @git ui patch.add C=%(commit)
-bind diff   pr       @git ui patch.reset
 bind diff   p<Enter> :!git ui patch.create
 bind diff   p1       :!git ui patch.create C=%(commit)
 bind diff   pn       :!git ui patch.create C=%(commit)^
 bind diff   pf       :!git ui patch.create C=%(commit) FILE=%(file)
-bind log    ps       @git ui patch.add C=%(commit)
-bind log    pr       @git ui patch.reset
 bind log    p<Enter> :!git ui patch.create
 bind log    p1       :!git ui patch.create C=%(commit)
 bind log    pn       :!git ui patch.create C=%(commit)^
 bind log    pf       :!git ui patch.create C=%(commit) FILE=%(file)
-bind reflog ps       @git ui patch.add C=%(commit)
-bind reflog pr       @git ui patch.reset
 bind reflog p<Enter> +git ui patch.create
 bind reflog p1       :!git ui patch.create C=%(commit)
 bind blame  p1       :!git ui patch.create C=%(commit)
