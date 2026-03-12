@@ -2,17 +2,13 @@ XDG_CONFIG_HOME?=${HOME}/.config
 XDG_DATA_HOME?=${HOME}/.local/share
 XDG_CACHE_HOME?=${HOME}/.cache
 CONF_HOME:=${XDG_CONFIG_HOME}
-DOTFILE_DIR:= $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
-DOTFILE:=$(shell ls -p $(DOTFILE_DIR) | grep -v -E '/$|^\.|^Makefile')
-UNDER_HOME:=clang-format editorconfig quiltrc inputrc
-UNDER_CONFDIR:=curlrc
+DOTFILE_DIR:=$(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
+DOTFILE_HOMEDIR=$(DOTFILE_DIR)/home
+DOTFILE_CONFDIR=$(DOTFILE_DIR)/config
+UNDER_HOME:=$(shell ls -p $(DOTFILE_HOMEDIR))
+UNDER_CONFDIR:=$(shell ls -p $(DOTFILE_CONFDIR))
+DOTFILE:=$(UNDER_HOME) $(UNDER_CONFDIR)
 UNDER_CONFDIR_SUBDIR:=
-
-# copy_to_subdir subdir_name dofile_file
-define copy_to_subdir
-	mkdir -p $(CONF_HOME)/$(1)
-	cp -rvf $(DOTFILE_DIR)/$(2) $(CONF_HOME)/$(1)/$(2)
-endef
 
 .ONESHELL:
 
@@ -28,15 +24,11 @@ endef
 #
 # Add the configuration file name to the targets
 $(UNDER_HOME):
-	$(H)cp -rvf $(DOTFILE_DIR)/$@ $(HOME)/.$@
+	$(H)cp -rvf $(DOTFILE_HOMEDIR)/$@ $(HOME)/.$@
 	$(H)printf -- "-- completed: $@ --\n"
 
 $(UNDER_CONFDIR):
-	$(H)cp -rvf $(DOTFILE_DIR)/$@ $(CONF_HOME)/$@
-	$(H)printf -- "-- completed: $@ --\n"
-
-toprc:
-	$(H)$(call copy_to_subdir,procps,$@)
+	$(H)cp -rvf $(DOTFILE_CONFDIR)/$@ $(CONF_HOME)/$@
 	$(H)printf -- "-- completed: $@ --\n"
 
 dotfile: $(DOTFILE)

@@ -9,16 +9,14 @@ SHELL?=bash
 
 H?=@
 
-#DOTFILE:=$(shell ls -p $(ROOT)/dotfile | grep -v -E '/$|^\.|^Makefile' | sed 's/\.[^.]*$$//')
-DOTFILE:=$(shell ls -p $(ROOT)/files | grep -v -E '/$|^\.|^Makefile')
-LIST:=$(shell ls -d -- */ | sed 's:/::' | grep -v '^setup\|^files')
+LIST:=$(shell ls -d -- */ | sed 's:/::' | grep -v '^setup\|^apps')
 ALIAS:=top
 
--include $(ROOT)/files/Makefile
+-include $(ROOT)/apps/Makefile
 
 .ONESHELL:
 
-all: $(LIST) $(DOTFILE)
+all: $(LIST)
 
 # dotfile: $(DOTFILE)
 
