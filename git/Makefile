@@ -29,6 +29,7 @@ config.$(PKG_NAME):
 	$(call query_saved,user.name,$(USERNAME))
 	$(call query_saved,user.email,$(EMAIL))
 
+	git config --global core.hooksPath $(CONFIG_DIR)/hooks
 
 install.$(PKG_NAME):
 	$(H)echo "-- $(PKG_NAME): install package --"

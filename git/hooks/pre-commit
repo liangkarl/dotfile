@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+set -u
+
+# avoid recursive calling if repo-local hook is chained manually
+if [[ "${GIT_IDENTITY_HOOK_CHAINED:-0}" == "1" ]]; then
+    exit 0
+fi
+
+git_dir="$(git rev-parse --git-dir 2>/dev/null)" || exit 0
+
+local_name="$(git config --local --get user.name 2>/dev/null || true)"
+local_email="$(git config --local --get user.email 2>/dev/null || true)"
+global_name="$(git config --global --get user.name 2>/dev/null || true)"
+global_email="$(git config --global --get user.email 2>/dev/null || true)"
+
+need_prompt=0
+[[ -z "$local_name" ]] && need_prompt=1
+[[ -z "$local_email" ]] && need_prompt=1
+
+if [[ "$need_prompt" -eq 1 ]]; then
+    echo
+    echo "=== Git local identity setup ==="
+    echo "This repo does not have complete local user identity."
+    echo "Press Enter to use the value inside [ ]."
+    echo
+
+    if [[ -z "$local_name" ]]; then
+        read -r -p "save new user.name: [${global_name}] " input_name < /dev/tty
+        final_name="${input_name:-$global_name}"
+        if [[ -n "$final_name" ]]; then
+            git config --local user.name "$final_name"
+            local_name="$final_name"
+        fi
+    fi
+
+    if [[ -z "$local_email" ]]; then
+        read -r -p "save new user.email: [${global_email}] " input_email < /dev/tty
+        final_email="${input_email:-$global_email}"
+        if [[ -n "$final_email" ]]; then
+            git config --local user.email "$final_email"
+            local_email="$final_email"
+        fi
+    fi
+
+    echo
+
+    if [[ -z "$local_name" || -z "$local_email" ]]; then
+        echo "ERROR: local user.name / user.email is still incomplete."
+        echo "No usable global value was available, and nothing was entered."
+        echo "Commit aborted."
+        echo
+        exit 1
+    fi
+fi
+
+# chain repo-local hook if it exists
+repo_hook="${git_dir}/hooks/pre-commit"
+if [[ -x "$repo_hook" ]]; then
+    GIT_IDENTITY_HOOK_CHAINED=1 "$repo_hook"
+    rc=$?
+    if [[ $rc -ne 0 ]]; then
+        exit $rc
+    fi
+fi
+
+exit 0
