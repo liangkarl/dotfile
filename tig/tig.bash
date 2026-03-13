@@ -428,7 +428,7 @@ select.reset() {
 	local item i
 
 	i=0
-	for item in $(cat $commits); do
+	for item in $(git tag -l | grep -E ^select\.[0-9]+$); do
 		git tag -d select.$((i++))
 	done
 	rm -f $commits
