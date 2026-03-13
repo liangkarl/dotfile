@@ -3,14 +3,14 @@
 XDG_CONFIG_HOME?=${HOME}/.config
 XDG_DATA_HOME?=${HOME}/.local/share
 XDG_CACHE_HOME?=${HOME}/.cache
-ROOT     := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
+XDG_LOCAL_BIN ?=$(HOME)/.local/bin
+ROOT     :=$(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
 CONF_HOME:=${XDG_CONFIG_HOME}
 SHELL?=bash
 
 H?=@
 
-LIST:=$(shell ls -d -- */ | sed 's:/::' | grep -v '^setup\|^apps')
-ALIAS:=top
+LIST:=$(shell ls -d -- */ | sed 's:/::' | grep -v '^sys\|^apps\|^bin')
 
 -include $(ROOT)/apps/Makefile
 
@@ -32,6 +32,10 @@ $(LIST):
 	fi
 	$(H)printf -- "-- completed: $@ --\n\n"
 
+bin:
+	$(H)mkdir -p $(XDG_LOCAL_BIN)
+	$(H)cp -rvf $(ROOT)/bin/* $(XDG_LOCAL_BIN)
+
 %.remove:
 	$(H)$(eval NAME:=$(strip $(subst .remove,,$@)))
 	$(H)if [ -d "$(CONF_HOME)/$(NAME)" ]; then
@@ -46,4 +50,4 @@ $(LIST):
 
 %.uninstall:
 
-.PHONY: all %.remove %.install %.uninstall $(LIST) $(ALIAS)
+.PHONY: all %.remove %.install %.uninstall $(LIST) $(ALIAS) bin
