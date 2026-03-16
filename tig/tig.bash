@@ -603,12 +603,12 @@ action.abort() {
 }
 
 action.next() {
-	local h
+	local hdr
 
 	eval "$*"
-	for h in "${heads[@]}"; do
-		if git rev-parse --verify $h &> $__N; then
-			git.msg $h --continue
+	for hdr in "${heads[@]}"; do
+		if git rev-parse --verify $hdr &> $__N; then
+			git.msg ${opts[$hdr]} --continue
 			return
 		fi
 	done
