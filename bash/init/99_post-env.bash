@@ -15,7 +15,7 @@ export HISTFILE="$HOME/.bash_history"
 export HISTCONTROL=ignoreboth:erasedups
 
 # 3) Append rather than overwrite
-# shopt -s histappend
+shopt -s histappend
 
 # 4) Save multi-line commands as a single entry (optional but nice)
 shopt -s cmdhist

@@ -20,7 +20,7 @@ _context_history_search() {
         _chs_index=0
 
         # 同步當前視窗歷史
-        history -a; history -r
+        history -a; history -c; history -r
 
         # 3. 極速一次性掃描：同時計算精確匹配與全歷史備份
         _chs_match_list=()
