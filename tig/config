@@ -293,9 +293,9 @@ bind main   r.       +?git cmd git.msg reset --hard
 bind stage  r,       +?git cmd git.msg reset
 bind main   r,       +?git cmd git.msg reset
 bind main   rp       +?git cmd git.msg reset HEAD@{1}
-bind reflog r<Enter> +?git cmd git.msg reset --hard %(commit)
-bind diff   r<Enter> +?git cmd git.msg reset --hard %(commit)
-bind main   r<Enter> +?git cmd git.msg reset --hard %(commit)
+bind reflog R<Enter> +?git cmd git.msg reset --hard %(commit)
+bind diff   R<Enter> +?git cmd git.msg reset --hard %(commit)
+bind main   R<Enter> +?git cmd git.msg reset --hard %(commit)
 bind reflog r<Enter> +?git cmd git.msg reset %(commit)
 bind diff   r<Enter> +?git cmd git.msg reset %(commit)
 bind main   r<Enter> +?git cmd git.msg reset %(commit)
