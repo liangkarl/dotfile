@@ -1,5 +1,5 @@
 # ==============================================================================
-# Context-Aware History Search (V32 - fc Builtin Optimization)
+# Context-Aware History Search (V31 - Performance + Intelligent Fallback)
 # ==============================================================================
 
 _context_history_search() {
@@ -22,12 +22,12 @@ _context_history_search() {
         # 同步當前視窗歷史
         history -a; history -r
 
-        # 3. 使用 fc 內建指令優化：-l (list), -n (no numbers), -5000 (last 5000)
+        # 3. 極速一次性掃描：同時計算精確匹配與全歷史備份
         _chs_match_list=()
-        mapfile -t _chs_match_list < <(fc -ln -5000 | awk -v orig="$_chs_orig_line" -v pref="$_chs_orig_prefix" -v suff="$_chs_orig_suffix" '
+        mapfile -t _chs_match_list < <(HISTTIMEFORMAT= history 5000 | awk -v orig="$_chs_orig_line" -v pref="$_chs_orig_prefix" -v suff="$_chs_orig_suffix" '
             {
-                # fc -n 雖然沒行號，但開頭通常會有一個 Tab 或空格，先清除
-                gsub(/^[ \t]+/, "");
+                # 移除行首行號 (取代 sed)
+                sub(/^[ ]*[0-9]+[ ]+/, "");
 
                 # 排除空行、重複行、以及目前這行
                 if ($0 == "" || seen[$0]++ || $0 == orig) next;
