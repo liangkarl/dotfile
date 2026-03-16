@@ -1,0 +1,133 @@
+#!/usr/bin/env python3
+import sys
+import os
+import json
+import subprocess
+import argparse
+
+def main():
+    parser = argparse.ArgumentParser(description="Python-based fzf menu with JSON state.")
+    parser.add_argument("-t", "--title", help="Set menu title (header)")
+    parser.add_argument("-p", "--prompt", help="Set prompt string")
+    parser.add_argument("-d", "--default", help="Initial query for fzf")
+    parser.add_argument("-I", "--index", type=int, help="Starting index for -v output")
+    parser.add_argument("-l", "--list", action="store_true", help="Non-interactive list mode")
+    parser.add_argument("-D", "--delim", help="Delimiter for input splitting or result parsing")
+    parser.add_argument("-s", "--save", help="Save state to a JSON file")
+    parser.add_argument("-m", "--load", help="Load state from a JSON file")
+    parser.add_argument("-v", "--value", action="store_true", help="Return index instead of text")
+    parser.add_argument("items", nargs="*", help="Menu items (passed as arguments)")
+
+    args = parser.parse_args()
+
+    # 1. Initialize default state
+    state = {
+        "title": "",
+        "prompt": ">",
+        "default": "",
+        "delim": "",
+        "index": 0,
+        "items": []
+    }
+
+    # 2. Load state from JSON if -m is specified
+    load_path = args.load
+    if load_path and os.path.exists(load_path):
+        try:
+            with open(load_path, 'r', encoding='utf-8') as f:
+                state.update(json.load(f))
+        except (json.JSONDecodeError, IOError):
+            pass
+
+    # 3. Override state with command line arguments (if provided)
+    if args.title is not None: state["title"] = args.title
+    if args.prompt is not None: state["prompt"] = args.prompt
+    if args.default is not None: state["default"] = args.default
+    if args.delim is not None: state["delim"] = args.delim
+    if args.index is not None: state["index"] = args.index
+
+    # 4. Handle input items
+    if args.items:
+        # If a single argument is passed containing the delimiter, split it into multiple items
+        if len(args.items) == 1 and state["delim"] and state["delim"] in args.items[0]:
+            state["items"] = args.items[0].split(state["delim"])
+        else:
+            state["items"] = args.items
+    elif not state["items"] and not sys.stdin.isatty():
+        # Read from pipe if no items in args or JSON
+        state["items"] = [line.strip() for line in sys.stdin if line.strip()]
+
+    # Exit if there is nothing to display
+    if not state["items"]:
+        sys.exit(0)
+
+    # 5. List mode execution
+    if args.list:
+        if state["title"]: print(f"--- {state['title']} ---")
+        for i, item in enumerate(state["items"]):
+            print(f"{i + state['index']}) {item}")
+        sys.exit(0)
+
+    # 6. Interactive Selection via fzf
+    full_prompt = f"{state['prompt']}: "
+    selected_text = None
+    selected_idx = None
+
+    try:
+        # Construct fzf command
+        fzf_cmd = ["fzf", "--height=10", "--layout=reverse", f"--prompt={full_prompt}"]
+        if state["title"]:
+            fzf_cmd += ["--header", state["title"]]
+        if state["default"]:
+            fzf_cmd += ["--query", state["default"]]
+
+        # Prepare input with internal indices (0\tItemA\n1\tItemB...)
+        input_data = "\n".join(f"{i}\t{item}" for i, item in enumerate(state["items"]))
+
+        # Always hide the internal index from fzf display
+        fzf_cmd += ["--with-nth=2.."]
+
+        proc = subprocess.Popen(fzf_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+        stdout, _ = proc.communicate(input=input_data)
+
+        if not stdout:
+            sys.exit(1) # User cancelled (ESC)
+
+        # Parse fzf output
+        idx_part, selected_text = stdout.strip().split('\t', 1)
+        selected_idx = int(idx_part)
+
+    except FileNotFoundError:
+        # Simple fallback if fzf is missing
+        print(f"== {state['title']} ==" if state['title'] else "")
+        for i, item in enumerate(state["items"]):
+            print(f"{i+1}) {item}")
+        try:
+            res = input(full_prompt)
+            selected_idx = int(res) - 1
+            selected_text = state["items"][selected_idx]
+        except (ValueError, IndexError, EOFError, KeyboardInterrupt):
+            sys.exit(1)
+
+    # 7. Output result
+    if args.value:
+        # Return index (adjusted by offset)
+        print(selected_idx + state["index"])
+    else:
+        # If delimiter is set and present in text, return the first field (Key/ID)
+        if state["delim"] and state["delim"] in selected_text:
+            print(selected_text.split(state["delim"])[0])
+        else:
+            print(selected_text)
+
+    # 8. Update item order (Move selected to top for "memory" effect)
+    state["items"] = [selected_text] + [item for item in state["items"] if item != selected_text]
+
+    # 9. Save updated state back to file (JSON format)
+    save_path = args.save or args.load
+    if save_path:
+        with open(save_path, 'w', encoding='utf-8') as f:
+            json.dump(state, f, indent=4, ensure_ascii=False)
+
+if __name__ == "__main__":
+    main()
