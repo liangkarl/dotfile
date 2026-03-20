@@ -34,7 +34,6 @@ HISTIGNORE="&:ls:cd:pwd:exit:clear"
 # Use a small guard to avoid spamming errors in restricted shells.
 __hist_sync() {
   builtin history -a
-  builtin history -n
 }
 PROMPT_COMMAND="__hist_sync${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
 
