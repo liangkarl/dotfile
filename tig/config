@@ -50,6 +50,7 @@ bind generic o none
 bind generic t none
 bind generic <Ctrl-C> none
 bind generic - none
+bind generic R none
 # }
 
 # Views {
