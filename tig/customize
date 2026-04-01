@@ -1,0 +1,6 @@
+# For customized tig version
+
+# With '+=' operation
+bind main  -<ENTER> :set main-options += --no-merges
+bind main  -a       :set main-options += --no-merges --author="%(author)"
+bind log   -a       :set log-options  += --no-merges --author="%(author)"
