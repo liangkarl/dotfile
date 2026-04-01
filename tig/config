@@ -16,20 +16,25 @@ set main-view-commit-title-graph = v1
 set refresh-mode = after-command
 
 # Addjust the column width of author
-set main-view = line-number:no,interval=5 \
-                date:custom,format="%m/%d/%y %H:%M" date:relative-compact \
+set main-view = date:custom,format="%m/%d/%y %H:%M" date:relative-compact \
                 author:full,width=15 id:yes \
                 commit-title:yes,graph,refs,overflow=no
-set blame-view = id:yes,color date:relative-compact \
-                 file-name:no author:abbreviated \
+set reflog-view = date:custom,format="%m/%d/%y %H:%M" date:relative-compact \
+                  author:full,width=15 id:yes,color \
+                  commit-title:yes,refs,overflow=no
+set stash-view = date:custom,format="%m/%d/%y %H:%M" date:relative-compact \
+                 author:full,width=15 id:yes,color \
+                 commit-title:yes,refs,overflow=no
+set refs-view = date:custom,format="%m/%d/%y %H:%M" date:relative-compact \
+                ref id:yes,color \
+                commit-title:yes,refs,overflow=no
+
+set tree-view = date:custom,format="%m/%d/%y %H:%M" date:relative-compact \
+                author:full,width=15 id:yes,color \
+                mode file-size file-name
+set blame-view = date:custom,format="%m/%d" date:relative-compact \
+                 author:abbreviated,width=10 id:yes,color \
                  line-number:yes,interval=1 text
-set refs-view = line-number:no \
-                date:custom,format="%m/%d/%y %H:%M" date:relative-compact \
-				ref id:yes,color commit-title
-set tree-view = line-number:no,interval=5 id:yes,color \
-                mode author:full file-size \
-                date:custom,format="%m/%d/%y %H:%M" date:relative-compact \
-                file-name
 
 # Unbind keys {
 bind generic f none
@@ -61,9 +66,9 @@ bind generic 8  view-log
 bind generic 1  view-status
 bind generic 2  view-refs
 bind generic 3  view-stash
-bind generic B  view-blame
 bind generic T  view-tree
 bind generic -g view-grep
+bind generic B  view-blame
 
 bind stage   1  none
 bind stage   2  none
@@ -115,13 +120,11 @@ bind blame -f       <tig --no-merges -- %(file)
 bind diff  -<ENTER> :set diff-options = --patience --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
 bind diff  -r       :set diff-options = --patience
 bind diff  -f       <tig --no-merges -- %(file)
-bind diff  -b       <tig blame %(file)
 
 ## Stage format
 bind stage -<ENTER> :set diff-options = --patience --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
 bind stage -r       :set diff-options = --patience
 bind stage -f       <tig --no-merges -- %(file)
-bind stage -b       <tig blame %(file)
 
 ## Main format
 bind main  -<ENTER> <tig --no-merges
@@ -253,7 +256,6 @@ bind diff   tr       @git cmd refs.rename C=%(commit) NAME="%(prompt rename tag:
 bind diff   t<ENTER> @git cmd git.msg tag tag.$(git rev-parse --short %(commit)) %(commit)
 bind diff   ba       @git cmd git.msg branch "%(prompt new branch: )" %(commit)
 bind diff   br       @git cmd refs.rename C=%(commit) NAME="%(prompt rename branch: )" BR=%(branch)
-bind diff   b<ENTER> @git cmd git.msg branch $(basename $(git rev-parse --show-toplevel)) %(commit)
 bind diff   a<ENTER> @git cmd refs.paste C=%(commit)
 bind diff   d<ENTER> @git cmd refs.cut C=%(commit)
 bind refs   ta       @git cmd git.msg tag "%(prompt new tag: )" HEAD
@@ -261,7 +263,6 @@ bind refs   tr       @git cmd refs.rename C=%(commit) NAME="%(prompt rename tag:
 bind refs   t<ENTER> @git cmd git.msg tag tag.$(git rev-parse --short HEAD) HEAD
 bind refs   ba       @git cmd git.msg branch "%(prompt new branch: )" HEAD
 bind refs   br       @git cmd refs.rename C=%(commit) NAME="%(prompt rename branch: )" BR=%(branch)
-bind refs   b<ENTER> @git cmd git.msg branch $(basename $(git rev-parse --show-toplevel)) HEAD
 bind refs   a<ENTER> @git cmd refs.paste C=%(commit)
 bind refs   d<ENTER> @git  cmd refs.cut C=%(commit) BR=%(branch) TAG=%(tag)
 bind refs   d!       !?git cmd refs.cut TAG=%(TAG)  BR=%(branch) REMOTE=%(remote)
@@ -376,6 +377,7 @@ bind refs pp       !?git cmd refs.push TAG=%(tag) BR=%(branch) REF=%(refname)
 bind refs pP       !?git cmd refs.push TAG=%(tag) BR=%(branch) REF=%(refname) OPT='--force-with-lease'
 bind refs pu       !?git cmd refs.push TAG=%(tag) BR=%(branch) UPSTREAM=%(repo:upstream)
 bind refs cs        +git cmd info.clean
+bind refs >         >tig %(refname)%(tag)
 # }
 
 # Main {
