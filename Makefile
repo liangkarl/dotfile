@@ -11,6 +11,8 @@ SHELL?=bash
 H?=@
 
 LIST:=$(shell ls -d -- */ | sed 's:/::' | grep -v '^sys\|^apps\|^bin')
+ACTION_TARGETS:=install uninstall config
+PKGS:=$(filter-out $(ACTION_TARGETS),$(MAKECMDGOALS))
 
 -include $(ROOT)/apps/Makefile
 
@@ -21,6 +23,9 @@ all: $(LIST)
 # dotfile: $(DOTFILE)
 
 $(LIST):
+	$(H)if [ -n "$(filter $(ACTION_TARGETS),$(MAKECMDGOALS))" ]; then
+		exit 0
+	fi
 	$(H)$(eval SRC_DIR:=$(ROOT)/$@)
 	$(H)$(eval DST_DIR:=$(CONF_HOME)/$@)
 
@@ -46,8 +51,32 @@ bin:
 	fi
 	$(H)echo "Remove Configuration: $(NAME)"
 
-%.install:
+install:
+	$(H)if [ -z "$(strip $(PKGS))" ]; then
+		echo "Usage: make install [pkg1] [pkg2] ..."
+		exit 1
+	fi
+	$(H)$(MAKE) --no-print-directory $(PKGS)
 
-%.uninstall:
+config:
+	$(H)if [ -z "$(strip $(PKGS))" ]; then
+		echo "Usage: make config [pkg1] [pkg2] ..."
+		exit 1
+	fi
+	$(H)$(MAKE) --no-print-directory $(PKGS)
 
-.PHONY: all %.remove %.install %.uninstall $(LIST) $(ALIAS) bin
+uninstall:
+	$(H)if [ -z "$(strip $(PKGS))" ]; then
+		echo "Usage: make uninstall [pkg1] [pkg2] ..."
+		exit 1
+	fi
+	$(H)for pkg in $(PKGS); do
+		H=$(H) $(MAKE) --no-print-directory $$pkg.remove || exit $$?
+	done
+
+ifneq (,$(filter $(ACTION_TARGETS),$(MAKECMDGOALS)))
+%:
+	@:
+endif
+
+.PHONY: all %.remove install uninstall config $(LIST) $(ALIAS) bin
