@@ -1,0 +1,4 @@
+# Yarn config (v2+)
+enableGlobalCache: true
+globalFolder: "${HOME}/.local/share/yarn/global"
+cacheFolder: "${HOME}/.cache/yarn"
