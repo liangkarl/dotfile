@@ -24,10 +24,16 @@ UNDER_CONFDIR_SUBDIR:=
 #
 # Add the configuration file name to the targets
 $(UNDER_HOME):
+	$(H)if [ -n "$(filter $(ACTION_TARGETS),$(MAKECMDGOALS))" ]; then
+		exit 0
+	fi
 	$(H)cp -rvf $(DOTFILE_HOMEDIR)/$@ $(HOME)/.$@
 	$(H)printf -- "-- completed: $@ --\n"
 
 $(UNDER_CONFDIR):
+	$(H)if [ -n "$(filter $(ACTION_TARGETS),$(MAKECMDGOALS))" ]; then
+		exit 0
+	fi
 	$(H)cp -rvf $(DOTFILE_CONFDIR)/$@ $(CONF_HOME)/$@
 	$(H)printf -- "-- completed: $@ --\n"
 
