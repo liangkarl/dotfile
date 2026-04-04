@@ -1,102 +1,120 @@
 #!/usr/bin/env bash
 
-set -eE
+set -euo pipefail
 
 usage() {
-	cat <<-EOF
+	cat <<EOF
+NAME:
+    $(basename "$0") - a small format tool for text-based files
 
-	NAME:
-	$(basename $0) - a small format tool for text-based files
+SYNOPSIS:
+    $(basename "$0") [-h] [-b SUFFIX] [-u] [-c] [-s] FILE...
+    $(basename "$0") -p PATH-IN-WINDOWS...
 
-	SYNOPSIS:
-	$(basename $0) [-h] [-b] [-u] [-c] [-s] FILE...
-	$(basename $0) [-p] PATH-IN-WINDOWS
-
-	OPTIONS:
-	    -h: help
-	    -b: assign backup file suffix
-	    -u: convert windows line break to linuxs
-	    -c: trim ANSI color codes
-	    -s: trim trailing spaces
-	    -p: convert win style path, '\', into posix style, '/'.
-	EOF
-
-	exit $1
+OPTIONS:
+    -h            Show help
+    -b SUFFIX     Create backup with suffix, e.g. -b bak -> file.bak
+    -u            Convert Windows line breaks to Unix
+    -c            Trim ANSI color codes
+    -s            Trim trailing spaces
+    -p            Convert Windows path '\' into POSIX path '/'
+EOF
 }
 
-# convert LB from windows -> unix
-to_unix_lb() {
-	sed -i"${bak}" 's/\r$//g' $1
+die() {
+	printf '%s\n' "$*" >&2
+	exit 1
 }
 
-# ansi color -> no ansi color
-trim_ansi_color() {
-	sed -i"${bak}" 's/\x1b\[[0-9;]*m//g' $1
+is_gnu_sed() {
+	sed --version >/dev/null 2>&1
 }
 
-# remove trailing space
-trim_space() {
-	sed -i"${bak}" 's/[[:space:]]\+$//g' $1
+run_sed_in_place() {
+	local file=$1
+
+	if is_gnu_sed; then
+		sed -i"${backup_suffix}" "${sed_args[@]}" -- "$file"
+	else
+		sed -i "${backup_suffix}" "${sed_args[@]}" "$file"
+	fi
 }
 
-# convert win path '\' to posix path '/'
 replace_backslash() {
-	printf '%s\n' "$@" | sed 's,\\,\/,g'
+	local path
+	for path in "$@"; do
+		printf '%s\n' "${path//\\//}"
+	done
 }
 
-# main
-## check options
-(( $# == 0 )) && usage 1
+backup_suffix=''
+do_unix=0
+do_color=0
+do_space=0
+do_path=0
 
-bak=''
-section="$1"
-cmd=''
-while (( $# != 0 )); do
-	case $1 in
-		-u)
-			if [[ "$section" != "$1" ]]; then
-				section='-u'
-				cmd+=';'
-			fi
-			cmd+="to_unix_lb"
+while getopts ":hb:ucsp" opt; do
+	case "$opt" in
+		h)
+			usage
+			exit 0
 			;;
-		-c)
-			if [[ "$section" != "$1" ]]; then
-				section='-c'
-				cmd+=';'
-			fi
-			cmd+="trim_ansi_color"
+		b)
+			backup_suffix=".$OPTARG"
 			;;
-		-s)
-			if [[ "$section" != "$1" ]]; then
-				section='-s'
-				cmd+=';'
-			fi
-			cmd+="trim_space"
+		u)
+			do_unix=1
 			;;
-		-b)
-			shift
-			cmd+="bak='.$1'"
+		c)
+			do_color=1
 			;;
-		-p)
-			if [[ "$section" != "$1" ]]; then
-				cmd+=';'
-			fi
-			shift
-			cmd+="replace_backslash '$@'"
-			break
+		s)
+			do_space=1
 			;;
-		-h)
-			usage 0
+		p)
+			do_path=1
 			;;
-		-*)
-			usage 2
+		:)
+			die "Option -$OPTARG requires an argument."
 			;;
-		*)
-			cmd+=" $1"
+		\?)
+			usage >&2
+			exit 2
+			;;
 	esac
-	shift
 done
 
-## execute functions
-eval $cmd
+shift $((OPTIND - 1))
+
+if (( do_path )); then
+	(( do_unix || do_color || do_space )) && die "-p cannot be used with -u/-c/-s"
+	(( $# > 0 )) || die "Missing PATH-IN-WINDOWS."
+	replace_backslash "$@"
+	exit 0
+fi
+
+(( do_unix || do_color || do_space )) || {
+	usage >&2
+	exit 1
+}
+
+(( $# > 0 )) || die "Missing FILE."
+
+sed_args=()
+
+if (( do_unix )); then
+	sed_args+=(-e $'s/\r$//')
+fi
+
+if (( do_color )); then
+	sed_args+=(-e $'s/\x1B\\[[0-9;]*m//g')
+fi
+
+if (( do_space )); then
+	sed_args+=(-e 's/[[:space:]]*$//')
+fi
+
+for file in "$@"; do
+	[[ -f "$file" ]] || die "Not a regular file: $file"
+	run_sed_in_place "$file"
+done
