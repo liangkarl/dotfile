@@ -17,7 +17,7 @@ define query_saved
 endef
 
 .ONESHELL:
-config.$(PKG_NAME):
+config:
 	$(H)echo "-- $(PKG_NAME): setup config --"
 	$(H)echo "current user.name = '$(USERNAME)'"
 	$(H)echo "current user.email = '$(EMAIL)'"
@@ -31,10 +31,11 @@ config.$(PKG_NAME):
 
 	git config --global core.hooksPath $(CONFIG_DIR)/hooks
 
-install.$(PKG_NAME):
+install:
 	$(H)echo "-- $(PKG_NAME): install package --"
 
-remove.$(PKG_NAME):
+uninstall:
 	$(H)echo "-- $(PKG_NAME): remove package --"
 
-.PHONY: config.$(PKG_NAME) install.$(PKG_NAME) remove.$(PKG_NAME)
+
+.PHONY: config install uninstall

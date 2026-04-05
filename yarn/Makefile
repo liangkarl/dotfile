@@ -5,11 +5,11 @@ CONFIG_DIR=${XDG_CONFIG_HOME}/$(PKG_NAME)
 
 .ONESHELL:
 
-config.$(PKG_NAME): install.$(PKG_NAME)
+config:
 	$(H)echo "-- $(PKG_NAME): setup config --"
 	$(H)ln -snf "${CONFIG_DIR}/yarnrc.yml" "${HOME}/.yarnrc.yml"
 
-install.$(PKG_NAME):
+install:
 	$(H)echo "-- $(PKG_NAME): install package manager --"
 	$(H)if ! command -v node >/dev/null 2>&1; then
 		echo "node is required; run make npm first"
@@ -24,9 +24,10 @@ install.$(PKG_NAME):
 		corepack prepare yarn@stable --activate
 	fi
 
-remove.$(PKG_NAME):
+uninstall:
 	$(H)echo "-- $(PKG_NAME): remove config --"
 	$(H)rm -f "${HOME}/.yarnrc.yml"
 	$(H)rm -rf "${CONFIG_DIR}"
 
-.PHONY: config.$(PKG_NAME) install.$(PKG_NAME) remove.$(PKG_NAME)
+
+.PHONY: config install uninstall
