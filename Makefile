@@ -41,29 +41,36 @@ bin:
 	$(H)mkdir -p $(XDG_LOCAL_BIN)
 	$(H)cp -rvf $(ROOT)/bin/* $(XDG_LOCAL_BIN)
 
-%.remove:
-	$(H)$(eval NAME:=$(strip $(subst .remove,,$@)))
-	$(H)if [ -d "$(CONF_HOME)/$(NAME)" ]; then
-		rm -rvf $(CONF_HOME)/$(NAME)
-	elif [ -e "$(CONF_HOME)/dotfile/$(NAME)" ]; then
-		rm -rvf $(CONF_HOME)/dotfile/$(NAME)
-		rm -rvf ~/.$(NAME)
-	fi
-	$(H)echo "Remove Configuration: $(NAME)"
-
 install:
 	$(H)if [ -z "$(strip $(PKGS))" ]; then
 		echo "Usage: make install [pkg1] [pkg2] ..."
 		exit 1
 	fi
-	$(H)$(MAKE) --no-print-directory $(PKGS)
+	$(H)for pkg in $(PKGS); do
+		SRC_DIR="$(ROOT)/$$pkg"
+		DST_DIR="$(CONF_HOME)/$$pkg"
+		cp -rvf $$SRC_DIR $(CONF_HOME)/
+		if [ -e "$$DST_DIR/Makefile" ]; then
+			H=$(H) $(MAKE) --no-print-directory -C "$$DST_DIR" install || exit $$?
+		elif [ -e "$$DST_DIR/install.sh" ]; then
+			bash $$DST_DIR/install.sh
+		fi
+		printf -- "-- completed: $$pkg --\n\n"
+	done
 
 config:
 	$(H)if [ -z "$(strip $(PKGS))" ]; then
 		echo "Usage: make config [pkg1] [pkg2] ..."
 		exit 1
 	fi
-	$(H)$(MAKE) --no-print-directory $(PKGS)
+	$(H)for pkg in $(PKGS); do
+		DST_DIR="$(CONF_HOME)/$$pkg"
+		if [ -e "$$DST_DIR/Makefile" ]; then
+			H=$(H) $(MAKE) --no-print-directory -C "$$DST_DIR" config || exit $$?
+		elif [ -e "$$DST_DIR/configure.sh" ]; then
+			bash $$DST_DIR/configure.sh
+		fi
+	done
 
 uninstall:
 	$(H)if [ -z "$(strip $(PKGS))" ]; then
@@ -71,7 +78,23 @@ uninstall:
 		exit 1
 	fi
 	$(H)for pkg in $(PKGS); do
-		H=$(H) $(MAKE) --no-print-directory $$pkg.remove || exit $$?
+		if [ -d "$(CONF_HOME)/$$pkg" ]; then
+			if [ -f "$(CONF_HOME)/$$pkg/Makefile" ]; then
+				H=$(H) $(MAKE) --no-print-directory -C "$(CONF_HOME)/$$pkg" uninstall || true
+			elif [ -f "$(CONF_HOME)/$$pkg/uninstall.sh" ]; then
+				bash $(CONF_HOME)/$$pkg/uninstall.sh || true
+			fi
+			rm -rvf $(CONF_HOME)/$$pkg
+		elif [ -e "$(CONF_HOME)/dotfile/$$pkg" ]; then
+			if [ -f "$(CONF_HOME)/dotfile/$$pkg/Makefile" ]; then
+				H=$(H) $(MAKE) --no-print-directory -C "$(CONF_HOME)/dotfile/$$pkg" uninstall || true
+			elif [ -f "$(CONF_HOME)/dotfile/$$pkg/uninstall.sh" ]; then
+				bash $(CONF_HOME)/dotfile/$$pkg/uninstall.sh || true
+			fi
+			rm -rvf $(CONF_HOME)/dotfile/$$pkg
+			rm -rvf ~/.$$pkg
+		fi
+		echo "Remove Configuration: $$pkg"
 	done
 
 ifneq (,$(filter $(ACTION_TARGETS),$(MAKECMDGOALS)))
@@ -79,4 +102,4 @@ ifneq (,$(filter $(ACTION_TARGETS),$(MAKECMDGOALS)))
 	@:
 endif
 
-.PHONY: all %.remove install uninstall config $(LIST) $(ALIAS) bin
+.PHONY: all install uninstall config $(LIST) $(ALIAS) bin

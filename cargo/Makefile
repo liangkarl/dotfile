@@ -6,12 +6,12 @@ OSTYPE=$(shell uname)
 
 .ONESHELL:
 
-config.$(PKG_NAME): install.$(PKG_NAME)
+config:
 	$(H)echo "-- $(PKG_NAME): setup config --"
 	$(H)mkdir -p "${HOME}/.cargo"
 	$(H)ln -snf "${CONFIG_DIR}/config.toml" "${HOME}/.cargo/config.toml"
 
-install.$(PKG_NAME):
+install:
 	$(H)echo "-- $(PKG_NAME): install rust toolchain (cargo via rustup) --"
 	$(H)if command -v cargo >/dev/null 2>&1; then
 		echo "cargo already installed"
@@ -28,9 +28,10 @@ install.$(PKG_NAME):
 		curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 	fi
 
-remove.$(PKG_NAME):
+uninstall:
 	$(H)echo "-- $(PKG_NAME): remove config --"
 	$(H)rm -f "${HOME}/.cargo/config.toml"
 	$(H)rm -rf "${CONFIG_DIR}"
 
-.PHONY: config.$(PKG_NAME) install.$(PKG_NAME) remove.$(PKG_NAME)
+
+.PHONY: config install uninstall

@@ -6,11 +6,11 @@ CMD=source $(CONFIG_DIR)/bootstrap.sh
 SHELL:=bash
 
 .ONESHELL:
-config.$(PKG_NAME): install.$(PKG_NAME)
+config:
 	$(H)echo "-- $(PKG_NAME): setup config --"
 #	echo "${BLE_CMD}" >> ${CONFIG_DIR}/bootstrap.sh
 
-install.$(PKG_NAME):
+install:
 	$(H)lib.load devel
 	$(H)if [[ -z "$(shell which ${PKG_NAME})" ]]; then
 		$(H)echo "-- $(PKG_NAME): install package --"
@@ -23,8 +23,9 @@ install.$(PKG_NAME):
 		make -C ble.sh
 	fi
 
-remove.$(PKG_NAME):
+uninstall:
 	$(H)echo "-- $(PKG_NAME): remove package --"
 	$(H)rm -rf $(CONFIG_DIR)
 
-.PHONY: config.$(PKG_NAME) install.$(PKG_NAME) remove.$(PKG_NAME)
+
+.PHONY: config install uninstall

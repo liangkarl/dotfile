@@ -4,7 +4,7 @@ NVIM_VER=0.9.4
 TMP:=$(shell mktemp)
 
 .ONESHELL:
-config.$(PKG_NAME):
+config:
 	$(H)echo "-- $(PKG_NAME): setup config --"
 	# TODO: implement different fuzzy_finder
 	# PS3='select a fuzzy finder above: '
@@ -19,12 +19,13 @@ config.$(PKG_NAME):
 	$(H)nvim +"set nomodifiable nomodified" $(TMP)
 	$(H)rm -f $(TMP)
 
-install.$(PKG_NAME):
+install:
 	$(H)echo "-- $(PKG_NAME): install package --"
 	$(H)brew install neovim@${NVIM_VER}
 
-remove.$(PKG_NAME):
+uninstall:
 	$(H)echo "-- $(PKG_NAME): remove package --"
 	$(H)brew remove neovim
 
-.PHONY: config.$(PKG_NAME) install.$(PKG_NAME) remove.$(PKG_NAME)
+
+.PHONY: config install uninstall

@@ -10,7 +10,8 @@ EXTRACT_DIR := $(BUILD_DIR)/fonts_extract
 
 # ---- dedupe duplicate font files (by content hash) ----
 DUP_DIR := $(BUILD_DIR)/duplicate_fonts
-.PHONY: all install clean list dedupe dedupe-dry
+
+.PHONY: all install config uninstall clean list dedupe dedupe-dry
 
 all: install
 
@@ -45,6 +46,22 @@ install:
 	echo "==> Rebuilding font cache for $(DEST_DIR)"; \
 	$(CACHE_CMD) "$(DEST_DIR)"; \
 	echo "Done."
+
+config:
+	@echo "fonts config completed"
+
+uninstall:
+	@set -euo pipefail; \
+	echo "Removing managed font folders from: $(DEST_DIR)"; \
+	for z in $(ZIP_FILES); do \
+		name="$$(basename "$$z" .zip)"; \
+		rm -rf "$(DEST_DIR)/$$name"; \
+		echo "removed: $(DEST_DIR)/$$name"; \
+	done; \
+	if command -v fc-cache >/dev/null 2>&1; then \
+		$(CACHE_CMD) "$(DEST_DIR)"; \
+	fi
+
 
 list:
 	@echo "Zip files:"; \

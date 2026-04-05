@@ -5,7 +5,7 @@ MK_PATH    := $(abspath $(lastword $(MAKEFILE_LIST)))
 MK_DIR     := $(shell dirname $(MK_PATH))
 
 .ONESHELL:
-config.$(PKG_NAME): # Run in $(CONFIG_DIR)
+config: # Run in $(CONFIG_DIR)
 	$(H)echo "-- $(PKG_NAME): setup config --"
 	$(H)$(eval f=${HOME}/.bash_profile)
 	$(H)$(eval cmd="source ${HOME}/.bashrc")
@@ -53,11 +53,12 @@ config.$(PKG_NAME): # Run in $(CONFIG_DIR)
 
 	$(H)echo "** Please restart console to apply new bash configuration **"
 
-install.$(PKG_NAME):
+install:
 	$(H)echo "-- $(PKG_NAME): install package --"
 
-remove.$(PKG_NAME):
+uninstall:
 	$(H)echo "-- $(PKG_NAME): remove package --"
 	rm -rf $(MK_DIR)
 
-.PHONY: config.$(PKG_NAME) install.$(PKG_NAME) remove.$(PKG_NAME)
+
+.PHONY: config install uninstall

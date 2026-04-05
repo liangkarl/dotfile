@@ -6,11 +6,11 @@ OSTYPE=$(shell uname)
 
 .ONESHELL:
 
-config.$(PKG_NAME): install.$(PKG_NAME)
+config:
 	$(H)echo "-- $(PKG_NAME): setup config --"
 	$(H)ln -snf "${CONFIG_DIR}/npmrc" "${HOME}/.npmrc"
 
-install.$(PKG_NAME):
+install:
 	$(H)echo "-- $(PKG_NAME): install package manager --"
 	$(H)if [[ "$(OSTYPE)" == "Darwin" ]]; then
 		brew install node
@@ -21,9 +21,10 @@ install.$(PKG_NAME):
 		echo "Unsupported OS: $(OSTYPE)"
 	fi
 
-remove.$(PKG_NAME):
+uninstall:
 	$(H)echo "-- $(PKG_NAME): remove config --"
 	$(H)rm -f "${HOME}/.npmrc"
 	$(H)rm -rf "${CONFIG_DIR}"
 
-.PHONY: config.$(PKG_NAME) install.$(PKG_NAME) remove.$(PKG_NAME)
+
+.PHONY: config install uninstall
