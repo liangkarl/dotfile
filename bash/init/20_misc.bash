@@ -147,6 +147,18 @@ file() {
     command file $args
 }
 
+# Use for some environment settings failing to link brew libs/cmds
+# This function would temporarily remove all possible brew related
+# environment settings
+# pure_env cmd [args]
+pure() {
+  local cmd=$(which $1)
+  shift
+  env -u LDFLAGS -u CPPFLAGS -u PKG_CONFIG_PATH -u LD_LIBRARY_PATH \
+    PATH="/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin" \
+    $cmd $*
+}
+
 android_init() {
     # Generate compile_commands.json
     export SOONG_GEN_COMPDB=1
