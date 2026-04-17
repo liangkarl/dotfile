@@ -168,6 +168,12 @@ aerial = {
       -- The autocmds that trigger symbols update (not used for LSP backend)
       update_events = "TextChanged,InsertLeave",
 
+      -- Disable aerial on files with this many lines
+      disable_max_lines = 0,
+
+      -- Disable aerial on files this size or larger (in bytes)
+      disable_max_size = 0,
+
       -- Customize the characters used when show_guides = true
       guides = {
         -- When the child item has a sibling below it
