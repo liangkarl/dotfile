@@ -69,7 +69,7 @@ git.auto() {
 		fi
 	fi
 
-	if [[ -n "$change" ]] && act.check; then
+	if [[ -n "$change" ]] && action.check; then
 		git stash pop stash@{0} || echo "failed to restore unchecked changes"
 	fi
 }
