@@ -72,7 +72,6 @@ bind generic B  view-blame
 
 bind stage   1  none
 bind stage   2  none
-bind main    H  view-help
 
 # 0 -> 1 -> 2 -> 3 -> 8 -> 9 -> 0
 # main -> status -> refs -> stash -> log -> reflog -> main
@@ -164,7 +163,9 @@ bind generic gg move-first-line
 bind generic G  move-last-line
 bind main    G  move-last-line
 
-bind generic l  enter
+bind generic H  view-help
+bind generic l  scroll-right
+bind generic h  scroll-left
 bind generic q  view-close-no-quit
 bind generic J  next
 bind generic K  previous
@@ -172,18 +173,6 @@ bind generic <Up> move-up
 bind generic <Down> move-down
 bind generic Q  quit
 bind generic <Ctrl-r> <tig
-bind diff    l  scroll-right
-bind diff    h  scroll-left
-bind status  l  scroll-right
-bind status  h  scroll-left
-bind stage   l  scroll-right
-bind stage   h  scroll-left
-bind blame   l  scroll-right
-bind blame   h  scroll-left
-bind grep    l  scroll-right
-bind grep    h  scroll-left
-bind blob    l  scroll-right
-bind blob    h  scroll-left
 
 bind generic ;  +git rev-parse --show-toplevel
 
