@@ -19,6 +19,7 @@ lib.load ansi
 # source bash/env/12_ps1.bash;
 # ...
 source.dir "${BASH_CFG}/init"
+source "${BASH_CFG}/external.bash"
 
 msg.dbg "path: $PATH"
 msg.dbg "completed"

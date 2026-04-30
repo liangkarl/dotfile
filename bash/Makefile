@@ -40,6 +40,12 @@ config: # Run in $(CONFIG_DIR)
 	$(H)cat ${CONFIG_DIR}/init/* > ${CONFIG_DIR}/init/all
 	$(H)rm -rf ${CONFIG_DIR}/init/*.bash
 
+	# Create scratch extension.bash if it's not exist
+	$(H)if [ ! -e ${CONFIG_DIR}/external.bash ]; then
+		touch ${CONFIG_DIR}/external.bash
+	fi
+
+	# Copy completions
 	$(H)if [ ! -e "${COMPL_DIR}" ]; then
 		mkdir -p ${COMPL_DIR}
 	fi
