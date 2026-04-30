@@ -36,9 +36,9 @@ config: # Run in $(CONFIG_DIR)
 		fi
 	fi
 
-	$(H)rm -rf ${CONFIG_DIR}/init/all
-	$(H)cat ${CONFIG_DIR}/init/* > ${CONFIG_DIR}/init/all
-	$(H)rm -rf ${CONFIG_DIR}/init/*.bash
+	$(H)echo "# Auto-Generated Config" > ${CONFIG_DIR}/full-init.bash
+	$(H)cat ${CONFIG_DIR}/init/* >> ${CONFIG_DIR}/full-init.bash
+	$(H)rm -rf ${CONFIG_DIR}/init
 
 	# Create scratch extension.bash if it's not exist
 	$(H)if [ ! -e ${CONFIG_DIR}/external.bash ]; then
