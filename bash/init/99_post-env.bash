@@ -32,10 +32,10 @@ HISTIGNORE="&:ls:cd:pwd:exit:clear"
 # - history -n : read new lines from HISTFILE into this session
 # - history -w : write out the current history list (after erasedups effects)
 # Use a small guard to avoid spamming errors in restricted shells.
-__hist_sync() {
-  builtin history -a
-}
-PROMPT_COMMAND="__hist_sync${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
+# __hist_sync() {
+#   builtin history -a
+# }
+# PROMPT_COMMAND="__hist_sync${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
 
 # ---------------------------------------------------------
 
