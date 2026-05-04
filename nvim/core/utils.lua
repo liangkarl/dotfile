@@ -1,6 +1,18 @@
 local M = {}
 local api = vim.api
 
+IN_MAC = function()
+  return vim.fn.has('macunix') == 1
+end
+
+ALT_ = function (key)
+  if IN_MAC() then
+    return '<M-' .. key .. '>'
+  else
+    return '<A-' .. key .. '>'
+  end
+end
+
 M.key_is_free = function(mode, lhs)
   -- get all maps for this mode
   local maps = vim.api.nvim_get_keymap(mode)

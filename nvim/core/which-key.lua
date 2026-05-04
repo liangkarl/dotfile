@@ -332,6 +332,7 @@ local function config()
   -- t: terminal mode
   -- r: replace mode
   m.noremap({'i', 'n', 'v', 'x', 's', 'o', 'c'}, '<C-c>', '<Esc>', "<ESC>")
+  m.noremap('t', '<ESC>', [[<C-\><C-n>]])
   m.noremap('i', '<C-s>', '<C-o>', "<C-o>")
   m.noremap('v', 'p', 'P', "Paste without yanking the deleted text")
 
@@ -363,12 +364,12 @@ local function config()
   -- Porting shell keyboard shortcuts
   m.noremap({ 'i', 'c' }, '<C-a>', '<Home>')
   m.noremap({ 'i', 'c' }, '<C-e>', '<End>')
-  m.noremap({ 'i', 'c' }, '<M-f>', '<C-Right>')
-  m.noremap({ 'i', 'c' }, '<M-b>', '<C-Left>')
   m.noremap('i', '<C-x><C-x>', '<Esc>``a')
-  m.noremap('i', '<M-d>', '<C-o>dw')
-  m.noremap('c', '<M-d>', '<C-Right><C-w>')
-  m.noremap({'i', 'c'}, '<M-BS>', '<C-w>')
+  m.noremap({ 'i', 'c' }, ALT_('f'), '<C-Right>')
+  m.noremap({ 'i', 'c' }, ALT_('b'), '<C-Left>')
+  m.noremap('i', ALT_('d'), '<C-o>dw')
+  m.noremap('c', ALT_('d'), '<C-Right><C-w>')
+  m.noremap({'i', 'c'}, ALT_('BS'), '<C-w>')
   m.noremap("i", "<C-k>", "<C-o>D")
   m.noremap("c", "<C-k>", "<C-k>")   -- default: delete to EOL
   m.noremap("i", "<C-y>", '<C-r>"')
@@ -414,11 +415,16 @@ local function config()
 
       --- action: switch
       --- <TAB> = <C-i> that could makes pause while using <C-i>
-      { '<leader>\\', '<C-w>w', desc = "Switch to next window"},
-      { '<leader><Left>', '<C-w>h',desc = "Switch to left window"},
-      { '<leader><Down>', '<C-w>j',desc = "Switch to down window"},
-      { '<leader><Up>', '<C-w>k', desc = "Switch to up window"},
-      { '<leader><Right>', '<C-w>l', desc = "Switch to right window"},
+      { ALT_('\\'), '<C-\\><C-n><C-w>w', mode = {"t"}, desc = "Switch to next window"},
+      { ALT_('Left'), '<C-\\><C-n><C-w>h', mode = {"t"}, desc = "Switch to left window"},
+      { ALT_('Down'), '<C-\\><C-n><C-w>j', mode = {"t"}, desc = "Switch to down window"},
+      { ALT_('Up'), '<C-\\><C-n><C-w>k', mode = {"t"}, desc = "Switch to up window"},
+      { ALT_('Right'), '<C-\\><C-n><C-w>l', mode = {"t"}, desc = "Switch to right window"},
+      { ALT_('\\'), '<C-w>w', mode = {"o", "x", "n"}, desc = "Switch to next window"},
+      { ALT_('Left'), '<C-w>h', mode = {"o", "x", "n"}, desc = "Switch to left window"},
+      { ALT_('Down'), '<C-w>j', mode = {"o", "x", "n"}, desc = "Switch to down window"},
+      { ALT_('Up'), '<C-w>k', mode = {"o", "x", "n"}, desc = "Switch to up window"},
+      { ALT_('Right'), '<C-w>l', mode = {"o", "x", "n"}, desc = "Switch to right window"},
       { '<leader><S-TAB>', '<cmd>BufferLineCyclePrev<cr>', desc = "Switch to previous buffer"},
       { '<leader><TAB>', '<cmd>BufferLineCycleNext<cr>', desc = "Switch to next buffer"},
 
