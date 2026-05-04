@@ -164,6 +164,7 @@ bind generic G  move-last-line
 bind main    G  move-last-line
 
 bind generic H  view-help
+bind main    H  view-help
 bind generic l  scroll-right
 bind generic h  scroll-left
 bind generic q  view-close-no-quit
