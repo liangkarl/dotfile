@@ -408,10 +408,13 @@ local function config()
       -- There are two different clipboards for Linux and only one for Win
       -- *: clipboard for copy-on-select
       -- +: clipboard for <C-c> and <C-v>
-      {  '<leader>ps', '"+p', desc = "Paste from Clipboard"},
-      {  '<leader>Ps', '"+P', desc = "Paste from Clipboard"},
-      {  '<leader>pc', '"*p', desc = "Paste from 'copy-on-select' Clipboard"},
-      {  '<leader>Pc', '"*P', desc = "Paste from 'copy-on-select' Clipboard"},
+      { "y", "<Plug>(YankyYank)", mode = { "n", "x" }, desc = "Yank text" },
+      { "p", "<Plug>(YankyPutAfter)", mode = { "n", "x" }, desc = "Put yanked text after cursor" },
+      { "P", "<Plug>(YankyPutBefore)", mode = { "n", "x" }, desc = "Put yanked text before cursor" },
+      { '<leader>ps', '"+p', desc = "Paste from Clipboard"},
+      { '<leader>Ps', '"+P', desc = "Paste from Clipboard"},
+      { '<leader>pc', '"*p', desc = "Paste from 'copy-on-select' Clipboard"},
+      { '<leader>Pc', '"*P', desc = "Paste from 'copy-on-select' Clipboard"},
 
       --- action: switch
       --- <TAB> = <C-i> that could makes pause while using <C-i>
