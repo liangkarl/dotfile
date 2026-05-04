@@ -17,7 +17,13 @@ lib.load config
 # PATCH='xxx yyy zzz'
 
 topdir="$(git rev-parse --show-toplevel)"
-gitdir="${topdir}/.git"
+gitdir="$(
+	if [[ -f "${dir}" ]]; then
+		echo $(cat $dir | awk -F: '{print $2}')/.git
+	else
+		echo ${topdir}/.git
+	fi
+)"
 tmpdir='/tmp/tig'
 node="${tmpdir}/node"
 commits=${tmpdir}/tig.commits
@@ -569,6 +575,7 @@ action.check() {
 	local hdr bis
 
 	bis=${gitdir}/BISECT_START
+	echo "gitdir: ${gitdir}"
 	if [[ -e $bis ]]; then
 		echo "'${opts[$bis]}' is in progress"
 		return 1
