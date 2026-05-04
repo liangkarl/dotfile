@@ -43,9 +43,6 @@ require("lazy").setup({
   -- Start-up screen
   require('config.vim-startify'),
 
-  require('config.trouble'),
-  require('config.nvim-bqf'),
-
   -- Status line (button)
   require('config.lualine'),
 
@@ -54,6 +51,8 @@ require("lazy").setup({
 
   require('config.symbol-list'),
 
+  -- Layout
+
   -- Enhanced functions
   require('config.nvim-treesitter'),
   require('config.vim-polyglot'),
@@ -61,6 +60,11 @@ require("lazy").setup({
   require('config.vim-doge'),
   require('config.yanky'),
   require('config.scope'),
+  require('config.trouble'),
+  require('config.nvim-bqf'),
+  require('config.bufresize'),
+  require('config.edgy'),
+  require('config.maximizer'),
 
   -- jump list
   require('config.jumppack'),
@@ -82,6 +86,7 @@ require("lazy").setup({
   require('config.vim-clang-format'),
 
   -- LSP plugin
+  require('core.lspconfig'),
   require('config.dropbar'),
 
   -- Debug Tools
@@ -113,9 +118,6 @@ require("lazy").setup({
   -- require('config.tabnine-nvim'),
   require('config.nvim-ufo'),
   require('config.editorconfig'),
-
-  -- LSP
-  require('core.lspconfig'),
 
   -- Keymaps
   require("core.which-key")
