@@ -638,6 +638,18 @@ local function config()
       { '<leader><space>g', '<cmd>TigOpenProjectRootDir<cr>', desc = "Tig: Project Root Dir"},
       { '<leader><space>s', '<cmd>AerialToggle<cr>', desc = 'Symbol Manager'},
       { '<leader><space>f', '<cmd>lua MiniFiles.open()<cr>', desc = 'File Explorer'},
+      {
+        '<leader><leader>o', -- Change this to your preferred keybinding
+        function() require('codex').toggle() end,
+        desc = 'Codex: Toggle',
+        mode = { 'n' },
+      },
+      {
+        '<leader><leader>o', -- Change this to your preferred keybinding
+        function() require('codex').actions.send_selection() end,
+        desc = 'Codex: Send selection',
+        mode = { 'v' },
+      }
     },
   })
 

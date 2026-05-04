@@ -22,6 +22,7 @@ opt.wildignore = "*.o,*.obj,.git,*.rbc,.pyc,__pycache__"
 g.set_list(false)
 opt.bomb = true              -- Set Byte Order Mask(BOM) dealing with UTF8 in window
 opt.equalalways = false      -- Close a split window in Vim without resizing other windows
+opt.splitkeep = "screen"
 opt.mouse = ""               -- disable support mouse action in normal mode.
 opt.clipboard = 'unnamed'    -- Copy/paste to system clipboard (, the selected copy one)
 opt.diffopt = opt.diffopt .. ",algorithm:histogram"

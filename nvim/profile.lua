@@ -142,6 +142,16 @@ m.highlight("MiniCursorwordCurrent", { underline = true, sp = 'tomato', ctermfg 
 m.autocmd("BufReadPost", "*", 'silent! GuessIndent', { group = gid })
 m.autocmd("VimEnter", "*", 'clearjumps', { group = gid })
 
+vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "TermOpen" }, {
+  callback = function()
+    if vim.bo.buftype == "terminal" then
+      vim.schedule(function()
+        vim.cmd("startinsert")
+      end)
+    end
+  end,
+})
+
 cmd([[
   " no one is really happy until you have this shortcuts
   cab W! w!
