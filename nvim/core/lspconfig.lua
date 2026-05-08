@@ -88,6 +88,7 @@ end
 
 return { -- LSP configuration
   'neovim/nvim-lspconfig',
+  tag = 'v2.9.0',
   dependencies = {
     { -- Following mason's requirements, install `mason.nvim`, `mason-lspconfig` and `nvim-lspconfig` by order
       "williamboman/mason.nvim",
@@ -106,18 +107,17 @@ return { -- LSP configuration
     },
   },
   config = function()
-    local lspconfig = require('lspconfig')
     local lsp_status = require('lsp-status')
     local lsps = require('mason-lspconfig.settings').current.ensure_installed
     local lsp = {}
-    local util = require('lspconfig.util')
     local lua_ls
 
     for _, server in ipairs(lsps) do
       lsp[server] = {
         on_attach = lsp_status.on_attach,
-        root_dir = util.root_pattern(".root", ".git"),
-        root_markers = util.root_pattern(".root", ".git"),
+        root_dir = function(bufnr)
+          return vim.fs.root(bufnr, { ".root", ".git" })
+        end,
       }
     end
 
@@ -155,7 +155,8 @@ return { -- LSP configuration
 
     -- initialize basic configurations for LSP servers installed by mason
     for _, server in ipairs(lsps) do
-      lspconfig[server].setup(lsp[server])
+      vim.lsp.config(server, lsp[server])
+      vim.lsp.enable(server)
     end
 
     -- configurations for external installation of LSP
