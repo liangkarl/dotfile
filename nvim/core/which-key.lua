@@ -262,7 +262,7 @@ local function config()
 
   gid = m.augroup("KeybindProfile")
 
-  m.autocmd('BufAdd', "*", function ()
+  m.autocmd({'BufAdd', 'BufHidden'}, "*", function ()
     if not vim.bo.modifiable then
       -- Using :quit instead of :close is because :quit could exit nvim
       -- once the current buffer is the last buffer

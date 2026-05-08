@@ -67,7 +67,7 @@ vim.opt.inccommand='nosplit'
 gid = m.augroup("UserProfile")
 
 -- Reload layout
-m.autocmd("FIleType", "Telescope*", function () vim.b.skip_edit = true end, {
+m.autocmd("FileType", "Telescope*", function () vim.b.skip_edit = true end, {
   desc = "Black list for edit mode",
   group = gid
 })
@@ -146,6 +146,7 @@ vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "TermOpen" }, {
   callback = function()
     if vim.bo.buftype == "terminal" then
       vim.schedule(function()
+        vim.b.miniindentscope_disable = true
         vim.cmd("startinsert")
       end)
     end
