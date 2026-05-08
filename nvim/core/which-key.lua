@@ -365,7 +365,11 @@ local function config()
   m.noremap({ 'i', 'c' }, '<C-a>', '<Home>')
   m.noremap({ 'i', 'c' }, '<C-e>', '<End>')
   m.noremap('i', '<C-x><C-x>', '<Esc>``a')
-  m.noremap({ 'i', 'c' }, ALT_('f'), '<C-Right>')
+  m.noremap({ 'i', 'c' }, ALT_('h'), '<Left>')
+  m.noremap({ 'i', 'c' }, ALT_('l'), '<Right>')
+  m.noremap({ 'i', 'c' }, ALT_('k'), '<Up>')
+  m.noremap({ 'i', 'c' }, ALT_('j'), '<Down>')
+  m.noremap({ 'i', 'c' }, ALT_('w'), '<C-Right>')
   m.noremap({ 'i', 'c' }, ALT_('b'), '<C-Left>')
   m.noremap('i', ALT_('d'), '<C-o>dw')
   m.noremap('c', ALT_('d'), '<C-Right><C-w>')
@@ -394,16 +398,6 @@ local function config()
       -- <leader>q would be dynamically set up
       -- { '<leader>q', quit, desc = "Close Current Buffer and Window"},
       { '<leader>[', '<cmd>Telescope buffers<cr>', desc = "Switch opened buffers"},
-      { '<leader>K', function()
-        builtin.help_tags({ default_text = vim.fn.expand('<cword>') })
-      end, desc = "Show Vim doc like :help" },
-      { '<leader>M', function()
-        local word = "^" .. vim.fn.expand("<cword>") .. "$"
-        builtin.man_pages({
-          default_text = word ~= "^$" and word or nil,
-          sections = { "ALL" },
-        })
-      end, desc = "Show Man doc like :Man" },
 
       -- There are two different clipboards for Linux and only one for Win
       -- *: clipboard for copy-on-select
@@ -418,20 +412,27 @@ local function config()
 
       --- action: switch
       --- <TAB> = <C-i> that could makes pause while using <C-i>
-      { ALT_('\\'), '<C-\\><C-n><C-w>w', mode = {"t"}, desc = "Switch to next window"},
-      { ALT_('Left'), '<C-\\><C-n><C-w>h', mode = {"t"}, desc = "Switch to left window"},
-      { ALT_('Down'), '<C-\\><C-n><C-w>j', mode = {"t"}, desc = "Switch to down window"},
-      { ALT_('Up'), '<C-\\><C-n><C-w>k', mode = {"t"}, desc = "Switch to up window"},
+      { ALT_('\\'),    '<C-\\><C-n><C-w>w', mode = {"t"}, desc = "Switch to next window"},
+      { ALT_('Left'),  '<C-\\><C-n><C-w>h', mode = {"t"}, desc = "Switch to left window"},
+      { ALT_('Down'),  '<C-\\><C-n><C-w>j', mode = {"t"}, desc = "Switch to down window"},
+      { ALT_('Up'),    '<C-\\><C-n><C-w>k', mode = {"t"}, desc = "Switch to up window"},
       { ALT_('Right'), '<C-\\><C-n><C-w>l', mode = {"t"}, desc = "Switch to right window"},
-      { ALT_('\\'), '<C-w>w', mode = {"o", "x", "n"}, desc = "Switch to next window"},
-      { ALT_('Left'), '<C-w>h', mode = {"o", "x", "n"}, desc = "Switch to left window"},
-      { ALT_('Down'), '<C-w>j', mode = {"o", "x", "n"}, desc = "Switch to down window"},
-      { ALT_('Up'), '<C-w>k', mode = {"o", "x", "n"}, desc = "Switch to up window"},
+      { ALT_('\\'),    '<Esc><C-w>w', mode = {"i"}, desc = "Switch to next window"},
+      { ALT_('Left'),  '<Esc><C-w>h', mode = {"i"}, desc = "Switch to left window"},
+      { ALT_('Down'),  '<Esc><C-w>j', mode = {"i"}, desc = "Switch to down window"},
+      { ALT_('Up'),    '<Esc><C-w>k', mode = {"i"}, desc = "Switch to up window"},
+      { ALT_('Right'), '<Esc><C-w>l', mode = {"i"}, desc = "Switch to right window"},
+      { ALT_('\\'),    '<C-w>w', mode = {"o", "x", "n"}, desc = "Switch to next window"},
+      { ALT_('Left'),  '<C-w>h', mode = {"o", "x", "n"}, desc = "Switch to left window"},
+      { ALT_('Down'),  '<C-w>j', mode = {"o", "x", "n"}, desc = "Switch to down window"},
+      { ALT_('Up'),    '<C-w>k', mode = {"o", "x", "n"}, desc = "Switch to up window"},
       { ALT_('Right'), '<C-w>l', mode = {"o", "x", "n"}, desc = "Switch to right window"},
       { '<leader><S-TAB>', '<cmd>BufferLineCyclePrev<cr>', desc = "Switch to previous buffer"},
       { '<leader><TAB>', '<cmd>BufferLineCycleNext<cr>', desc = "Switch to next buffer"},
+      { '<leader>g', function() require("flash").jump() end, mode = { "n", "x", "o" }, desc = "Flash"},
+      { ALT_('g'), function() require("flash").jump() end, mode = { "i", "c" }, desc = "Flash"},
 
-      { 'S', function() require("flash").treesitter() end, mode = { "n", "x", "o" }, desc = "Flash Treesitter" },
+      { '<leader>v', function() require("flash").treesitter() end, mode = { "n", "x", "o" }, desc = "Flash Treesitter" },
       { 'r', mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
       { 'R', mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
     },
@@ -439,7 +440,6 @@ local function config()
       group = "Extra Cmd G",
       { 'g0', '^', desc = "Go to the first character of line" },
       { 'g9', '$', desc = "Go to the end of line" },
-      { 'g/', function() require("flash").jump() end, mode = { "n", "x", "o" }, desc = "Flash"},
       { "g[", function ()
         exe_loop({
           { id = 'trouble', action = 'Trouble lsp_outgoing_calls toggle' },
@@ -625,8 +625,18 @@ local function config()
       { '<leader><space>l', '<cmd>Mason<cr>', desc = "Mason: Main Menu" },
       { '<leader><space>p', '<cmd>Lazy<cr>', desc = "Lazy: Main Menu" },
       { '<leader><space>t', '<cmd>Telescope builtin include_extensions=true<cr>', desc = "Telescope: Main Menu"},
-      { '<leader><space>h', '<cmd>Telescope help_tags<cr>', desc = "Help Manuals"},
-      { '<leader><space>m', '<cmd>Telescope man_pages sections=ALL<cr>', desc = "Manuals"},
+      { '<leader><space>H', '<cmd>Telescope help_tags<cr>', desc = "Nvim Docs"},
+      { '<leader><space>h', function()
+        builtin.help_tags({ default_text = vim.fn.expand('<cword>') })
+      end, desc = "Search current word in nvim docs" },
+      { '<leader><space>M', '<cmd>Telescope man_pages sections=ALL<cr>', desc = "Man Docs"},
+      { '<leader><space>m', function()
+        local word = "^" .. vim.fn.expand("<cword>") .. "$"
+        builtin.man_pages({
+          default_text = word ~= "^$" and word or nil,
+          sections = { "ALL" },
+        })
+      end, desc = "Search current word in man docs" },
       { '<leader><space>k', '<cmd>Telescope keymaps<cr>', desc = "Keymaps" },
       { '<leader><space>r', '<cmd>Telescope registers<cr>', desc = "Registers" },
       { '<leader><space>y', '<cmd>Telescope yank_history<cr>', desc = "Clipboard History" },
