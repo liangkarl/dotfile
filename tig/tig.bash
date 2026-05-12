@@ -29,6 +29,7 @@ node="${tmpdir}/node"
 commits=${tmpdir}/tig.commits
 infos=${tmpdir}/tig.save
 p_opts='--binary --histogram'
+patchdir=${topdir}/git-patch
 
 heads=(
 	REBASE_HEAD
@@ -49,7 +50,7 @@ opts=(
 
 mkdir $tmpdir 2> $__N
 
-cmd.msg() {
+show_cmd() {
 	if $*; then
 		echo "'$*' done"
 	else
@@ -58,7 +59,7 @@ cmd.msg() {
 	fi
 }
 
-git.msg() { cmd.msg git $*; }
+git.msg() { show_cmd git $*; }
 
 git.auto() {
 	local list="stash rebase merge cherry-pick revert"
@@ -379,25 +380,40 @@ stage.file() {
 	fi
 }
 
-# (commit) C= patch.create
-# (diff)   C=000... NAME= patch.create
-# [OPT=all] patch.create
+# (stash)  TYPE=stash        C=stash@{x} [FILE=] patch.create
+# (diff)   TYPE=new-patch    C=[000..|xxx] [FILE=] patch.create
+# (select) TYPE=select-patch patch.create
 patch.create() {
-	if [[ -z "$C" ]]; then
+	[[ ! -d "$patchdir" ]] && mkdir ${patchdir}
+
+	out=${patchdir}/${NAME:-$(date +%y%m%d-%H%M%S)}${FILE:+_$(basename $FILE)}
+	case "$TYPE" in
+	new-patch)
+		echo "output: ${out}.patch"
+		if [[ "$C" =~ ^0+$ ]]; then
+			git diff $p_opts ${FILE+-- $FILE} | tee ${out}.patch
+		elif is_commit $C; then
+			git diff $p_opts ${C}^ ${C} ${FILE+-- $FILE} | tee ${out}.patch
+		fi
+		;;
+	stash)
+		echo "output: ${out}.patch"
+		git diff $p_opts ${C}^1 ${C} ${FILE+-- $FILE} | tee ${out}.patch
+		;;
+	select-patch)
 		local item i
 
 		i=100
 		for item in $(cat $commits); do
-			git format-patch --start-number $((i++)) -k $p_opts -1 -o git-patch $item
+			git format-patch --start-number $((i++)) -k $p_opts -1 -o ${patchdir} $item
 		done &> $__N
 
 		select.reset
 		echo "$((i - 100)) patches has been created."
-	elif [[ "$C" =~ ^0+$ ]]; then
-		git.msg diff --output=${NAME}.diff $p_opts $FILE
-	elif is_commit $C; then
-		git.msg format-patch -k $p_opts -o git-patch -1 $C $FILE
-	fi
+		;;
+	*)
+		echo "unknown type $TYPE"
+	esac
 }
 
 # C= commit.create

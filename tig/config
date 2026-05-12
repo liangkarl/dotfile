@@ -305,22 +305,23 @@ bind diff   cp       :!git cmd git.auto cherry-pick -s %(commit)
 bind diff   cp       :!git cmd git.msg  cherry-pick -s %(commit)
 
 ## Format patch
-bind main   p<Enter> :!git cmd patch.create
-bind main   pn       :!git cmd patch.create C=%(commit)^
-bind main   p1       :!git cmd patch.create C=%(commit) NAME='$(date +%y%m%d%H%M%S)'
-bind diff   p<Enter> :!git cmd patch.create
-bind diff   p1       :!git cmd patch.create C=%(commit)
-bind diff   pn       :!git cmd patch.create C=%(commit)^
-bind diff   pf       :!git cmd patch.create C=%(commit) FILE=%(file)
-bind log    p<Enter> :!git cmd patch.create
-bind log    p1       :!git cmd patch.create C=%(commit)
-bind log    pn       :!git cmd patch.create C=%(commit)^
-bind log    pf       :!git cmd patch.create C=%(commit) FILE=%(file)
-bind reflog p<Enter> +git  cmd patch.create
-bind reflog p1       :!git cmd patch.create C=%(commit)
-bind blame  p1       :!git cmd patch.create C=%(commit)
-bind stage  p1       :!git cmd patch.create C=%(commit) NAME='$(date +%y%m%d%H%M%S)'
-bind stage  pf       :!git cmd patch.create C=%(commit) NAME='$(date +%y%m%d%H%M%S)_$(basename %(file))'  FILE=%(file)
+bind main   p<Enter> :!git cmd patch.create TYPE=select-patch
+bind main   p1       :!git cmd patch.create TYPE=new-patch C=%(commit)
+bind diff   p<Enter> :!git cmd patch.create TYPE=select-patch
+bind diff   p1       :!git cmd patch.create TYPE=new-patch C=%(commit)
+bind diff   pf       :!git cmd patch.create TYPE=new-patch C=%(commit) FILE=%(file)
+bind log    p<Enter> :!git cmd patch.create TYPE=select-patch
+bind log    p1       :!git cmd patch.create TYPE=new-patch C=%(commit)
+bind log    pf       :!git cmd patch.create TYPE=new-patch C=%(commit) FILE=%(file)
+bind reflog p<Enter> +git  cmd patch.create TYPE=select-patch
+bind reflog p1       :!git cmd patch.create TYPE=new-patch C=%(commit)
+bind reflog pf       :!git cmd patch.create TYPE=new-patch C=%(commit) FILE=%(file)
+bind blame  p1       :!git cmd patch.create TYPE=new-patch C=%(commit)
+bind blame  pf       :!git cmd patch.create TYPE=new-patch C=%(commit) FILE=%(file)
+bind stage  p1       :!git cmd patch.create TYPE=new-patch C=%(commit)
+bind stage  pf       :!git cmd patch.create TYPE=new-patch C=%(commit) FILE=%(file)
+bind stash  p1       :!git cmd patch.create TYPE=stash C=%(stash)
+bind stash  pf       :!git cmd patch.create TYPE=stash C=%(stash) FILE=%(file)
 
 # Save Info
 bind refs   ss       :!git cmd info.write   C=%(commit) BR=%(branch) REF=%(refname) TAG=%(tag) FILE=%(file) OFILE=%(file_old)
