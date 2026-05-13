@@ -112,38 +112,39 @@ bind diff   = <tig show %(commit)
 bind stage  = <tig
 
 ## Blame format
-bind blame -<ENTER> <tig blame -w -C -C -C %(file)
-bind blame -f       <tig --no-merges -- %(file)
+bind blame -<ENTER> :set blame-options += -w -C -C -C
 
 ## Diff format
-bind diff  -<ENTER> :set diff-options = --patience --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
+bind diff  -<ENTER> :set diff-options += --patience --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
 bind diff  -r       :set diff-options = --patience
-bind diff  -f       <tig --no-merges -- %(file)
+bind diff  -f       :set diff-options += --no-merges -- %(file)
 
 ## Stage format
-bind stage -<ENTER> :set diff-options = --patience --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
+bind stage -<ENTER> :set diff-options += --patience --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
 bind stage -r       :set diff-options = --patience
-bind stage -f       <tig --no-merges -- %(file)
+bind stage -f       :set diff-options += --no-merges -- %(file)
 
 ## Main format
-bind main  -<ENTER> <tig --no-merges
-bind main  -a       <tig --no-merges --author="%(prompt search author name: )"
+bind main  -<ENTER> :set main-options += --no-merges
+bind main  -A       :set main-options += --no-merges --author="%(prompt search author name: )"
 
 ## Refs format
 bind refs  -b       <tig refs --branches
 bind refs  -t       <tig refs --tags
 bind refs  -r       <tig refs --remotes
 
-## tree/blob format
-bind blob  -f       <tig --no-merges -- %(file)
-bind tree  -f       <tig --no-merges -- %(file)
+## tree/blob/blame -> main %(file)
+bind blob  -f       >tig --no-merges -- %(file)
+bind tree  -f       >tig --no-merges -- %(file)
+bind blame -f       >tig --no-merges -- %(file)
 
 # Log format
-bind log   -<ENTER> :set log-options = --patience -p --no-merges --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
-bind log   -v       :set log-options = --patience -p
+bind log   -<ENTER> :set log-options += --patience -p --no-merges --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
 bind log   -r       :set log-options = --patience
-bind log   -a       <tig log --no-merges --author="%(prompt search author name: )"
-bind log   -f       <tig log -- "%(file)"
+bind log   -v       :set log-options += -p
+bind log   -s       :set log-options += --stat
+bind log   -A       :set log-options += --no-merges --author="%(prompt search author name: )"
+bind log   -f       :set log-options += -- "%(file)"
 
 ## Options
 bind generic os :toggle sort-field
