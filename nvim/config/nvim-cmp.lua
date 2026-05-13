@@ -72,8 +72,6 @@ return { -- Autocomplete framework
     local cmp = require('cmp')
     local luasnip = require('luasnip')
     local lspkind = require('lspkind')
-    local mason_lsp = require('mason-lspconfig.settings').current.ensure_installed
-    local lspconfig = require('lspconfig')
     local cap = vim.lsp.protocol.make_client_capabilities()
 
     -- Set completeopt to have a better completion experience
@@ -148,11 +146,8 @@ return { -- Autocomplete framework
       },
     }
 
-    for _, lsp in ipairs(mason_lsp) do
-      lspconfig[lsp].setup({
-        -- on_attach = my_custom_on_attach,
-        capabilities = cap,
-      })
-    end
+    vim.lsp.config("*", {
+      capabilities = cap,
+    })
   end,
 }
