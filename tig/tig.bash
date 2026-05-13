@@ -424,9 +424,10 @@ commit.create() {
 		list+="$item "
 	done &> $__N
 
-	git.msg cherry-pick -n $list
-	git commit -e -m "$(printf "TITLE:\n\nMerged:\n"; git show -s --format='- %h: %s' $list)"
-	select.reset
+	if git.msg cherry-pick -n $list; then
+		git commit -e -m "$(printf "TITLE:\n\nMerged:\n"; git show -s --format='- %h: %s' $list)"
+		select.reset
+	fi
 }
 
 select.refresh() {
