@@ -271,14 +271,10 @@ bind diff   cO        +?git cmd git.msg  checkout %(commit)^ -- %(file)
 
 ### File Operation
 bind main   dc       +?git cmd git.msg clean -fd
-bind status d<Enter> +?git cmd cmd rm -rf %(file)
-bind status dd       +?git cmd cmd rm -rf $(dirname %(file))
 bind status dc       +?git cmd git.msg clean -fd
-bind stage  d<Enter> +?git cmd cmd rm -rf %(file)
-bind stage  dd       +?git cmd cmd rm -rf $(dirname %(file))
-bind stage  dc       +?git cmd git.msg clean -fd
-bind diff   d<Enter> +?git cmd cmd rm -rf %(file)
-bind diff   dd       +?git cmd cmd rm -rf $(dirname %(file))
+bind status dd       !git cmd delete NAME=%(file)
+bind stage  dd       !git cmd delete NAME=%(file)
+bind diff   dd       !git cmd delete NAME=%(file)
 
 ## Reset commits
 bind stage  r.       +?git cmd git.msg reset --hard

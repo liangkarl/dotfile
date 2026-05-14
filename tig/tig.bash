@@ -97,6 +97,22 @@ file.checkout() {
     true
 }
 
+# NAME= delete
+delete() {
+	name=$NAME
+	target=$(while [[ "$name" != '.' ]]; do
+		echo "$name"
+		name=$(dirname $name)
+	done | fzf --prompt='Delete Target: ')
+
+	if [[ -z "$target" ]]; then
+		echo "no file selected"
+		return 1
+	fi
+
+	rm -ivr $target
+}
+
 # br.add() {
 #
 # }
