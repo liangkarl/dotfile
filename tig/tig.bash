@@ -416,18 +416,46 @@ patch.create() {
 	esac
 }
 
-# C= commit.create
+# TYPE=merge-pick commit.create
+# TYPE=reuse-msg  commit.create
 commit.create() {
 	local item list
 
-	for item in $(cat $commits); do
-		list+="$item "
-	done &> $__N
+	case "$TYPE" in
+	merge-pick)
+		for item in $(cat $commits); do
+			list+="$item "
+		done &> $__N
 
-	if git.msg cherry-pick -n $list; then
-		git commit -e -m "$(printf "TITLE:\n\nMerged:\n"; git show -s --format='- %h: %s' $list)"
-		select.reset
-	fi
+		if [[ -z "$item" ]]; then
+			echo "no commit has been selected"
+			return 1
+		fi
+
+		if ! git.msg cherry-pick -n $list; then
+			echo "merging cherry-pick has failed"
+			return 2
+		fi
+
+		if git commit -e -m "$(printf "TITLE:\n\nMerged:\n"; git show -s --format='- %h: %s' $list)"; then
+            select.reset
+		fi
+		;;
+	reuse-msg)
+		sha=$(sed -n '1p' $commits)
+
+		if [[ -z "$sha" ]]; then
+			echo "no commit has been selected"
+			return 1
+		fi
+
+		if git commit -e -C $sha; then
+			select.reset
+		fi
+		;;
+	*)
+		echo "unknown type $TYPE"
+	esac
 }
 
 select.refresh() {

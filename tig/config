@@ -296,14 +296,14 @@ bind main   r<Enter> +?git cmd git.msg reset %(commit)
 ## Cherry-pick
 bind main   cp       :!git cmd git.auto cherry-pick -s %(commit)
 bind main   cP       :!git cmd git.msg  cherry-pick -s %(commit)
-bind main   cs       >git  cmd commit.create
-bind refs   cp       :!git cmd git.auto cherry-pick -s %(commit)
-bind refs   cp       :!git cmd git.msg  cherry-pick -s %(commit)
+bind main   cs       >git  cmd commit.create TYPE=merge-pick
+bind main   cc       >git  cmd commit.create TYPE=reuse-msg
 bind reflog cp       :!git cmd git.auto cherry-pick -s %(commit)
-bind reflog cp       :!git cmd git.msg  cherry-pick -s %(commit)
-bind reflog cs       >git  cmd commit.create
+bind reflog cP       :!git cmd git.msg  cherry-pick -s %(commit)
+bind reflog cs       >git  cmd commit.create TYPE=merge-pick
+bind reflog cc       >git  cmd commit.create TYPE=reuse-msg
 bind diff   cp       :!git cmd git.auto cherry-pick -s %(commit)
-bind diff   cp       :!git cmd git.msg  cherry-pick -s %(commit)
+bind diff   cP       :!git cmd git.msg  cherry-pick -s %(commit)
 
 ## Format patch
 bind main   p<Enter> :!git cmd patch.create TYPE=select-patch
