@@ -81,6 +81,36 @@ git.auto() {
 	fi
 }
 
+dump_refs() {
+	git for-each-ref $1 \
+		--format='refname=%(refname)
+			short=%(refname:short)
+			objectname=%(objectname)
+			subject=%(contents:subject)
+			upstream=%(upstream:short)
+			upstream_track=%(upstream:track)
+			remote=%(upstream:remotename)
+			objecttype=%(objecttype)
+			tagger=%(taggername)
+			taggerdate=%(taggerdate)'
+}
+
+dump_remote_branch() {
+	git for-each-ref refs/remotes/$1 \
+		--format='refname=%(refname)
+			short=%(refname:short)
+			objectname=%(objectname)
+			subject=%(contents:subject)'
+}
+
+dump_tag() {
+	git for-each-ref refs/tags/$1 \
+		--format='refname=%(refname)
+			short=%(refname:short)
+			objectname=%(objectname)
+			subject=%(contents:subject)'
+}
+
 # is_commit <sha>
 is_commit() { git rev-parse --verify --quiet ${1} &> $__N; }
 # is_branch <branch>
