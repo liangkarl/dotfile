@@ -657,10 +657,10 @@ info.line_history() {
 		echo "\"$CURRENT_CONTENT\""
 
         # 從 HEAD 開始往回找這行內容
-        git log -S "$CURRENT_CONTENT" --pretty=format:"%h %an %ad %s" --date=short -- "$FILE"
+        git log -S "$CURRENT_CONTENT" --date=short -- "$FILE"
     else
         # 如果有指定 SHA，則走原本的精確行號模式
-        git log -L "${LINE},${LINE}:${FILE}" "$REV" --pretty=format:"%h %an %ad %s" --date=short
+        git log -L "${LINE},${LINE}:${FILE}" "$REV" --date=short
     fi
 }
 
