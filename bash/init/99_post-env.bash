@@ -7,7 +7,7 @@ force_cursor_bar() { printf '\e[?25h\e[5 q'; }
 alias fixcursor='stty sane; force_cursor_bar; clear'
 
 # Force set cursor everytime as the application may not recover it
-PROMPT_COMMAND="force_cursor_bar${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
+PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND;force_cursor_bar}"
 
 # ---------- Bash History: best-practice setup ----------
 
