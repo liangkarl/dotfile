@@ -179,45 +179,39 @@ refs.verify() {
     return 3
 }
 
-# C= [TAG=y] [BR=y] UP= refs.find
+# C= TYPE=tag|branch UP= refs.find
 refs.find() {
-	local tag br rev
 
 	is_commit "$C" || return 1
 
-    if [[ -n "$TAG" ]]; then
-        for tag in $(git tag -l); do
-            rev=$(to_sha $tag)
-            if [[ "$rev" == "$C" ]]; then
-                echo $tag
-                return
-            fi
-        done
-    elif [[ -n "$BR" ]]; then
-        for br in $(git branch --format='%(refname:short)' | sed '/HEAD/d'); do
-            rev=$(to_sha $br)
-            if [[ "$rev" == "$C" ]]; then
-                echo $br
-                return
-            fi
-        done
-    fi
+	case "$TYPE" in
+	tag)
+		rev='refs/tags'
+		prompt='Select Tag:'
+		;;
+	branch)
+		rev='refs/heads'
+		prompt='Select Branch:'
+		;;
+	all)
+		rev='refs/heads refs/tags'
+		prompt='Select Ref:'
+		;;
+	*)
+		echo "unsupport type $TYPE" >&2
+		return 2
+	esac
 
-    return 2
+	git for-each-ref --points-at $C $rev \
+        --format='%(refname)' | fzf --prompt="$prompt"
 }
 
-# add <commit>
-# C= TYPE=[t|b] refs.paste
+# C= refs.paste
 refs.paste() {
 	config.load $node
-	config.get BR BR
-	config.get TAG TAG
-	if [[ -n "$BR" ]]; then
-		git branch "$BR" "$C"
-	elif [[ -n "$TAG" ]]; then
-		git tag "$TAG" "$C"
-	else
-		echo "no assigned tag or branch"
+	config.get REFS REFS
+	if [[ -n "$REFS" ]]; then
+		git update-ref $REFS $C
 	fi
 	rm $node
 }
@@ -236,17 +230,14 @@ refs.rename() {
 	fi
 }
 
-# C= [BR=] [TAG=] [REMOTE=] refs.cut
+# C= [REFS=] refs.cut
 # TODO: add cutting remove branchs & tags
 refs.cut() {
-	local br tag
-
-	if [[ -z "$TAG" && -z "$BR" ]]; then
+	if [[ -z "$REFS" ]]; then
 		is_commit "$C" || return 1
 
-		TAG=$(C=$C TAG=y BR='' refs.find)
-		BR=$(C=$C BR=y TAG='' refs.find)
-		if [[ -z "$TAG$BR" ]]; then
+		REFS=$(C=$C TYPE=all refs.find)
+		if [[ -z "$REFS" ]]; then
 			echo "no branch or tag available"
 			return 2
 		fi
@@ -262,24 +253,12 @@ refs.cut() {
 		else
 			echo "invalid remote branch: ${REMOTE}/${BR}"
 		fi
-	elif [[ -n "$BR" ]]; then
-		if C=$C BR=$BR refs.verify; then
-			git branch -D $BR
-			config.set "BR" "$BR"
-		else
-			echo "invalid branch: $BR, $C"
-		fi
-	elif [[ -n "$TAG" ]]; then
-		if C=$C TAG=$TAG refs.verify; then
-			git tag -d $TAG
-			if [[ "$TAG" =~ patch\.[0-9]+ ]]; then
-				sed -i -e "/${TAG}/d" $commits
-				patch.refresh
-				return
-			fi
-			config.set "TAG" "$TAG"
-		else
-			echo "invalid tag: $TAG, $C"
+	elif [[ -n "$REFS" ]]; then
+		git update-ref -d $REFS
+		config.set "REFS" "$REFS"
+		if [[ "${REFS##refs/tag/}" =~ select\.[0-9]+ ]]; then
+			patch.refresh
+			return
 		fi
 	fi
 	config.save
@@ -367,7 +346,9 @@ refs.push() {
 
 	fi
 
-	rm -rf $infos
+	if [[ $? -eq 0 ]]; then
+		rm -rf $infos
+	fi
 }
 
 # copy <text>
