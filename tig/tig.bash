@@ -85,8 +85,12 @@ git.auto() {
 is_commit() { git rev-parse --verify --quiet ${1} &> $__N; }
 # is_branch <branch>
 is_branch() { git show-ref --verify --quiet refs/heads/${1} &> $__N; }
-# is_tag <tag>
-is_tag() { git show-ref --verify --quiet refs/tags/${1} &> $__N; }
+# is_tag TAG
+is_tag() {
+	git show-ref --verify --quiet refs/tags/${1} && return
+	[[ "$1" =~ refs/tags/ ]] || return $?
+	git show-ref --verify --quiet ${1}
+} &> $__N
 # is_remote_branch <refname>
 is_remote_branch() { git show-ref --verify --quiet refs/remotes/${1} &> $__N; }
 # to_sha <tag|branch>
@@ -216,17 +220,34 @@ refs.paste() {
 	rm $node
 }
 
-# C= NAME= [BR=] [TAG=] refs.rename
+# C= REFS= refs.rename
 refs.rename() {
-	set -x
 	is_commit "$C" || return 1
-	if [[ -n "$BR" ]] && refs.verify; then
-        git branch -m "$BR" "$NAME"
-	elif [[ -n "$TAG" ]] && refs.verify; then
-        git tag -d "$TAG"
-        git tag "$NAME" "$C"
+
+	if [[ -z "$REFS" ]]; then
+		REFS=$(C=$C TYPE=all refs.find)
+		if [[ -z "$REFS" ]]; then
+			echo "no branch or tag available"
+			return 2
+		fi
+	fi
+
+	echo "Reference: $REFS"
+	read -p "Rename To: " NAME
+	if [[ -z "$NAME" ]]; then
+		echo "no name specified"
+		return 3
+	fi
+
+	if is_tag $REFS; then
+		if ! grep -q 'refs/tags/' <<< $REFS; then
+			REFS="refs/tags/$REFS"
+		fi
+		NAME="refs/tags/$NAME"
+		git update-ref -d $REFS
+		git update-ref $NAME $C
 	else
-        echo "Invalid inputs: C($C) NAME($NAME) TAG($TAG) BR($BR)"
+		git branch -m "${REFS##refs/heads/}" "$NAME"
 	fi
 }
 
