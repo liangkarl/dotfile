@@ -243,8 +243,13 @@ refs.find() {
 		return 2
 	esac
 
-	git for-each-ref --points-at $C $rev \
-        --format='%(refname)' | fzf --prompt="$prompt"
+	list="$(git for-each-ref --points-at $C $rev --format='%(refname)')"
+	count=$(printf "${list:+${list}\n}" | wc -l)
+	if [[ $count -gt 1 ]]; then
+		printf "$list" | fzf --prompt="$prompt"
+	else
+		echo $list
+	fi
 }
 
 # C= refs.paste
