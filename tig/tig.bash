@@ -30,6 +30,7 @@ commits=${tmpdir}/tig.commits
 infos=${tmpdir}/tig.save
 p_opts='--binary --histogram'
 patchdir=${topdir}/git-patch
+CUR_BR=$(git branch --show-current)
 
 PREFIX_TAG='refs/tags'
 PREFIX_BR='refs/heads'
@@ -298,6 +299,10 @@ refs.cut() {
 			echo "no branch or tag available"
 			return 2
 		fi
+	else
+		if [[ ! "$REFS" =~ $PREFIX_TAG/* ]]; then
+			REFS=$(git for-each-ref --format='%(refname)' $PREFIX_BR $PREFIX_TAG | grep -E "^*/${REFS}$")
+		fi
 	fi
 
 	rm -f $node
@@ -311,9 +316,14 @@ refs.cut() {
 			echo "invalid remote branch: ${REMOTE}/${BR}"
 		fi
 	elif [[ -n "$REFS" ]]; then
+		if [[ ${PREFIX_BR}/${CUR_BR} == $REFS ]]; then
+			echo "Cannot remove current branch"
+			return 1
+		fi
 		git update-ref -d $REFS
 		config.set "REFS" "$REFS"
 
+		echo "Cut: $REFS"
 		if [[ "${REFS##${PREFIX_TAG}}" =~ select\/[0-9]+ ]]; then
 			select.refresh
 			return
