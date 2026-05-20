@@ -313,8 +313,9 @@ refs.cut() {
 	elif [[ -n "$REFS" ]]; then
 		git update-ref -d $REFS
 		config.set "REFS" "$REFS"
-		if [[ "${REFS##refs/tag/}" =~ select\/[0-9]+ ]]; then
-			patch.refresh
+
+		if [[ "${REFS##${PREFIX_TAG}}" =~ select\/[0-9]+ ]]; then
+			select.refresh
 			return
 		fi
 	fi
@@ -463,7 +464,7 @@ patch.create() {
 		done &> $__N
 
 		select.reset
-		echo "$((i - 100)) patches has been created."
+		echo "$((i - 100)) patch(es) has been created."
 		;;
 	*)
 		echo "unknown type $TYPE"
@@ -525,19 +526,18 @@ commit.create() {
 }
 
 select.refresh() {
-	local i t p
+	local i t
 
 	i=0
-	for t in $(git tag -l | grep ^select/ | sort); do
-		p="select/$i"
+	rm -f $commits
+	for t in $(git for-each-ref --format='%(refname):%(objectname)' ${PREFIX_SELECT}/); do
+		commit=${t##*:}
+		tag=${t%%:*}
+
+		git update-ref -d $tag
+		git update-ref ${PREFIX_SELECT}/$i $commit
+		echo "$commit" >> $commits
 		((i++))
-
-		if [[ $t == $p ]]; then
-			continue
-		fi
-
-		git tag $p $(git rev-parse $t)
-		git tag -d $t
 	done
 }
 
