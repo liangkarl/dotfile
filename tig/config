@@ -117,12 +117,10 @@ bind blame -<ENTER> :set blame-options += -w -C -C -C
 ## Diff format
 bind diff  -<ENTER> :set diff-options += --patience --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
 bind diff  -r       :set diff-options = --patience
-bind diff  -f       :set diff-options += --no-merges -- %(file)
 
 ## Stage format
 bind stage -<ENTER> :set diff-options += --patience --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
 bind stage -r       :set diff-options = --patience
-bind stage -f       :set diff-options += --no-merges -- %(file)
 
 ## Main format
 bind main  -<ENTER> :set main-options += --no-merges
@@ -134,9 +132,11 @@ bind refs  -t       <tig refs --tags
 bind refs  -r       <tig refs --remotes
 
 ## tree/blob/blame -> main %(file)
-bind blob  -f       >tig --no-merges -- %(file)
-bind tree  -f       >tig --no-merges -- %(file)
-bind blame -f       >tig --no-merges -- %(file)
+bind blob  -f       >tig --no-merges %(commit) -- %(file)
+bind tree  -f       >tig --no-merges %(commit) -- %(file)
+bind blame -f       >tig --no-merges %(commit) -- %(file)
+bind stage -f       >tig --no-merges %(commit) -- %(file)
+bind diff  -f       >tig --no-merges %(commit) -- %(file)
 
 # Log format
 bind log   -<ENTER> :set log-options += --patience -p --no-merges --ignore-all-space --ignore-blank-lines --ignore-cr-at-eol --ignore-space-at-eol --ignore-space-change
@@ -358,7 +358,7 @@ bind refs pp       !?git cmd refs.push TAG=%(tag) BR=%(branch) REF=%(refname)
 bind refs pP       !?git cmd refs.push TAG=%(tag) BR=%(branch) REF=%(refname) OPT='--force-with-lease'
 bind refs pu       !?git cmd refs.push TAG=%(tag) BR=%(branch) UPSTREAM=%(repo:upstream)
 bind refs cs        +git cmd info.clean
-bind refs >         >tig %(refname)%(tag)
+bind refs >         >tig %(commit)
 # }
 
 # Main {
