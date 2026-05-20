@@ -31,6 +31,12 @@ infos=${tmpdir}/tig.save
 p_opts='--binary --histogram'
 patchdir=${topdir}/git-patch
 
+PREFIX_TAG='refs/tags'
+PREFIX_BR='refs/heads'
+PREFIX_REMOTE='refs/remotes'
+PREFIX_STASH='refs/stash'
+PREFIX_SELECT="${PREFIX_TAG}/select"
+
 heads=(
 	REBASE_HEAD
 	MERGE_HEAD
@@ -96,7 +102,7 @@ dump_refs() {
 }
 
 dump_remote_branch() {
-	git for-each-ref refs/remotes/$1 \
+	git for-each-ref ${PREFIX_REMOTE}/$1 \
 		--format='refname=%(refname)
 			short=%(refname:short)
 			objectname=%(objectname)
@@ -104,7 +110,7 @@ dump_remote_branch() {
 }
 
 dump_tag() {
-	git for-each-ref refs/tags/$1 \
+	git for-each-ref ${PREFIX_TAG}/$1 \
 		--format='refname=%(refname)
 			short=%(refname:short)
 			objectname=%(objectname)
@@ -114,15 +120,15 @@ dump_tag() {
 # is_commit <sha>
 is_commit() { git rev-parse --verify --quiet ${1} &> $__N; }
 # is_branch <branch>
-is_branch() { git show-ref --verify --quiet refs/heads/${1} &> $__N; }
+is_branch() { git show-ref --verify --quiet ${PREFIX_BR}/${1} &> $__N; }
 # is_tag TAG
 is_tag() {
-	git show-ref --verify --quiet refs/tags/${1} && return
-	[[ "$1" =~ refs/tags/ ]] || return $?
+	git show-ref --verify --quiet ${PREFIX_TAG}/${1} && return
+	[[ "$1" =~ ${PREFIX_TAG}/ ]] || return $?
 	git show-ref --verify --quiet ${1}
 } &> $__N
 # is_remote_branch <refname>
-is_remote_branch() { git show-ref --verify --quiet refs/remotes/${1} &> $__N; }
+is_remote_branch() { git show-ref --verify --quiet ${PREFIX_REMOTE}/${1} &> $__N; }
 # to_sha <tag|branch>
 to_sha() { git rev-parse $1 2> $__N; }
 
@@ -203,10 +209,10 @@ refs.verify() {
 	is_commit "$C" || return 1
 
     if [[ -n "$TAG" ]] && is_tag "$TAG"; then
-        [ "$(to_sha refs/tags/${TAG})" == "$(to_sha $C)" ]
+        [ "$(to_sha ${PREFIX_TAG}/${TAG})" == "$(to_sha $C)" ]
         return $?
     elif [[ -n "$BR" ]] && is_branch "$BR"; then
-        [ "$(to_sha refs/heads/${BR})" == "$(to_sha $C)" ]
+        [ "$(to_sha ${PREFIX_BR}/${BR})" == "$(to_sha $C)" ]
         return $?
     fi
 
@@ -220,15 +226,15 @@ refs.find() {
 
 	case "$TYPE" in
 	tag)
-		rev='refs/tags'
+		rev=${PREFIX_TAG}
 		prompt='Select Tag:'
 		;;
 	branch)
-		rev='refs/heads'
+		rev=${PREFIX_BR}
 		prompt='Select Branch:'
 		;;
 	all)
-		rev='refs/heads refs/tags'
+		rev="${PREFIX_BR} ${PREFIX_TAG}"
 		prompt='Select Ref:'
 		;;
 	*)
@@ -270,14 +276,14 @@ refs.rename() {
 	fi
 
 	if is_tag $REFS; then
-		if ! grep -q 'refs/tags/' <<< $REFS; then
-			REFS="refs/tags/$REFS"
+		if ! grep -q "${PREFIX_TAG}/" <<< $REFS; then
+			REFS="${PREFIX_TAG}/$REFS"
 		fi
-		NAME="refs/tags/$NAME"
+		NAME="${PREFIX_TAG}/$NAME"
 		git update-ref -d $REFS
 		git update-ref $NAME $C
 	else
-		git branch -m "${REFS##refs/heads/}" "$NAME"
+		git branch -m "${REFS##${PREFIX_BR}}" "$NAME"
 	fi
 }
 
@@ -540,7 +546,7 @@ select.reset() {
 
 	i=0
 	for item in $(git tag -l | grep -E ^select/[0-9]+$); do
-		git tag -d select/$((i++))
+		git update-ref -d $PREFIX_SELECT/$((i++))
 	done
 	rm -f $commits
 }
@@ -557,7 +563,7 @@ select.add() {
 	idx=$(wc -l $file | cut -d' ' -f 1)
 	if ! cat $file | grep -q $commit; then
 		echo "select: $commit"
-		git tag select/${idx} $commit
+		git update-ref $PREFIX_SELECT/$((idx++)) $commit
 		echo $commit >> $file
 	else
 		echo "'$commit' has already been added."
