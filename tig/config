@@ -284,7 +284,8 @@ bind main   r<Enter> +?git cmd git.msg reset %(commit)
 ## Cherry-pick
 bind main   cp       :!git cmd git.auto cherry-pick -s %(commit)
 bind main   cP       :!git cmd git.msg  cherry-pick -s %(commit)
-bind main   cs       >git  cmd commit.create TYPE=merge-pick
+bind main   cs       >git  cmd commit.create TYPE=select-patch
+bind main   cS       >git  cmd commit.create TYPE=merge-pick
 bind main   cc       >git  cmd commit.create TYPE=reuse-msg
 bind reflog cp       :!git cmd git.auto cherry-pick -s %(commit)
 bind reflog cP       :!git cmd git.msg  cherry-pick -s %(commit)
@@ -319,8 +320,8 @@ bind reflog ss       :!git cmd info.write   C=%(commit) FILE=%(file) OFILE=%(fil
 bind reflog sc       @git cmd select.add C=%(commit)
 bind log    sc       @git cmd select.add C=%(commit)
 bind diff   sc       @git cmd select.add C=%(commit)
-bind main   sc       @git cmd select.add C=%(commit)
-bind main   sr       @git  cmd select.reset
+bind main   sc       !git cmd select.add C=%(commit)
+bind main   sr       !git  cmd select.reset
 bind diff   sr       @git  cmd select.reset
 bind reflog sr       @git  cmd select.reset
 

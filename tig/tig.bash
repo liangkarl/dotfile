@@ -307,7 +307,7 @@ refs.cut() {
 	elif [[ -n "$REFS" ]]; then
 		git update-ref -d $REFS
 		config.set "REFS" "$REFS"
-		if [[ "${REFS##refs/tag/}" =~ select\.[0-9]+ ]]; then
+		if [[ "${REFS##refs/tag/}" =~ select\/[0-9]+ ]]; then
 			patch.refresh
 			return
 		fi
@@ -470,6 +470,18 @@ commit.create() {
 	local item list
 
 	case "$TYPE" in
+	select-patch)
+		local item i
+
+		i=0
+		for item in $(cat $commits); do
+			git.auto cherry-pick -s $item
+			i=$((i + 1))
+		done
+
+		select.reset
+		echo "$i commit(s) has been created."
+		;;
 	merge-pick)
 		for item in $(cat $commits); do
 			list+="$item "
@@ -510,8 +522,8 @@ select.refresh() {
 	local i t p
 
 	i=0
-	for t in $(git tag -l | grep ^select. | sort); do
-		p="select.$i"
+	for t in $(git tag -l | grep ^select/ | sort); do
+		p="select/$i"
 		((i++))
 
 		if [[ $t == $p ]]; then
@@ -527,8 +539,8 @@ select.reset() {
 	local item i
 
 	i=0
-	for item in $(git tag -l | grep -E ^select\.[0-9]+$); do
-		git tag -d select.$((i++))
+	for item in $(git tag -l | grep -E ^select/[0-9]+$); do
+		git tag -d select/$((i++))
 	done
 	rm -f $commits
 }
@@ -545,7 +557,7 @@ select.add() {
 	idx=$(wc -l $file | cut -d' ' -f 1)
 	if ! cat $file | grep -q $commit; then
 		echo "select: $commit"
-		git tag select.${idx} $commit
+		git tag select/${idx} $commit
 		echo $commit >> $file
 	else
 		echo "'$commit' has already been added."
