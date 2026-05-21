@@ -28,6 +28,7 @@ tmpdir='/tmp/tig'
 node="${tmpdir}/node"
 commits=${tmpdir}/tig.commits
 infos=${tmpdir}/tig.save
+change=${tmpdir}/change.diff
 p_opts='--binary --histogram'
 patchdir=${topdir}/git-patch
 CUR_BR=$(git branch --show-current)
@@ -196,13 +197,23 @@ stash.save() {
 
 # NAME= stash.pop
 stash.pop() {
+	touch ${change}
+
 	# stage changes if exist
-	git diff --quiet || git add -u
+	if ! git diff --quiet; then
+		git add -u
+		git diff --cached --binary --patience > ${change}
+	fi
 
-	git.msg stash pop stash@{0}
+	if ! git.msg stash pop stash@{0}; then
+		echo "Recover previous change(s)"
+		git reset --hard
+		git apply --verbose ${change}
+		return
+	fi
 
-	# reset to release staged changes
 	git reset
+	rm -f ${change}
 }
 
 # TAG=|BR= C= [TYPE=[local|remote]] refs.verify
