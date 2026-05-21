@@ -46,5 +46,7 @@ HISTIGNORE="&:ls:cd:pwd:exit:clear"
 
 # ---------------------------------------------------------
 
+GIT_COMPLETION_SHOW_ALL_COMMANDS=1
+
 PATH="$(sys.info bin):$PATH"
 dbg.cmd "sys.reload_path"
