@@ -28,7 +28,8 @@ tmpdir='/tmp/tig'
 node="${tmpdir}/node"
 commits=${tmpdir}/tig.commits
 infos=${tmpdir}/tig.save
-change=${tmpdir}/change.diff
+stage_change=${tmpdir}/stage.diff
+unstage_change=${tmpdir}/unstage.diff
 p_opts='--binary --histogram'
 patchdir=${topdir}/git-patch
 CUR_BR=$(git branch --show-current)
@@ -87,6 +88,10 @@ git.auto() {
 	if [[ -n "$change" ]] && action.check; then
 		git stash pop stash@{0} || echo "failed to restore unchecked changes"
 	fi
+}
+
+has_conflict() {
+	[[ $(git diff --name-only --diff-filter=U | wc -l) -ne 0 ]]
 }
 
 dump_refs() {
@@ -197,23 +202,44 @@ stash.save() {
 
 # NAME= stash.pop
 stash.pop() {
-	touch ${change}
-
-	# stage changes if exist
-	if ! git diff --quiet; then
-		git add -u
-		git diff --cached --binary --patience > ${change}
-	fi
-
-	if ! git.msg stash pop stash@{0}; then
-		echo "Recover previous change(s)"
-		git reset --hard
-		git apply --verbose ${change}
+	if [[ $(git stash list | wc -l) -eq 0 ]]; then
+		echo "No stash found"
 		return
 	fi
 
-	git reset
-	rm -f ${change}
+	rm -f ${stage_change} ${unstage_change}
+
+	if ! git diff --quiet; then
+		echo "Backup unstage change(s)"
+		git diff --binary --patience > ${unstage_change}
+	fi
+
+	# stage changes if exist
+	if ! git diff --cached --quiet; then
+		echo "Backup stage change(s)"
+		git diff --cached --binary --patience > ${stage_change}
+	fi
+
+	if git.msg stash apply stash@{0}; then
+		git.msg stash drop stash@{0}
+	else
+		if has_conflict; then
+			echo "Conflict(s):"
+			git diff
+		fi
+
+		echo "Recover previous change(s)"
+		git reset --hard
+
+		if [[ -e ${stage_change} ]]; then
+			git apply --verbose ${stage_change}
+			git add -u
+		fi
+
+		if [[ -e ${unstage_change} ]]; then
+			git apply --verbose ${unstage_change}
+		fi
+	fi
 }
 
 # TAG=|BR= C= [TYPE=[local|remote]] refs.verify
