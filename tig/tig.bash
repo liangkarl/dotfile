@@ -199,7 +199,16 @@ stash.save() {
 	local repo="$(basename $topdir)"
 	local sha="$(git rev-parse --short HEAD)"
 
-	git.msg stash save ${NAME:-${repo}.${sha}}
+	case "$TYPE" in
+	stage)
+		git.msg stash save --staged ${NAME:-STAGE: ${repo}.${sha}}
+		;;
+	unstage)
+		git.msg stash save --keep-index ${NAME:-UNSTAGE: ${repo}.${sha}}
+		;;
+	*)
+		git.msg stash save ${NAME:-${repo}.${sha}}
+	esac
 }
 
 # NAME= stash.pop
