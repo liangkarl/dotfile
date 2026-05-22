@@ -60,11 +60,13 @@ opts=(
 mkdir $tmpdir 2> $__N
 
 show_cmd() {
+	local ret
 	if $*; then
 		echo "'$*' done"
 	else
-		echo "'$*' failed ($?)"
-		false
+		ret=$?
+		echo "'$*' failed ($ret)"
+		return $ret
 	fi
 }
 
