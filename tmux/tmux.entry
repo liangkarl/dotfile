@@ -36,6 +36,17 @@ def get_entry():
                 shell=True, capture_output=True, text=True)
     return r.stdout.strip() or None
 
+def get_entry_name(str):
+    entry = input(f"{str}: ")
+    if not entry:
+        print("No name given")
+        exit(1)
+    elif entry.find('.') >= 0:
+        print("Invalid name due to '.'")
+        exit(2)
+
+    return entry
+
 def main(argv):
     config_dir = os.environ["XDG_CONFIG_HOME"] + '/tmuxp'
     args = parse_args(argv)
@@ -47,10 +58,7 @@ def main(argv):
     if args.create:
         print("NOTE: The default configuration of new entry "
               "will be the current tmux session")
-        entry = input("Name a new entry: ")
-        if entry == '':
-            print("No name given")
-            exit(1)
+        entry = get_entry_name("Name the new entry")
         args.save = True
 
         opt = input("Do you want to edit it now? [y/N] ")
@@ -68,20 +76,19 @@ def main(argv):
             shell(['tmuxp', 'freeze', '-o', f'{config_dir}/{entry}.yaml'])
         else:
             shell(['tmuxp', 'freeze', '-o', f'{config_dir}/{entry}.yaml', entry])
+        print(f"Saved {entry}")
 
     if args.edit:
         shell(['tmuxp', 'edit', entry])
 
     if args.rename:
-        name = input("Name the new entry: ")
-        if name == '':
-            print("No name given")
-            exit(2)
+        name = get_entry_name("Rename to a new entry")
         run(['mv', f'{config_dir}/{entry}.yaml', f'{config_dir}/{name}.yaml'])
         exit(0)
 
     if args.delete:
         run(['rm', f'{config_dir}/{entry}.yaml'])
+        print(f"Deleted {entry}")
         exit(0)
 
     if args.enter:
