@@ -71,6 +71,7 @@ return {
   {
     'nvim-telescope/telescope.nvim',
     tag = 'v0.2.1',
+    pin = true,
     dependencies = {
       'nvim-lua/plenary.nvim',
       { 'nvim-telescope/telescope-fzf-native.nvim',     build = 'make' },

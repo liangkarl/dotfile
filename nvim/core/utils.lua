@@ -97,4 +97,18 @@ M.has_treesitter = function(bufnr, filetype, buftype)
   return ok and parser ~= nil
 end
 
+M.nvim_version = function(cmp, str)
+  str = "nvim-" .. str
+  if cmp == ">" then
+    return vim.version.gt(vim.version(), str)
+  elseif cmp == ">=" then
+    return vim.version.ge(vim.version(), str)
+  elseif cmp == "<" then
+    return vim.version.lt(vim.version(), str)
+  elseif cmp == "<=" then
+    return vim.version.le(vim.version(), str)
+  end
+  return vim.version.eq(vim.version(), str)
+end
+
 return M

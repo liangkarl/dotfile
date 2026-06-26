@@ -1,8 +1,15 @@
+utils = require('core.utils')
+
+if utils.nvim_version(">=", "0.12") then
+  return {}
+end
+
 return { -- Syntax highlight/lint with `treesitter`
   -- NOTE: treesitter might have to update after updating neovim
   'nvim-treesitter/nvim-treesitter',
   build = ":TSUpdateSync",
   tag = 'v0.10.0',
+  pin = true,
   config = function()
     local treesitter = require('nvim-treesitter.configs')
     local vim = vim

@@ -1,6 +1,8 @@
 local m = require('core.utils')
 local outline, aerial
 
+utils = require('core.utils')
+
 local function get_symbol()
   return aerial
 end
@@ -24,6 +26,8 @@ outline = { -- Symbol Manager
 
 aerial = {
   'stevearc/aerial.nvim',
+  tag = utils.nvim_version("<", "0.12") and 'v3.1.0' or nil,
+  pin = utils.nvim_version("<", "0.12") and true or nil,
   -- Optional dependencies
   dependencies = {
      "nvim-treesitter/nvim-treesitter",
