@@ -45,6 +45,7 @@ opt.shada = "!,'100,\"100,:20,<50,s10,h,n~/.vim.shada"
 -------------------------------------------------
 opt.wrap = true
 opt.wrapmargin = 8           -- wrap lines when coming within n characters from side
+opt.smoothscroll = true      -- enable showing the wrap line parts
 opt.title = true             -- Set the title text in the window
 opt.titlestring = "%F"
 opt.backspace = "indent,eol,start" -- Fix backspace indent

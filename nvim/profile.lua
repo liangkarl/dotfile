@@ -18,13 +18,11 @@ local function edit(enable)
 
   vim.g.set_list(enable)
   if enable then
-    vim.opt.showbreak = '↪ '
     vim.opt.colorcolumn = '80'
     vim.opt.scrolloff = 5
     vim.opt.sidescrolloff = 5
     space.highlight()
   else
-    vim.opt.showbreak = ''
     vim.opt.colorcolumn = ''
     vim.opt.scrolloff = 999
     vim.opt.sidescrolloff = 10

@@ -266,7 +266,7 @@ local function config()
     if not vim.bo.modifiable then
       -- Using :quit instead of :close is because :quit could exit nvim
       -- once the current buffer is the last buffer
-      m.noremap('n', 'q', quit, "Close Buffer", { buffer = true, force = false })
+      m.noremap('n', 'q', quit, "Close Buffer", { buffer = true, force = false, nowait = true })
     end
   end, {
     desc = "Configure keybinds for read-only buffers",
@@ -369,8 +369,10 @@ local function config()
   m.noremap('i', '<C-x><C-x>', '<Esc>``a')
   m.noremap({ 'i', 'c' }, ALT_('h'), '<Left>')
   m.noremap({ 'i', 'c' }, ALT_('l'), '<Right>')
-  m.noremap({ 'i', 'c' }, ALT_('k'), '<Up>')
-  m.noremap({ 'i', 'c' }, ALT_('j'), '<Down>')
+  m.noremap('i', ALT_('k'), '<C-o>gk')
+  m.noremap('i', ALT_('j'), '<C-o>gj')
+  m.noremap('c', ALT_('k'), '<Up>')
+  m.noremap('c', ALT_('j'), '<Down>')
   m.noremap({ 'i', 'c' }, ALT_('w'), '<C-Right>')
   m.noremap({ 'i', 'c' }, ALT_('b'), '<C-Left>')
   m.noremap('i', ALT_('d'), '<C-o>dw')
@@ -382,7 +384,7 @@ local function config()
   m.noremap("c", "<C-y>", "<C-y>")   -- default: paste cut text
 
   -- Remove command history keybinds
-  m.noremap('',  'q:', '<Nop>')
+  m.noremap('',  'q:', '<Nop>', 'NULL', { nowait = true })
 
   -------------------
   -- Folded Keymap --
@@ -432,7 +434,14 @@ local function config()
       { '<leader><S-TAB>', '<cmd>BufferLineCyclePrev<cr>', desc = "Switch to previous buffer"},
       { '<leader><TAB>', '<cmd>BufferLineCycleNext<cr>', desc = "Switch to next buffer"},
       { '<leader>g', function() require("flash").jump() end, mode = { "n", "x", "o" }, desc = "Flash"},
-      { ALT_('g'), function() require("flash").jump() end, mode = { "i", "c" }, desc = "Flash"},
+      { ALT_('g'), function()
+        local cmp = require("cmp")
+
+        if cmp.visible() then
+          cmp.close()
+        end
+        require("flash").jump()
+      end, mode = { "i", "c" }, desc = "Flash"},
 
       { '<leader>v', function() require("flash").treesitter() end, mode = { "n", "x", "o" }, desc = "Flash Treesitter" },
       { 'r', mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
@@ -616,7 +625,7 @@ local function config()
     },
     {
       group = "Edit",
-      { '<leader>ca', '<cmd>Gitsigns stage_hunk<cr>', desc = "Add the hunk"},
+      { '<leader>ca', '<cmd>Gitsigns stage_hunk<cr>', desc = "Toggle the hunk"},
       { '<leader>cs', '<cmd>Gitsigns reset_hunk<cr>', desc = "Reset the hunk"},
       { '<leader>cn', lsp.rename, desc = "Rename (LSP)" },
       -- check mini.lua
