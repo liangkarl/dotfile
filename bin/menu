@@ -54,12 +54,12 @@ def main():
             pass
 
     # 3. Override state with command line arguments (if provided)
-    if args.title is not None: state["title"] = args.title
-    if args.prompt is not None: state["prompt"] = args.prompt
-    if args.default is not None: state["default"] = args.default
+    if args.title: state["title"] = args.title
+    if args.prompt: state["prompt"] = args.prompt
+    if args.default: state["default"] = args.default
     if args.index is not None: state["index"] = args.index
     if args.height is not None: state["height"] = args.height
-    if args.backend is not None: state["backend"] = args.backend
+    if args.backend: state["backend"] = args.backend
     if args.mru: state["mru_enabled"] = True
 
     # 4. Input Handling (Pipe > Arguments > JSON)
@@ -88,7 +88,7 @@ def main():
         sys.exit(0)
 
     # 6. Interactive Selection via fzf
-    full_prompt = f"{state['prompt']}: "
+    full_prompt = f"{state['prompt']} "
     selected_text = None
     selected_idx = None
 
