@@ -368,6 +368,7 @@ bind main ! none
 bind main bs +?git cmd git.msg bisect start
 bind main bg +?git cmd git.msg bisect good %(commit)
 bind main bb +?git cmd git.msg bisect bad %(commit)
+bind main br +?git cmd git.msg bisect reset
 bind main rv :!git cmd git.auto revert --no-edit %(commit)
 bind main rV :!git cmd git.msg revert --no-edit %(commit)
 bind diff rv :!git cmd git.auto revert --no-edit %(commit)
@@ -375,9 +376,9 @@ bind diff rV :!git cmd git.msg revert --no-edit %(commit)
 bind main rb >?git cmd git.auto rebase -i %(commit)
 bind main rB >?git cmd git.msg rebase -i %(commit)
 bind main rk >?git rebase --skip
-# progress stop: rebase, merge, revert, cherry-pick, bisect
+# progress stop: rebase, merge, revert, cherry-pick
 bind main pa :!git cmd action.abort
-# progress continue: rebase, merge, revert, cherry-pick, bisect
+# progress continue: rebase, merge, revert, cherry-pick
 bind main pc :!git cmd action.next
 # progress info
 bind main pi :!git cmd action.check

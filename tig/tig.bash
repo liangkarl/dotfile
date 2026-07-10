@@ -40,22 +40,14 @@ PREFIX_REMOTE='refs/remotes'
 PREFIX_STASH='refs/stash'
 PREFIX_SELECT="${PREFIX_TAG}/select"
 
-heads=(
-	REBASE_HEAD
-	MERGE_HEAD
-	REVERT_HEAD
-	CHERRY_PICK_HEAD
-	BISECT_START
+declare -A git_actions=(
+	[rebase-merge]=rebase
+	[rebase-apply]=rebase
+	[MERGE_HEAD]=merge
+	[REVERT_HEAD]=revert
+	[CHERRY_PICK_HEAD]=cherry-pick
 )
 
-declare -A opts
-opts=(
-	[REBASE_HEAD]='rebase'
-	[MERGE_HEAD]='merge'
-	[REVERT_HEAD]='revert'
-	[CHERRY_PICK_HEAD]='cherry-pick'
-	[BISECT_START]='bisect'
-)
 
 mkdir $tmpdir 2> $__N
 
@@ -140,6 +132,41 @@ is_tag() {
 is_remote_branch() { git show-ref --verify --quiet ${PREFIX_REMOTE}/${1} &> $__N; }
 # to_sha <tag|branch>
 to_sha() { git rev-parse $1 2> $__N; }
+
+what_action() {
+	local state path line
+
+	git rev-parse --git-dir &>/dev/null || return 2
+
+	for state in "${!git_actions[@]}"; do
+		path=$(git rev-parse --git-path "$state") || return 2
+
+		if [[ -e $path ]]; then
+			printf '%s\n' "${git_actions[$state]}"
+			return 0
+		fi
+	done
+
+	# Multi-commit cherry-pick/revert.
+	path=$(git rev-parse --git-path sequencer/todo) || return 2
+
+	if [[ -f $path ]]; then
+		while read -r line; do
+			case $line in
+				pick\ *)
+					printf '%s\n' cherry-pick
+					return 0
+					;;
+				revert\ *)
+					printf '%s\n' revert
+					return 0
+					;;
+			esac
+		done < "$path"
+	fi
+
+	return 1
+}
 
 # FILE=%(file) C=%(commit) file.checkout
 file.checkout() {
@@ -746,53 +773,70 @@ info.line_history() {
 }
 
 action.check() {
-	local hdr bis
+	local action
 
-	bis=${gitdir}/BISECT_START
-	echo "gitdir: ${gitdir}"
-	if [[ -e $bis ]]; then
-		echo "'${opts[$bis]}' is in progress"
+	if action=$(what_action); then
+		printf "'%s' is in progress\n" "$action"
 		return 1
 	fi
 
-	for hdr in "${heads[@]}"; do
-		if git rev-parse --verify $hdr &> $__N; then
-			echo "'${opts[$hdr]}' is in progress"
-			return 1
-		fi
-	done
-	echo "not in any git session"
+	case $? in
+		1)
+			printf '%s\n' "not in any git session"
+			;;
+		2)
+			printf '%s\n' "not inside a Git repository" >&2
+			return 2
+			;;
+	esac
 }
 
 action.abort() {
-	local hdr bis
+	local action
 
-	eval "$ARGS"
+	if (( $# )); then
+		"$@" || return
+	fi
 
-	bis=${gitdir}/BISECT_START
-	if [[ -e $bis ]]; then
-		git.msg bisect reset
+	if action=$(what_action); then
+		git.msg "$action" --abort
 		return
 	fi
 
-	for hdr in "${heads[@]}"; do
-		if git rev-parse --verify $hdr &> $__N; then
-			git.msg ${opts[$hdr]} --abort
-			return
-		fi
-	done
+	case $? in
+		1)
+			printf '%s\n' "No abortable Git operation found." >&2
+			return 1
+			;;
+		2)
+			printf '%s\n' "Not inside a Git repository." >&2
+			return 2
+			;;
+	esac
 }
 
 action.next() {
-	local hdr
+	local action
 
-	eval "$*"
-	for hdr in "${heads[@]}"; do
-		if git rev-parse --verify $hdr &> $__N; then
-			git.msg ${opts[$hdr]} --continue
-			return
-		fi
-	done
+	if (( $# )); then
+		"$@" || return
+	fi
+
+	if action=$(what_action); then
+		git.msg "$action" --continue
+		return
+	fi
+
+	case $? in
+		1)
+			printf '%s\n' "No resumable Git operation found." >&2
+			return 1
+			;;
+		2)
+			printf '%s\n' "Not inside a Git repository." >&2
+			return 2
+			;;
+	esac
 }
 
 commit_report() {
