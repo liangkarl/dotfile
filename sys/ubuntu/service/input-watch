@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+log_file=/var/log/input-watch.log
+keep_seconds=$((30 * 60))
+cleanup_interval=60
+motion_limit=100
+cleanup_pid=
+
+install -m 600 -o root -g root /dev/null "$log_file"
+
+cleanup_log() {
+    local now cutoff tmp_file
+
+    now=$(date +%s)
+    cutoff=$((now - keep_seconds))
+    tmp_file="${log_file}.tmp"
+
+    awk -v cutoff="$cutoff" '
+        $1 >= cutoff
+    ' "$log_file" > "$tmp_file"
+
+    chmod 600 "$tmp_file"
+    chown root:root "$tmp_file"
+    mv "$tmp_file" "$log_file"
+}
+
+cleanup_loop() {
+    while sleep "$cleanup_interval"; do
+        cleanup_log
+    done
+}
+
+cleanup() {
+    if [[ -n ${cleanup_pid:-} ]]; then
+        kill "$cleanup_pid" 2>/dev/null || true
+        wait "$cleanup_pid" 2>/dev/null || true
+    fi
+
+    rm -f "${log_file}.tmp"
+}
+
+trap cleanup EXIT INT TERM
+
+cleanup_log
+
+cleanup_loop &
+cleanup_pid=$!
+
+stdbuf -oL libinput debug-events |
+    awk -v motion_limit="$motion_limit" '
+        function flush_motion() {
+            if (motion_count == 1) {
+                print last_motion
+            } else if (motion_count > 1) {
+                print last_motion " (accumulated " motion_count " events)"
+            }
+
+            fflush()
+            motion_count = 0
+            last_motion = ""
+        }
+
+        /POINTER_MOTION/ {
+            last_motion = $0
+            motion_count++
+
+            if (motion_count >= motion_limit)
+                flush_motion()
+
+            next
+        }
+
+        /KEYBOARD_KEY|POINTER_BUTTON|POINTER_SCROLL|TOUCH_DOWN|TOUCH_UP|GESTURE_/ {
+            flush_motion()
+            print
+            fflush()
+        }
+
+        END {
+            flush_motion()
+        }
+    ' |
+    while IFS= read -r event; do
+        printf '%s %s %s\n' \
+            "$(date +%s)" \
+            "$(date '+%Y-%m-%d %H:%M:%S')" \
+            "$event" >> "$log_file"
+done

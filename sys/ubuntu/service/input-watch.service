@@ -1,0 +1,31 @@
+[Unit]
+Description=Input activity rolling logger
+Documentation=man:libinput-debug-events(1)
+After=systemd-udevd.service
+Wants=systemd-udevd.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/input-watch
+
+Restart=on-failure
+RestartSec=3s
+
+User=root
+Group=root
+
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+
+ReadWritePaths=/var/log
+DevicePolicy=closed
+# DeviceAllow=char-input r
+# DeviceAllow=/dev/input/event* r
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
