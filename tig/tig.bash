@@ -364,7 +364,7 @@ refs.rename() {
 		git update-ref -d $REFS
 		git update-ref $NAME $C
 	else
-		git branch -m "${REFS##${PREFIX_BR}}" "$NAME"
+		git branch -m "${REFS##${PREFIX_BR}/}" "$NAME"
 	fi
 }
 
