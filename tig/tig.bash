@@ -179,7 +179,7 @@ delete() {
 	target=$(while [[ "$name" != '.' ]]; do
 		echo "$name"
 		name=$(dirname $name)
-	done | fzf --prompt='Delete Target: ')
+	done | fzf-tmux -p --prompt='Delete Target: ')
 
 	if [[ -z "$target" ]]; then
 		echo "no file selected"
@@ -303,15 +303,15 @@ refs.find() {
 	case "$TYPE" in
 	tag)
 		rev=${PREFIX_TAG}
-		prompt='Select Tag:'
+		prompt='Select Tag: '
 		;;
 	branch)
 		rev=${PREFIX_BR}
-		prompt='Select Branch:'
+		prompt='Select Branch: '
 		;;
 	all)
 		rev="${PREFIX_BR} ${PREFIX_TAG}"
-		prompt='Select Ref:'
+		prompt='Select Ref: '
 		;;
 	*)
 		echo "unsupport type $TYPE" >&2
@@ -321,7 +321,7 @@ refs.find() {
 	list="$(git for-each-ref --points-at $C $rev --format='%(refname)')"
 	count=$(printf "${list:+${list}\n}" | wc -l)
 	if [[ $count -gt 1 ]]; then
-		printf "$list" | fzf --prompt="$prompt"
+		printf "$list" | fzf-tmux -p --prompt="$prompt"
 	else
 		echo $list
 	fi
