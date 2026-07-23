@@ -58,8 +58,9 @@ fi
 if cmd.has bat; then
     export BAT_THEME_DARK="TwoDark"
     # export BAT_THEME="dark"
-    alias cat="$(which bat) --theme-dark $BAT_THEME_DARK --paging=never --plain"
-    alias bat="$(which bat) --theme-dark $BAT_THEME_DARK --style=numbers"
+    alias cat="bat --theme-dark $BAT_THEME_DARK --paging=never --plain"
+    alias less="bat --theme-dark $BAT_THEME_DARK --plain"
+    alias bat="bat --theme-dark $BAT_THEME_DARK --style=numbers"
 fi
 
 if cmd.has delta; then
