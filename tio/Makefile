@@ -10,26 +10,24 @@ config:
 	$(H)echo "-- $(PKG_NAME): setup config --"
 
 install:
+	# Development
+	# Using /dev/ttyUSBX without root permissions
+	# sudo usermod -aG dialout "$USER"
+	# newgrp dialout
 	$(H)echo "-- $(PKG_NAME): install package --"
 	$(H)if command -v tio >/dev/null 2>&1; then
 		echo "tio already installed"
-	elif [[ "$(OSTYPE)" == "Darwin" ]]; then
-		brew install tio
 	elif [[ "$(OSTYPE)" == "Linux" ]]; then
-		sudo apt-get update
-		sudo apt-get install -y tio
+		brew install tio
 	else
 		echo "Unsupported OS: $(OSTYPE)"
 	fi
 
 uninstall:
 	$(H)echo "-- $(PKG_NAME): remove package/config --"
-	$(H)if [[ "$(OSTYPE)" == "Darwin" ]]; then
+	$(H)if [[ "$(OSTYPE)" == "Linux" ]]; then
 		brew uninstall tio || true
-	elif [[ "$(OSTYPE)" == "Linux" ]]; then
-		sudo apt-get remove -y tio || true
 	fi
 	$(H)rm -rf "${CONFIG_DIR}"
-
 
 .PHONY: config install uninstall

@@ -30,3 +30,8 @@ if [[ "$found_err" == y ]]; then
 else
 	rm $tmp
 fi
+
+# Development
+# Using /dev/ttyUSBX without root permissions
+sudo usermod -aG dialout "$USER"
+newgrp dialout

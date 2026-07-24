@@ -1,7 +1,12 @@
 [default]
-baudrate = 9600
+baudrate = 115200
 databits = 8
 parity = none
 stopbits = 1
 color = 10
-line-pulse-duration = DTR=200,RTS=400
+timestamp = true
+
+[usb-devices]
+pattern = ^usb([0-9]*)
+device = /dev/ttyUSB%m1
+color = 255
