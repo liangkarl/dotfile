@@ -100,28 +100,6 @@ configure_glib() {
     export LD_LIBRARY_PATH="$(brew --prefix glibc)/lib:${LD_LIBRARY_PATH}"
 }
 
-configure_enhancd() {
-    local enhancd
-
-    enhancd=${XDG_CONFIG_HOME}/enhancd
-    if [[ -e "$enhancd" ]]; then
-        if [[ -e "$enhancd/bootstrap.sh" ]]; then
-            source ${enhancd}/bootstrap.sh
-        else
-            source ${enhancd}/init.sh
-        fi
-    fi
-}
-
-configure_starship() {
-    local starship
-
-    starship=${XDG_CONFIG_HOME}/starship
-    if cmd.has starship; then
-        source ${starship}/bootstrap.sh
-    fi
-}
-
 configure_update_alternative() {
     export DPKG_ADMINDIR="$(sys.info ua_altdir)"
 }
@@ -132,5 +110,3 @@ oneshot configure_package_management
 
 oneshot configure_update_alternative
 oneshot configure_fuzzy_finder
-oneshot configure_enhancd
-oneshot configure_starship

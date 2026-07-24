@@ -1,14 +1,18 @@
 PKG_NAME=starship
 CONFIG_DIR=${XDG_CONFIG_HOME}/$(PKG_NAME)
+CONFIG_KEY=__STARSHIP_INCLUDED__
 TMP:=$(shell mktemp -d)
 CMD=source $(CONFIG_DIR)/bootstrap.sh
-# BLE_CMD=source $(CONFIG_DIR)/ble.sh/out/ble.sh
 SHELL:=bash
 
 .ONESHELL:
 config:
 	$(H)echo "-- $(PKG_NAME): setup config --"
-#	echo "${BLE_CMD}" >> ${CONFIG_DIR}/bootstrap.sh
+	$(H)if ! grep -q ${CONFIG_KEY} ${XDG_CONFIG_HOME}/bash/external.bash; then
+		echo "### ${CONFIG_KEY} ###"
+		echo "source ${CONFIG_DIR}/bootstrap.sh"
+		echo ""
+	fi >> ${XDG_CONFIG_HOME}/bash/external.bash
 
 install:
 	$(H)lib.load devel
