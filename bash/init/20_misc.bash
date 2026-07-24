@@ -17,6 +17,7 @@ alias l='ll'
 alias cls='clear'
 alias rsync='rsync -av -h --progress'
 alias less='less -R'
+alias ln='ln -r'
 
 # coloring manual
 alias man="\
@@ -77,14 +78,6 @@ if cmd.has reboot; then
     }
 fi
 
-kill.contain() {
-    if [[ -z "$1" ]]; then
-        echo "kill the process including its children"
-        return 1
-    fi
-    kill $(ps -s $1 -o pid=);
-}
-
 ln.abs() {
     local dst=$(eval "echo \$$#")
     local cmd linkdir opt
@@ -109,10 +102,6 @@ ln.abs() {
     done
 
     ln $cmd
-}
-
-ln.rlt() {
-    ln -r "$@"
 }
 
 man.vim() {

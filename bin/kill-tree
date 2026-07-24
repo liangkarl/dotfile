@@ -1,0 +1,332 @@
+#!/usr/bin/env bash
+#
+# kill-tree - terminate a process and all descendants
+#
+# Requirements: Bash 4.3+, procps-ng ps
+#
+# Usage:
+#   kill-tree [options] PID
+#
+# Options:
+#   -s, --signal SIGNAL   Initial signal (default: TERM)
+#   -t, --timeout SEC     Wait before SIGKILL escalation (default: 3)
+#   -n, --no-escalate     Do not escalate to SIGKILL
+#   -d, --dry-run         Show targets without sending signals
+#   -q, --quiet           Suppress informational output
+#   -h, --help            Show this help
+#
+# Exit status:
+#   0  All snapshotted processes terminated, or dry-run succeeded
+#   1  One or more processes survived or an operation failed
+#   2  Invalid command-line usage
+
+set -u
+
+program=${0##*/}
+initial_signal=TERM
+timeout=3
+escalate=1
+dry_run=0
+quiet=0
+
+usage() {
+    sed -n '3,22s/^# \{0,1\}//p' "$0"
+}
+
+log() {
+    (( quiet )) || printf '%s\n' "$*"
+}
+
+error() {
+    printf '%s: %s\n' "$program" "$*" >&2
+}
+
+is_nonnegative_number() {
+    [[ $1 =~ ^([0-9]+([.][0-9]*)?|[.][0-9]+)$ ]]
+}
+
+normalize_signal() {
+    local signal=${1#SIG}
+    signal=${signal#-}
+    signal=${signal^^}
+
+    kill -l "$signal" &>/dev/null || return 1
+    printf '%s\n' "$signal"
+}
+
+while (($#)); do
+    case $1 in
+        -s|--signal)
+            (($# >= 2)) || {
+                error "$1 requires an argument"
+                exit 2
+            }
+            initial_signal=$2
+            shift 2
+            ;;
+        -t|--timeout)
+            (($# >= 2)) || {
+                error "$1 requires an argument"
+                exit 2
+            }
+            timeout=$2
+            shift 2
+            ;;
+        -n|--no-escalate)
+            escalate=0
+            shift
+            ;;
+        -d|--dry-run)
+            dry_run=1
+            shift
+            ;;
+        -q|--quiet)
+            quiet=1
+            shift
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        --)
+            shift
+            break
+            ;;
+        -*)
+            error "unknown option: $1"
+            exit 2
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+(($# == 1)) || {
+    usage >&2
+    exit 2
+}
+
+root_pid=$1
+
+[[ $root_pid =~ ^[0-9]+$ ]] && (( root_pid > 1 )) || {
+    error "PID must be an integer greater than 1"
+    exit 2
+}
+
+initial_signal=$(normalize_signal "$initial_signal") || {
+    error "invalid signal"
+    exit 2
+}
+
+is_nonnegative_number "$timeout" || {
+    error "timeout must be a non-negative number"
+    exit 2
+}
+
+# Refuse targets that could terminate this script or its invoking shell.
+shell_pid=$$
+caller_pid=$PPID
+if (( root_pid == shell_pid || root_pid == caller_pid )); then
+    error "refusing to target the current or invoking shell"
+    exit 1
+fi
+
+# Store the snapshot as PID -> start time, parent PID, process-group ID.
+# The start time protects verification from PID reuse.
+declare -A start_times=()
+declare -A parent_pids=()
+declare -A group_ids=()
+declare -A children=()
+declare -a preorder=()
+declare -a postorder=()
+
+snapshot_processes() {
+    local pid ppid pgid start_time
+
+    while read -r pid ppid pgid start_time; do
+        [[ -n $pid ]] || continue
+        start_times[$pid]=$start_time
+        parent_pids[$pid]=$ppid
+        group_ids[$pid]=$pgid
+        children[$ppid]+=" $pid"
+    done < <(ps -e -o pid=,ppid=,pgid=,lstart= |
+        awk '{
+            # lstart occupies fields 4..8; keep it as a PID-reuse token.
+            printf "%s %s %s %s_%s_%s_%s_%s\n",
+                   $1, $2, $3, $4, $5, $6, $7, $8
+        }')
+
+    [[ -n ${start_times[$root_pid]+x} ]]
+}
+
+walk_tree() {
+    local pid=$1 child
+
+    preorder+=("$pid")
+    for child in ${children[$pid]-}; do
+        walk_tree "$child"
+    done
+    postorder+=("$pid")
+}
+
+same_process_exists() {
+    local pid=$1 current_start
+
+    [[ -r /proc/$pid/stat ]] || return 1
+
+    # Field 22 is process start time. Reading after ')' avoids spaces in comm.
+    current_start=$(sed 's/^.*) //' "/proc/$pid/stat" 2>/dev/null |
+        awk '{print $20}') || return 1
+
+    # Convert the ps snapshot token to /proc start time lazily when first used.
+    # /proc start time is more precise, so snapshot it separately if available.
+    [[ ${proc_start_times[$pid]-} == "$current_start" ]]
+}
+
+declare -A proc_start_times=()
+
+snapshot_processes || {
+    error "PID $root_pid does not exist"
+    exit 1
+}
+
+walk_tree "$root_pid"
+
+# Snapshot precise /proc start times after traversal.
+for pid in "${preorder[@]}"; do
+    if [[ -r /proc/$pid/stat ]]; then
+        proc_start_times[$pid]=$(
+            sed 's/^.*) //' "/proc/$pid/stat" 2>/dev/null |
+                awk '{print $20}'
+        )
+    fi
+done
+
+((${#proc_start_times[@]})) || {
+    error "process tree disappeared during traversal"
+    exit 1
+}
+
+# Remove entries that vanished before the precise snapshot.
+declare -a targets=()
+for pid in "${postorder[@]}"; do
+    [[ -n ${proc_start_times[$pid]-} ]] && targets+=("$pid")
+done
+
+show_tree() {
+    local csv
+    printf -v csv '%s,' "${targets[@]}"
+    csv=${csv%,}
+
+    ps -o pid,ppid,pgid,sid,stat,etime,cmd -p "$csv" --forest
+}
+
+log "Snapshotted ${#targets[@]} process(es):"
+(( quiet )) || show_tree
+
+if (( dry_run )); then
+    log "Dry run: no signals sent."
+    exit 0
+fi
+
+# A group signal is safe only when:
+#   1. every target is in the root's process group;
+#   2. every current member of that group is in the snapshotted tree;
+#   3. it is not this script's or its caller's process group.
+use_group=1
+root_pgid=${group_ids[$root_pid]}
+script_pgid=$(ps -o pgid= -p "$$" | tr -d '[:space:]')
+caller_pgid=$(ps -o pgid= -p "$PPID" | tr -d '[:space:]')
+
+[[ -n $root_pgid &&
+   $root_pgid != "$script_pgid" &&
+   $root_pgid != "$caller_pgid" ]] || use_group=0
+
+declare -A target_set=()
+for pid in "${targets[@]}"; do
+    target_set[$pid]=1
+    [[ ${group_ids[$pid]} == "$root_pgid" ]] || use_group=0
+done
+
+if (( use_group )); then
+    while read -r pid; do
+        [[ -n ${target_set[$pid]-} ]] || {
+            use_group=0
+            break
+        }
+    done < <(ps -e -o pid=,pgid= |
+        awk -v pgid="$root_pgid" '$2 == pgid { print $1 }')
+fi
+
+send_to_tree() {
+    local signal=$1 pid rc=0
+
+    # postorder is children first, parent last.
+    for pid in "${targets[@]}"; do
+        same_process_exists "$pid" || continue
+        kill "-$signal" -- "$pid" 2>/dev/null || rc=1
+    done
+
+    return "$rc"
+}
+
+if (( use_group )); then
+    log "Sending SIG$initial_signal to process group $root_pgid."
+    kill "-$initial_signal" -- "-$root_pgid" 2>/dev/null ||
+        error "failed to signal process group $root_pgid"
+else
+    log "Sending SIG$initial_signal to the process tree (children first)."
+    send_to_tree "$initial_signal" ||
+        error "one or more initial signals failed"
+fi
+
+survivors=()
+refresh_survivors() {
+    local pid
+    survivors=()
+
+    for pid in "${targets[@]}"; do
+        same_process_exists "$pid" && survivors+=("$pid")
+    done
+}
+
+wait_for_exit() {
+    local end_time
+
+    end_time=$(awk -v now="$EPOCHREALTIME" -v delay="$timeout" \
+        'BEGIN { printf "%.6f", now + delay }')
+
+    while :; do
+        refresh_survivors
+        ((${#survivors[@]})) || return 0
+
+        awk -v now="$EPOCHREALTIME" -v end="$end_time" \
+            'BEGIN { exit !(now >= end) }' && return 1
+
+        sleep 0.1
+    done
+}
+
+wait_for_exit
+
+if ((${#survivors[@]} && escalate)); then
+    log "Escalating ${#survivors[@]} survivor(s) to SIGKILL: ${survivors[*]}"
+
+    for pid in "${survivors[@]}"; do
+        same_process_exists "$pid" || continue
+        kill -KILL -- "$pid" 2>/dev/null ||
+            error "failed to send SIGKILL to PID $pid"
+    done
+
+    sleep 0.1
+    refresh_survivors
+fi
+
+if ((${#survivors[@]})); then
+    error "processes still exist: ${survivors[*]}"
+    error "they may be uninterruptible, zombies awaiting reaping, or inaccessible"
+    exit 1
+fi
+
+log "All snapshotted processes terminated."
