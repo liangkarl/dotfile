@@ -409,10 +409,11 @@ local function config()
       { "y", "<Plug>(YankyYank)", mode = { "n", "x" }, desc = "Yank text" },
       { "p", "<Plug>(YankyPutAfter)", mode = { "n", "x" }, desc = "Put yanked text after cursor" },
       { "P", "<Plug>(YankyPutBefore)", mode = { "n", "x" }, desc = "Put yanked text before cursor" },
-      { '<leader>ps', '"+p', desc = "Paste from Clipboard"},
-      { '<leader>Ps', '"+P', desc = "Paste from Clipboard"},
-      { '<leader>pc', '"*p', desc = "Paste from 'copy-on-select' Clipboard"},
-      { '<leader>Pc', '"*P', desc = "Paste from 'copy-on-select' Clipboard"},
+      { '<leader>p', '"+p', desc = "Paste after from Clipboard"},
+      { '<leader>P', '"+P', desc = "Paste before from Clipboard"},
+      { '<leader>yc', '<cmd>YankyRingHistory<CR>', mode = { "n", "x" }, desc = "Copy Yanky item to system clipboard" },
+      { '<leader>y', '"+y', desc = "Copy to Clipboard" },
+      { '<leader>Y', '"+Y', desc = "Copy whole line to Clipboard" },
 
       --- action: switch
       --- <TAB> = <C-i> that could makes pause while using <C-i>
@@ -649,7 +650,6 @@ local function config()
         })
       end, desc = "Search current word in man docs" },
       { '<leader><space>k', '<cmd>Telescope keymaps<cr>', desc = "Keymaps" },
-      { '<leader><space>r', '<cmd>Telescope registers<cr>', desc = "Registers" },
       { '<leader><space>y', '<cmd>Telescope yank_history<cr>', desc = "Clipboard History" },
       -- { '<leader>sm', '<cmd>Outline<cr>', 'Toggle Outline Symbol Manager' },
       -- { '<leader>si', '<cmd>OutlineStatus<cr>', 'Get Outline Symbol Manager info' },

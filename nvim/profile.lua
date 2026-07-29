@@ -181,3 +181,30 @@ vim.keymap.set("n", "<leader>p", function()
   vim.fn.setreg('p', text, 'l')
   vim.cmd.normal('"pp')
 end, { desc = "Paste visual block as separate lines" })
+
+-- Cancel xclip/xsel support and replace with CopyQ
+-- Nvim Preparation
+local copyq_add_and_copy = [[
+tmp=$(mktemp) || exit 1
+trap 'rm -f "$tmp"' EXIT
+
+cat >"$tmp" || exit 1
+copyq add - <"$tmp" || exit 1
+copyq copy - <"$tmp"
+]]
+vim.opt.clipboard = ""
+vim.g.clipboard = {
+  name = "copyq",
+
+  copy = {
+    ["+"] = { "sh", "-c", copyq_add_and_copy },
+    ["*"] = { "sh", "-c", copyq_add_and_copy },
+  },
+
+  paste = {
+    ["+"] = { "copyq", "clipboard" },
+    ["*"] = { "copyq", "clipboard" },
+  },
+
+  cache_enabled = 0,
+}

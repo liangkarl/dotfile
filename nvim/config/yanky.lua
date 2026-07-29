@@ -5,9 +5,28 @@
 --
 return {
   "gbprod/yanky.nvim",
-  opts = {
-    -- your configuration comes here
-    -- or leave it empty to use the default settings
-    -- refer to the configuration section below
-  },
+  config = function()
+    local picker = require('yanky.picker')
+    require("yanky").setup({
+      ring = {
+        storage = "shada",
+        history_length = 50,
+        sync_with_numbered_registers = true,
+      },
+      system_clipboard = {
+        sync_with_ring = false,
+      },
+
+      picker = {
+        select = {
+          -- send to CopyQ/system clipboard if it is chosen
+          action = picker.actions.set_register("+"),
+        },
+        telescope = {
+          use_default_mappings = true, -- if default mappings should be used
+          mappings = nil, -- nil to use default mappings or no mappings (see `use_default_mappings`)
+        },
+      },
+    })
+  end
 }
