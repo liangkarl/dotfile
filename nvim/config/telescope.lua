@@ -37,36 +37,39 @@ end
 return {
   { -- provides superior project management
     "DrKJeff16/project.nvim",
-    config = function()
-      require("project").setup {
-        -- Manual mode doesn't automatically change your root directory, so you have
-        -- the option to manually do so using `:ProjectRoot` command.
-        manual_mode = false,
+    opts = {
+      -- Manual mode doesn't automatically change your root directory, so you have
+      -- the option to manually do so using `:ProjectRoot` command.
+      manual_mode = false,
 
-        -- Methods of detecting the root directory. **"lsp"** uses the native neovim
-        -- lsp, while **"pattern"** uses vim-rooter like glob pattern matching. Here
-        -- order matters: if one is not detected, the other is used as fallback. You
-        -- can also delete or rearangne the detection methods.
-        detection_methods = { "pattern", "lsp" },
+      -- Methods of detecting the root directory. **"lsp"** uses the native neovim
+      -- lsp, while **"pattern"** uses vim-rooter like glob pattern matching. Here
+      -- order matters: if one is not detected, the other is used as fallback. You
+      -- can also delete or rearangne the detection methods.
+      detection_methods = { "pattern", "lsp" },
 
-        -- All the patterns used to detect root dir, when **"pattern"** is in
-        -- detection_methods
-        patterns = { ".root", ".git", },
+      -- All the patterns used to detect root dir, when **"pattern"** is in
+      -- detection_methods
+      patterns = { ".root", ".git", },
 
-        -- What scope to change the directory, valid options are
-        -- * global (default)
-        -- * tab
-        -- * win
-        scope_chdir = 'win',
+      -- What scope to change the directory, valid options are
+      -- * global (default)
+      -- * tab
+      -- * win
+      scope_chdir = 'win',
 
-        -- Path where project.nvim will store the project history for use in
-        -- telescope
-        history = {
-          save_dir = vim.fn.stdpath("data"),
-        },
-        silent_chdir = true,
-      }
-    end,
+      -- Path where project.nvim will store the project history for use in
+      -- telescope
+      history = {
+        save_dir = vim.fn.stdpath("data"),
+      },
+      silent_chdir = true,
+      exclude_dirs = {
+        '/',
+        '/tmp',
+        '/var/tmp',
+      },
+    },
   },
   {
     'nvim-telescope/telescope.nvim',
