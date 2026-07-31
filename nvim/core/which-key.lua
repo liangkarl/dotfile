@@ -389,7 +389,13 @@ local function config()
   -------------------
   -- Folded Keymap --
   -------------------
-  wk.setup()
+  wk.setup({
+    preset = 'modern',
+    spelling = {
+      enable = false
+    },
+    sort = { 'mod', 'local', "group" }
+  })
   -- NOTE: need explicity declaration if override g, s, c, d, =, etc.
   wk.add({
     {
@@ -406,12 +412,11 @@ local function config()
       -- There are two different clipboards for Linux and only one for Win
       -- *: clipboard for copy-on-select
       -- +: clipboard for <C-c> and <C-v>
-      { "y", "<Plug>(YankyYank)", mode = { "n", "x" }, desc = "Yank text" },
-      { "p", "<Plug>(YankyPutAfter)", mode = { "n", "x" }, desc = "Put yanked text after cursor" },
-      { "P", "<Plug>(YankyPutBefore)", mode = { "n", "x" }, desc = "Put yanked text before cursor" },
+      { "y", "<Plug>(YankyYank)", mode = { "n", "v", "x" }, desc = "Yank text" },
+      { "p", "<Plug>(YankyPutAfter)", mode = { "n", "v", "x" }, desc = "Put yanked text after cursor" },
+      { "P", "<Plug>(YankyPutBefore)", mode = { "n", "v", "x" }, desc = "Put yanked text before cursor" },
       { '<leader>p', '"+p', desc = "Paste after from Clipboard"},
       { '<leader>P', '"+P', desc = "Paste before from Clipboard"},
-      { '<leader>yc', '<cmd>YankyRingHistory<CR>', mode = { "n", "x" }, desc = "Copy Yanky item to system clipboard" },
       { '<leader>y', '"+y', desc = "Copy to Clipboard" },
       { '<leader>Y', '"+Y', desc = "Copy whole line to Clipboard" },
 
@@ -514,12 +519,6 @@ local function config()
       group = "Format",
       { '=', '=', desc = "Format" },
       { '==', '<cmd>lua vim.lsp.buf.format({ async = true })<cr>', desc = "LSP: Format" },
-    },
-    {
-      mode = { 'n', 'v' },
-      group = "Yank",
-      { 'ys', '"+y', desc = "Copy to Clipboard" },
-      { 'yc', '"*y', desc = "Copy to 'copy-on-select' Clipboard" },
     },
     {
       group = "Search",
@@ -638,10 +637,10 @@ local function config()
       { '<leader><space>p', '<cmd>Lazy<cr>', desc = "Lazy: Main Menu" },
       { '<leader><space>t', '<cmd>Telescope builtin include_extensions=true<cr>', desc = "Telescope: Main Menu"},
       { '<leader><space>H', '<cmd>Telescope help_tags<cr>', desc = "Nvim Docs"},
+      { '<leader><space>M', '<cmd>Telescope man_pages sections=ALL<cr>', desc = "Man Docs"},
       { '<leader><space>h', function()
         builtin.help_tags({ default_text = vim.fn.expand('<cword>') })
       end, desc = "Search current word in nvim docs" },
-      { '<leader><space>M', '<cmd>Telescope man_pages sections=ALL<cr>', desc = "Man Docs"},
       { '<leader><space>m', function()
         local word = "^" .. vim.fn.expand("<cword>") .. "$"
         builtin.man_pages({
@@ -650,7 +649,7 @@ local function config()
         })
       end, desc = "Search current word in man docs" },
       { '<leader><space>k', '<cmd>Telescope keymaps<cr>', desc = "Keymaps" },
-      { '<leader><space>y', '<cmd>Telescope yank_history<cr>', desc = "Clipboard History" },
+      { '<leader><space>y', '<cmd>Telescope yank_history<CR>', mode = { "n", "v", "x" }, desc = "Copy Yanky item to system clipboard" },
       -- { '<leader>sm', '<cmd>Outline<cr>', 'Toggle Outline Symbol Manager' },
       -- { '<leader>si', '<cmd>OutlineStatus<cr>', 'Get Outline Symbol Manager info' },
       -- { "<leader><space>q", '<cmd>TroubleToggle quickfix<cr>', desc = "Trouble: Toggle Quickfix"},

@@ -273,7 +273,6 @@ return {
       telescope.load_extension('undo')
       telescope.load_extension('luasnip')
       telescope.load_extension('egrepify')
-      telescope.load_extension('yank_history')
     end,
   },
 }
