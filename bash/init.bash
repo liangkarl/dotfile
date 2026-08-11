@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+oneshot() {
+    eval "$*"
+    unset -f "$1"
+}
+
 export BASH_CFG="$(dirname ${BASH_SOURCE[0]})"
 
 # This first call of library should be source

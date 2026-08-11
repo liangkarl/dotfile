@@ -2,11 +2,6 @@
 
 dbg.cmd "export SYS_INFO=\"${BASH_CFG}/info\""
 
-oneshot() {
-    eval "$*"
-    unset -f "$1"
-}
-
 bash_init() {
     if ! cmp -s ${SYS_INFO} ${SYS_INFO}.last; then (
         lib.load config
