@@ -24,7 +24,7 @@
 # you can launch broot with `br -H`).
 # A popular flag is the `g` one which displays git related info.
 #
-# default_flags:
+default_flags: -psih --sort-by-date --sort-by-type-dirs-first
 
 ###############################################################
 # Terminal's title
@@ -67,16 +67,16 @@ show_selection_mark: true
 # array. You should keep the name column at the end as it has a
 # variable length.
 #
-# cols_order: [
-#     mark
-#     git
-#     size
-#     permission
-#     date
-#     count
-#     branch
-#     name
-# ]
+cols_order: [
+    permission
+    date
+    mark
+    git
+    count
+    branch
+    size
+    name
+]
 
 ###############################################################
 # True Colors
@@ -86,7 +86,7 @@ show_selection_mark: true
 # and set it to false or true if you notice the colors in
 # previewed images are too off.
 #
-# true_colors: false
+true_colors: true
 
 ###############################################################
 # Icons
@@ -94,7 +94,7 @@ show_selection_mark: true
 # (see https://dystroy.org/broot/icons for installation and
 # troubleshooting)
 #
-# icon_theme: vscode
+icon_theme: nerdfont
 
 ###############################################################
 # Special paths
@@ -131,7 +131,7 @@ special_paths: {
 # to cancel (for example when you just opened broot), uncomment
 # this parameter
 # 
-# quit_on_last_cancel: true
+quit_on_last_cancel: true
 
 ###############################################################
 # Search modes
@@ -167,10 +167,20 @@ special_paths: {
 # uncomment and modify the next section if you want to color
 # file name depending on their extension
 #
-# ext_colors: {
-#     png: rgb(255, 128, 75)
-#     rs: yellow
-# }
+ext_colors: {
+    rej: red
+    bin: ansi(120)
+    img: ansi(120)
+    mk: ansi(111)
+    patch: ansi(111)
+    o: ansi(240)
+    tmp: ansi(240)
+    bak: ansi(240)
+    //md: bright blue
+    //json: bright blue
+    //toml: bright blue
+    //conf: bright blue
+}
 
 ###############################################################
 # Max file size for content search
