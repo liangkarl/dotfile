@@ -190,7 +190,7 @@ return { -- LSP configuration
     -- end, {
     --   group = m.augroup('UserLspConfig'),
     -- })
-    vim.lsp.log.set_level("off")
+    vim.lsp.log.set_level("INFO")
     create_v_lsp_file()
   end,
 }

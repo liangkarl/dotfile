@@ -208,3 +208,73 @@ vim.g.clipboard = {
 
   cache_enabled = 0,
 }
+
+local uv = vim.uv or vim.loop
+
+local MAX_SIZE  = 20 * 1024 * 1024 -- 20 MB
+local KEEP_SIZE = 15 * 1024 * 1024 -- 保留最新 15 MB
+
+local function get_lsp_log_path()
+  if vim.lsp.log and vim.lsp.log.get_filename then
+    return vim.lsp.log.get_filename()
+  elseif vim.lsp.get_log_path then
+    return vim.lsp.get_log_path()
+  end
+end
+
+local function trim_lsp_log()
+  local path = get_lsp_log_path()
+  if not path then
+    return
+  end
+
+  local stat = uv.fs_stat(path)
+  if not stat or stat.size <= MAX_SIZE then
+    return
+  end
+
+  local input = io.open(path, "rb")
+  if not input then
+    return
+  end
+
+  input:seek("end", -math.min(KEEP_SIZE, stat.size))
+  local data = input:read("*a")
+  input:close()
+
+  -- 不從半行開始
+  local newline = data:find("\n")
+  if newline then
+    data = data:sub(newline + 1)
+  end
+
+  --
+  -- 關鍵：
+  -- "wb" truncate 現有檔案，而不是 remove + recreate。
+  -- pathname / inode 不被替換。
+  --
+  local output = io.open(path, "wb")
+  if not output then
+    return
+  end
+
+  output:write(data)
+  output:close()
+end
+
+-- 啟動時先檢查一次
+trim_lsp_log()
+
+-- Nvim 存活期間每 5 分鐘檢查
+local timer = uv.new_timer()
+
+timer:start(
+  5 * 60 * 1000,
+  5 * 60 * 1000,
+  vim.schedule_wrap(function()
+    trim_lsp_log()
+  end)
+)
+
+-- 防止 Lua GC 把 timer 回收
+_G.lsp_log_trim_timer = timer
