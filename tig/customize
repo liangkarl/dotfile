@@ -1,5 +1,3 @@
 # For customized tig version
 
-# %(author)
-bind main  -a       :set main-options += --no-merges --author="%(author)"
-bind log   -a       :set log-options  += --no-merges --author="%(author)"
+set show-loading = no

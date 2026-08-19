@@ -125,6 +125,7 @@ bind stage -r       :set diff-options = --patience
 ## Main format
 bind main  -<ENTER> :set main-options += --no-merges
 bind main  -A       :set main-options += --no-merges --author="%(prompt search author name: )"
+bind main  -a       :set main-options += --no-merges --author="%(author)"
 
 ## Refs format
 bind refs  -b       <tig refs --branches
@@ -144,6 +145,7 @@ bind log   -r       :set log-options = --patience
 bind log   -v       :set log-options += -p
 bind log   -s       :set log-options += --stat
 bind log   -A       :set log-options += --no-merges --author="%(prompt search author name: )"
+bind log   -a       :set log-options += --no-merges --author="%(author)"
 bind log   -f       :set log-options += -- "%(file)"
 
 ## Options
