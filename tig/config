@@ -298,23 +298,12 @@ bind diff   cp       :!git cmd git.auto cherry-pick -s %(commit)
 bind diff   cP       :!git cmd git.msg  cherry-pick -s %(commit)
 
 ## Format patch
-bind main   p<Enter> :!git cmd patch.create TYPE=select-patch
-bind main   p1       :!git cmd patch.create TYPE=new-patch C=%(commit)
-bind diff   p<Enter> :!git cmd patch.create TYPE=select-patch
-bind diff   p1       :!git cmd patch.create TYPE=new-patch C=%(commit)
-bind diff   pf       :!git cmd patch.create TYPE=new-patch C=%(commit) FILE=%(file)
-bind log    p<Enter> :!git cmd patch.create TYPE=select-patch
-bind log    p1       :!git cmd patch.create TYPE=new-patch C=%(commit)
-bind log    pf       :!git cmd patch.create TYPE=new-patch C=%(commit) FILE=%(file)
-bind reflog p<Enter> +git  cmd patch.create TYPE=select-patch
-bind reflog p1       :!git cmd patch.create TYPE=new-patch C=%(commit)
-bind reflog pf       :!git cmd patch.create TYPE=new-patch C=%(commit) FILE=%(file)
-bind blame  p1       :!git cmd patch.create TYPE=new-patch C=%(commit)
-bind blame  pf       :!git cmd patch.create TYPE=new-patch C=%(commit) FILE=%(file)
-bind stage  p1       :!git cmd patch.create TYPE=new-patch C=%(commit)
-bind stage  pf       :!git cmd patch.create TYPE=new-patch C=%(commit) FILE=%(file)
-bind stash  p1       :!git cmd patch.create TYPE=stash C=%(stash)
-bind stash  pf       :!git cmd patch.create TYPE=stash C=%(stash) FILE=%(file)
+bind main   p<Enter> :!git cmd patch.create C=%(commit)
+bind diff   p<Enter> :!git cmd patch.create TYPE=commit C=%(commit)
+bind log    p<Enter> :!git cmd patch.create TYPE=commit C=%(commit)
+bind reflog p<Enter> :!git cmd patch.create TYPE=commit C=%(commit)
+bind stage  p<Enter> :!git cmd patch.create C=%(commit)
+bind stash  p<Enter> :!git cmd patch.create TYPE=stash C=%(stash)
 
 # Save Info
 bind refs   ss       :!git cmd info.write   C=%(commit) BR=%(branch) REF=%(refname) TAG=%(tag) FILE=%(file) OFILE=%(file_old)

@@ -39,6 +39,8 @@ PREFIX_BR='refs/heads'
 PREFIX_REMOTE='refs/remotes'
 PREFIX_STASH='refs/stash'
 PREFIX_SELECT="${PREFIX_TAG}/select"
+FZF='fzf-tmux -p'
+MENU='menu -b fzf-tmux'
 
 declare -A git_actions=(
 	[rebase-merge]=rebase
@@ -60,6 +62,18 @@ show_cmd() {
 		echo "'$*' failed ($ret)"
 		return $ret
 	fi
+}
+
+input() {
+	if [[ "$FZF" =~ ^fzf-tmux ]]; then
+		echo -en | $FZF -h 3 -- --style=minimal --no-info --print-query --prompt "$* " | head -n 1
+	elif [[ "$FZF" == fzf ]]; then
+		echo -en | $FZF --style=minimal --no-info --print-query --prompt "$* " | head -n 1
+	fi
+}
+
+conv_name() {
+	sed 'y/ :()/-___/; s/!//g; s/[-_]*_[-_]*/_/g'
 }
 
 git.msg() { show_cmd git $*; }
@@ -130,6 +144,16 @@ is_tag() {
 } &> $__N
 # is_remote_branch <refname>
 is_remote_branch() { git show-ref --verify --quiet ${PREFIX_REMOTE}/${1} &> $__N; }
+is_stash() {
+	local commit
+
+    commit=$(git rev-parse --verify "$1^{commit}" 2>/dev/null) ||
+        return 2
+
+    git reflog show --format='%H' refs/stash 2>/dev/null |
+        grep -Fxq "$commit"
+}
+
 # to_sha <tag|branch>
 to_sha() { git rev-parse $1 2> $__N; }
 
@@ -179,14 +203,14 @@ delete() {
 	target=$(while [[ "$name" != '.' ]]; do
 		echo "$name"
 		name=$(dirname $name)
-	done | fzf-tmux -p --prompt='Delete Target: ')
+	done | $MENU -p 'Delete Target:')
 
 	if [[ -z "$target" ]]; then
-		echo "no file selected"
+		echo "Cancelled"
 		return 1
 	fi
 
-	rm -ivr $target
+	rm -vr $target
 }
 
 # br.add() {
@@ -321,7 +345,7 @@ refs.find() {
 	list="$(git for-each-ref --points-at $C $rev --format='%(refname)')"
 	count=$(printf "${list:+${list}\n}" | wc -l)
 	if [[ $count -gt 1 ]]; then
-		printf "$list" | fzf-tmux -p --prompt="$prompt"
+		printf "$list" | $MENU -p "$prompt"
 	else
 		echo $list
 	fi
@@ -508,36 +532,87 @@ stage.file() {
 	fi
 }
 
-# (stash)  TYPE=stash        C=stash@{x} [FILE=] patch.create
-# (diff)   TYPE=new-patch    C=[000..|xxx] [FILE=] patch.create
-# (select) TYPE=select-patch patch.create
+# TYPE= C= patch.create
 patch.create() {
+	local opts
+
+	opts="diff commit stage stash select-patch select-range"
 	[[ ! -d "$patchdir" ]] && mkdir ${patchdir}
 
-	out=${patchdir}/${NAME:-$(date +%y%m%d-%H%M%S)}${FILE:+_$(basename $FILE)}
+	if [[ -z "$TYPE" ]]; then
+		TYPE=$($MENU -p "Generate Patch(es) From:" $opts)
+	fi
+
+
+	i=100
+	out="${patchdir}/"
 	case "$TYPE" in
-	new-patch)
-		echo "output: ${out}.patch"
-		if [[ "$C" =~ ^0+$ ]]; then
-			git diff $p_opts ${FILE+-- $FILE} | tee ${out}.patch
-		elif is_commit $C; then
-			git diff $p_opts ${C}^ ${C} ${FILE+-- $FILE} | tee ${out}.patch
-		fi
+	diff)
+		FILE="$({ echo "ALL"; git diff --name-only; } | $MENU -p "Pick File(s):")"
+		[[ "$FILE" == "ALL" ]] && unset FILE
+		NAME="$(input "Patch Name?" | conv_name)"
+		out+=${NAME:-$(date +%y%m%d-%H%M%S)}.patch
+		git diff $p_opts ${FILE+-- $FILE} | tee ${out}
+		;;
+	stage)
+		FILE="$({ echo "ALL"; git diff --name-only --cached; } | $MENU -p "Pick File(s):")"
+		[[ "$FILE" == "ALL" ]] && unset FILE
+		NAME="$(input "Patch Name?" | conv_name)"
+		out+=${NAME:-$(date +%y%m%d-%H%M%S)}.patch
+		git diff --cached $p_opts ${FILE+-- $FILE} | tee ${out}
 		;;
 	stash)
-		echo "output: ${out}.patch"
-		git diff $p_opts ${C}^1 ${C} ${FILE+-- $FILE} | tee ${out}.patch
+		if ! is_stash $C; then
+			C=$(git stash list | $MENU -p "Select Stash:" | cut -d: -f1)
+			[[ -z "$C" ]] && return 2
+		fi
+		FILE="$({ echo "ALL"; git stash show --name-only $C; } | $MENU -p "Pick File(s):")"
+		[[ "$FILE" == "ALL" ]] && unset FILE
+		NAME="$(input "Patch Name?" | conv_name)"
+		out+=${NAME:-$(date +%y%m%d-%H%M%S)}.patch
+		git stash show $p_opts -p $C ${FILE+-- $FILE} | tee ${out}
+		;;
+	commit)
+		if ! is_commit $C || is_stash $C; then
+			C=$(git log --oneline | $MENU -p "Select Commit:" | cut -d: -f1)
+			[[ -z "$C" ]] && return 2
+		fi
+		FILE="$({ echo "ALL"; git show --pretty='' --name-only $C; } | $MENU -p "Pick File(s):")"
+		[[ "$FILE" == "ALL" ]] && unset FILE
+		out+=${NAME:-$(date +%y%m%d-%H%M%S)}.patch
+		git show $p_opts $C ${FILE+-- $FILE} | tee ${out}
 		;;
 	select-patch)
 		local item i
 
-		i=100
+		if [[ ! -e $commit ]]; then
+			return 2
+		fi
 		for item in $(cat $commits); do
-			git format-patch --start-number $((i++)) -k $p_opts -1 -o ${patchdir} $item
+			git.msg format-patch --start-number $((i++)) -k $p_opts -1 -o ${patchdir} $item
 		done &> $__N
 
 		select.reset
-		echo "$((i - 100)) patch(es) has been created."
+		;;
+	select-range)
+		if [[ ! -e $commit ]]; then
+			return 2
+		fi
+
+		beg=$(head -n 1 $commit)
+
+		if [[ "$(wc -l $commits | cut -d' ' -f1)" -ge 2 ]]; then
+			end=$(tail -n 1 $commit)
+		else
+			end=HEAD
+		fi
+
+		if git format-patch -o ${patchdir} -k $p_opts ${beg}..${end}; then
+			echo "$((i - 100)) patch(es) has been created."
+		else
+			echo "Failed to create patch(es)"
+		fi
+		select.reset
 		;;
 	*)
 		echo "unknown type $TYPE"
