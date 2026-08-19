@@ -385,8 +385,6 @@ bind main pa :!git cmd action.abort
 bind main pc :!git cmd action.next
 # progress info
 bind main pi :!git cmd action.check
-bind main pp !?git cmd refs.push C=%(commit)
-bind main pP !?git cmd refs.push C=%(commit) OPT='--force-with-lease'
 bind main <SingleQuote> :!git cmd commit_report
 # }
 

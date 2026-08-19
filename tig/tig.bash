@@ -420,10 +420,6 @@ refs.cut() {
 # main: (local)  info.write C= FILE= OFILE=
 # refs: (remote) refs.push TAG= BR= REF=
 #
-# 3. Choose remote reference then select local commit
-# refs: (remote) info.write C= BR= REF= TAG= FILE= OFILE=
-# main: (local)  refs.push C=
-#
 # 4. Create a new branch
 # main: (local 1)  info.write C= FILE= OFILE=
 # refs: (local 2)  info.write C= BR= REF= TAG= FILE= OFILE=
@@ -478,19 +474,6 @@ refs.push() {
 		elif [[ -n "$commit" ]]; then
 			git.msg push $OPT $remote ${commit}:${BR}${TAG}
 		fi
-
-	# 3. Choose remote reference then select local commit
-	elif [[ -n "$C" ]]; then
-		config.get remote_branch remote_branch
-		config.get remote_tag remote_tag
-		config.get remote remote
-
-		if [[ -z "$remote" ]]; then
-			echo "no remote name"; false
-			return
-		fi
-
-		git.msg push $OPT $remote ${C}:${remote_branch}${remote_tag}
 
 	fi
 
