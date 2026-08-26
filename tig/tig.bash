@@ -245,11 +245,12 @@ _load_last_action() {
 	local cmd
 }
 
-# NAME= stash.save
+# stash.save
 stash.save() {
 	local repo="$(basename $topdir)"
 	local sha="$(git rev-parse --short HEAD)"
 
+	NAME=$(input "New Stash Name: [[STAGE/UNSTAGE]: {repo}.${sha}]")
 	case "$TYPE" in
 	stage)
 		git.msg stash save --staged ${NAME:-STAGE: ${repo}.${sha}}
@@ -301,6 +302,38 @@ stash.pop() {
 		if [[ -e ${unstage_change} ]]; then
 			git apply --verbose ${unstage_change}
 		fi
+	fi
+}
+
+# C=
+refs.add() {
+	is_commit "$C" || return 1
+
+	TYPE=$($MENU -p 'Add What? ' branch tag save-refs)
+	if [[ -z "$TYPE" ]]; then
+		echo "No type selected"
+		return 2
+	fi
+
+	if [[ "$TYPE" != save-refs ]]; then
+		NAME=$(input "What's its name? [Enter to skip]" | conv_name)
+		if [[ "$TYPE" == branch ]]; then
+			NAME=${NAME:-$(basename "$(git rev-parse --show-toplevel)")}
+			git.msg branch $NAME $C
+		elif [[ "$TYPE" == tag ]]; then
+			NAME=${NAME:-tag.$(git rev-parse --short $C)}
+			git.msg tag $NAME $C
+		else
+			echo "Unknown type $TYPE"
+			return 4
+		fi
+	elif [[ "$TYPE" == save-refs ]]; then
+		config.load $node
+		config.get NAME REFS
+		if [[ -n "$NAME" ]]; then
+			git update-ref $NAME $C
+		fi
+		rm $node
 	fi
 }
 
@@ -374,7 +407,7 @@ refs.rename() {
 	fi
 
 	echo "Reference: $REFS"
-	read -p "Rename To: " NAME
+	NAME=$(input "Rename To:" | conv_name)
 	if [[ -z "$NAME" ]]; then
 		echo "no name specified"
 		return 3

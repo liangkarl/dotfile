@@ -213,44 +213,27 @@ bind stage   f<Enter> @git cmd stage.file FILE='%(file)'
 bind stage   fa       @git cmd stage.file
 
 ## Add stash
-bind main    sa        @git cmd stash.save NAME="%(prompt new stash: )"
 bind main    s<Enter>  @git cmd stash.save
 bind main    sp       :!git cmd stash.pop
-bind stage   sa        @git cmd stash.save NAME="%(prompt new stash: )"
 bind stage   s<Enter>  @git cmd stash.save
 bind stage   sp       :!git cmd stash.pop
-bind status  sa        @git cmd stash.save NAME="%(prompt new stash: )"
 bind status  s<Enter>  @git cmd stash.save
 bind status  sp       :!git cmd stash.pop
 
 ## Add/Remove/Move tag and branch
-bind main   ta       @git cmd git.msg tag "%(prompt new tag: )" %(commit)
-bind main   ba       @git cmd git.msg branch "%(prompt new branch: )" %(commit)
-bind main   rn       !git cmd refs.rename C=%(commit)
-bind main   t<ENTER> @git cmd git.msg tag tag.$(git rev-parse --short %(commit)) %(commit)
-bind main   b<ENTER> @git cmd git.msg branch $(basename $(git rev-parse --show-toplevel)) %(commit)
-bind main   a<ENTER> @git cmd refs.paste C=%(commit)
-bind main   d<ENTER> !git cmd refs.cut C=%(commit)
-bind reflog ta       @git cmd git.msg tag "%(prompt new tag: )" %(commit)
-bind reflog ba       @git cmd git.msg branch "%(prompt new branch: )" %(commit)
-bind reflog rn       !git cmd refs.rename C=%(commit)
-bind reflog t<ENTER> @git cmd git.msg tag tag.$(git rev-parse --short %(commit)) %(commit)
-bind reflog b<ENTER> @git cmd git.msg branch $(basename $(git rev-parse --show-toplevel)) %(commit)
-bind reflog a<ENTER> @git cmd refs.paste C=%(commit)
-bind reflog d<ENTER> !git cmd refs.cut C=%(commit)
-bind diff   ta       @git cmd git.msg tag "%(prompt new tag: )" %(commit)
-bind diff   ba       @git cmd git.msg branch "%(prompt new branch: )" %(commit)
-bind diff   rn       !git cmd refs.rename C=%(commit)
-bind diff   t<ENTER> @git cmd git.msg tag tag.$(git rev-parse --short %(commit)) %(commit)
-bind diff   a<ENTER> @git cmd refs.paste C=%(commit)
-bind diff   d<ENTER> !git cmd refs.cut C=%(commit)
-bind refs   ta       @git cmd git.msg tag "%(prompt new tag: )" HEAD
-bind refs   ba       @git cmd git.msg branch "%(prompt new branch: )" HEAD
-bind refs   rn       !git cmd refs.rename C=%(commit) REFS=%(refname)
-bind refs   t<ENTER> @git cmd git.msg tag tag.$(git rev-parse --short HEAD) HEAD
-bind refs   a<ENTER> @git cmd refs.paste C=%(commit)
-bind refs   d<ENTER> !git  cmd refs.cut REFS=%(refname)
-bind refs   d!       !?git cmd refs.cut TAG=%(TAG)  BR=%(branch) REMOTE=%(remote)
+bind main   rn       @git  cmd refs.rename C=%(commit)
+bind main   a<ENTER> :!git cmd refs.add C=%(commit)
+bind main   d<ENTER> :!git cmd refs.cut C=%(commit)
+bind reflog rn       @git  cmd refs.rename C=%(commit)
+bind reflog a<ENTER> :!git cmd refs.add C=%(commit)
+bind reflog d<ENTER> :!git cmd refs.cut C=%(commit)
+bind diff   rn       @git  cmd refs.rename C=%(commit)
+bind diff   a<ENTER> :!git cmd refs.add C=%(commit)
+bind diff   d<ENTER> :!git cmd refs.cut C=%(commit)
+bind refs   rn       @git  cmd refs.rename C=%(commit) REFS=%(refname)
+bind refs   a<ENTER> :!git cmd refs.add C=%(commit)
+bind refs   d<ENTER> :!git cmd refs.cut REFS=%(refname)
+bind refs   d!       @?git cmd refs.cut TAG=%(tag) BR=%(branch) REMOTE=%(remote)
 
 ##   Checkout
 bind main   co        :!git cmd git.auto checkout %(commit)
@@ -266,9 +249,9 @@ bind diff   cO        +?git cmd git.msg  checkout %(commit)^ -- %(file)
 ### File Operation
 bind main   dc       +?git cmd git.msg clean -fd
 bind status dc       +?git cmd git.msg clean -fd
-bind status dd       !git cmd delete NAME=%(file)
-bind stage  dd       !git cmd delete NAME=%(file)
-bind diff   dd       !git cmd delete NAME=%(file)
+bind status d<ENTER> :!git cmd delete NAME=%(file)
+bind stage  d<ENTER> :!git cmd delete NAME=%(file)
+bind diff   d<ENTER> :!git cmd delete NAME=%(file)
 
 ## Reset commits
 bind stage  r.       +?git cmd git.msg reset --hard
