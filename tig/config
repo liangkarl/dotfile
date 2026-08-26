@@ -79,6 +79,8 @@ bind stage   2  none
 # '.': next (right)
 bind main   . view-status
 bind status . view-refs
+bind stage  . view-refs
+bind diff   . view-refs
 bind refs   . view-stash
 bind stash  . view-log
 bind log    . view-reflog
@@ -90,6 +92,8 @@ bind log    , view-stash
 bind stash  , view-refs
 bind refs   , view-status
 bind status , view-main
+bind stage  , view-main
+bind diff   , view-main
 
 # tree -> blob -> blame
 bind tree   . view-blob
