@@ -469,74 +469,61 @@ refs.cut() {
 	config.save
 }
 
-# 1. Choose a local reference then push to remote
-# refs: (local)  info.write C= BR= REF= TAG= FILE= OFILE=
-# refs: (remote) refs.push TAG= BR= REF=
-#
-# 2. Choose a local commit, and then push
-# main: (local)  info.write C= FILE= OFILE=
-# refs: (remote) refs.push TAG= BR= REF=
-#
-# 4. Create a new branch
-# main: (local 1)  info.write C= FILE= OFILE=
-# refs: (local 2)  info.write C= BR= REF= TAG= FILE= OFILE=
-# refs: (remote) refs.push REMOTE= [BR= TAG=]
-#
-# 5. Push to upstream
-# refs: (local) refs.push UPSTREAM= BR= TAG=
+# [C=|BR= TAG=] $OPT refs.push()
 refs.push() {
 	local cmd
+	local opts
 
-	config.load "$infos"
-	config.get remote_branch "$remote_branch"
-	config.get remote_tag "$remote_tag"
-	config.get track_branch "$track_branch"
-	config.get track_tag "$track_tag"
-	config.get file "$file"
+	act="$($MENU -p 'Select Action:' Create Update)"
+	[[ -z "$act" ]] && { echo "cancelled"; return; }
 
-	# 4. Create a new branch
-	if [[ -n "$REMOTE" ]]; then
-		config.get local_branch local_branch
-		config.get local_tag local_tag
+	remote=$(git remote)
+	if [[ $(git remote | wc -l) -gt 1 ]]; then
+		remote=$($MENU -p 'Select Remote:' $(git remote))
+	fi
 
-		TAG=${TAG:-$local_tag}
-		BR=${BR:-$local_branch}
+	if [[ -n "$C" ]]; then
+		src="$C"
 
-		if [[ -n "${local_branch}${local_tag}" ]]; then
-			cmd="git.msg push $OPT $REMOTE ${local_branch}${local_tag}"
-			if [[ -n "${BR}${TAG}" ]]; then
-				cmd+=":$TAG$BR"
+		if [[ "$act" == "Create" ]]; then
+			name="$(input "Name?")"
+			[[ -z "$name" ]] && { echo "cancelled"; return; }
+
+			obj="$($MENU -p 'Type?' Branch Tag)"
+			[[ -z "$obj" ]] && { echo "cancelled"; return; }
+
+			if [[ "$obj" == "Tag" ]]; then
+				obj="refs/tags/${name}"
+			elif [[ "$obj" == "Branch" ]]; then
+				obj="refs/heads/${name}"
 			fi
 		fi
-		eval "$cmd"
 
-	elif [[ -n "$UPSTREAM" ]]; then
-		git.msg push
+	elif [[ -n "$BR$TAG" ]]; then
+		src="$BR$TAG"
 
-	# 1. Choose a local reference, and then push to remote
-	# 2. Choose a local commit, and then push to remote
-	elif [[ -n "$BR$TAG$REF" ]]; then
-		config.get local_branch local_branch
-		config.get local_tag local_tag
-		config.get commit commit
-
-		if [[ -n "${REF%%/$BR}" ]]; then
-			remote="${REF%%/$BR}"
-		elif [[ -n "${REF%%/$TAG}" ]]; then
-			remote="${REF%%/$TAG}"
+		if [[ "$act" == "Create" ]]; then
+			name="$(input "Name? [$BR$TAG]")"
+			name="${name:-$BR$TAG}"
+			if [[ -n "$BR" ]]; then
+				obj="refs/heads/${name}"
+			elif [[ -n "$TAG" ]]; then
+				obj="refs/tags/${name}"
+			fi
 		fi
-
-		if [[ -n "${local_branch}${local_tag}" ]]; then
-			git.msg push $OPT $remote ${local_branch}${local_tag}:${BR}${TAG}
-		elif [[ -n "$commit" ]]; then
-			git.msg push $OPT $remote ${commit}:${BR}${TAG}
-		fi
-
 	fi
 
-	if [[ $? -eq 0 ]]; then
-		rm -rf $infos
+	if [[ "$act" == "Update" ]]; then
+		obj="$(git ls-remote -t -b origin | awk '{print $2}' | $MENU -p 'Which one?')"
+
+		force="$(input 'Force? [y/N]')"
+		force="${force:-n}"
+		if [[ "$force" == y ]]; then
+			OPT='--force-with-lease'
+		fi
 	fi
+
+	git.msg push $OPT $remote ${src}:${obj}
 }
 
 # copy <text>
@@ -749,25 +736,6 @@ select.add() {
 	else
 		echo "'$commit' has already been added."
 	fi
-}
-
-# TAG= BR= push.create
-push.create() {
-	source $infos
-
-	if [[ -z "$remote" ]]; then
-		echo "no remote name"; false
-		return
-	fi
-
-	if [[ -z "$1" ]]; then
-		echo "Empty branch or tag name"; false
-		return
-	fi
-
-	git.msg push $remote ${BR:-$TAG}
-
-	rm -rf $infos
 }
 
 info.clean() {

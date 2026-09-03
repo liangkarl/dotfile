@@ -328,14 +328,7 @@ bind refs ! none
 bind refs f<ENTER> :!git cmd git.msg fetch --prune --all
 bind refs rb       :!git cmd git.auto rebase %(commit)
 bind refs rB       :!git cmd git.msg rebase %(commit)
-# 1. Select local branch
-# 2. Select assigned remote branch
-bind refs pb       !?git cmd refs.push BR="%(prompt new branch: )" REMOTE=%(remote)
-bind refs pt       !?git cmd refs.push TAG="%(prompt new tag: )" REMOTE=%(remote)
-bind refs pc       !?git cmd refs.push REMOTE=%(remote)
-bind refs pp       !?git cmd refs.push TAG=%(tag) BR=%(branch) REF=%(refname)
-bind refs pP       !?git cmd refs.push TAG=%(tag) BR=%(branch) REF=%(refname) OPT='--force-with-lease'
-bind refs pu       !?git cmd refs.push TAG=%(tag) BR=%(branch) UPSTREAM=%(repo:upstream)
+bind refs pp       !git cmd refs.push TAG=%(tag) BR=%(branch)
 bind refs cs        +git cmd info.clean
 bind refs >         >tig %(commit)
 # }
@@ -355,6 +348,7 @@ bind diff rV :!git cmd git.msg revert --no-edit %(commit)
 bind main rb >?git cmd git.auto rebase -i %(commit)
 bind main rB >?git cmd git.msg rebase -i %(commit)
 bind main rk >?git rebase --skip
+bind main pp !git cmd refs.push C=%(commit)
 # progress stop: rebase, merge, revert, cherry-pick
 bind main pa :!git cmd action.abort
 # progress continue: rebase, merge, revert, cherry-pick
