@@ -4,6 +4,8 @@ import os
 import sys
 import subprocess
 import argparse
+import json
+import re
 
 cmd = subprocess
 
@@ -31,8 +33,8 @@ def parse_args(argv):
                         default=True, help='enter a session')
     return parser.parse_args(argv)
 
-def get_entry():
-    r = cmd.run('tmuxp ls | fzf',
+def get_entry(config_dir):
+    r = cmd.run(f'ls {config_dir} | cut -d. -f1 | fzf',
                 shell=True, capture_output=True, text=True)
     return r.stdout.strip() or None
 
@@ -46,6 +48,27 @@ def get_entry_name(str):
         exit(2)
 
     return entry
+
+def rename_session(config_path, session_name):
+    """Update the top-level tmuxp session_name without renaming its file."""
+    with open(config_path, encoding='utf-8') as config_file:
+        config = config_file.read()
+
+    # JSON strings are valid YAML scalars, and quote names containing YAML
+    # metacharacters so the resulting configuration remains valid.
+    replacement = f'session_name: {json.dumps(session_name)}'
+    updated_config, replacements = re.subn(
+        r'^session_name:[^\n]*(?=\n|$)',
+        lambda _: replacement,
+        config,
+        count=1,
+        flags=re.MULTILINE,
+    )
+    if replacements != 1:
+        raise ValueError(f"No top-level session_name found in {config_path}")
+
+    with open(config_path, 'w', encoding='utf-8') as config_file:
+        config_file.write(updated_config)
 
 def main(argv):
     config_dir = os.environ["XDG_CONFIG_HOME"] + '/tmuxp'
@@ -66,7 +89,7 @@ def main(argv):
             args.edit = True
 
     else:
-        entry = get_entry()
+        entry = get_entry(config_dir)
         if entry is None:
             print("No entry selected")
             exit(1)
@@ -83,7 +106,13 @@ def main(argv):
 
     if args.rename:
         name = get_entry_name("Rename to a new entry")
-        run(['mv', f'{config_dir}/{entry}.yaml', f'{config_dir}/{name}.yaml'])
+        try:
+            rename_session(f'{config_dir}/{entry}.yaml', name)
+            run(['mv', f'{config_dir}/{entry}.yaml', f'{config_dir}/{name}.yaml'])
+        except (OSError, ValueError) as error:
+            print(f"Failed to rename session: {error}", file=sys.stderr)
+            exit(1)
+        print(f"Renamed session to {name}")
         exit(0)
 
     if args.delete:
