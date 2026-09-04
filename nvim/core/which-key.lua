@@ -253,6 +253,26 @@ local function config()
     end
   end
 
+  local function flash_jump()
+    require("flash").jump({
+      actions = {
+        ["<CR>"] = function(state)
+          if state.pattern:empty() then
+            -- <CR> with no Flash input:
+            -- match empty lines or whitespace-only lines
+            state.pattern.mode = "search"
+            state:update({ pattern = [[^\s*$]] })
+            return true
+          end
+
+          -- Preserve Flash's normal <CR> behavior
+          state:jump()
+          return false
+        end,
+      },
+    })
+  end
+
   -- NOTE:
   -- '' in map mode means normal, visual and select modes
 
@@ -439,14 +459,14 @@ local function config()
       { ALT_('Right'), '<C-w>l', mode = {"o", "x", "n"}, desc = "Switch to right window"},
       { '<leader><S-TAB>', '<cmd>BufferLineCyclePrev<cr>', desc = "Switch to previous buffer"},
       { '<leader><TAB>', '<cmd>BufferLineCycleNext<cr>', desc = "Switch to next buffer"},
-      { '<leader>g', function() require("flash").jump() end, mode = { "n", "x", "o" }, desc = "Flash"},
+      { '<leader>g', flash_jump, mode = { "n", "x", "o" }, desc = "Flash"},
       { ALT_('g'), function()
         local cmp = require("cmp")
 
         if cmp.visible() then
           cmp.close()
         end
-        require("flash").jump()
+        flash_jump()
       end, mode = { "i", "c" }, desc = "Flash"},
 
       { '<leader>v', function() require("flash").treesitter() end, mode = { "n", "x", "o" }, desc = "Flash Treesitter" },
