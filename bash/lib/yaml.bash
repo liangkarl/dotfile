@@ -163,6 +163,15 @@ _yaml_builder_current_length() {
     "$YAML_LIB_JQ" -r --argjson path "$path_json" 'getpath($path) | length' "$YAML_LIB_BUILD_STATE"
 }
 
+_yaml_builder_require_single_document() {
+    local state_file=$1
+
+    "$YAML_LIB_JQ" -e -s 'length == 1' "$state_file" >/dev/null || {
+        _yaml_err "YAML builder supports exactly one document"
+        return 1
+    }
+}
+
 _yaml_builder_start_with_text() {
     local yaml_text=$1
     local state_file
@@ -177,6 +186,11 @@ _yaml_builder_start_with_text() {
 
     if [[ ! -s $state_file ]]; then
         printf '{}\n' > "$state_file"
+    fi
+
+    if ! _yaml_builder_require_single_document "$state_file"; then
+        rm -f -- "$state_file"
+        return 1
     fi
 
     _yaml_cleanup_builder
@@ -816,13 +830,20 @@ yaml_get_from_stdin() {
 #   0 on success.
 #   Non-zero on yq failure.
 yaml_getd_from_file() {
+    local value_tag
+
     [[ $# -eq 3 ]] || {
         _yaml_usage "usage: yaml_getd_from_file FILE YQ_FILTER DEFAULT_TEXT"
         return 2
     }
 
     yaml_require_yq || return $?
-    YAML_LIB_DEFAULT=$3 "$YAML_LIB_YQ" eval --no-colors "(($2) // strenv(YAML_LIB_DEFAULT))" "$1"
+    value_tag=$("$YAML_LIB_YQ" eval --no-colors "(($2) | tag)" "$1") || return 1
+    if [[ $value_tag == "!!null" ]]; then
+        printf '%s\n' "$3"
+    else
+        "$YAML_LIB_YQ" eval --no-colors "$2" "$1"
+    fi
 }
 
 # API: yaml_getd_from_text
@@ -836,13 +857,20 @@ yaml_getd_from_file() {
 #   0 on success.
 #   Non-zero on yq failure.
 yaml_getd_from_text() {
+    local value_tag
+
     [[ $# -eq 3 ]] || {
         _yaml_usage "usage: yaml_getd_from_text YAML_TEXT YQ_FILTER DEFAULT_TEXT"
         return 2
     }
 
     yaml_require_yq || return $?
-    printf '%s' "$1" | YAML_LIB_DEFAULT=$3 "$YAML_LIB_YQ" eval --no-colors "(($2) // strenv(YAML_LIB_DEFAULT))" -
+    value_tag=$(printf '%s' "$1" | "$YAML_LIB_YQ" eval --no-colors "(($2) | tag)" -) || return 1
+    if [[ $value_tag == "!!null" ]]; then
+        printf '%s\n' "$3"
+    else
+        printf '%s' "$1" | "$YAML_LIB_YQ" eval --no-colors "$2" -
+    fi
 }
 
 # API: yaml_getd_from_stdin
@@ -856,13 +884,15 @@ yaml_getd_from_text() {
 #   0 on success.
 #   Non-zero on yq failure.
 yaml_getd_from_stdin() {
+    local yaml_text
+
     [[ $# -eq 2 ]] || {
         _yaml_usage "usage: yaml_getd_from_stdin YQ_FILTER DEFAULT_TEXT"
         return 2
     }
 
-    yaml_require_yq || return $?
-    YAML_LIB_DEFAULT=$2 "$YAML_LIB_YQ" eval --no-colors "(($1) // strenv(YAML_LIB_DEFAULT))" -
+    yaml_text=$(cat)
+    yaml_getd_from_text "$yaml_text" "$1" "$2"
 }
 
 # API: yaml_has_from_file
@@ -1276,13 +1306,15 @@ yaml_false_from_stdin() {
 #   0 on success.
 #   Non-zero on parse failure or builder setup failure.
 yaml_begin_file() {
-    local target_file=$1
+    local target_file
     local state_file
 
     [[ $# -eq 1 ]] || {
         _yaml_usage "usage: yaml_begin_file FILE"
         return 2
     }
+
+    target_file=$1
 
     yaml_require_yq || return $?
     yaml_require_jq || return $?
@@ -1296,6 +1328,11 @@ yaml_begin_file() {
         fi
     else
         printf '{}\n' > "$state_file"
+    fi
+
+    if ! _yaml_builder_require_single_document "$state_file"; then
+        rm -f -- "$state_file"
+        return 1
     fi
 
     _yaml_cleanup_builder

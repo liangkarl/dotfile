@@ -1248,13 +1248,15 @@ json_false_from_stdin() {
 #   0 on success.
 #   Non-zero on parse failure or builder setup failure.
 json_begin_file() {
-    local target_file=$1
+    local target_file
     local state_file
 
     [[ $# -eq 1 ]] || {
         _json_usage "usage: json_begin_file FILE"
         return 2
     }
+
+    target_file=$1
 
     json_require_jq || return $?
 
