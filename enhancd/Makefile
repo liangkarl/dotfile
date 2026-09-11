@@ -5,7 +5,7 @@ ENHANCD=${CONFIG_DIR}/${PKG_NAME}.git
 SHELL:=bash
 
 .ONESHELL:
-config:
+config: install
 	$(H)echo "-- $(PKG_NAME): setup config --"
 	$(H)if ! grep -q ${CONFIG_KEY} ${XDG_CONFIG_HOME}/bash/external.bash; then
 		echo "### ${CONFIG_KEY} ###"
