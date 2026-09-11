@@ -1,0 +1,119 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+source_dir=${1:?usage: append-config SOURCE_DIR DESTINATION_DIR}
+destination_dir=${2:?usage: append-config SOURCE_DIR DESTINATION_DIR}
+
+die() {
+    printf 'append-config: %s\n' "$*" >&2
+    exit 1
+}
+
+merge_json() {
+    local source_file=$1
+    local destination_file=$2
+    local temporary_file=$3
+
+    command -v jq >/dev/null 2>&1 || die 'jq is required to merge JSON files'
+    jq -s '
+        def merge_config($existing; $incoming):
+            if ($existing | type) == "object" and ($incoming | type) == "object" then
+                reduce ($incoming | keys_unsorted[]) as $key ($existing;
+                    .[$key] = if has($key)
+                        then merge_config(.[$key]; $incoming[$key])
+                        else $incoming[$key]
+                    end
+                )
+            else
+                $existing
+            end;
+        merge_config(.[0]; .[1])
+    ' "$destination_file" "$source_file" > "$temporary_file"
+}
+
+merge_toml() {
+    local source_file=$1
+    local destination_file=$2
+    local temporary_file=$3
+
+    command -v python3 >/dev/null 2>&1 || die 'python3 is required to merge TOML files'
+    python3 - "$destination_file" "$source_file" > "$temporary_file" <<'PY'
+import sys
+from collections.abc import Mapping
+
+try:
+    import tomllib
+    import tomlkit
+except ModuleNotFoundError as exc:
+    raise SystemExit(f"append-config: {exc.name} is required to merge TOML files")
+
+
+def load(path):
+    with open(path, "rb") as file_obj:
+        return tomllib.load(file_obj)
+
+
+def merge(existing, incoming):
+    if isinstance(existing, Mapping) and isinstance(incoming, Mapping):
+        result = dict(existing)
+        for key, value in incoming.items():
+            result[key] = merge(result[key], value) if key in result else value
+        return result
+    return existing
+
+
+print(tomlkit.dumps(merge(load(sys.argv[1]), load(sys.argv[2]))), end="")
+PY
+}
+
+merge_yaml() {
+    local source_file=$1
+    local destination_file=$2
+    local temporary_file=$3
+
+    command -v yq >/dev/null 2>&1 || die 'yq is required to merge YAML files'
+    yq eval-all --no-colors 'select(fileIndex == 1) * select(fileIndex == 0)' \
+        "$destination_file" "$source_file" > "$temporary_file"
+}
+
+merge_file() {
+    local source_file=$1
+    local destination_file=$2
+    local temporary_file
+
+    temporary_file=$(mktemp "${destination_file}.XXXXXX")
+    case "$source_file" in
+        *.json)
+            merge_json "$source_file" "$destination_file" "$temporary_file"
+            ;;
+        *.toml)
+            merge_toml "$source_file" "$destination_file" "$temporary_file"
+            ;;
+        *.yaml|*.yml)
+            merge_yaml "$source_file" "$destination_file" "$temporary_file"
+            ;;
+        *)
+            cat "$destination_file" "$source_file" > "$temporary_file"
+            ;;
+    esac
+    mv "$temporary_file" "$destination_file"
+}
+
+[[ -d $source_dir ]] || die "source directory does not exist: $source_dir"
+[[ -d $destination_dir ]] || die "destination directory does not exist: $destination_dir"
+
+while IFS= read -r -d '' source_file; do
+    relative_path=${source_file#"$source_dir"/}
+    destination_file="$destination_dir/$relative_path"
+    mkdir -p "$(dirname "$destination_file")"
+
+    if [[ -f $destination_file ]]; then
+        merge_file "$source_file" "$destination_file"
+    else
+        cp -p "$source_file" "$destination_file"
+    fi
+done < <(find "$source_dir" -type f -print0)
+
+# Preserve empty directories and source symlinks after all regular files are merged.
+cp -R -n "$source_dir/." "$destination_dir/"

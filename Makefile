@@ -10,6 +10,12 @@ SHELL?=bash
 
 H?=@
 
+# Set CONFIG_ACTION=append or CONFIG_ACTION=overwrite to apply the choice to
+# every existing configuration directory without prompting. Append deep-merges
+# JSON, TOML, and YAML with existing values taking precedence; other matching
+# files are concatenated.
+CONFIG_ACTION?=ask
+
 LIST:=$(shell ls -d -- */ | sed 's:/::' | grep -v '^sys\|^apps\|^bin')
 ACTION_TARGETS:=install uninstall config
 PKGS:=$(filter-out $(ACTION_TARGETS),$(MAKECMDGOALS))
@@ -29,7 +35,28 @@ $(LIST):
 	$(H)$(eval SRC_DIR:=$(ROOT)/$@)
 	$(H)$(eval DST_DIR:=$(CONF_HOME)/$@)
 
-	$(H)cp -rvf $(SRC_DIR) $(CONF_HOME)/
+	$(H)if [ -d "$(DST_DIR)" ]; then
+		config_action="$(CONFIG_ACTION)"
+		if [ "$$config_action" = ask ]; then
+			printf 'Configuration for %s already exists. Append or overwrite? [a/o] ' "$@"
+			read -r config_action
+		fi
+		case "$$config_action" in
+			a|A|append|APPEND)
+				bash "$(ROOT)/bin/append-config" "$(SRC_DIR)" "$(DST_DIR)"
+				;;
+			o|O|overwrite|OVERWRITE)
+				rm -rf "$(DST_DIR)"
+				cp -rvf "$(SRC_DIR)" "$(CONF_HOME)/"
+				;;
+			*)
+				echo 'Expected append or overwrite; no files were changed.'
+				exit 1
+				;;
+		esac
+	else
+		cp -rvf "$(SRC_DIR)" "$(CONF_HOME)/"
+	fi
 	$(H)if [ -e $(DST_DIR)/Makefile ]; then
 		H=$(H) make -C $(DST_DIR)
 	elif [ -e $(DST_DIR)/configure.sh ]; then
