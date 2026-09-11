@@ -1,0 +1,169 @@
+# Codex keybinding reference.
+# `make codex` appends this commented block to the local config without
+# changing active settings. Uncomment only the bindings you want to use.
+# If the local config already has a section, add the key there instead of
+# uncommenting a duplicate section header.
+
+[tui.keymap.composer]
+submit = "alt-enter"
+# queue = "tab" # Queue a message while Codex is working.
+# toggle_shortcuts = ["?", "shift-?"] # Show or hide shortcut help.
+# history_search_previous = "ctrl-r"
+# history_search_next = "ctrl-s"
+#
+[tui.keymap.editor]
+insert_newline = ["enter", "ctrl-j", "ctrl-m", "shift-enter"]
+# move_left = ["left", "ctrl-b"]
+# move_right = ["right", "ctrl-f"]
+# move_up = ["up", "ctrl-p"]
+# move_down = ["down", "ctrl-n"]
+# move_word_left = ["alt-b", "alt-left", "ctrl-left"]
+# move_word_right = ["alt-f", "alt-right", "ctrl-right"]
+# move_line_start = ["home", "ctrl-a"]
+# move_line_end = ["end", "ctrl-e"]
+# delete_backward = ["backspace", "ctrl-h"]
+# delete_forward = ["delete", "ctrl-d"]
+# delete_backward_word = ["alt-backspace", "ctrl-backspace", "ctrl-w"]
+# delete_forward_word = ["alt-delete", "ctrl-delete", "ctrl-shift-w", "alt-d"]
+# kill_line_start = "ctrl-u"
+# kill_whole_line = []
+# kill_line_end = "ctrl-k"
+# yank = "ctrl-y" # Paste text removed with a kill command.
+#
+# [tui.keymap.global]
+# open_agents = []
+# open_transcript = "ctrl-t" # Open the conversation transcript.
+# open_external_editor = "ctrl-g" # Edit the composer externally.
+# copy = "ctrl-o"
+# clear_terminal = "ctrl-l"
+# toggle_vim_mode = []
+# toggle_fast_mode = []
+# toggle_raw_output = "alt-r" # Show raw model output.
+# toggle_side_conversation = "ctrl-/" # Open or close the side conversation.
+#
+# [tui.keymap.chat]
+# interrupt_turn = "esc" # Stop the current Codex turn.
+# decrease_reasoning_effort = ["alt-,", "shift-down"]
+# increase_reasoning_effort = ["alt-.", "shift-up"]
+# previous_permission_mode = []
+# next_permission_mode = []
+# edit_queued_message = ["alt-up", "shift-left"] # Edit the queued message.
+# toggle_voice_mute = []
+#
+# Vim normal mode uses standard Vim editing keys.
+# [tui.keymap.vim_normal]
+# enter_insert = "i"
+# append_after_cursor = "a"
+# append_line_end = "shift-a"
+# insert_line_start = "shift-i"
+# open_line_below = "o"
+# open_line_above = "shift-o"
+# move_left = ["h", "left"]
+# move_right = ["l", "right"]
+# move_up = ["k", "up"]
+# move_down = ["j", "down"]
+# move_word_forward = "w"
+# move_word_backward = "b"
+# move_word_end = "e"
+# move_line_start = "0"
+# move_line_end = ["$", "shift-$"]
+# find_forward = "f"
+# find_backward = "shift-f"
+# till_forward = "t"
+# till_backward = "shift-t"
+# jump_top = "g g"
+# jump_bottom = "shift-g"
+# delete_char = "x"
+# replace_char = "r"
+# repeat_last_change = "."
+# substitute_char = "s"
+# delete_to_line_end = "shift-d"
+# change_to_line_end = "shift-c"
+# yank_line = "shift-y"
+# paste_after = "p"
+# start_delete_operator = "d"
+# start_yank_operator = "y"
+# start_change_operator = "c"
+# undo = "u"
+# redo = "ctrl-r"
+# cancel_operator = "esc"
+#
+# [tui.keymap.vim_search]
+# forward = "/"
+# backward = ["?", "shift-?"]
+# next = "n"
+# previous = "shift-n"
+#
+# [tui.keymap.vim_operator]
+# delete_line = "d"
+# yank_line = "y"
+# motion_left = "h"
+# motion_right = "l"
+# motion_up = "k"
+# motion_down = "j"
+# motion_word_forward = "w"
+# motion_word_backward = "b"
+# motion_word_end = "e"
+# motion_line_start = "0"
+# motion_line_end = ["$", "shift-$"]
+# motion_find_forward = "f"
+# motion_find_backward = "shift-f"
+# motion_till_forward = "t"
+# motion_till_backward = "shift-t"
+# motion_jump_top = "g g"
+# motion_jump_bottom = "shift-g"
+# select_inner_text_object = "i"
+# select_around_text_object = "a"
+# cancel = "esc"
+#
+# [tui.keymap.vim_text_object]
+# word = "w"
+# big_word = "shift-w"
+# parentheses = ["(", "shift-(", ")", "shift-)", "b"]
+# brackets = ["[", "]"]
+# braces = ["{", "shift-{", "}", "shift-}", "shift-b"]
+# double_quote = ["\"", "shift-\""]
+# single_quote = "'"
+# backtick = "`"
+# cancel = "esc"
+#
+# [tui.keymap.pager]
+# scroll_up = ["up", "k"]
+# scroll_down = ["down", "j"]
+# page_up = ["page-up", "shift-space", "ctrl-b"]
+# page_down = ["page-down", "space", "ctrl-f"]
+# half_page_up = "ctrl-u"
+# half_page_down = "ctrl-d"
+# jump_top = "home"
+# jump_bottom = "end"
+# close = ["q", "ctrl-c"]
+# close_transcript = "ctrl-t"
+#
+# [tui.keymap.list]
+# move_up = ["up", "ctrl-p", "ctrl-k", "k"]
+# move_down = ["down", "ctrl-n", "ctrl-j", "j"]
+# move_left = ["left", "ctrl-h"]
+# move_right = ["right", "ctrl-l"]
+# page_up = ["page-up", "ctrl-b"]
+# page_down = ["page-down", "ctrl-f"]
+# jump_top = "home"
+# jump_bottom = "end"
+# accept = "enter"
+# cancel = "esc"
+#
+# [tui.keymap.agents]
+# search = "ctrl-f"
+# new_task = "ctrl-n" # Create a task in the agents view.
+# rename = "ctrl-r"
+# stop = "ctrl-x" # Stop the selected agent.
+# toggle_grouping = "ctrl-s"
+#
+# [tui.keymap.approval]
+# open_fullscreen = ["ctrl-a", "ctrl-shift-a"]
+# open_thread = "o"
+# approve = "y"
+# approve_for_session = "a" # Approve this action for the session.
+# approve_for_prefix = "p" # Approve commands matching this prefix.
+# deny = "n"
+# decline = "esc"
+# cancel = "ctrl-c"
