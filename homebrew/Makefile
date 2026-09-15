@@ -2,15 +2,18 @@ XDG_CONFIG_HOME ?= ${HOME}/.config
 
 PKG_NAME=homebrew
 CONFIG_DIR=${XDG_CONFIG_HOME}/$(PKG_NAME)
+CONFIG_KEY=__HOMEBREW_INCLUDED__
 BREW=$(shell command -v brew)
 
 .ONESHELL:
 
 config:
 	$(H)echo "-- $(PKG_NAME): setup config --"
-	$(H)if [[ -f "${CONFIG_DIR}/brew.env" ]]; then
-		grep -q 'homebrew/brew.env' "${HOME}/.bashrc" || echo '[[ -f "${CONFIG_DIR}/brew.env" ]] && source "${CONFIG_DIR}/brew.env"' >> "${HOME}/.bashrc"
-	fi
+	$(H)if ! grep -q ${CONFIG_KEY} ${XDG_CONFIG_HOME}/bash/external.bash; then
+		echo "### ${CONFIG_KEY} ###"
+		echo "source ${CONFIG_DIR}/brew.env"
+		echo ""
+	fi >> ${XDG_CONFIG_HOME}/bash/external.bash
 
 install:
 	$(H)echo "-- $(PKG_NAME): install package manager --"
