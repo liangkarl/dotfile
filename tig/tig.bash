@@ -200,6 +200,11 @@ file.checkout() {
 # NAME= delete
 delete() {
 	name=$NAME
+	if [[ -z "$name" ]]; then
+		echo "Cancelled"
+		return 1
+	fi
+
 	target=$(while [[ "$name" != '.' ]]; do
 		echo "$name"
 		name=$(dirname $name)
