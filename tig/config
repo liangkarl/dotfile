@@ -213,8 +213,6 @@ bind status  ca       >?git commit -v --amend
 bind status  cn       @?git commit --amend --no-edit
 
 ## Stage/Unstage file
-bind stage   f<Enter> @git cmd stage.file FILE='%(file)'
-bind stage   fa       @git cmd stage.file
 
 ## Add stash
 bind main    s<Enter>  @git cmd stash.save
@@ -253,23 +251,28 @@ bind diff   cO        +?git cmd git.msg  checkout %(commit)^ -- %(file)
 ### File Operation
 bind main   dc       +?git cmd git.msg clean -fd
 bind status dc       +?git cmd git.msg clean -fd
-bind status d<ENTER> :!git cmd delete NAME=%(file)
-bind stage  d<ENTER> :!git cmd delete NAME=%(file)
-bind diff   d<ENTER> :!git cmd delete NAME=%(file)
+bind status d<ENTER> +git cmd delete NAME=%(file)
+bind stage  d<ENTER> +git cmd delete NAME=%(file)
+bind diff   d<ENTER> +git cmd delete NAME=%(file)
 
 ## Reset commits
-bind stage  r.       +?git cmd git.msg reset --hard
-bind main   r.       +?git cmd git.msg reset --hard
-bind stage  r,       +?git cmd git.msg reset
-bind main   r,       +?git cmd git.msg reset
+bind main   RR       +?git cmd git.msg reset --hard
 bind main   rp       +?git cmd git.msg reset --soft HEAD@{1}
 bind reflog R<Enter> +?git cmd git.msg reset --hard %(commit)
 bind diff   R<Enter> +?git cmd git.msg reset --hard %(commit)
 bind main   R<Enter> +?git cmd git.msg reset --hard %(commit)
+bind refs   R<Enter> +?git cmd git.msg reset --hard %(commit)
+bind stage  R<Enter> +?git cmd git.msg reset --hard
 bind reflog r<Enter> +?git cmd git.msg reset --soft %(commit)
 bind diff   r<Enter> +?git cmd git.msg reset --soft %(commit)
 bind main   r<Enter> +?git cmd git.msg reset --soft %(commit)
+bind refs   r<Enter> +?git cmd git.msg reset --soft %(commit)
+bind stage  r<Enter> +?git cmd git.msg reset --soft
 bind main   rr       +?git cmd git.msg reset
+bind refs   rr       +?git cmd git.msg reset
+bind stage  rr       +?git cmd git.msg reset
+bind diff   rr       +?git cmd git.msg reset
+bind reflog rr       +?git cmd git.msg reset
 
 ## Cherry-pick
 bind main   cp       :!git cmd git.auto cherry-pick -s %(commit)

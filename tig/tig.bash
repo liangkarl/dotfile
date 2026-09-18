@@ -547,16 +547,6 @@ copy() {
 	echo "copy '$TEXT'"
 }
 
-# FILE= stage_file
-# - if [file] is empty, stage all files
-stage.file() {
-	if git diff --cached --quiet $FILE; then
-		git add ${FILE:--u}
-	else
-		git reset --quiet HEAD $FILE
-	fi
-}
-
 # TYPE= C= patch.create
 patch.create() {
 	local opts
