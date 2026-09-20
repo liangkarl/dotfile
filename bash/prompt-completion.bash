@@ -6,8 +6,8 @@
 #   -> 解法: 使用 `HISTTIMEFORMAT= history` 暫時遮蔽時間輸出。
 # 坑點 2 (游標回傳異常): 在 Tmux 等環境下，READLINE_POINT 有時會錯回傳 0。
 #   -> 解法: 透過 `if [[ $cursor_pos -eq 0 && ${#current_line} -gt 0 ]]` 手動校正。
-# 坑點 3 (歷史未同步): 剛打完的指令還在記憶體，沒寫入檔案，導致搜尋不到。
-#   -> 解法: 搜尋前執行 `history -a; history -c; history -r` 強制雙向同步。
+# 坑點 3 (歷史未同步): 剛打完的指令還在記憶體，尚未寫入檔案。
+#   -> 解法: 直接搜尋目前 shell 的記憶體歷史，避免匯入其他終端的指令。
 # 坑點 4 (重複項過多): 歷史紀錄裡有無數個相同的指令，會讓搜尋體驗極差。
 #   -> 解法: awk 內先存入陣列，END 區塊倒序輸出並使用 `seen[cmd]++` 去重。
 # 坑點 5 (變數命名衝突): awk 內若使用 log 作為變數，會觸發 Fatal Error。
@@ -59,12 +59,8 @@ _context_history_search() {
         _chs_orig_suffix="${current_line:cursor_pos}"
         _chs_index=0
 
-        # 強制完全同步
-        history -a; history -c; history -r
-
-        # [修改原因]
-        # history -a/-c/-r 之後，最後一筆 history 可能因重新讀入檔案而改變。
-        # 所以同步後必須重新取得一次 history 狀態，作為新的 cache 基準點。
+        # 搜尋目前 shell 的記憶體歷史。不要在這裡同步 HISTFILE，否則 tmux
+        # 其他 pane 的指令會被讀入這個 shell 的 history。
         _chs_last_history_state="$(HISTTIMEFORMAT= history 1)"
 
         _chs_match_list=()
