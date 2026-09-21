@@ -10,6 +10,10 @@ sys.auto_alter_cmd() {(
     local p n bin
 
     lib.load devel
+    if [[ $# -eq 0 ]]; then
+        echo "$FUNCNAME CMD [PRIORITY]"
+        return 1
+    fi
     bin=$(sys.info bin)/$1
     n=${2:-300}
     for p in $(which -a $1); do
@@ -24,6 +28,10 @@ sys.auto_alter_cmd() {(
 sys.alter_cmd() {(
     local pr path
 
+    if [[ $# -eq 0 ]]; then
+        echo "$FUNCNAME CMD LOCATION [PRIORITY]"
+        return 1
+    fi
     lib.load devel
     path=$(path.abs $2)
     pr=${3:-300}
@@ -37,7 +45,17 @@ sys.alter_cmd() {(
 
 # sys.config_cmd CMD
 sys.config_cmd() {
+    if [[ $# -eq 0 ]]; then
+        echo "$FUNCNAME CMD"
+        return 1
+    fi
     update-alternatives --config $1
+}
+
+# Add path without duplicated
+sys.add_path() {
+    PATH="$*:$PATH"
+    sys.reload_path
 }
 
 # Remove duplicated path. The duplicated words in the end would be removed

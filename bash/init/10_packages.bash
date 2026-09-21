@@ -1,28 +1,5 @@
 #!/usr/bin/env bash
 
-configure_package_management() {
-    local cmd
-
-    # HomeBrew
-    for cmd in "/home/linuxbrew/.linuxbrew/bin/brew" "/opt/homebrew/bin/brew"; do
-        if [[ -e "$cmd" ]]; then
-            msg.dbg "found: $cmd"
-            eval $($cmd shellenv)
-            path.append HOMEBREW_LIBRARY_PATHS "$($cmd --prefix)/lib"
-        fi
-    done
-
-    # NVM
-    if [[ -e "${HOME}/.config/nvm" ]]; then
-        msg.dbg "found: NVM configuration"
-        export NVM_DIR="$HOME/.config/nvm"
-        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-        [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-    fi
-
-    msg.dbg "path change: $PATH"
-}
-
 configure_alternatives() {
     local admdir altdir
 
@@ -95,18 +72,11 @@ configure_fuzzy_finder() {
     fi
 }
 
-configure_glib() {
-    export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu"
-    export LD_LIBRARY_PATH="$(brew --prefix glibc)/lib:${LD_LIBRARY_PATH}"
-}
-
 configure_update_alternative() {
     export DPKG_ADMINDIR="$(sys.info ua_altdir)"
 }
 
 oneshot configure_alternatives
-oneshot configure_package_management
-# oneshot configure_glib
 
 oneshot configure_update_alternative
 oneshot configure_fuzzy_finder

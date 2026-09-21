@@ -4,23 +4,16 @@ PKG_NAME=pyenv
 CONFIG_DIR=${XDG_CONFIG_HOME}/$(PKG_NAME)
 OSTYPE=$(shell uname)
 PYENV_ROOT=${HOME}/.pyenv
-PYENV_ENV_LINK=${HOME}/.pyenvrc
 
 .ONESHELL:
 
 config:
 	$(H)echo "-- $(PKG_NAME): setup config --"
-	$(H)ln -snf "${CONFIG_DIR}/pyenv.env" "${PYENV_ENV_LINK}"
-	$(H)echo "Created ${PYENV_ENV_LINK}. Source it from your shell startup file if needed."
 
 install:
 	$(H)echo "-- $(PKG_NAME): install package manager --"
 	$(H)if ! command -v pyenv >/dev/null 2>&1; then
-		if [[ "$(OSTYPE)" == "Darwin" ]]; then
-			brew install pyenv
-		else
-			curl -fsSL https://pyenv.run | bash
-		fi
+		brew install pyenv
 	fi
 	$(H)export PYENV_ROOT="${PYENV_ROOT}"
 	$(H)export PATH="${PYENV_ROOT}/bin:${PATH}"
@@ -49,10 +42,9 @@ install:
 
 uninstall:
 	$(H)echo "-- $(PKG_NAME): remove config and pyenv --"
-	$(H)rm -f "${PYENV_ENV_LINK}"
-	$(H)rm -rf "${PYENV_ROOT}"
+	# $(H)rm -rf "${PYENV_ROOT}"
 	$(H)rm -rf "${CONFIG_DIR}"
-	$(H)if [[ "$(OSTYPE)" == "Darwin" ]] && command -v brew >/dev/null 2>&1; then
+	$(H)if command -v brew >/dev/null 2>&1; then
 		brew uninstall pyenv || true
 	fi
 

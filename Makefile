@@ -46,7 +46,7 @@ $(LIST):
 				bash "$(ROOT)/bin/append-config" "$(SRC_DIR)" "$(DST_DIR)"
 				;;
 			o|O|overwrite|OVERWRITE)
-				rm -rf "$(DST_DIR)"
+				# rm -rf "$(DST_DIR)"
 				cp -rvf "$(SRC_DIR)" "$(CONF_HOME)/"
 				;;
 			*)

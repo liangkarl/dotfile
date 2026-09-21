@@ -1,17 +1,11 @@
 PKG_NAME=enhancd
 CONFIG_DIR=${XDG_CONFIG_HOME}/$(PKG_NAME)
-CONFIG_KEY=__ENHANCD_INCLUDED__
-ENHANCD=${CONFIG_DIR}/${PKG_NAME}.git
+ENHANCD=${XDG_DATA_HOME}/${PKG_NAME}
 SHELL:=bash
 
 .ONESHELL:
 config: install
 	$(H)echo "-- $(PKG_NAME): setup config --"
-	$(H)if ! grep -q ${CONFIG_KEY} ${XDG_CONFIG_HOME}/bash/external.bash; then
-		echo "### ${CONFIG_KEY} ###"
-		echo "source ${CONFIG_DIR}/bootstrap.sh"
-		echo ""
-	fi >> ${XDG_CONFIG_HOME}/bash/external.bash
 
 install:
 	$(H)echo "-- $(PKG_NAME): install package --"

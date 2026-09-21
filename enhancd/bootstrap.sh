@@ -5,9 +5,7 @@
 
 __enhancd_bootstrap() {
     local fzy_filter fzf_filter
-    local dir
 
-    dir=$(dirname ${BASH_SOURCE[0]})
     fzf_filter='fzf --height 35% --reverse'
     fzy_filter="fzy -i"
     export ENHANCD_FILTER="$fzf_filter:$fzy_filter"
@@ -18,7 +16,7 @@ __enhancd_bootstrap() {
     export ENHANCD_ARG_HYPHEN='='            # List 10 latest directories
     export ENHANCD_HYPHEN_NUM=20             # List recent directory entries
     export ENHANCD_ARG_HOME=''               # List change
-    export ENHANCD_DIR="${dir}/enhancd.git"
+    export ENHANCD_DIR="${XDG_DATA_HOME}/enhancd"
 
     source ${ENHANCD_DIR}/init.sh
 }

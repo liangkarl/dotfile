@@ -13,13 +13,8 @@ install:
 	$(H)echo "-- $(PKG_NAME): install package --"
 	$(H)if command -v broot >/dev/null 2>&1; then
 		echo "broot already installed"
-	elif [[ "$(OSTYPE)" == "Darwin" ]]; then
-		brew install broot
-	elif [[ "$(OSTYPE)" == "Linux" ]]; then
-		sudo apt-get update
-		sudo apt-get install -y broot
 	else
-		echo "Unsupported OS: $(OSTYPE)"
+		brew install broot
 	fi
 
 uninstall:
