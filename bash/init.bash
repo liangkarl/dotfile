@@ -21,6 +21,7 @@ ext_init() {
     local init_order d tmp
     init_order=(
         "homebrew"
+        "mise"
         "rustup"
         "pyenv"
         "pipx"
