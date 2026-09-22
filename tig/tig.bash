@@ -634,12 +634,29 @@ patch.create() {
 	esac
 }
 
-# TYPE=merge-pick commit.create
-# TYPE=reuse-msg  commit.create
+# [TYPE=] commit.create
 commit.create() {
-	local item list
+	local item list opts
 
+	declare -A opts
+	opts=(
+		[amend]='--amend'
+		[no-edit]='--no-edit'
+	)
+	TYPE=${TYPE:-$($MENU -p 'What type?' just-commit select-patch merge-pick reuse-msg)}
 	case "$TYPE" in
+	just-commit)
+		opt='-v '
+		$MENU -o multi -p 'Options?' none "${!opts[@]}" | while read -r opt; do
+			if [[ "$opt" == none ]]; then
+				break
+			fi
+			opt+="${opts[$opt]} "
+		done
+		[[ "$amend" == 'y' ]] && opt+='--amend '
+		[[ "$edit" == 'n' ]] && opt+='--no-edit '
+		git.msg commit $opt
+		;;
 	select-patch)
 		local item i
 

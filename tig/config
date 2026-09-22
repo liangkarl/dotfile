@@ -202,15 +202,10 @@ bind generic yt +git cmd copy TEXT='%(tag)'
 # Feature {
 ## Commit
 bind generic c        none
-bind main    c<ENTER>  >git commit -v
-bind main    ca       >?git commit -v --amend
-bind main    cn       @?git commit --amend --no-edit
-bind stage   c<ENTER>  >git commit -v
-bind stage   ca       >?git commit -v --amend
-bind stage   cn       @?git commit --amend --no-edit
-bind status  c<ENTER>  >git commit -v
-bind status  ca       >?git commit -v --amend
-bind status  cn       @?git commit --amend --no-edit
+bind main    c<ENTER>  >git cmd commit.create
+bind stage   c<ENTER>  >git cmd commit.create
+bind status  c<ENTER>  >git cmd commit.create
+bind reflog  c<ENTER>  >git cmd commit.create
 
 ## Stage/Unstage file
 
@@ -277,13 +272,8 @@ bind reflog rr       +?git cmd git.msg reset
 ## Cherry-pick
 bind main   cp       :!git cmd git.auto cherry-pick -s %(commit)
 bind main   cP       :!git cmd git.msg  cherry-pick -s %(commit)
-bind main   cs       >git  cmd commit.create TYPE=select-patch
-bind main   cS       >git  cmd commit.create TYPE=merge-pick
-bind main   cc       >git  cmd commit.create TYPE=reuse-msg
 bind reflog cp       :!git cmd git.auto cherry-pick -s %(commit)
 bind reflog cP       :!git cmd git.msg  cherry-pick -s %(commit)
-bind reflog cs       >git  cmd commit.create TYPE=merge-pick
-bind reflog cc       >git  cmd commit.create TYPE=reuse-msg
 bind diff   cp       :!git cmd git.auto cherry-pick -s %(commit)
 bind diff   cP       :!git cmd git.msg  cherry-pick -s %(commit)
 
