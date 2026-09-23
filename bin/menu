@@ -5,25 +5,44 @@ import json
 import subprocess
 import argparse
 
+
+MENU_OPTIONS = {"list", "mru", "multi", "value"}
+
+
+def selected_options(parser, option_groups):
+    options = set()
+    for option_group in option_groups or []:
+        for option in option_group.split(","):
+            option = option.strip()
+            if option not in MENU_OPTIONS:
+                parser.error(
+                    f"invalid option '{option}'; choose from: "
+                    f"{', '.join(sorted(MENU_OPTIONS))}"
+                )
+            options.add(option)
+    return options
+
+
 def main():
     parser = argparse.ArgumentParser(description="Python-based fzf menu with JSON state.")
     parser.add_argument("-t", "--title", help="Set menu title (header)")
     parser.add_argument("-p", "--prompt", help="Set prompt string")
     parser.add_argument("-d", "--default", help="Initial query or default index")
-    parser.add_argument("-I", "--index", type=int, help="Starting index for -v output")
-    parser.add_argument("-L", "--list", action="store_true", help="Non-interactive list mode")
+    parser.add_argument("-I", "--index", type=int, help="Starting index for --option value output")
+    parser.add_argument(
+        "-o", "--option", action="append", metavar="OPTION[,OPTION...]",
+        help="Select modes: list, mru, multi, value (comma-separated or repeatable)"
+    )
     parser.add_argument("-D", "--delim", help="Delimiter for input splitting or result parsing")
     parser.add_argument("-s", "--save", help="Save state to a JSON file")
     parser.add_argument("-l", "--load", help="Load state from a JSON file")
     parser.add_argument("-k", "--key", default="__global__", help="Specific key in JSON (default: __global__)")
-    parser.add_argument("-v", "--value", action="store_true", help="Return index instead of text")
-    parser.add_argument("--multi", action="store_true", help="Allow selecting multiple options")
     parser.add_argument("-b", "--backend", choices=["fzf", "fzf-tmux", "legacy"], help="Menu backend")
     parser.add_argument("-H", "--height", type=int, help="fzf list height (integer)")
-    parser.add_argument("-m", "--mru", action="store_true", help="Enable MRU (Most Recently Used) reordering")
     parser.add_argument("items", nargs="*", help="Menu items (passed as arguments)")
 
     args = parser.parse_args()
+    options = selected_options(parser, args.option)
 
     # 1. Initialize default state structure
     state = {
@@ -61,7 +80,7 @@ def main():
     if args.index is not None: state["index"] = args.index
     if args.height is not None: state["height"] = args.height
     if args.backend: state["backend"] = args.backend
-    if args.mru: state["mru_enabled"] = True
+    if "mru" in options: state["mru_enabled"] = True
 
     # 4. Input Handling (Pipe > Arguments > JSON)
     if not sys.stdin.isatty():
@@ -82,7 +101,7 @@ def main():
         sys.exit(0)
 
     # 5. List mode (CLI listing only)
-    if args.list:
+    if "list" in options:
         if state["title"]: print(f"--- {state['title']} ---")
         for i, item in enumerate(state["items"]):
             print(f"{i + state['index']}) {item}")
@@ -98,7 +117,7 @@ def main():
             fzf_cmd = cmd + [f"--height={state['height']}", "--layout=reverse", f"--prompt={full_prompt}"]
             if state["title"]: fzf_cmd += ["--header", state["title"]]
             if state["default"]: fzf_cmd += ["--query", state["default"]]
-            if args.multi: fzf_cmd += ["--multi"]
+            if "multi" in options: fzf_cmd += ["--multi"]
 
             input_data = "\n".join(f"{i}\t{item}" for i, item in enumerate(state["items"]))
             fzf_cmd += ["--with-nth=2.."]
@@ -135,7 +154,7 @@ def main():
                 selections.append((selected_idx, selected_text))
             else:
                 choices = [choice]
-                if args.multi:
+                if "multi" in options:
                     choices = [item.strip() for item in choice.split(',')]
 
                 for choice in choices:
@@ -151,7 +170,7 @@ def main():
 
     # 7. Final Output
     for selected_idx, selected_text in selections:
-        if args.value:
+        if "value" in options:
             # Return index (adjusted by offset)
             print(selected_idx + state["index"])
         elif runtime_delim and runtime_delim in selected_text:
