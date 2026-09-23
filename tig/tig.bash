@@ -310,36 +310,43 @@ stash.pop() {
 	fi
 }
 
-# C=
-refs.add() {
+# [TYPE=] [NAME=] C= refs.create
+refs.create() {
 	is_commit "$C" || return 1
 
-	TYPE=$($MENU -p 'Add What? ' branch tag save-refs)
+	TYPE=${TYPE:-$($MENU -p 'Add What? ' branch tag save-refs)}
 	if [[ -z "$TYPE" ]]; then
 		echo "No type selected"
 		return 2
 	fi
 
-	if [[ "$TYPE" != save-refs ]]; then
-		NAME=$(input "What's its name? [Enter to skip]" | conv_name)
-		if [[ "$TYPE" == branch ]]; then
-			NAME=${NAME:-$(basename "$(git rev-parse --show-toplevel)")}
-			git.msg branch $NAME $C
-		elif [[ "$TYPE" == tag ]]; then
-			NAME=${NAME:-tag.$(git rev-parse --short $C)}
-			git.msg tag $NAME $C
-		else
-			echo "Unknown type $TYPE"
-			return 4
-		fi
-	elif [[ "$TYPE" == save-refs ]]; then
+	case "$TYPE" in
+	branch)
+		NAME=${NAME:-$(input "What's its name? [Enter to skip]" | conv_name)}
+		NAME=${NAME:-$(basename "$(git rev-parse --show-toplevel)")}
+		git.msg branch $NAME $C
+		;;
+	tag)
+		NAME=${NAME:-$(input "What's its name? [Enter to skip]" | conv_name)}
+		NAME=${NAME:-tag.$(git rev-parse --short $C)}
+		git.msg tag $NAME $C
+		;;
+	save-refs)
 		config.load $node
 		config.get NAME REFS
 		if [[ -n "$NAME" ]]; then
-			git update-ref $NAME $C
+			git.msg update-ref $NAME $C
 		fi
 		rm $node
-	fi
+		;;
+	refs)
+		NAME=${NAME:-$(input "What's the refs name? [refs/tags/tag.$(git rev-parse --short $C)]")}
+		git.msg update-ref $NAME $C
+		;;
+	*)
+		echo "Unknown type $TYPE"
+		return 4
+	esac
 }
 
 # TAG=|BR= C= [TYPE=[local|remote]] refs.verify
@@ -389,16 +396,6 @@ refs.find() {
 	fi
 }
 
-# C= refs.paste
-refs.paste() {
-	config.load $node
-	config.get REFS REFS
-	if [[ -n "$REFS" ]]; then
-		git update-ref $REFS $C
-	fi
-	rm $node
-}
-
 # C= REFS= refs.rename
 refs.rename() {
 	is_commit "$C" || return 1
@@ -411,7 +408,6 @@ refs.rename() {
 		fi
 	fi
 
-	echo "Reference: $REFS"
 	NAME=$(input "Rename To:" | conv_name)
 	if [[ -z "$NAME" ]]; then
 		echo "no name specified"
@@ -424,9 +420,9 @@ refs.rename() {
 		fi
 		NAME="${PREFIX_TAG}/$NAME"
 		git update-ref -d $REFS
-		git update-ref $NAME $C
+		git.msg update-ref $NAME $C
 	else
-		git branch -m "${REFS##${PREFIX_BR}/}" "$NAME"
+		git.msg branch -m "${REFS##${PREFIX_BR}/}" "$NAME"
 	fi
 }
 
@@ -729,6 +725,7 @@ select.reset() {
 		git update-ref -d $PREFIX_SELECT/$((i++))
 	done
 	rm -f $commits
+	echo "select: $i tags has been removed"
 }
 
 # C= commit.add
@@ -742,9 +739,9 @@ select.add() {
 
 	idx=$(wc -l $file | cut -d' ' -f 1)
 	if ! cat $file | grep -q $commit; then
-		echo "select: $commit"
-		git update-ref $PREFIX_SELECT/$((idx++)) $commit
+		TYPE=refs NAME="${PREFIX_SELECT}/$((idx++))" refs.create
 		echo $commit >> $file
+		echo "select: $commit"
 	else
 		echo "'$commit' has already been added."
 	fi

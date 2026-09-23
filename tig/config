@@ -210,27 +210,27 @@ bind reflog  c<ENTER>  >git cmd commit.create
 ## Stage/Unstage file
 
 ## Add stash
-bind main    s<Enter>  @git cmd stash.save
+bind main    s<Enter>  +git cmd stash.save
 bind main    sp       :!git cmd stash.pop
-bind stage   s<Enter>  @git cmd stash.save
+bind stage   s<Enter>  +git cmd stash.save
 bind stage   sp       :!git cmd stash.pop
-bind status  s<Enter>  @git cmd stash.save
+bind status  s<Enter>  +git cmd stash.save
 bind status  sp       :!git cmd stash.pop
 
 ## Add/Remove/Move tag and branch
-bind main   rn       @git  cmd refs.rename C=%(commit)
-bind main   a<ENTER> :!git cmd refs.add C=%(commit)
-bind main   d<ENTER> :!git cmd refs.cut C=%(commit)
-bind reflog rn       @git  cmd refs.rename C=%(commit)
-bind reflog a<ENTER> :!git cmd refs.add C=%(commit)
-bind reflog d<ENTER> :!git cmd refs.cut C=%(commit)
-bind diff   rn       @git  cmd refs.rename C=%(commit)
-bind diff   a<ENTER> :!git cmd refs.add C=%(commit)
-bind diff   d<ENTER> :!git cmd refs.cut C=%(commit)
-bind refs   rn       @git  cmd refs.rename C=%(commit) REFS=%(refname)
-bind refs   a<ENTER> :!git cmd refs.add C=%(commit)
-bind refs   d<ENTER> :!git cmd refs.cut REFS=%(refname)
-bind refs   d!       @?git cmd refs.cut TAG=%(tag) BR=%(branch) REMOTE=%(remote)
+bind main   rn       +git  cmd refs.rename C=%(commit)
+bind main   a<ENTER> +git cmd refs.create C=%(commit)
+bind main   d<ENTER> +git cmd refs.cut C=%(commit)
+bind reflog rn       +git  cmd refs.rename C=%(commit)
+bind reflog a<ENTER> +git cmd refs.create C=%(commit)
+bind reflog d<ENTER> +git cmd refs.cut C=%(commit)
+bind diff   rn       +git  cmd refs.rename C=%(commit)
+bind diff   a<ENTER> +git cmd refs.create C=%(commit)
+bind diff   d<ENTER> +git cmd refs.cut C=%(commit)
+bind refs   rn       +git  cmd refs.rename C=%(commit) REFS=%(refname)
+bind refs   a<ENTER> +git cmd refs.create C=%(commit)
+bind refs   d<ENTER> +git cmd refs.cut REFS=%(refname)
+bind refs   d!       +?git cmd refs.cut TAG=%(tag) BR=%(branch) REMOTE=%(remote)
 
 ##   Checkout
 bind main   co        :!git cmd git.auto checkout %(commit)
@@ -289,13 +289,13 @@ bind stash  p<Enter> :!git cmd patch.create TYPE=stash C=%(stash)
 bind refs   ss       :!git cmd info.write   C=%(commit) BR=%(branch) REF=%(refname) TAG=%(tag) FILE=%(file) OFILE=%(file_old)
 bind main   ss       :!git cmd info.write   C=%(commit) FILE=%(file) OFILE=%(file_old)
 bind reflog ss       :!git cmd info.write   C=%(commit) FILE=%(file) OFILE=%(file_old)
-bind reflog sc       @git cmd select.add C=%(commit)
-bind log    sc       @git cmd select.add C=%(commit)
-bind diff   sc       @git cmd select.add C=%(commit)
-bind main   sc       !git cmd select.add C=%(commit)
-bind main   sr       !git  cmd select.reset
-bind diff   sr       @git  cmd select.reset
-bind reflog sr       @git  cmd select.reset
+bind reflog sc       +git cmd select.add C=%(commit)
+bind log    sc       +git cmd select.add C=%(commit)
+bind diff   sc       +git cmd select.add C=%(commit)
+bind main   sc       +git cmd select.add C=%(commit)
+bind main   sr       +git  cmd select.reset
+bind diff   sr       +git  cmd select.reset
+bind reflog sr       +git  cmd select.reset
 
 
 # Check line history {
