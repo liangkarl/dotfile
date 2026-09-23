@@ -319,8 +319,7 @@ bind refs C none
 bind refs ! none
 
 bind refs f<ENTER> :!git cmd git.msg fetch --prune --all
-bind refs rb       :!git cmd git.auto rebase %(commit)
-bind refs rB       :!git cmd git.msg rebase %(commit)
+bind refs rb       :!git cmd refs.move C=%(commit)
 bind refs pp       !git cmd refs.push TAG=%(tag) BR=%(branch)
 bind refs cs        +git cmd info.clean
 bind refs >         >tig %(commit)
@@ -338,8 +337,7 @@ bind main rv :!git cmd git.auto revert --no-edit %(commit)
 bind main rV :!git cmd git.msg revert --no-edit %(commit)
 bind diff rv :!git cmd git.auto revert --no-edit %(commit)
 bind diff rV :!git cmd git.msg revert --no-edit %(commit)
-bind main rb >?git cmd git.auto rebase -i %(commit)
-bind main rB >?git cmd git.msg rebase -i %(commit)
+bind main rb >?git cmd refs.move C=%(commit)
 bind main rk >?git rebase --skip
 bind main pp !git cmd refs.push C=%(commit)
 # progress stop: rebase, merge, revert, cherry-pick

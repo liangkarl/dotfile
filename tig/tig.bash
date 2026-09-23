@@ -310,11 +310,69 @@ stash.pop() {
 	fi
 }
 
+#C= [NAME=] refs.move
+refs.move() {
+	local opts opt
+	declare -A opts
+
+	is_commit "$C" || return 1
+
+	TYPE=${TYPE:-$($MENU -p 'How to move? ' simple-move rebase merge)}
+	if [[ -z "$TYPE" ]]; then
+		echo "No type selected"
+		return 2
+	fi
+
+	case "$TYPE" in
+	simple-move)
+		NAME=${NAME:-$(git for-each-ref --format='%(refname)' refs/heads refs/tags | $MENU -p 'Move which refs?')}
+		git update-ref -d $NAME
+		git.msg update-ref $NAME $C
+		;;
+	rebase)
+		opts=(
+			[other-refs]=''
+			[onto]="--onto $C "
+			[edit]='-i '
+		)
+		while read -r item; do
+			if [[ -z "$item" ]]; then
+				echo "cancelled"
+				exit
+			fi
+			if [[ "$item" == none ]]; then
+				break
+			fi
+			if [[ "$item" == onto ]]; then
+				ONTO=y
+			fi
+			if [[ "$item" == other-refs ]]; then
+				OTHER_REFS=y
+			fi
+			opt+="${opts[$item]} "
+		done <<< $($MENU -o multi -p 'Options?' none "${!opts[@]}")
+
+		if [[ "$OTHER_REFS" == y ]]; then
+			END=${NAME:-$(git for-each-ref --format='%(refname)' refs/heads | $MENU -p 'Move which refs?')}
+		fi
+		if [[ "$ONTO" == y ]]; then
+			FROM_IDX=${FROM:-$(git log --pretty=slog $END | $MENU -o value -p 'From?')}
+			git.msg rebase $opt ${END:-HEAD}~$FROM_IDX $END
+		else
+			git.msg rebase $opt $C $END
+		fi
+		;;
+	merge)
+		;;
+	*)
+	esac
+}
+
 # [TYPE=] [NAME=] C= refs.create
 refs.create() {
 	is_commit "$C" || return 1
 
-	TYPE=${TYPE:-$($MENU -p 'Add What? ' branch tag save-refs)}
+	TYPE=${TYPE:-$($MENU -p 'Add What? ' branch tag refs)}
 	if [[ -z "$TYPE" ]]; then
 		echo "No type selected"
 		return 2
@@ -331,16 +389,17 @@ refs.create() {
 		NAME=${NAME:-tag.$(git rev-parse --short $C)}
 		git.msg tag $NAME $C
 		;;
-	save-refs)
-		config.load $node
-		config.get NAME REFS
-		if [[ -n "$NAME" ]]; then
-			git.msg update-ref $NAME $C
-		fi
-		rm $node
-		;;
+	# save-refs)
+	# 	config.load $node
+	# 	config.get NAME REFS
+	# 	if [[ -n "$NAME" ]]; then
+	# 		git.msg update-ref $NAME $C
+	# 	fi
+	# 	rm $node
+	# 	;;
 	refs)
 		NAME=${NAME:-$(input "What's the refs name? [refs/tags/tag.$(git rev-parse --short $C)]")}
+		NAME=${NAME:-refs/tags/tag.$(git rev-parse --short $C)}
 		git.msg update-ref $NAME $C
 		;;
 	*)
@@ -643,14 +702,16 @@ commit.create() {
 	case "$TYPE" in
 	just-commit)
 		opt='-v '
-		$MENU -o multi -p 'Options?' none "${!opts[@]}" | while read -r opt; do
-			if [[ "$opt" == none ]]; then
+		while read -r item; do
+			if [[ -z "$item" ]]; then
+				echo "cancelled"
+				exit
+			fi
+			if [[ "$item" == none ]]; then
 				break
 			fi
-			opt+="${opts[$opt]} "
-		done
-		[[ "$amend" == 'y' ]] && opt+='--amend '
-		[[ "$edit" == 'n' ]] && opt+='--no-edit '
+			opt+="${opts[$item]} "
+		done <<< $($MENU -o multi -p 'Options?' none "${!opts[@]}")
 		git.msg commit $opt
 		;;
 	select-patch)
