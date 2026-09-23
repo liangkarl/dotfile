@@ -17,6 +17,7 @@ def main():
     parser.add_argument("-l", "--load", help="Load state from a JSON file")
     parser.add_argument("-k", "--key", default="__global__", help="Specific key in JSON (default: __global__)")
     parser.add_argument("-v", "--value", action="store_true", help="Return index instead of text")
+    parser.add_argument("--multi", action="store_true", help="Allow selecting multiple options")
     parser.add_argument("-b", "--backend", choices=["fzf", "fzf-tmux", "legacy"], help="Menu backend")
     parser.add_argument("-H", "--height", type=int, help="fzf list height (integer)")
     parser.add_argument("-m", "--mru", action="store_true", help="Enable MRU (Most Recently Used) reordering")
@@ -89,8 +90,7 @@ def main():
 
     # 6. Interactive Selection via fzf
     full_prompt = f"{state['prompt']} "
-    selected_text = None
-    selected_idx = None
+    selections = []
 
     if state["backend"] in ["fzf", "fzf-tmux"]:
         try:
@@ -98,6 +98,7 @@ def main():
             fzf_cmd = cmd + [f"--height={state['height']}", "--layout=reverse", f"--prompt={full_prompt}"]
             if state["title"]: fzf_cmd += ["--header", state["title"]]
             if state["default"]: fzf_cmd += ["--query", state["default"]]
+            if args.multi: fzf_cmd += ["--multi"]
 
             input_data = "\n".join(f"{i}\t{item}" for i, item in enumerate(state["items"]))
             fzf_cmd += ["--with-nth=2.."]
@@ -105,10 +106,11 @@ def main():
             proc = subprocess.Popen(fzf_cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
             stdout, _ = proc.communicate(input=input_data)
 
-            if not stdout: sys.exit(1)
+            for line in stdout.splitlines():
+                idx_part, selected_text = line.split('\t', 1)
+                selections.append((int(idx_part), selected_text))
 
-            idx_part, selected_text = stdout.strip().split('\t', 1)
-            selected_idx = int(idx_part)
+            if not selections: sys.exit(1)
         except FileNotFoundError:
             state["backend"] = "legacy"
 
@@ -130,26 +132,38 @@ def main():
                 except (ValueError, IndexError):
                     selected_text = state["default"]
                     selected_idx = state["items"].index(selected_text) if selected_text in state["items"] else 0
+                selections.append((selected_idx, selected_text))
             else:
-                selected_idx = int(choice) - 1
-                selected_text = state["items"][selected_idx]
+                choices = [choice]
+                if args.multi:
+                    choices = [item.strip() for item in choice.split(',')]
+
+                for choice in choices:
+                    selected_idx = int(choice) - 1
+                    selected_text = state["items"][selected_idx]
+                    if (selected_idx, selected_text) not in selections:
+                        selections.append((selected_idx, selected_text))
+
+            if not selections:
+                sys.exit(1)
         except (ValueError, IndexError, EOFError, KeyboardInterrupt):
             sys.exit(1)
 
     # 7. Final Output
-    if args.value:
-        # Return index (adjusted by offset)
-        print(selected_idx + state["index"])
-    else:
-        # If delimiter is set and present in text, return the first field (Key/ID)
-        if runtime_delim and runtime_delim in selected_text:
+    for selected_idx, selected_text in selections:
+        if args.value:
+            # Return index (adjusted by offset)
+            print(selected_idx + state["index"])
+        elif runtime_delim and runtime_delim in selected_text:
+            # If delimiter is set and present in text, return the first field (Key/ID)
             print(selected_text.split(runtime_delim)[0])
         else:
             print(selected_text)
 
     # 8. Update MRU order (only if enabled)
     if state["mru_enabled"]:
-        state["items"] = [selected_text] + [item for item in state["items"] if item != selected_text]
+        selected_texts = [selected_text for _, selected_text in selections]
+        state["items"] = selected_texts + [item for item in state["items"] if item not in selected_texts]
 
     # 9. Persistent State Saving
     save_path = args.save or args.load
