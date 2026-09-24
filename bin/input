@@ -4,9 +4,13 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 
 
-MENU_OPTIONS = {"list", "mru", "multi", "value"}
+MENU_OPTIONS = {"list", "menu", "mru", "multi", "value"}
+FILE_OPTIONS = {"load", "save"}
+DISPLAY_OPTIONS = {"popup", "split"}
+ALL_OPTIONS = MENU_OPTIONS | FILE_OPTIONS | DISPLAY_OPTIONS
 
 
 def default_state():
@@ -18,6 +22,7 @@ def default_state():
         "items": [],
         "height": 10,
         "backend": "fzf",
+        "layout": "popup",
         "delim": None,
         "options": []
     }
@@ -30,10 +35,10 @@ def selected_options(parser, option_groups):
             option = option.strip()
             if option == "none":
                 options.add(option)
-            elif option not in MENU_OPTIONS:
+            elif option not in ALL_OPTIONS:
                 parser.error(
                     f"invalid option '{option}'; choose from: "
-                    f"{', '.join(sorted(MENU_OPTIONS))}, none"
+                    f"{', '.join(sorted(ALL_OPTIONS))}, none"
                 )
             else:
                 options.add(option)
@@ -42,6 +47,8 @@ def selected_options(parser, option_groups):
         if len(options) != 1:
             parser.error("option 'none' cannot be combined with other options")
         return set()
+    if DISPLAY_OPTIONS <= options:
+        parser.error("options 'popup' and 'split' cannot be combined")
     return options
 
 
@@ -70,7 +77,7 @@ def loaded_state(path, key):
     if not isinstance(saved_state, dict):
         return state
 
-    for name in ("title", "prompt", "default", "backend"):
+    for name in ("title", "prompt", "default", "backend", "layout"):
         if isinstance(saved_state.get(name), str):
             state[name] = saved_state[name]
     for name in ("index", "height"):
@@ -86,8 +93,10 @@ def loaded_state(path, key):
         options.add("mru")
     state["options"] = sorted(options)
 
-    if state["backend"] not in {"fzf", "fzf-tmux", "legacy"}:
+    if state["backend"] not in {"fzf", "legacy"}:
         state["backend"] = default_state()["backend"]
+    if state["layout"] not in {"popup", "split", "plain"}:
+        state["layout"] = default_state()["layout"]
     return state
 
 
@@ -97,14 +106,23 @@ def apply_arguments(state, args, command_options):
         if value is not None:
             state[name] = value
     if args.option is not None:
-        state["options"] = sorted(command_options)
+        if command_options & MENU_OPTIONS or not command_options:
+            state["options"] = sorted(command_options & MENU_OPTIONS)
+        if "split" in command_options:
+            state["layout"] = "split"
+        elif "popup" in command_options:
+            state["layout"] = "popup"
+        elif not command_options:
+            state["layout"] = "plain"
+    if args.backend == "fzf" and not (command_options & DISPLAY_OPTIONS):
+        state["layout"] = "plain"
     state["options"] = sorted(saved_options(state))
 
 
 def resolve_items(state, args):
     # Explicit arguments override piped input, which overrides saved items.
     if not sys.stdin.isatty():
-        piped_items = [line.strip() for line in sys.stdin if line.strip()]
+        piped_items = [line.rstrip("\n") for line in sys.stdin if line.rstrip("\n")]
         if piped_items:
             state["items"] = piped_items
 
@@ -132,31 +150,76 @@ def print_list(state):
 
 
 def select_with_fzf(state, options):
-    command = ["fzf"] if state["backend"] == "fzf" else ["fzf-tmux", "-p"]
+    menu_mode = "menu" in options
+    if state["layout"] == "popup":
+        command = ["fzf-tmux", "-p", "--"]
+    elif state["layout"] == "split":
+        command = ["fzf-tmux", "-d", "--"]
+    else:
+        command = ["fzf"]
     command += [f"--height={state['height']}", "--layout=reverse", f"--prompt={state['prompt']} "]
     if state["title"]:
         command += ["--header", state["title"]]
     if state["default"]:
         command += ["--query", state["default"]]
-    if "multi" in options:
+    if "multi" in options and menu_mode:
         command += ["--multi"]
     command += ["--with-nth=2.."]
 
-    input_data = "\n".join(f"{index}\t{item}" for index, item in enumerate(state["items"]))
-    try:
-        process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
-    except FileNotFoundError:
-        return None
+    input_items = "\n".join(f"{index}\t{item}" for index, item in enumerate(state["items"]))
+    command_env = os.environ.copy()
+    item_file = None
+    if not menu_mode:
+        command += [
+            "--style=minimal", "--min-height=3", "--info=hidden", "--no-multi",
+            "--no-bold", "--color=current-bg:-1,current-fg:-1,hl:1:underline,hl+:1:underline",
+            "--print-query", "--pointer=▌"
+        ]
+        command += ["--bind=start:transform:([[ -z \"$FZF_QUERY\" ]] && echo 'change-pointer(▌)' || echo 'change-pointer( )')"]
+        command += ["--bind=change:transform:([[ -z \"$FZF_QUERY\" ]] && echo 'change-pointer(▌)' || echo 'change-pointer( )')"]
+        command += ["--bind=down:transform:([[ \"$FZF_POINTER\" == \" \" ]] && echo 'first+change-pointer(▌)' || echo 'down+change-pointer(▌)')"]
+        command += ["--bind=up:transform:([[ \"$FZF_POINTER\" == \" \" ]] && echo 'last+change-pointer(▌)' || echo 'up+change-pointer(▌)')"]
+        command += ["--bind=page-down:page-down+change-pointer(▌)", "--bind=page-up:page-up+change-pointer(▌)"]
+        command += ["--bind=shift-right:replace-query"]
+        command += ["--bind=enter:transform:([[ \"$FZF_POINTER\" != \" \" ]] || grep -Fqx -- \"$FZF_QUERY\" \"$INPUT_ITEMS_FILE\") && echo accept || echo print-query"]
+        item_file = tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", delete=False)
+        item_file.write("\n".join(state["items"]))
+        item_file.close()
+        command_env["INPUT_ITEMS_FILE"] = item_file.name
+        command_env["FZF_DEFAULT_OPTS"] = ""
+    else:
+        command += ["--bind=enter:accept"]
 
-    stdout, _ = process.communicate(input=input_data)
+    try:
+        try:
+            process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=command_env)
+        except FileNotFoundError:
+            return None
+        stdout, _ = process.communicate(input=input_items)
+    finally:
+        if item_file is not None:
+            os.unlink(item_file.name)
+    if process.returncode != 0:
+        return []
+
+    lines = stdout.splitlines()
+    if not menu_mode:
+        query = lines[0] if lines else ""
+        chosen = lines[1] if len(lines) > 1 else None
+        if chosen is None:
+            return [(None, query)]
+        index, text = chosen.split("\t", 1)
+        return [(int(index), text)]
+
     selections = []
-    for line in stdout.splitlines():
-        index, text = line.split('\t', 1)
+    for line in lines:
+        index, text = line.split("\t", 1)
         selections.append((int(index), text))
     return selections
 
 
 def select_with_legacy(state, options):
+    menu_mode = "menu" in options
     if state["title"]:
         print(f"== {state['title']} ==")
     for index, item in enumerate(state["items"]):
@@ -168,6 +231,11 @@ def select_with_legacy(state, options):
 
     try:
         choice = input(prompt)
+        if not menu_mode:
+            if choice in state["items"]:
+                index = state["items"].index(choice)
+                return [(index, choice)]
+            return [(None, choice)]
         if not choice and state["default"]:
             try:
                 index = int(state["default"]) - 1
@@ -189,7 +257,7 @@ def select_with_legacy(state, options):
 
 
 def select_items(state, options):
-    if state["backend"] in {"fzf", "fzf-tmux"}:
+    if state["backend"] == "fzf":
         selections = select_with_fzf(state, options)
         if selections is not None:
             return selections
@@ -198,7 +266,9 @@ def select_items(state, options):
 
 def print_selections(selections, state, options):
     for index, text in selections:
-        if "value" in options:
+        if index is None:
+            print(text)
+        elif "value" in options:
             print(index + state["index"])
         elif state["delim"] and state["delim"] in text:
             print(text.split(state["delim"])[0])
@@ -207,42 +277,46 @@ def print_selections(selections, state, options):
 
 
 def update_mru(state, selections):
-    selected_items = [text for _, text in selections]
+    selected_items = [text for _, text in selections if text is not None]
     state["items"] = selected_items + [item for item in state["items"] if item not in selected_items]
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Python-based fzf menu with JSON state.")
-    parser.add_argument("-t", "--title", help="Set menu title (header)")
+    parser = argparse.ArgumentParser(description="Python input picker with input and menu modes.")
+    parser.add_argument("-t", "--title", help="Set picker title (header)")
     parser.add_argument("-p", "--prompt", help="Set prompt string")
     parser.add_argument("-d", "--default", help="Initial query or default index")
-    parser.add_argument("-I", "--index", type=int, help="Starting index for --option value output")
+    parser.add_argument("-i", "--index", type=int, help="Starting index for menu value output")
     parser.add_argument(
         "-o", "--option", action="append", metavar="OPTION[,OPTION...]",
-        help="Select modes: list, mru, multi, value; use none to clear saved modes"
+        help="Modes: list, menu, mru, multi, value; file: load, save; display: popup, split; none clears modes and uses plain fzf"
     )
     parser.add_argument("-D", "--delim", help="Delimiter for input splitting or result parsing")
-    parser.add_argument("-s", "--save", help="Save state to a JSON file")
-    parser.add_argument("-l", "--load", help="Load state from a JSON file")
+    parser.add_argument("-f", "--file", help="JSON state file (load and save by default)")
     parser.add_argument("-k", "--key", default="__global__", help="Specific key in JSON (default: __global__)")
-    parser.add_argument("-b", "--backend", choices=["fzf", "fzf-tmux", "legacy"], help="Menu backend")
+    parser.add_argument("-b", "--backend", choices=["fzf", "legacy"], help="Picker backend")
     parser.add_argument("-H", "--height", type=int, help="fzf list height (integer)")
-    parser.add_argument("items", nargs="*", help="Menu items (passed as arguments)")
+    parser.add_argument("items", nargs="*", help="Reference items (passed as arguments)")
 
     args = parser.parse_args()
     command_options = selected_options(parser, args.option)
-    state = loaded_state(args.load, args.key)
+    file_options = command_options & FILE_OPTIONS
+    load = bool(args.file) and (not file_options or "load" in file_options)
+    save = bool(args.file) and (not file_options or "save" in file_options)
+    state = loaded_state(args.file if load else None, args.key)
     apply_arguments(state, args, command_options)
     resolve_items(state, args)
 
-    if not state["items"]:
-        save_state(args.save, args.key, state)
+    if not state["items"] and "menu" in state["options"]:
+        if save:
+            save_state(args.file, args.key, state)
         return 0
 
     options = set(state["options"])
     if "list" in options:
         print_list(state)
-        save_state(args.save, args.key, state)
+        if save:
+            save_state(args.file, args.key, state)
         return 0
 
     selections = select_items(state, options)
@@ -252,7 +326,8 @@ def main():
     print_selections(selections, state, options)
     if "mru" in options:
         update_mru(state, selections)
-    save_state(args.save, args.key, state)
+    if save:
+        save_state(args.file, args.key, state)
     return 0
 
 

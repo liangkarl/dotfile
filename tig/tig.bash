@@ -39,8 +39,8 @@ PREFIX_BR='refs/heads'
 PREFIX_REMOTE='refs/remotes'
 PREFIX_STASH='refs/stash'
 PREFIX_SELECT="${PREFIX_TAG}/select"
-FZF='fzf-tmux -p'
-MENU='menu -b fzf-tmux'
+MENU='input -o menu'
+INPUT='input'
 
 declare -A git_actions=(
 	[rebase-merge]=rebase
