@@ -19,22 +19,25 @@
 * Do not rename anything unless the current name is misleading or confusing.
 * Add comments only when they clarify non-obvious intent or expected behavior.
 * Keep changes focused on the requested task.
-
-  * Changes directly required by the task do not need comments merely to identify them as required.
-  * If code outside the directly requested change must also be modified, add a nearby comment explaining the technical reason for the additional change when that reason is not obvious from the code.
-  * Do not make unrelated or opportunistic changes.
+  - Changes directly required by the task do not need comments merely to identify them as required.
+  - If code outside the directly requested change must also be modified, add a nearby comment explaining the technical reason for the additional change when that reason is not obvious from the code.
+  - Do not make unrelated or opportunistic changes.
 * Before introducing a new function, data structure, abstraction, or implementation pattern, search for similar existing code.
-
-  * Prefer extending an existing implementation when it fits cleanly.
-  * Create a new implementation only when existing code cannot reasonably support the required behavior.
+  - Prefer extending an existing implementation when it fits cleanly.
+  - Create a new implementation only when existing code cannot reasonably support the required behavior.
 
 ## Validation
 
 * Redirect stdout and stderr of compilation commands to a temporary log file and use the command's exit status to determine success.
 * Inspect the raw log when the build fails, when warnings are relevant, or when verification requires it. Read it in bounded sections rather than printing the entire log.
-
-  * Remove the temporary log after a successful build.
-  * If the purpose is only to grep specific information from the output, redirection to a temporary log is not required.
+  - Remove the temporary log after a successful build.
+  - If the purpose is only to grep specific information from the output, redirection to a temporary log is not required.
+* After completing and validating a code-changing task:
+  - If the working tree had no pre-existing changes before the task, commit the changes made for the task.
+  - If pre-existing changes were already present, leave the task changes uncommitted.
+  - Do not include unrelated or pre-existing changes in a commit.
+* The commit message should summarize the task and how it was implemented.
+  - For bug fixes, include the root cause and solution when known.
 
 ## Final Response
 
