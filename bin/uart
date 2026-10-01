@@ -12,7 +12,6 @@
 #         select supported serial console
 #     -+([0-9]): serial port number, eg, -1, -2, etc.
 
-lib.load menu
 lib.load config
 lib.load devel
 
@@ -48,57 +47,32 @@ list_port() {
 	fi
 }
 
-menu_cb() {
-	opt="$2"
-}
-
 setup_uart() {
-	menu.backend 'fzf'
-	menu.callback menu_cb
-
-	menu.title "Select a command as backend"
-	menu.opts "${cmds[@]}"
-	menu.run
-	cmd=$opt
+	cmd=$(input -o menu -t "Select a command as backend" "${cmds[@]}")
 	msg.info "backend: $(basename $cmd)"
 
 	# baudrate
-	menu.title 'baudrate setup'
-	menu.defopt 2
-	menu.opts 'b9600' 'b921600' 'b115200'
-	menu.run
+	opt=$(input -o menu -t 'baudrate setup' -d 'b115200' 'b9600' 'b921600' 'b115200')
 	baudrate=${opt#b}
 	msg.info "baudrate: $opt"
 
 	# flow control
-	menu.title 'flow control setup'
-	menu.defopt 0
-	menu.opts 'none' 'XON_OFF' 'RST_CTS' 'DSR_STR'
-	menu.run
+	opt=$(input -o menu -t 'flow control setup' -d 'none' 'none' 'XON_OFF' 'RST_CTS' 'DSR_STR')
 	flow_control=${opt}
 	msg.info "flow control: $opt"
 
 	# parity
-	menu.title 'parity setup'
-	menu.defopt 0
-	menu.opts 'none' 'odd' 'even' 'mark' 'space'
-	menu.run
+	opt=$(input -o menu -t 'parity setup' -d 'none' 'none' 'odd' 'even' 'mark' 'space')
 	parity=${opt}
 	msg.info "parity: $opt"
 
 	# data bit
-	menu.title 'data bit setup'
-	menu.defopt 3
-	menu.opts '5' '6' '7' '8' '9'
-	menu.run
+	opt=$(input -o menu -t 'data bit setup' -d '8' '5' '6' '7' '8' '9')
 	data_bits=${opt}
 	msg.info "data bits: $opt"
 
 	# stop bit
-	menu.title 'stop bit setup'
-	menu.defopt 0
-	menu.opts '1' '1.5' '2'
-	menu.run
+	opt=$(input -o menu -t 'stop bit setup' -d '1' '1' '1.5' '2')
 	stop_bits=${opt}
 	msg.info "stop bits: $opt"
 

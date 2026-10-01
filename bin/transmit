@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 lib.load devel
-lib.load menu
 
 set -eE
 
@@ -94,11 +93,7 @@ select_and_show_menu() {
 	fi
 
 	# manual selection
-	menu_title 'more than one site as below:'
-	menu_prompt 'select one to continue'
-	menu_default 1
-	menu_select ${remote_root[@]}
-	root=$(menu_choice)
+	root=$(input -o menu -t 'more than one site as below:' -p 'select one to continue' -d "${remote_root[0]}" "${remote_root[@]}")
 
 	echo "remote dir: $root"
 }
