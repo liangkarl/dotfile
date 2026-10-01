@@ -1,0 +1,12 @@
+[settings]
+idiomatic_version_file_enable_tools = ["python", "node", "rust", "go"]
+
+[env]
+MISE_RUSTUP_HOME = "{{env.HOME}}/.local/share/rustup"
+MISE_CARGO_HOME = "{{env.HOME}}/.local/share/cargo"
+
+[tools]
+python = "3.12.13"
+node = "20.14.0"
+rust = "1.98.1"
+go = "1.27.1"
