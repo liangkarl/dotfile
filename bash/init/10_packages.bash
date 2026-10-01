@@ -35,9 +35,9 @@ configure_fuzzy_finder() {
         binds+="ctrl-e:last,"
         binds+="ctrl-c:cancel,"
         binds+="ctrl-t:toggle-track,"
-        binds+="right:replace-query,"
+        binds+="shift-right:replace-query,"
         # Detect if last actions is moving up/down, print item if yes else print query
-        binds+='enter:transform:[[ {fzf:action} =~ ^(up|down)$ ]] && echo accept || echo print-query'
+        binds+="alt-enter:transform([[ -z \"\$FZF_QUERY\" || {fzf:action} =~ ^(up|down|page-up|page-down|half-page-up|half-page-down)$ ]] && echo accept || echo print-query)"
         # Hide the preview window at beginning and keep empty preview command to
         # avoid conflict to the preview command setting from other apps
         # `toggle-track` is only available after fzf 0.40
