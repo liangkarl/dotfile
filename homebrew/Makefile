@@ -8,6 +8,7 @@ BREW=$(shell command -v brew)
 
 config:
 	$(H)echo "-- $(PKG_NAME): setup config --"
+	chmod 700 $(CONFIG_DIR)
 
 install:
 	$(H)echo "-- $(PKG_NAME): install package manager --"
