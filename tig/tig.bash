@@ -64,14 +64,6 @@ show_cmd() {
 	fi
 }
 
-input() {
-	if [[ "$FZF" =~ ^fzf-tmux ]]; then
-		echo -en | $FZF -h 3 -- --style=minimal --no-info --print-query --prompt "$* " | head -n 1
-	elif [[ "$FZF" == fzf ]]; then
-		echo -en | $FZF --style=minimal --no-info --print-query --prompt "$* " | head -n 1
-	fi
-}
-
 conv_name() {
 	sed 'y/ :()/-___/; s/!//g; s/[-_]*_[-_]*/_/g'
 }
@@ -255,7 +247,7 @@ stash.save() {
 	local repo="$(basename $topdir)"
 	local sha="$(git rev-parse --short HEAD)"
 
-	NAME=$(input "New Stash Name: [[STAGE/UNSTAGE]: {repo}.${sha}]")
+	NAME=$($INPUT -t "New Stash Name: [[STAGE/UNSTAGE]: {repo}.${sha}]")
 	case "$TYPE" in
 	stage)
 		git.msg stash save --staged ${NAME:-STAGE: ${repo}.${sha}}
@@ -380,12 +372,12 @@ refs.create() {
 
 	case "$TYPE" in
 	branch)
-		NAME=${NAME:-$(input "What's its name? [Enter to skip]" | conv_name)}
+		NAME=${NAME:-$($INPUT -t "What's its name? [Enter to skip]" | conv_name)}
 		NAME=${NAME:-$(basename "$(git rev-parse --show-toplevel)")}
 		git.msg branch $NAME $C
 		;;
 	tag)
-		NAME=${NAME:-$(input "What's its name? [Enter to skip]" | conv_name)}
+		NAME=${NAME:-$($INPUT -t "What's its name? [Enter to skip]" | conv_name)}
 		NAME=${NAME:-tag.$(git rev-parse --short $C)}
 		git.msg tag $NAME $C
 		;;
@@ -398,7 +390,7 @@ refs.create() {
 	# 	rm $node
 	# 	;;
 	refs)
-		NAME=${NAME:-$(input "What's the refs name? [refs/tags/tag.$(git rev-parse --short $C)]")}
+		NAME=${NAME:-$($INPUT -t "What's the refs name? [refs/tags/tag.$(git rev-parse --short $C)]")}
 		NAME=${NAME:-refs/tags/tag.$(git rev-parse --short $C)}
 		git.msg update-ref $NAME $C
 		;;
@@ -467,7 +459,7 @@ refs.rename() {
 		fi
 	fi
 
-	NAME=$(input "Rename To:" | conv_name)
+	NAME=$($INPUT -t "Rename To:" | conv_name)
 	if [[ -z "$NAME" ]]; then
 		echo "no name specified"
 		return 3
@@ -546,7 +538,7 @@ refs.push() {
 		src="$C"
 
 		if [[ "$act" == "Create" ]]; then
-			name="$(input "Name?")"
+			name="$($INPUT -t "Name?")"
 			[[ -z "$name" ]] && { echo "cancelled"; return; }
 
 			obj="$($MENU -p 'Type?' Branch Tag)"
@@ -563,7 +555,7 @@ refs.push() {
 		src="$BR$TAG"
 
 		if [[ "$act" == "Create" ]]; then
-			name="$(input "Name? [$BR$TAG]")"
+			name="$($INPUT -t "Name? [$BR$TAG]")"
 			name="${name:-$BR$TAG}"
 			if [[ -n "$BR" ]]; then
 				obj="refs/heads/${name}"
@@ -576,7 +568,7 @@ refs.push() {
 	if [[ "$act" == "Update" ]]; then
 		obj="$(git ls-remote -t -b origin | awk '{print $2}' | $MENU -p 'Which one?')"
 
-		force="$(input 'Force? [y/N]')"
+		force="$($INPUT -t 'Force? [y/N]')"
 		force="${force:-n}"
 		if [[ "$force" == y ]]; then
 			OPT='--force-with-lease'
@@ -620,14 +612,14 @@ patch.create() {
 	diff)
 		FILE="$({ echo "ALL"; git diff --name-only; } | $MENU -p "Pick File(s):")"
 		[[ "$FILE" == "ALL" ]] && unset FILE
-		NAME="$(input "Patch Name?" | conv_name)"
+		NAME="$($INPUT -t "Patch Name?" | conv_name)"
 		out+=${NAME:-$(date +%y%m%d-%H%M%S)}.patch
 		git diff $p_opts ${FILE+-- $FILE} | tee ${out}
 		;;
 	stage)
 		FILE="$({ echo "ALL"; git diff --name-only --cached; } | $MENU -p "Pick File(s):")"
 		[[ "$FILE" == "ALL" ]] && unset FILE
-		NAME="$(input "Patch Name?" | conv_name)"
+		NAME="$($INPUT -t "Patch Name?" | conv_name)"
 		out+=${NAME:-$(date +%y%m%d-%H%M%S)}.patch
 		git diff --cached $p_opts ${FILE+-- $FILE} | tee ${out}
 		;;
@@ -638,7 +630,7 @@ patch.create() {
 		fi
 		FILE="$({ echo "ALL"; git stash show --name-only $C; } | $MENU -p "Pick File(s):")"
 		[[ "$FILE" == "ALL" ]] && unset FILE
-		NAME="$(input "Patch Name?" | conv_name)"
+		NAME="$($INPUT -t "Patch Name?" | conv_name)"
 		out+=${NAME:-$(date +%y%m%d-%H%M%S)}.patch
 		git stash show $p_opts -p $C ${FILE+-- $FILE} | tee ${out}
 		;;
