@@ -44,7 +44,11 @@
 1. List the requested tasks.
 2. Summarize the actions taken and indicate which tasks were completed.
 3. Classify the solution as a general solution, targeted solution, or workaround, and briefly explain why.
-4. List any minor assumptions that were not specified by me and did not require clarification.
+4. Excluding temporary debug logging, classify the code changes as:
+  - **Release-ready**: the implementation itself is suitable for a normal release commit after removing temporary debug instrumentation.
+  - **Debug-only**: the implementation is intended only for diagnosis or experimentation and should not be released.
+  - **Needs follow-up before release**: the implementation may be suitable, but code changes or meaningful verification are still required.
+5. List any minor assumptions that were not specified by me and did not require clarification.
 
 ## Workflow
 
