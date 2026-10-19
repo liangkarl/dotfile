@@ -17,37 +17,158 @@ def shell(argv):
 
 def parse_args(argv):
     parser = argparse.ArgumentParser(description='tmux entries')
-    parser.add_argument('-l', '--list', action='store_true',
-                        help='list the sessions')
-    parser.add_argument('-r', '--rename', action='store_true',
-                        help='rename a session')
-    parser.add_argument('-c', '--create', action='store_true',
-                        help='create a session')
-    parser.add_argument('-s', '--save', action='store_true',
-                        help='save the session')
-    parser.add_argument('-d', '--delete', action='store_true',
-                        help='delete a session')
-    parser.add_argument('-e', '--edit', action='store_true',
-                        help='edit a session')
-    parser.add_argument('-E', '--enter', action='store_true',
-                        default=True, help='enter a session')
+    operations = parser.add_mutually_exclusive_group()
+    operations.add_argument('-s', '--save', action='store_const',
+                            const='save', dest='operation')
+    operations.add_argument('-r', '--rename', action='store_const',
+                            const='rename', dest='operation')
+    operations.add_argument('-d', '--delete', action='store_const',
+                            const='delete', dest='operation')
+    operations.add_argument('-E', '--enter', action='store_const',
+                            const='enter', dest='operation')
+    operations.add_argument('-e', '--edit', action='store_const',
+                            const='edit', dest='operation')
+    operations.add_argument('-l', '--list', action='store_const',
+                            const='list', dest='operation')
+    operations.add_argument('--info', action='store_const',
+                            const='info', dest='operation')
     return parser.parse_args(argv)
 
-def get_entry(config_dir):
-    r = cmd.run(f'ls {config_dir} | cut -d. -f1 | fzf',
-                shell=True, capture_output=True, text=True)
-    return r.stdout.strip() or None
+OPERATIONS = ['save', 'rename', 'delete', 'enter', 'edit', 'list', 'info']
 
-def get_entry_name(str):
-    entry = input(f"{str}: ")
-    if not entry:
-        print("No name given")
-        exit(1)
-    elif entry.find('.') >= 0:
-        print("Invalid name due to '.'")
-        exit(2)
+def profile_data(config_dir):
+    profiles = sorted(
+        filename[:-5]
+        for filename in os.listdir(config_dir)
+        if filename.endswith('.yaml')
+    )
+    session_names = {profile: profile for profile in profiles}
+    result = cmd.run(['tmuxp', 'ls', '--json'], capture_output=True, text=True)
+    if result.returncode == 0:
+        try:
+            workspaces = json.loads(result.stdout).get('workspaces', [])
+        except (json.JSONDecodeError, AttributeError):
+            workspaces = []
+        for workspace in workspaces:
+            profile = workspace.get('name')
+            if profile in session_names and workspace.get('session_name'):
+                session_names[profile] = workspace['session_name']
+    return profiles, session_names
 
-    return entry
+def pick(title, items, default=None, menu=False):
+    argv = ['input', '-t', title]
+    if menu:
+        argv.extend(['-o', 'menu'])
+    if default:
+        argv.extend(['-d', default])
+    result = cmd.run([*argv, *items], capture_output=True, text=True)
+    if result.returncode != 0:
+        return None
+    return result.stdout.rstrip('\n')
+
+def choose_operation():
+    return pick('select an operation', OPERATIONS, menu=True)
+
+def save_profile(config_dir, default=None):
+    profiles, session_names = profile_data(config_dir)
+    current = current_session()
+    current_profile = next(
+        (profile for profile, session in session_names.items() if session == current),
+        None,
+    )
+    items = list(profiles)
+    if current and current_profile is None:
+        items.append(current)
+
+    name = pick('save current session as a profile', items,
+                default=default or current_profile or current)
+    if not name:
+        return
+    if os.path.basename(name) != name or '.' in name:
+        print('Invalid profile name', file=sys.stderr)
+        return
+
+    path = f'{config_dir}/{name}.yaml'
+    if name in profiles:
+        shell(['tmuxp', 'freeze', '-o', path, session_names[name]])
+    else:
+        shell(['tmuxp', 'freeze', '-o', path])
+
+def enter_profile(config_dir, selected=None):
+    profiles, _ = profile_data(config_dir)
+    name = selected
+    if name is None:
+        value = pick('select or enter a session', profiles)
+        if not value:
+            return
+        name = value
+
+    if name in profiles:
+        shell(['tmuxp', 'load', name])
+    elif 'TMUX' in os.environ:
+        env = os.environ.copy()
+        env.pop('TMUX', None)
+        result = cmd.run(['tmux', 'new-session', '-d', '-s', name], env=env)
+        if result.returncode == 0:
+            shell(['tmux', 'switch-client', '-t', name])
+    else:
+        shell(['tmux', 'new-session', '-s', name])
+
+def rename_profile(config_dir, profile):
+    name = pick('rename profile', [], default=profile)
+    if not name:
+        return
+    if os.path.basename(name) != name or '.' in name:
+        print('Invalid profile name', file=sys.stderr)
+        return
+
+    old_path = f'{config_dir}/{profile}.yaml'
+    new_path = f'{config_dir}/{name}.yaml'
+    try:
+        rename_session(old_path, name)
+        os.replace(old_path, new_path)
+    except (OSError, ValueError) as error:
+        print(f'Failed to rename session: {error}', file=sys.stderr)
+        return
+    print(f'Renamed session to {name}')
+
+def current_session():
+    if 'TMUX' not in os.environ:
+        return None
+    result = cmd.run(
+        ['tmux', 'display-message', '-p', '#S'],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        return None
+    return result.stdout.rstrip('\n') or None
+
+def running_sessions():
+    result = cmd.run(
+        ['tmux', 'list-sessions', '-F', '#{session_name}'],
+        capture_output=True, text=True,
+    )
+    if result.returncode != 0:
+        return set()
+    return set(result.stdout.splitlines())
+
+def select_profile(config_dir, show_status=False):
+    profiles, session_names = profile_data(config_dir)
+    if not profiles:
+        print('No profiles found')
+        return None
+
+    labels = {}
+    if show_status:
+        running = running_sessions()
+        for profile in profiles:
+            status = 'running' if session_names[profile] in running else 'stopped'
+            labels[f'{profile} ({status})'] = profile
+    else:
+        labels = {profile: profile for profile in profiles}
+
+    selected = pick('select a profile', list(labels), menu=True)
+    return labels.get(selected)
 
 def rename_session(config_path, session_name):
     """Update the top-level tmuxp session_name without renaming its file."""
@@ -71,59 +192,49 @@ def rename_session(config_path, session_name):
         config_file.write(updated_config)
 
 def main(argv):
-    config_dir = os.environ["XDG_CONFIG_HOME"] + '/tmuxp'
+    config_dir = os.environ['XDG_CONFIG_HOME'] + '/tmuxp'
     args = parse_args(argv)
+    operation = args.operation or choose_operation()
+    selected = None
 
-    if args.list:
-        run(['tmuxp', 'ls'])
-        exit(0)
+    while operation:
+        if operation == 'list':
+            selected = select_profile(config_dir, show_status=True)
+            if selected is None:
+                return 0
+            operation = choose_operation()
+            continue
 
-    if args.create:
-        print("NOTE: The default configuration of new entry "
-              "will be the current tmux session")
-        entry = get_entry_name("Name the new entry")
-        args.save = True
+        if operation == 'info':
+            run(['tmuxp', 'ls', '--full'])
+            return 0
 
-        opt = input("Do you want to edit it now? [y/N] ")
-        if opt == 'y':
-            args.edit = True
+        if operation == 'save':
+            save_profile(config_dir, selected)
+            return 0
 
-    else:
-        entry = get_entry(config_dir)
-        if entry is None:
-            print("No entry selected")
-            exit(1)
+        if operation == 'enter':
+            enter_profile(config_dir, selected)
+            return 0
 
-    if args.save:
-        if args.create:
-            shell(['tmuxp', 'freeze', '-o', f'{config_dir}/{entry}.yaml'])
-        else:
-            shell(['tmuxp', 'freeze', '-o', f'{config_dir}/{entry}.yaml', entry])
-        print(f"Saved {entry}")
+        profile = selected or select_profile(config_dir)
+        if profile is None:
+            return 0
 
-    if args.edit:
-        shell(['tmuxp', 'edit', entry])
+        if operation == 'rename':
+            rename_profile(config_dir, profile)
+        elif operation == 'delete':
+            try:
+                os.remove(f'{config_dir}/{profile}.yaml')
+                print(f'Deleted {profile}')
+            except OSError as error:
+                print(f'Failed to delete profile: {error}', file=sys.stderr)
+        elif operation == 'edit':
+            shell(['tmuxp', 'edit', profile])
 
-    if args.rename:
-        name = get_entry_name("Rename to a new entry")
-        try:
-            rename_session(f'{config_dir}/{entry}.yaml', name)
-            run(['mv', f'{config_dir}/{entry}.yaml', f'{config_dir}/{name}.yaml'])
-        except (OSError, ValueError) as error:
-            print(f"Failed to rename session: {error}", file=sys.stderr)
-            exit(1)
-        print(f"Renamed session to {name}")
-        exit(0)
+        return 0
 
-    if args.delete:
-        run(['rm', f'{config_dir}/{entry}.yaml'])
-        print(f"Deleted {entry}")
-        exit(0)
-
-    if args.enter:
-        shell(["tmuxp", "load", entry])
-
-    exit(0)
+    return 0
 
 if __name__ == '__main__':
     main(sys.argv[1:])
