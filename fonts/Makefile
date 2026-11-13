@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-ZIP_FILES := $(wildcard *.zip)
+ZIP_FILES := $(sort $(wildcard *.zip) $(patsubst %.part000,%,$(wildcard *.zip.part000)))
 
 DEST_DIR  := $(HOME)/.local/share/fonts
 CACHE_CMD := fc-cache -f -v
@@ -30,6 +30,10 @@ install:
 		echo "==> $$z  ->  $(DEST_DIR)/$$name/"; \
 		rm -rf "$(EXTRACT_DIR)/$$name"; \
 		mkdir -p "$(EXTRACT_DIR)/$$name"; \
+		if [[ -f "$$z.part000" ]]; then \
+			./merge-archive.sh "$$z" "$(EXTRACT_DIR)/$$name.zip"; \
+			z="$(EXTRACT_DIR)/$$name.zip"; \
+		fi; \
 		unzip -o -q "$$z" -d "$(EXTRACT_DIR)/$$name"; \
 		mkdir -p "$(DEST_DIR)/$$name"; \
 		cnt=0; \
@@ -65,7 +69,7 @@ uninstall:
 
 list:
 	@echo "Zip files:"; \
-	ls -1 *.zip 2>/dev/null || echo "(none)"
+	if [[ -n "$(ZIP_FILES)" ]]; then printf "%s\n" $(ZIP_FILES); else echo "(none)"; fi
 
 clean:
 	@rm -rf "$(BUILD_DIR)"
