@@ -303,9 +303,9 @@ bind reflog sr       +git  cmd select.reset
 
 
 # Check line history {
-bind stage b       :!git cmd info.line_history LINE=%(lineno) FILE=%(file)
-bind diff  b       :!git cmd info.line_history LINE=%(lineno) FILE=%(file) REV=%(commit)
-bind blame b       :!git cmd info.line_history LINE=%(lineno) FILE=%(file) REV=%(commit)
+bind stage b       :!git cmd info.line_history VIEW=stage FILE=%(file) OLD_FILE=%(file_old) LINE=%(lineno) OLD_LINE=%(lineno_old) REF=%(status) TEXT=%(text)
+bind diff  b       :!git cmd info.line_history VIEW=diff FILE=%(file) OLD_FILE=%(file_old) LINE=%(lineno) OLD_LINE=%(lineno_old) REF=%(commit) TEXT=%(text)
+bind blame b       :!git cmd info.line_history VIEW=blame FILE=%(file) OLD_FILE=%(file_old) LINE=%(lineno) OLD_LINE=%(lineno_old) REF=%(ref) TEXT=%(text)
 # }
 
 # Stage {

@@ -928,35 +928,88 @@ info.write() {
 	config.save
 }
 
-# FILE= LINE= REV= info.line_history
+# Print context from the selected version, before blame maps it to an origin.
+info.line_context() {
+	local file=$1 line=$2
+	printf 'Selected line in %s (line %s):\n' "$file" "$line"
+	awk -v line="$line" 'NR >= line - 3 && NR <= line + 3 {
+		printf "%s %6d  %s\n", NR == line ? ">" : " ", NR, $0
+	}'
+	printf '\n'
+}
+
+# VIEW= FILE= OLD_FILE= LINE= OLD_LINE= TEXT= REF= info.line_history
 info.line_history() {
-	if [ -z "$FILE" ] || [ -z "$LINE" ]; then
-		echo "Usage: $0 <file_path> <line_number>"
-		exit 1
+	local view=$VIEW file=$FILE old_file=$OLD_FILE line=$LINE old_line=$OLD_LINE text=$TEXT ref=$REF
+	local contents='' temp='' blame commit origin filename
+
+	if [[ $view == diff || $view == stage ]]; then
+		case $text in
+		-*) file=$old_file; line=$old_line ;;
+		+*|' '*) ;;
+		*) echo 'Select a line inside a diff hunk.' >&2; return 1 ;;
+		esac
+	fi
+	if [[ -z $file || $file == /dev/null || ! $line =~ ^[1-9][0-9]*$ ]]; then
+		echo 'No file and line available to trace.' >&2
+		return 1
 	fi
 
-    # Step 1: 從特定版本提取該行的內容（用於搜尋第一次出現的 commit）
-    # 使用 git show 確保我們拿到的是該版本的內容
-    # local LINE=$(git show "${REV}:${FILE}" | sed -n "${LINE}p")
-
-    # if [ -z "$LINE" ]; then
-    #     echo "Error: Could not find line $LINE in $FILE at revision $REV"
-    #     return 1
-    # fi
-
-	# 如果使用者沒有指定 SHA，代表他可能想查目前正在改的這一行
-    if [ -z "$REV" ]; then
-        # 取得目前工作目錄該行的內容
-        local CURRENT_CONTENT=$(sed -n "${LINE}p" "$FILE")
-        echo "Checking history for current (unstaged) content:"
-		echo "\"$CURRENT_CONTENT\""
-
-        # 從 HEAD 開始往回找這行內容
-        git log -S "$CURRENT_CONTENT" --date=short -- "$FILE"
-    else
-        # 如果有指定 SHA，則走原本的精確行號模式
-        git log -L "${LINE},${LINE}:${FILE}" "$REV" --date=short
-    fi
+	if [[ $view == diff && $text == -* ]]; then
+		ref="${ref}^"
+	elif [[ $view == stage ]]; then
+		case $ref in
+		'Staged changes'*)
+			if [[ $text == -* ]]; then
+				ref=HEAD
+			else
+				temp=$(mktemp) || return 1
+				git show ":$file" > "$temp" || { rm -f "$temp"; return 1; }
+				contents=$temp
+			fi
+			;;
+		'Unstaged changes'*)
+			if [[ $text == -* ]]; then
+				temp=$(mktemp) || return 1
+				git show ":$file" > "$temp" || { rm -f "$temp"; return 1; }
+				contents=$temp
+			else
+				contents="$topdir/$file"
+			fi
+			;;
+		*) echo 'Cannot determine which version is shown in stage view.' >&2; return 1 ;;
+		esac
+		if [[ -n $contents ]]; then
+			info.line_context "$file" "$line" < "$contents"
+			if ! git cat-file -e "HEAD:$file" 2>/dev/null; then
+				[[ -z $temp ]] || rm -f "$temp"
+				echo 'This file has no committed history at its current path.'
+				return 0
+			fi
+			blame=$(git -c core.quotePath=false blame --line-porcelain --contents "$contents" -L "$line,$line" HEAD -- "$file")
+			local result=$?
+			[[ -z $temp ]] || rm -f "$temp"
+			if (( result )); then return "$result"; fi
+			read -r commit origin _ <<< "$blame"
+			if [[ $commit =~ ^0+$ ]]; then
+				echo 'This line has no committed origin.'
+				return 0
+			fi
+			filename=${blame#*$'\n'filename }
+			filename=${filename%%$'\n'*}
+			if [[ $filename == \"*\" ]]; then
+				filename=$(python3 -c 'import codecs, os, sys; sys.stdout.buffer.write(codecs.escape_decode(os.fsencode(sys.argv[1][1:-1]))[0])' "$filename") || return 1
+			fi
+			file=$filename
+			line=$origin
+			ref=$commit
+			printf 'Tracing committed origin %s:%s at %s\n' "$file" "$line" "$ref"
+		fi
+	fi
+	if [[ -z $contents ]]; then
+		git show "${ref}:${file}" | info.line_context "$file" "$line"
+	fi
+	python3 "$(dirname -- "${BASH_SOURCE[0]}")/line-history-context.py" "$line" "$file" "$ref"
 }
 
 action.check() {
@@ -1035,9 +1088,35 @@ commit_report() {
 	git shortlog --summary --numbered --all --no-merges
 }
 
-if [[ ! "$0" =~ git* ]]; then
-	# As tig requests the format "script FUNC argv1 ..." and doesn't accept this
-	# format "C=xxx script FUNC", so we could define our custom format
-	# "script FUNC C=xxx"
-	eval "$*"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+	# Named values may appear before or after the command; -- passes the rest through.
+	cmd.dispatch() {
+		local __tig_item __tig_literal=0
+		local -a __tig_args=()
+
+		for __tig_item in "$@"; do
+			if (( __tig_literal )); then
+				__tig_args+=("$__tig_item")
+			elif [[ $__tig_item == -- ]]; then
+				__tig_literal=1
+				if (( ${#__tig_args[@]} )); then
+					__tig_args+=("$__tig_item")
+				fi
+			elif [[ $__tig_item =~ ^[a-zA-Z_][a-zA-Z0-9_]*= ]]; then
+				if [[ ${__tig_item%%=*} == __tig_* ]]; then
+					echo 'Variable names beginning with __tig_ are reserved.' >&2
+					return 1
+				fi
+				printf -v "${__tig_item%%=*}" '%s' "${__tig_item#*=}" || return
+			else
+				__tig_args+=("$__tig_item")
+			fi
+		done
+		if (( ! ${#__tig_args[@]} )); then
+			echo 'No command specified.' >&2
+			return 1
+		fi
+		"${__tig_args[@]}"
+	}
+	cmd.dispatch "$@"
 fi

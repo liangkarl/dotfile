@@ -9,7 +9,7 @@ config:
 	$(H)if [[ ! -e $(LOCAL_BIN) ]]; then
 		mkdir $(LOCAL_BIN)
 	fi
-	git config --global alias.cmd '!bash -c "source $(CONFIG_DIR)/tig.bash; $$*"'
+	git config --global alias.cmd '!bash "$(CONFIG_DIR)/tig.bash"'
 	$(H)ln -sf $(CONFIG_DIR)/tig.run $(LOCAL_BIN)
 	$(H) if [[ $(CUSTOMIZE_TIG) == 'y' ]]; then
 		mv $(CONFIG_DIR)/config $(CONFIG_DIR)/config.common
