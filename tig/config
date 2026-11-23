@@ -206,6 +206,10 @@ bind main    c<ENTER>  >git cmd commit.create
 bind stage   c<ENTER>  >git cmd commit.create
 bind status  c<ENTER>  >git cmd commit.create
 bind reflog  c<ENTER>  >git cmd commit.create
+bind main    cv        :!git cmd C=%(commit) commit.versions
+bind log     cv        :!git cmd C=%(commit) commit.versions
+bind diff    cv        :!git cmd C=%(commit) commit.versions
+bind reflog  cv        :!git cmd C=%(commit) commit.versions
 
 ## Stage/Unstage file
 
@@ -358,5 +362,8 @@ bind reflog ! none
 # }
 
 # Pager {
+color "Amend versions (newer -> older):" red default bold
+color "Changes between versions (older -> newer):" red default bold
+color "/^[[:xdigit:]]{12} -> [[:xdigit:]]{12}:$/" yellow default bold
 bind pager <Space> view-close-no-quit
 # }

@@ -681,6 +681,72 @@ patch.create() {
 	esac
 }
 
+# C= commit.versions
+commit.versions() {
+	local commit reflog line old new message i changed stat
+	local -a old_commits=() new_commits=() versions=()
+	local -A found=() added=()
+
+	commit=$(git rev-parse --verify --quiet "${C}^{commit}") || {
+		echo "Invalid commit: $C" >&2
+		return 1
+	}
+	reflog=$(git rev-parse --git-path logs/HEAD) || return 1
+	if [[ ! -r "$reflog" ]]; then
+		echo "HEAD reflog is not available" >&2
+		return 1
+	fi
+
+	while IFS= read -r line; do
+		message=${line#*$'\t'}
+		[[ "$message" == 'commit (amend): '* ]] || continue
+		read -r old new _ <<< "$line"
+		old_commits+=("$old")
+		new_commits+=("$new")
+	done < "$reflog"
+
+	found["$commit"]=1
+	while :; do
+		changed=0
+		for ((i=0; i<${#old_commits[@]}; i++)); do
+			old=${old_commits[i]}
+			new=${new_commits[i]}
+			if [[ -n ${found[$old]} || -n ${found[$new]} ]]; then
+				if [[ -z ${found[$old]} || -z ${found[$new]} ]]; then
+					found["$old"]=1
+					found["$new"]=1
+					changed=1
+				fi
+			fi
+		done
+		(( changed )) || break
+	done
+
+	for ((i=${#old_commits[@]}-1; i>=0; i--)); do
+		for commit in "${new_commits[i]}" "${old_commits[i]}"; do
+			if [[ -n ${found[$commit]} && -z ${added[$commit]} ]] &&
+				git cat-file -e "${commit}^{commit}" 2>/dev/null; then
+				versions+=("$commit")
+				added["$commit"]=1
+			fi
+		done
+	done
+
+	if (( ${#versions[@]} < 2 )); then
+		echo "No available amend versions found in the HEAD reflog"
+		return 1
+	fi
+	printf 'Amend versions (newer -> older):\n\n'
+	git --no-pager log --no-walk=unsorted --format=medium "${versions[@]}" || return
+	printf '\nChanges between versions (older -> newer):\n'
+	for ((i=1; i<${#versions[@]}; i++)); do
+		old=${versions[i]}
+		new=${versions[i-1]}
+		stat=$(git diff --stat "$old" "$new") || return
+		printf '\n%s -> %s:\n%s\n' "${old:0:12}" "${new:0:12}" "${stat:- no file changes}"
+	done
+}
+
 # [TYPE=] commit.create
 commit.create() {
 	local item list opts
