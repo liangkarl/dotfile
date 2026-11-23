@@ -14,9 +14,9 @@ assert_eq() {
     }
 }
 
-sys.stage_start() { :; }
-sys.stage_stop() { :; }
-lib.load() { :; }
+__bash_env_record_begin() { :; }
+__bash_env_record_end() { :; }
+load() { :; }
 dbg.mark() { :; }
 msg.dbg() { :; }
 

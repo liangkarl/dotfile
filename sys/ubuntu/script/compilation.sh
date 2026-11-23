@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
 
-lib.load devel
+source "$(bash-env)" || { return 1 2>/dev/null || exit 1; }
+
+load devel
 
 list=(curl device-tree-compiler libncurses-dev python3-distutils)
 tmp=/tmp/install.log

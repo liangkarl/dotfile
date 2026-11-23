@@ -1,6 +1,39 @@
 #!/usr/bin/env bash
 
-source ${XDG_CONFIG_HOME}/bash/prompt-completion.bash
+dbg.cmd "export SYS_INFO=\"${BASH_CFG}/info\""
+
+if ! cmp -s ${SYS_INFO} ${SYS_INFO}.last; then (
+    load config
+
+    config.load ${SYS_INFO}
+    config.get system system
+    if [[ -z "$system" ]]; then
+        system=$(cmd.try "sw_vers -productName" "lsb_release -i -s")
+        system=${system,,}
+        config.set system "${system}$([[ -n "$WSL_DISTRO_NAME" ]] && echo ':wsl')"
+    fi
+
+    config.get bin bin
+    if [[ -z "$bin" ]]; then
+        config.set bin "$LOCAL_BIN"
+    fi
+
+    config.get altdir ua_altdir
+    if [[ -z "$altdir" ]]; then
+        config.set ua_altdir "${HOME}/.local/etc/alternatives"
+    fi
+
+    config.get admdir ua_admdir
+    if [[ -z "$admdir" ]]; then
+        config.set ua_admdir "${HOME}/.local/etc/alternatives-admin"
+    fi
+
+    config.save
+    cp $SYS_INFO ${SYS_INFO}.last
+
+    msg.dbg "$SYS_INFO:"
+    msg.dbg "$(cat $SYS_INFO)"
+) fi
 
 # PROMPT_COMMAND=""
 force_cursor_bar() { printf '\e[?25h\e[5 q'; }
@@ -44,7 +77,4 @@ HISTIGNORE="&:ls:cd:pwd:exit:clear"
 # }
 # PROMPT_COMMAND="__hist_sync${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
 
-# ---------------------------------------------------------
-
-GIT_COMPLETION_SHOW_ALL_COMMANDS=1
-
+export GIT_COMPLETION_SHOW_ALL_COMMANDS=1

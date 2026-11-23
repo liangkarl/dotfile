@@ -15,7 +15,8 @@ config:
 	fi >> ${XDG_CONFIG_HOME}/bash/external.bash
 
 install:
-	$(H)lib.load devel
+	$(H)source "$$(bash-env)"
+	$(H)load devel
 	$(H)if [[ -z "$(shell which ${PKG_NAME})" ]]; then
 		$(H)echo "-- $(PKG_NAME): install package --"
 		brew install ${PKG_NAME}

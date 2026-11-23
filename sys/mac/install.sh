@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source "$(bash-env)" || { return 1 2>/dev/null || exit 1; }
+
 # install package manager
 
 # install core utils
@@ -28,7 +30,7 @@ eval ${pos}/install
 
 nvim +PlugInstall +qa
 
-lib.load system
+load system
 
 sys.auto_alter_cmd ls
 sys.auto_alter_cmd vim

@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-lib.load devel
-lib.load config
+source "$(bash-env)" || { return 1 2>/dev/null || exit 1; }
+
+load devel
+load config
 
 # GLOBAL CONFIGURATION FORMAT:
 #

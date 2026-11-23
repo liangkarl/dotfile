@@ -1,6 +1,8 @@
 #! /usr/bin/env bash
 
-lib.load devel
+source "$(bash-env)" || { return 1 2>/dev/null || exit 1; }
+
+load devel
 
 list=(curl vim make gawk sharutils build-essential gcc python2 python3 libncurses-dev openjdk-8-jdk xclip quilt wireshark)
 tmp=/tmp/install.log

@@ -21,6 +21,7 @@ alias ln='ln -r'
 
 # coloring manual
 alias man="\
+    GROFF_NO_SGR=1 \
     LESS_TERMCAP_md=$'$(ansi 100)' \
     LESS_TERMCAP_me=$'${_RS}' \
     LESS_TERMCAP_us=$'$(ansi 010)' \

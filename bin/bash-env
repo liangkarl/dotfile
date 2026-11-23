@@ -1,0 +1,183 @@
+#!/usr/bin/env bash
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    # Executed
+    echo "$0"
+    exit
+fi
+
+## Source Start (not for script running) ##
+
+if [[ -n "${__BASH_ENV_INCLUDED:-}" ]] \
+        && declare -F $__BASH_ENV_INCLUDED > /dev/null; then
+    return
+fi
+
+__BASH_ENV_BEFORE="$(compgen -A function)"
+
+export BASH_CFG=${BASH_CFG:-${XDG_CONFIG_HOME:-$HOME/.config}/bash}
+
+__bash_env_record_begin() {
+    local id
+    # source.name
+    id=${BASH_SOURCE[1]:-root.environment}
+    id=$(basename ${id^^})
+    id=${id/./_}
+    eval "__${id}_BEFORE=\"\$(compgen -A function) \$(compgen -v)\""
+}
+
+__bash_env_record_end() {
+    local id
+    # source.name
+    id=${BASH_SOURCE[1]:-root.environment}
+    id=$(basename ${id^^})
+    id=${id/./_}
+    eval "__${id}_AFTER=\"\$(compgen -A function) \$(compgen -v)\""
+    eval "__${id}_INCLUDED=\$(awk 'NR==FNR {a[\$0]=1; next} !(\$0 in a)' <(printf \"%s\n\" \$__${id}_BEFORE) <(printf \"%s\n\" \$__${id}_AFTER))"
+    eval "unset __${id}_AFTER __${id}_BEFORE"
+}
+
+__bash_env_record_reset() {
+    local f list id
+
+    id=${1:-root.environment}
+    id=$(basename ${id^^})
+    id=${id/./_}
+    eval "list=\"\${__${id}_INCLUDED}\""
+    for f in $list; do
+        unset $f || unset -f $f
+    done 2> /dev/null
+
+    unset __${id}_INCLUDED
+}
+
+
+# load [LIB...]
+# load --list
+# load --export [LIB]
+# load --cmd [LIB...]
+load() {
+    local mode lib f list marker
+    mode=load
+
+	if [[ ! -e "$BASH_CFG" ]]; then
+		echo "ERROR: BASH_CFG not found: '$BASH_CFG'" >&2
+		return 3
+	fi
+
+    case "${1:-}" in
+        --list)
+            local var
+            for var in $(compgen -A variable | sort); do
+                [[ "$var" =~ ^__[A-Z0-9_]+_BASH_INCLUDED$ ]] || continue
+                [[ "${!var}" == none ]] && continue
+                printf '%s\n' "${var#__}" | sed 's/_BASH_INCLUDED$/.bash/' | tr '[:upper:]' '[:lower:]'
+            done
+            return
+            ;;
+        --export)
+            mode=export
+            shift
+            if [[ $# -eq 0 ]]; then
+                for marker in $(compgen -A variable); do
+                    [[ "$marker" =~ ^__[A-Z0-9_]+_BASH_INCLUDED$ ]] || continue
+                    marker=${marker#__}
+                    marker=${marker%_BASH_INCLUDED}
+                    set -- "$@" "${marker,,}"
+                done
+            fi
+            ;;
+        --cmd)
+            mode=cmd
+            shift
+            ;;
+        --*)
+            echo "$FUNCNAME: unknown option: $1" >&2
+            return 2
+            ;;
+    esac
+
+    if [[ "$mode" == load && $# -eq 0 ]]; then
+        echo "$FUNCNAME: library required" >&2
+        return 2
+    fi
+
+    if [[ "$mode" == cmd && $# -eq 0 ]]; then
+        set -- "${BASH_CFG}"/lib/*.bash
+    fi
+
+    for lib in "$@"; do
+        if [[ "$mode" == cmd && "$lib" == */* ]]; then
+            f=$(basename "$lib" .bash)
+        else
+            f=${lib%.bash}
+            lib="${BASH_CFG}/lib/${f}.bash"
+        fi
+
+        if [[ "$mode" == cmd ]]; then
+            if [[ ! -e "$lib" ]]; then
+                echo "$FUNCNAME: library not found: $lib" >&2
+                return 1
+            fi
+            eval "${f}.cmd() { (load '${f}'; eval \"\$*\"); }"
+            eval "${f}.unload() { unset -f '${f}.cmd' '${f}.unload'; }"
+        elif [[ "$mode" == export ]]; then
+            marker="__${f^^}_BASH_INCLUDED"
+            if [[ ! -v $marker ]]; then
+                if [[ ! -e "$lib" ]]; then
+                    echo "$FUNCNAME: library not found: $lib" >&2
+                    return 1
+                fi
+                source "$lib" || return $?
+            fi
+            list=${!marker}
+            for f in $list; do
+                if declare -F "$f" > /dev/null; then
+                    export -f "$f"
+                elif [[ -v $f ]]; then
+                    export "$f"
+                fi
+            done
+        else
+            if [[ ! -e "$lib" ]]; then
+                echo "$FUNCNAME: library not found: $lib" >&2
+                return 1
+            fi
+            source "$lib"
+        fi
+    done
+}
+
+# unload LIB
+unload() {
+    local f list id
+
+    if [[ $# -ne 1 ]]; then
+        echo "$FUNCNAME: library required" >&2
+        return 2
+    fi
+
+    id="${1:-root.default}.bash"
+    id="$(basename ${id^^})"
+    id="${id/./_}"
+    eval "list=\"\${__${id}_INCLUDED}\""
+    for f in $list; do
+        unset $f || unset -f $f
+    done 2> /dev/null
+
+    unset __${id}_INCLUDED
+}
+
+__BASH_ENV_AFTER="$(compgen -A function)"
+
+# time __BASH_ENV_INCLUDED=$(comm -23 <(printf "%s\n" $' '"$__BASH_ENV_AFTER" | sort) <(printf "%s\n" $' '"$__BASH_ENV_BEFORE" | sort))
+# time __BASH_ENV_INCLUDED=$(printf "%s\n" $__BASH_ENV_AFTER | grep -Fvx -f <(printf "%s\n" $__BASH_ENV_BEFORE))
+__BASH_ENV_INCLUDED=$(awk 'NR==FNR {a[$0]=1; next} !($0 in a)' <(printf "%s\n" $__BASH_ENV_BEFORE) <(printf "%s\n" $__BASH_ENV_AFTER))
+
+unset __BASH_ENV_AFTER __BASH_ENV_BEFORE
+
+export -f load unload
+export -f __bash_env_record_begin __bash_env_record_end __bash_env_record_reset
+export __BASH_ENV_INCLUDED
+
+## Source End ##

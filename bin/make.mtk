@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source "$(bash-env)" || { return 1 2>/dev/null || exit 1; }
+
 # MIT License
 # -----------
 # Copyright (c) 2021 Karl Liang
@@ -24,7 +26,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-lib.load devel
+load devel
 source $(myscript helper.aosp)
 
 # don't move to botton since 'extglob' needs to be called at first

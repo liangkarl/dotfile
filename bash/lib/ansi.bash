@@ -3,7 +3,7 @@
 [[ -v __ANSI_BASH_INCLUDED ]] && return
 __ANSI_BASH_INCLUDED='none'
 
-sys.stage_start
+__bash_env_record_begin
 
 _BOLD='\e[1m'
 _FADE='\e[2m'
@@ -83,4 +83,4 @@ ansi_tc() {
     done
 }
 
-sys.stage_stop
+__bash_env_record_end

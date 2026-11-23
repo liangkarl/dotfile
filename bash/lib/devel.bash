@@ -3,7 +3,7 @@
 [[ -v __DEVEL_BASH_INCLUDED ]] && return
 __DEVEL_BASH_INCLUDED='none'
 
-sys.stage_start
+__bash_env_record_begin
 
 __N=/dev/null
 __DBG_ALL='__global__'
@@ -325,4 +325,4 @@ pause() {
     return $1
 }
 
-sys.stage_stop
+__bash_env_record_end

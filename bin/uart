@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+
+source "$(bash-env)" || { return 1 2>/dev/null || exit 1; }
 # Name:
 # $0 - A simple CLI serial console that supports tio, ss, plink and
 #      putty.
@@ -12,8 +14,8 @@
 #         select supported serial console
 #     -+([0-9]): serial port number, eg, -1, -2, etc.
 
-lib.load config
-lib.load devel
+load config
+load devel
 
 shopt -s extglob
 tio="$(which tio || which tio.exe)"

@@ -3,8 +3,8 @@
 [[ -v __CONFIG_BASH_INCLUDED ]] && return
 __CONFIG_BASH_INCLUDED='none'
 
-sys.stage_start
-lib.load devel
+__bash_env_record_begin
+load devel
 
 __CONFIG_BASH_DBG=$(dbg.mark)
 # dbg.on $__CONFIG_BASH_DBG
@@ -293,4 +293,4 @@ config.sort() {
     fi
 }
 
-sys.stage_stop
+__bash_env_record_end

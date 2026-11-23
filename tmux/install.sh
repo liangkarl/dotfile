@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
+source "$(bash-env)" || { return 1 2>/dev/null || exit 1; }
+
 # tmux installer script
-lib.load devel
+load devel
 
 usage() {
     n=$(basename $0)

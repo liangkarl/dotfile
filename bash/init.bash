@@ -46,17 +46,34 @@ ext_init() {
     source "$tmp"
 }
 
-export BASH_CFG="$(dirname ${BASH_SOURCE[0]})"
+PATH() {
+    echo "$PATH" | sed "s/:/\n/g"
+}
 
-# This first call of library should be source
-source ${BASH_CFG}/lib/system.bash
-source ${BASH_CFG}/lib/library.bash
-lib.export system
-lib.export library
+# Add path without duplicated
+PATH.add() {
+    PATH="$*:$PATH"
+    PATH.reload
+}
+
+# Remove duplicated path. The last duplicated path would be removed
+PATH.reload() {
+    PATH=$(echo -n $PATH | awk 'BEGIN {RS=":"; ORS=":"} !a[$0]++')
+    PATH=${PATH%:}
+}
+
+export BASH_CFG="$(dirname ${BASH_SOURCE[0]})"
+export LOCAL_BIN="${HOME}/.local/bin"
+export -f PATH.add PATH.reload
+
+# bash-env would need to be loaded from .local/bin
+PATH.add "$LOCAL_BIN"
+source "$(bash-env)"
+load --export system
 
 # for debug
-lib.load devel
-lib.load ansi
+load devel
+load ansi
 dbg.on
 
 oneshot xdg_init
@@ -68,11 +85,11 @@ oneshot ext_init
 # source bash/env/12_ps1.bash;
 # ...
 source "${BASH_CFG}/full-init.bash"
-dbg.cmd "sys.add_path '$(sys.info bin)'"
+dbg.cmd "PATH.add '$(sys.info bin)'"
 
 msg.dbg "path: $PATH"
 msg.dbg "completed"
 dbg.off
 
-lib.unload ansi
-lib.unload devel
+unload ansi
+unload devel

@@ -3,13 +3,13 @@
 [[ -v __SYSTEM_BASH_INCLUDED ]] && return
 __SYSTEM_BASH_INCLUDED='none'
 
-__SYSTEM_BASH_BEFORE="$(compgen -A function) $(compgen -v)"
+__bash_env_record_begin
 
 # sys.auto_setup_cmd CMD [PRIORITY]
 sys.auto_alter_cmd() {(
     local p n bin
 
-    lib.load devel
+    load devel
     if [[ $# -eq 0 ]]; then
         echo "$FUNCNAME CMD [PRIORITY]"
         return 1
@@ -32,7 +32,7 @@ sys.alter_cmd() {(
         echo "$FUNCNAME CMD LOCATION [PRIORITY]"
         return 1
     fi
-    lib.load devel
+    load devel
     path=$(path.abs $2)
     pr=${3:-300}
     if [[ ! -e "$path" ]]; then
@@ -52,18 +52,6 @@ sys.config_cmd() {
     update-alternatives --config $1
 }
 
-# Add path without duplicated
-sys.add_path() {
-    PATH="$*:$PATH"
-    sys.reload_path
-}
-
-# Remove duplicated path. The duplicated words in the end would be removed
-sys.reload_path() {
-    PATH=$(echo -n $PATH | awk 'BEGIN {RS=":"; ORS=":"} !a[$0]++')
-    PATH=${PATH%:}
-}
-
 # Read/Write system info database
 # sys.info var [VAL]
 sys.info() {(
@@ -74,56 +62,16 @@ sys.info() {(
             source ${SYS_INFO}
             echo "${!1}"
         else
-            lib.load config
+            load config
             config.reset
             config.load ${SYS_INFO}
             config.set "$1" "$2"
             config.save
         fi
     else
-        lib.load devel
+        load devel
         msg.err "failed to load system info (${SYS_INFO})"
     fi
 );}
 
-sys.stage_start() {
-    local id
-    # source.name
-    id=${BASH_SOURCE[1]:-root.environment}
-    id=$(basename ${id^^})
-    id=${id/./_}
-    eval "__${id}_BEFORE=\"\$(compgen -A function) \$(compgen -v)\""
-}
-
-sys.stage_stop() {
-    local id
-    # source.name
-    id=${BASH_SOURCE[1]:-root.environment}
-    id=$(basename ${id^^})
-    id=${id/./_}
-    eval "__${id}_AFTER=\"\$(compgen -A function) \$(compgen -v)\""
-    eval "__${id}_INCLUDED=\$(awk 'NR==FNR {a[\$0]=1; next} !(\$0 in a)' <(printf \"%s\n\" \$__${id}_BEFORE) <(printf \"%s\n\" \$__${id}_AFTER))"
-    eval "unset __${id}_AFTER __${id}_BEFORE"
-}
-
-sys.stage_reset() {
-    local f list id
-
-    id=${1:-root.environment}
-    id=$(basename ${id^^})
-    id=${id/./_}
-    eval "list=\"\${__${id}_INCLUDED}\""
-    for f in $list; do
-        unset $f || unset -f $f
-    done 2> /dev/null
-
-    unset __${id}_INCLUDED
-}
-
-__SYSTEM_BASH_AFTER="$(compgen -A function) $(compgen -v)"
-
-# time __SYSTEM_BASH_INCLUDED=$(comm -23 <(printf "%s\n" $' '"$__SYSTEM_BASH_AFTER" | sort) <(printf "%s\n" $' '"$__SYSTEM_BASH_BEFORE" | sort))
-# time __SYSTEM_BASH_INCLUDED=$(printf "%s\n" $__SYSTEM_BASH_AFTER | grep -Fvx -f <(printf "%s\n" $__SYSTEM_BASH_BEFORE))
-__SYSTEM_BASH_INCLUDED=$(awk 'NR==FNR {a[$0]=1; next} !($0 in a)' <(printf "%s\n" $__SYSTEM_BASH_BEFORE) <(printf "%s\n" $__SYSTEM_BASH_AFTER))
-
-unset __SYSTEM_BASH_AFTER __SYSTEM_BASH_BEFORE
+__bash_env_record_end
