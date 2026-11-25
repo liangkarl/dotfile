@@ -15,6 +15,7 @@ source "$(bash-env)" || { return 1 2>/dev/null || exit 1; }
 
 load config
 load devel
+load debug
 
 dbg.on
 

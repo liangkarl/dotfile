@@ -9,7 +9,7 @@ t() {
 }
 
 lib.load devel
-b=$(dbg.mark)
+b=$(dbg.space)
 # dbg.on $b
 
 echo "t.sh: dbg_list:${__DEVEL_BASH_DBG_SPACE_LIST[@]}"

@@ -17,7 +17,7 @@ assert_eq() {
 __bash_env_record_begin() { :; }
 __bash_env_record_end() { :; }
 load() { :; }
-dbg.mark() { :; }
+dbg.space() { :; }
 msg.dbg() { :; }
 
 # shellcheck source=/dev/null

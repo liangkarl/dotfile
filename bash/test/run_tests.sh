@@ -7,6 +7,7 @@ test_files=(
     "$SCRIPT_DIR/test_toml.sh"
     "$SCRIPT_DIR/test_yaml.sh"
     "$SCRIPT_DIR/test_config.sh"
+    "$SCRIPT_DIR/test_debug.sh"
 )
 
 status=0

@@ -3,10 +3,12 @@
 [[ -v __CONFIG_BASH_INCLUDED ]] && return
 __CONFIG_BASH_INCLUDED='none'
 
-__bash_env_record_begin
+load debug
 load devel
 
-__CONFIG_BASH_DBG=$(dbg.mark)
+__bash_env_record_begin
+
+__CONFIG_BASH_DBG=$(dbg.space)
 # dbg.on $__CONFIG_BASH_DBG
 
 _config_err() {

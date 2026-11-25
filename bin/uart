@@ -16,6 +16,7 @@ source "$(bash-env)" || { return 1 2>/dev/null || exit 1; }
 
 load config
 load devel
+load debug
 
 shopt -s extglob
 tio="$(which tio || which tio.exe)"
@@ -187,7 +188,7 @@ while [[ $# -gt 0 ]]; do
 	shift
 done
 
-D="$(dbg.mark)"
+D="$(dbg.space)"
 [[ -n "$debug" ]] && dbg.on $D
 
 if [[ "$list_port" == y ]]; then

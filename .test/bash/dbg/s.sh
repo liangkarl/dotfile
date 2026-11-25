@@ -8,7 +8,7 @@ msg.dbg config!!!
 
 msg.info "======= lib.load devel"
 lib.load devel
-a=$(dbg.mark)
+a=$(dbg.space)
 msg.info "lib.load devel"
 
 dbg.on

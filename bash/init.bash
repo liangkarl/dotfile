@@ -73,6 +73,7 @@ load --export system
 
 # for debug
 load devel
+load debug
 load ansi
 dbg.on
 
@@ -92,4 +93,5 @@ msg.dbg "completed"
 dbg.off
 
 unload ansi
+unload debug
 unload devel
