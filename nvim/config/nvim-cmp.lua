@@ -61,6 +61,7 @@ return { -- Autocomplete framework
         "nvim-lua/plenary.nvim",
         "hrsh7th/nvim-cmp",
       },
+      enabled = true,
       config = function()
         require("codeium").setup({})
       end
@@ -139,7 +140,7 @@ return { -- Autocomplete framework
       },
       sources = {
         -- { name = 'cmp_tabnine' },
-        { name = 'codeium' },
+        -- { name = 'codeium' },
         { name = 'nvim_lsp' },
         { name = 'luasnip' },
         { name = 'buffer' },
