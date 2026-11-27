@@ -10,63 +10,80 @@ SHELL?=bash
 
 H?=@
 
-# Set CONFIG_ACTION=append or CONFIG_ACTION=overwrite to apply the choice to
+# Set CONFIG_ACTION=append, overwrite, or replace to apply the choice to
 # every existing configuration directory without prompting. Append deep-merges
 # JSON, TOML, and YAML with existing values taking precedence; other matching
-# files are concatenated.
+# files are concatenated. Replace removes the existing directory first.
 CONFIG_ACTION?=ask
 
-LIST:=$(shell ls -d -- */ | sed 's:/::' | grep -v '^sys\|^apps\|^bin')
-ACTION_TARGETS:=install uninstall config
+LIST:=$(filter-out sys bin home config,$(shell ls -d -- */ | sed 's:/::'))
+UNDER_HOME:=$(notdir $(wildcard $(ROOT)/home/*))
+UNDER_CONFDIR:=$(notdir $(wildcard $(ROOT)/config/*))
+ACTION_TARGETS:=install uninstall
 PKGS:=$(filter-out $(ACTION_TARGETS),$(MAKECMDGOALS))
-
--include $(ROOT)/apps/Makefile
 
 .ONESHELL:
 
-all: $(LIST)
-
-# dotfile: $(DOTFILE)
-
-$(LIST):
-	$(H)if [ -n "$(filter $(ACTION_TARGETS),$(MAKECMDGOALS))" ]; then
-		exit 0
-	fi
-	$(H)$(eval SRC_DIR:=$(ROOT)/$@)
-	$(H)$(eval DST_DIR:=$(CONF_HOME)/$@)
-
-	$(H)if [ -d "$(DST_DIR)" ]; then
-		config_action="$(CONFIG_ACTION)"
-		if [ "$$config_action" = ask ]; then
-			printf 'Configuration for %s already exists. Append or overwrite? [a/o] ' "$@"
-			read -r config_action
-		fi
-		case "$$config_action" in
-			a|A|append|APPEND)
-				bash "$(ROOT)/bin/append-config" "$(SRC_DIR)" "$(DST_DIR)"
-				;;
-			o|O|overwrite|OVERWRITE)
-				# rm -rf "$(DST_DIR)"
-				cp -rvf "$(SRC_DIR)" "$(CONF_HOME)/"
-				;;
-			*)
-				echo 'Expected append or overwrite; no files were changed.'
-				exit 1
-				;;
-		esac
-	else
-		cp -rvf "$(SRC_DIR)" "$(CONF_HOME)/"
-	fi
-	$(H)if [ -e $(DST_DIR)/Makefile ]; then
-		H=$(H) make -C $(DST_DIR)
-	elif [ -e $(DST_DIR)/configure.sh ]; then
-		eval $(DST_DIR)/configure.sh
-	fi
-	$(H)printf -- "-- completed: $@ --\n\n"
+all: $(LIST) bin home config
 
 bin:
 	$(H)mkdir -p $(XDG_LOCAL_BIN)
 	$(H)cp -rvf $(ROOT)/bin/* $(XDG_LOCAL_BIN)
+
+home: $(UNDER_HOME)
+
+config: $(UNDER_CONFDIR)
+
+$(UNDER_HOME) $(UNDER_CONFDIR) $(LIST):
+	$(H)if [ -n "$(filter $(ACTION_TARGETS),$(MAKECMDGOALS))" ]; then
+		exit 0
+	fi
+
+	$(H)if [ -f "$(ROOT)/home/$@" ]; then
+		mkdir -p "$(HOME)" && cp -rvf "$(ROOT)/home/$@" "$(HOME)/.$@"
+		exit $$?
+	elif [ -f "$(ROOT)/config/$@" ]; then
+		mkdir -p "$(CONF_HOME)" && cp -rvf "$(ROOT)/config/$@" "$(CONF_HOME)/$@"
+		exit $$?
+	fi
+
+	$(H)$(eval SRC_DIR:=$(ROOT)/$@)
+	$(H)$(eval DST_DIR:=$(CONF_HOME)/$@)
+
+	$(H)mkdir -p "$(CONF_HOME)" || exit $$?
+	$(H)if [ -d "$(DST_DIR)" ]; then
+		config_action="$(CONFIG_ACTION)"
+		if [ "$$config_action" = ask ]; then
+			printf 'Configuration for %s already exists. Append, overwrite, or replace? [a/o/r] ' "$@"
+			read -r config_action
+		fi
+		case "$$config_action" in
+			a|A|append|APPEND)
+				bash "$(ROOT)/bin/append-config" "$(SRC_DIR)" "$(DST_DIR)" || exit $$?
+				;;
+			o|O|overwrite|OVERWRITE)
+				cp -rvf "$(SRC_DIR)" "$(CONF_HOME)/" || exit $$?
+				;;
+			r|R|replace|REPLACE)
+				rm -rf "$(DST_DIR)" || exit $$?
+				cp -rvf "$(SRC_DIR)" "$(CONF_HOME)/" || exit $$?
+				;;
+			*)
+				echo 'Expected append, overwrite, or replace; no files were changed.'
+				exit 1
+				;;
+		esac
+	else
+		cp -rvf "$(SRC_DIR)" "$(CONF_HOME)/" || exit $$?
+	fi
+
+	$(H)if [ -e $(DST_DIR)/Makefile ]; then
+		H=$(H) $(MAKE) --no-print-directory -C "$(DST_DIR)" config || exit $$?
+	elif [ -e $(DST_DIR)/configure.sh ]; then
+		bash "$(DST_DIR)/configure.sh" || exit $$?
+	fi
+
+	$(H)printf -- "-- completed: $@ --\n\n"
 
 install:
 	$(H)if [ -z "$(strip $(PKGS))" ]; then
@@ -74,6 +91,15 @@ install:
 		exit 1
 	fi
 	$(H)for pkg in $(PKGS); do
+		if [ -f "$(ROOT)/home/$$pkg" ]; then
+			mkdir -p "$(HOME)"
+			cp -vf "$(ROOT)/home/$$pkg" "$(HOME)/.$$pkg" || exit $$?
+			continue
+		elif [ -f "$(ROOT)/config/$$pkg" ]; then
+			mkdir -p "$(CONF_HOME)"
+			cp -vf "$(ROOT)/config/$$pkg" "$(CONF_HOME)/$$pkg" || exit $$?
+			continue
+		fi
 		SRC_DIR="$(ROOT)/$$pkg"
 		DST_DIR="$(CONF_HOME)/$$pkg"
 		cp -rvf $$SRC_DIR $(CONF_HOME)/
@@ -85,27 +111,17 @@ install:
 		printf -- "-- completed: $$pkg --\n\n"
 	done
 
-config:
-	$(H)if [ -z "$(strip $(PKGS))" ]; then
-		echo "Usage: make config [pkg1] [pkg2] ..."
-		exit 1
-	fi
-	$(H)for pkg in $(PKGS); do
-		DST_DIR="$(CONF_HOME)/$$pkg"
-		if [ -e "$$DST_DIR/Makefile" ]; then
-			H=$(H) $(MAKE) --no-print-directory -C "$$DST_DIR" config || exit $$?
-		elif [ -e "$$DST_DIR/configure.sh" ]; then
-			bash $$DST_DIR/configure.sh
-		fi
-	done
-
 uninstall:
 	$(H)if [ -z "$(strip $(PKGS))" ]; then
 		echo "Usage: make uninstall [pkg1] [pkg2] ..."
 		exit 1
 	fi
 	$(H)for pkg in $(PKGS); do
-		if [ -d "$(CONF_HOME)/$$pkg" ]; then
+		if [ -f "$(ROOT)/home/$$pkg" ]; then
+			rm -vf "$(HOME)/.$$pkg"
+		elif [ -f "$(ROOT)/config/$$pkg" ]; then
+			rm -vf "$(CONF_HOME)/$$pkg"
+		elif [ -d "$(CONF_HOME)/$$pkg" ]; then
 			if [ -f "$(CONF_HOME)/$$pkg/Makefile" ]; then
 				H=$(H) $(MAKE) --no-print-directory -C "$(CONF_HOME)/$$pkg" uninstall || true
 			elif [ -f "$(CONF_HOME)/$$pkg/uninstall.sh" ]; then
@@ -129,4 +145,4 @@ ifneq (,$(filter $(ACTION_TARGETS),$(MAKECMDGOALS)))
 	@:
 endif
 
-.PHONY: all install uninstall config $(LIST) $(ALIAS) bin
+.PHONY: all $(ACTION_TARGETS) $(UNDER_HOME) $(UNDER_CONFDIR) $(LIST) bin home config
