@@ -48,9 +48,9 @@ config: # Run in $(CONFIG_DIR)
 	$(H)echo "-- add bash-completion completed --"
 
 	# $SHELL is from environment
-	$(H)if realpath ${SHELL} | grep -q 'dash'; then
-		sudo dpkg-reconfigure dash
-	fi
+	# $(H)if realpath ${SHELL} | grep -q 'dash'; then
+	# 	sudo dpkg-reconfigure dash
+	# fi
 
 	$(H)echo "** Please restart console to apply new bash configuration **"
 
